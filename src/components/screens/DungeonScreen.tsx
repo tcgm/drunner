@@ -11,7 +11,7 @@ import GameOverScreen from '@components/dungeon/GameOverScreen'
 import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
-import type { EventChoice } from '@/types'
+import type { EventChoice, Hero } from '@/types'
 
 interface DungeonScreenProps {
   onExit: () => void
@@ -23,16 +23,16 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
-  const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp'; value: number; id: string }>>>({})
+  const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
   
   // When outcome changes, create floating numbers
   useEffect(() => {
     if (!lastOutcome) return
     
-    const newEffects: Record<string, Array<{ type: 'damage' | 'heal' | 'xp'; value: number; id: string }>> = {}
+    const newEffects: Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>> = {}
     
     lastOutcome.effects.forEach((effect) => {
-      if (!effect.target || !effect.value) return
+      if (!effect.target || effect.value === undefined) return
       
       effect.target.forEach((heroId) => {
         if (!newEffects[heroId]) {
@@ -42,21 +42,27 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         if (effect.type === 'damage' || effect.type === 'heal' || effect.type === 'xp' || effect.type === 'gold') {
           newEffects[heroId].push({
             type: effect.type,
-            value: effect.value,
+            value: effect.value!,
             id: `${effect.type}-${heroId}-${Date.now()}-${Math.random()}`
           })
         }
       })
     })
     
-    setHeroEffects(newEffects)
+    // Schedule state update to avoid cascading renders
+    const effectTimer = setTimeout(() => {
+      setHeroEffects(newEffects)
+    }, 0)
     
     // Clear effects after animation completes
-    const timer = setTimeout(() => {
+    const clearTimer = setTimeout(() => {
       setHeroEffects({})
     }, 100) // Just enough time for PartyMemberCard to pick them up
     
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(effectTimer)
+      clearTimeout(clearTimer)
+    }
   }, [lastOutcome])
   
   const handleSelectChoice = (choice: EventChoice) => {
@@ -83,9 +89,12 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     return <GameOverScreen depth={dungeon.depth} onExit={onExit} />
   }
   
+  // Filter out null heroes for components that expect Hero[]
+  const activeParty = party.filter((hero): hero is Hero => hero !== null)
+  
   return (
     <Flex className="dungeon-screen" h="100vh" gap={2} p={2}>
-      <PartySidebar party={party} />
+      <PartySidebar party={activeParty} heroEffects={heroEffects} />
       
       <Flex className="dungeon-screen-main" direction="column" flex={1} gap={2} minH={0}>
         <DungeonHeader 
@@ -98,7 +107,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         <EventArea
           currentEvent={dungeon.currentEvent}
           currentOutcome={lastOutcome}
-          party={party}
+          party={activeParty}
           depth={dungeon.depth}
           gold={dungeon.gold}
           onSelectChoice={handleSelectChoice}
@@ -116,7 +125,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         />
       </Flex>
       
-      <InfoSidebar party={party} activeRun={activeRun} />
+      <InfoSidebar party={activeParty} activeRun={activeRun} />
       
       {/* Retreat Confirmation Dialog */}
       <AlertDialog

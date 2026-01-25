@@ -226,6 +226,7 @@ export interface GameState {
       item?: Item
       description: string
     }[]
+    items: Item[] // Items that should be added to inventory
   } | null
 }
 
