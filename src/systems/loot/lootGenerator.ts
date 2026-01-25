@@ -206,17 +206,23 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
 /**
  * Generate a random item by combining material + base template, unique item, or set item
  */
-export function generateItem(depth: number): Item {
+export function generateItem(depth: number, forceType?: ItemSlot): Item {
   const rarity = selectRarity(depth)
-  const type = selectItemType()
+  const type = forceType || selectItemType()
   
   // Check if we should generate a set item (independent of rarity)
   if (depth >= 15 && Math.random() < LOOT_CONFIG.setChance) {
     const setTemplate = getRandomSetItem()
     if (setTemplate) {
-      return {
-        ...setTemplate,
-        id: uuidv4(),
+      // If we have a forced type, only use set item if it matches
+      if (!forceType || setTemplate.type === forceType || 
+          (forceType === 'accessory1' && (setTemplate.type === 'accessory1' || setTemplate.type === 'accessory2')) ||
+          (forceType === 'accessory2' && (setTemplate.type === 'accessory1' || setTemplate.type === 'accessory2'))) {
+        return {
+          ...setTemplate,
+          id: uuidv4(),
+          type, // Use the requested type for accessory distinction
+        }
       }
     }
   }
@@ -227,20 +233,16 @@ export function generateItem(depth: number): Item {
     const uniqueTemplate = getRandomUnique(rarity)
     if (uniqueTemplate) {
       // Generate unique item with proper type matching if possible
-      if (uniqueTemplate.type === type || 
-          (type === 'accessory1' && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2')) ||
-          (type === 'accessory2' && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
+      if (!forceType || uniqueTemplate.type === type || 
+          (forceType === 'accessory1' && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2')) ||
+          (forceType === 'accessory2' && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
         return {
           ...uniqueTemplate,
           id: uuidv4(),
           type, // Use the selected type (for accessory1/accessory2 distinction)
         }
       }
-      // If type doesn't match, use the unique's original type but still generate it
-      return {
-        ...uniqueTemplate,
-        id: uuidv4(),
-      }
+      // If forced type doesn't match unique, generate procedural item instead
     }
   }
   

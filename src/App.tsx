@@ -11,8 +11,14 @@ type Screen = 'menu' | 'party-setup' | 'dungeon' | 'run-history'
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
-  const { activeRun, retreatFromDungeon } = useGameStore()
+  const { activeRun, retreatFromDungeon, startDungeon } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  
+  const handleStartDungeon = () => {
+    startDungeon() // Actually start the dungeon in the game store
+    setCurrentScreen('dungeon')
+  }
+  
   const cancelRef = useRef<HTMLButtonElement>(null)
 
   const handleNewRun = () => {
@@ -47,7 +53,7 @@ function App() {
       )}
       {currentScreen === 'party-setup' && (
         <PartySetupScreen 
-          onStart={() => setCurrentScreen('dungeon')}
+          onStart={handleStartDungeon}
           onBack={() => setCurrentScreen('menu')}
         />
       )}

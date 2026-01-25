@@ -334,6 +334,7 @@ export const useGameStore = create<GameStore>()(
         dungeon: {
           ...state.dungeon,
           gold: updatedGold,
+          inventory: [...state.dungeon.inventory, ...resolvedOutcome.items], // Add found items to inventory
           currentEvent: null // Clear current event after resolution
         },
         isGameOver: isWiped,

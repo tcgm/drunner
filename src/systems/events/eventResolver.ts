@@ -1,9 +1,14 @@
-import type { Hero, EventOutcome, Item } from '@/types'
+import type { Hero, EventOutcome, Item, Material, BaseTemplate } from '@/types'
 import { GAME_CONFIG } from '@/config/game'
+import { generateItem } from '@/systems/loot/lootGenerator'
+import { getRandomMaterial } from '@/data/items/materials'
+import { getRandomBase } from '@/data/items/bases'
+import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
   text: string
   effects: ResolvedEffect[]
+  items: Item[] // Items that should be added to inventory
 }
 
 export interface ResolvedEffect {
@@ -19,6 +24,105 @@ export interface ResolvedEffect {
  */
 function scaleValue(baseValue: number, depth: number, scalingFactor: number = 0.1): number {
   return Math.floor(baseValue * (1 + (depth - 1) * scalingFactor))
+}
+
+/**
+ * Select weighted choice from array
+ */
+function selectWeightedChoice<T extends { weight: number }>(choices: T[]): T {
+  const totalWeight = choices.reduce((sum, choice) => sum + choice.weight, 0)
+  let roll = Math.random() * totalWeight
+  
+  for (const choice of choices) {
+    roll -= choice.weight
+    if (roll <= 0) {
+      return choice
+    }
+  }
+  
+  return choices[choices.length - 1] // Fallback to last choice
+}
+
+/**
+ * Generate item from specification with literal imports support
+ */
+function generateItemFromSpec(spec: {
+  itemType?: 'random' | any
+  uniqueItem?: string | Omit<Item, 'id'>
+  material?: string | Material
+  baseTemplate?: string | BaseTemplate
+}, depth: number): Item | null {
+  // Handle weighted item choices
+  if ('itemChoices' in spec && Array.isArray(spec.itemChoices)) {
+    const choice = selectWeightedChoice(spec.itemChoices as any[])
+    return generateItemFromSpec(choice, depth)
+  }
+
+  // Handle literal unique item import
+  if (spec.uniqueItem && typeof spec.uniqueItem === 'object') {
+    return {
+      ...spec.uniqueItem,
+      id: uuidv4(),
+    }
+  }
+
+  // Handle literal material import
+  if (spec.material && typeof spec.material === 'object') {
+    const material = spec.material as Material
+    const baseTemplate = getRandomBase(spec.itemType !== 'random' ? spec.itemType : undefined)
+    
+    if (baseTemplate) {
+      // Generate item using literal material
+      const modifiedStats: any = {}
+      for (const [key, value] of Object.entries(baseTemplate.stats)) {
+        if (value !== undefined) {
+          modifiedStats[key] = Math.floor(value * material.statMultiplier)
+        }
+      }
+      
+      return {
+        id: uuidv4(),
+        name: `${material.prefix} ${baseTemplate.type === 'weapon' ? 'Weapon' : 'Item'}`,
+        description: baseTemplate.description,
+        type: baseTemplate.type,
+        rarity: material.rarity,
+        stats: modifiedStats,
+        value: Math.floor(50 * material.valueMultiplier),
+      }
+    }
+  }
+
+  // Handle literal base template import
+  if (spec.baseTemplate && typeof spec.baseTemplate === 'object') {
+    const template = spec.baseTemplate as BaseTemplate
+    const material = typeof spec.material === 'object' 
+      ? spec.material as Material
+      : getRandomMaterial('common') // Default to common material
+    
+    const modifiedStats: any = {}
+    for (const [key, value] of Object.entries(template.stats)) {
+      if (value !== undefined) {
+        modifiedStats[key] = Math.floor(value * material.statMultiplier)
+      }
+    }
+    
+    return {
+      id: uuidv4(),
+      name: `${material.prefix} ${template.description}`,
+      description: template.description,
+      type: template.type,
+      rarity: material.rarity,
+      stats: modifiedStats,
+      value: Math.floor(50 * material.valueMultiplier),
+    }
+  }
+
+  // Handle string-based specifications (existing system)
+  if (spec.itemType) {
+    return generateItem(depth, spec.itemType === 'random' ? undefined : spec.itemType)
+  }
+
+  return null
 }
 
 /**
@@ -41,6 +145,7 @@ export function resolveEventOutcome(
   }))
   let updatedGold = dungeon.gold
   const resolvedEffects: ResolvedEffect[] = []
+  const foundItems: Item[] = []
   const depth = dungeon.depth
 
   for (const effect of outcome.effects) {
@@ -124,14 +229,28 @@ export function resolveEventOutcome(
       }
       
       case 'item': {
-        // Item handling - for now just log it
-        // Will implement proper inventory/equipment system later
+        // Item handling - generate items based on specifications
+        let generatedItem: Item | null = null
+        
         if (effect.item) {
+          // Backward compatibility: use pre-generated item
+          generatedItem = effect.item
+        } else if (effect.itemChoices) {
+          // Handle weighted item choices
+          const choice = selectWeightedChoice(effect.itemChoices)
+          generatedItem = generateItemFromSpec(choice, depth)
+        } else {
+          // Handle single item specification
+          generatedItem = generateItemFromSpec(effect, depth)
+        }
+        
+        if (generatedItem) {
+          foundItems.push(generatedItem)
           resolvedEffects.push({
             type: 'item',
             target: [],
-            item: effect.item,
-            description: `Found ${effect.item.name}`
+            item: generatedItem,
+            description: `Found ${generatedItem.name}`
           })
         }
         break
@@ -182,7 +301,8 @@ export function resolveEventOutcome(
     updatedGold,
     resolvedOutcome: {
       text: outcome.text,
-      effects: resolvedEffects
+      effects: resolvedEffects,
+      items: foundItems
     }
   }
 }

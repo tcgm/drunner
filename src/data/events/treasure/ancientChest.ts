@@ -13,6 +13,7 @@ export const ANCIENT_CHEST: DungeonEvent = {
         effects: [
           { type: 'gold', value: 100 },
           { type: 'damage', target: 'random', value: 10 },
+          { type: 'item', itemType: 'random' }, // Generate random item
         ],
       },
     },
@@ -25,6 +26,7 @@ export const ANCIENT_CHEST: DungeonEvent = {
         text: 'The lock clicks open smoothly!',
         effects: [
           { type: 'gold', value: 150 },
+          { type: 'item', itemType: 'random' }, // Generate random item
         ],
       },
     },

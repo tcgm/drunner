@@ -114,7 +114,20 @@ export interface EventOutcome {
     type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive'
     target?: 'random' | 'all' | 'weakest' | 'strongest'
     value?: number
-    item?: Item
+    // Item generation specifications (only one should be used)
+    itemType?: 'random' | ItemSlot // Generate random item of specific type or any type
+    uniqueItem?: string | Omit<Item, 'id'> // Generate specific unique item by ID or literal import
+    material?: string | Material // Material by ID or literal import
+    baseTemplate?: string | BaseTemplate // Base template by ID or literal import
+    // Weighted item choices - for multiple possible outcomes
+    itemChoices?: Array<{
+      weight: number
+      itemType?: 'random' | ItemSlot
+      uniqueItem?: string | Omit<Item, 'id'>
+      material?: string | Material
+      baseTemplate?: string | BaseTemplate
+    }>
+    item?: Item // Deprecated: pre-generated item (for backward compatibility)
   }[]
 }
 
@@ -172,4 +185,21 @@ export interface GameState {
       description: string
     }[]
   } | null
+}
+
+// Additional types for literal imports
+export interface Material {
+  id: string
+  name: string
+  prefix: string
+  rarity: ItemRarity
+  statMultiplier: number
+  valueMultiplier: number
+  description?: string
+}
+
+export interface BaseTemplate {
+  description: string
+  type: ItemSlot
+  stats: Partial<Omit<Stats, 'hp'>>
 }

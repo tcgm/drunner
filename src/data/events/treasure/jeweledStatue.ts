@@ -12,6 +12,7 @@ export const JEWELED_STATUE: DungeonEvent = {
         text: 'You extract several valuable gems!',
         effects: [
           { type: 'gold', value: 200 },
+          { type: 'item', itemType: 'accessory1' }, // Generate accessory/jewelry
         ],
       },
     },
@@ -24,6 +25,8 @@ export const JEWELED_STATUE: DungeonEvent = {
         text: 'You disarm a trap and safely take the gems!',
         effects: [
           { type: 'gold', value: 250 },
+          { type: 'item', itemType: 'accessory1' }, // Generate accessory
+          { type: 'item', itemType: 'accessory2' }, // Second accessory
         ],
       },
     },
