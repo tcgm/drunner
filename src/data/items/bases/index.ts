@@ -29,6 +29,9 @@ export const ALL_BASE_TEMPLATES = [
   ...ALL_ACCESSORY_BASES,
 ]
 
+// Alias for easier import
+export const allBases = ALL_BASE_TEMPLATES
+
 // Base templates by type
 export const BASE_TEMPLATES_BY_TYPE: Record<string, BaseItemTemplate[]> = {
   weapon: ALL_WEAPON_BASES,

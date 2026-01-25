@@ -25,6 +25,9 @@ export const NECROMANTIC_RITUAL: DungeonEvent = {
         text: 'You attempt the ritual without proper knowledge. It partially works...',
         effects: [
           { type: 'revive', target: 'random', value: 30 },
+          // NOTE: Damage scales with depth, which can result in the revived hero
+          // immediately dying again from massive damage at deep floors.
+          // This is intentionally left in because it's hilarious.
           { type: 'damage', target: 'all', value: 30 },
         ],
       },

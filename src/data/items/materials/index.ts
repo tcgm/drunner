@@ -87,6 +87,9 @@ export const ALL_MATERIALS: Material[] = [
   PRIMORDIAL, COSMIC, ETERNAL,
 ]
 
+// Alias for easier import
+export const allMaterials = ALL_MATERIALS
+
 /**
  * Get materials by rarity
  */

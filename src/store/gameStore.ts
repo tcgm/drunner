@@ -573,33 +573,37 @@ export const useGameStore = create<GameStore>()(
           const str = localStorage.getItem(name)
           if (!str) return null
           const state = JSON.parse(str) as GameState
+          
+          // Access the actual nested state
+          const actualState = (state as any).state as GameState
+          
           // Repair any NaN values when loading from storage
-          if (state.party?.length > 0) {
-            const needsRepair = state.party.some(hero => 
+          if (actualState.party?.length > 0) {
+            const needsRepair = actualState.party.some(hero => 
               isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
             )
             if (needsRepair) {
-              state.party = state.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
+              actualState.party = actualState.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
             }
           }
           // Also repair heroRoster
-          if (state.heroRoster?.length > 0) {
-            const needsRepair = state.heroRoster.some(hero => 
+          if (actualState.heroRoster?.length > 0) {
+            const needsRepair = actualState.heroRoster.some(hero => 
               isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
             )
             if (needsRepair) {
-              state.heroRoster = state.heroRoster.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
+              actualState.heroRoster = actualState.heroRoster.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
             }
           }
-          // Repair item names if they have generic names
-          if (state.bankInventory?.length > 0) {
-            state.bankInventory = repairItemNames(state.bankInventory)
+          // Repair item names and icons if they have generic names or default icons
+          if (actualState.bankInventory?.length > 0) {
+            actualState.bankInventory = repairItemNames(actualState.bankInventory)
           }
-          if (state.dungeon?.inventory?.length > 0) {
-            state.dungeon.inventory = repairItemNames(state.dungeon.inventory)
+          if (actualState.dungeon?.inventory?.length > 0) {
+            actualState.dungeon.inventory = repairItemNames(actualState.dungeon.inventory)
           }
-          if (state.overflowInventory?.length > 0) {
-            state.overflowInventory = repairItemNames(state.overflowInventory)
+          if (actualState.overflowInventory?.length > 0) {
+            actualState.overflowInventory = repairItemNames(actualState.overflowInventory)
           }
           return state
         },

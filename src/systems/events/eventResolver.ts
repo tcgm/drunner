@@ -66,63 +66,14 @@ function generateItemFromSpec(spec: {
     }
   }
 
-  // Handle literal material import
-  if (spec.material && typeof spec.material === 'object') {
-    const material = spec.material as Material
-    const baseTemplate = getRandomBase(spec.itemType !== 'random' ? spec.itemType : undefined)
-    
-    if (baseTemplate) {
-      // Generate item using literal material
-      const modifiedStats: any = {}
-      for (const [key, value] of Object.entries(baseTemplate.stats)) {
-        if (value !== undefined) {
-          modifiedStats[key] = Math.floor(value * material.statMultiplier)
-        }
-      }
-      
-      return {
-        id: uuidv4(),
-        name: `${material.prefix} ${baseTemplate.type === 'weapon' ? 'Weapon' : 'Item'}`,
-        description: baseTemplate.description,
-        type: baseTemplate.type,
-        rarity: material.rarity,
-        stats: modifiedStats,
-        value: Math.floor(50 * material.valueMultiplier),
-      }
-    }
-  }
-
-  // Handle literal base template import
-  if (spec.baseTemplate && typeof spec.baseTemplate === 'object') {
-    const template = spec.baseTemplate as BaseTemplate
-    const material = typeof spec.material === 'object' 
-      ? spec.material as Material
-      : getRandomMaterial('common') // Default to common material
-    
-    const modifiedStats: any = {}
-    for (const [key, value] of Object.entries(template.stats)) {
-      if (value !== undefined) {
-        modifiedStats[key] = Math.floor(value * material.statMultiplier)
-      }
-    }
-    
-    return {
-      id: uuidv4(),
-      name: `${material.prefix} ${template.description}`,
-      description: template.description,
-      type: template.type,
-      rarity: material.rarity,
-      stats: modifiedStats,
-      value: Math.floor(50 * material.valueMultiplier),
-    }
-  }
-
-  // Handle string-based specifications (existing system)
+  // For all other cases, use the centralized generateItem function
+  // This ensures consistent name generation, repair logic, and alkahest fallback
   if (spec.itemType) {
     return generateItem(depth, spec.itemType === 'random' ? undefined : spec.itemType)
   }
 
-  return null
+  // Default case: generate random item
+  return generateItem(depth)
 }
 
 /**
