@@ -7,9 +7,9 @@ export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
   description: 'A hooded figure offers to sell you "special" items at a steep price.',
   choices: [
     {
-      text: 'Buy the special item (costs 150 gold)',
+      text: 'Buy the special item',
       requirements: {
-        item: 'gold',
+        gold: 150,
       },
       outcome: {
         text: 'The item seems powerful... but cursed?',

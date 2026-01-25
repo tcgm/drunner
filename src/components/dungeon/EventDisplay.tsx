@@ -7,6 +7,7 @@ interface EventDisplayProps {
   event: DungeonEvent
   party: Hero[]
   depth: number
+  gold: number
   onSelectChoice: (choice: EventChoice) => void
 }
 
@@ -20,7 +21,7 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
   boss: 'pink',
 }
 
-export default function EventDisplay({ event, party, depth, onSelectChoice }: EventDisplayProps) {
+export default function EventDisplay({ event, party, depth, gold, onSelectChoice }: EventDisplayProps) {
   return (
     <VStack spacing={2} align="stretch" flex={1}>
       {/* Event Header */}
@@ -44,7 +45,7 @@ export default function EventDisplay({ event, party, depth, onSelectChoice }: Ev
           What will you do?
         </Heading>
         {event.choices.map((choice, index) => {
-          const canSelect = checkRequirements(choice.requirements, party, depth)
+          const canSelect = checkRequirements(choice.requirements, party, depth, gold)
           
           return (
             <Button
@@ -98,6 +99,12 @@ function getRequirementText(requirements: EventChoice['requirements'], depth: nu
     // Show scaled requirement value
     const scaledValue = Math.floor(requirements.minValue * (1 + (depth - 1) * 0.05))
     parts.push(`Requires any hero with ${requirements.stat} ≥ ${scaledValue}`)
+  }
+  
+  if (requirements.gold !== undefined) {
+    // Show scaled gold requirement
+    const scaledGold = Math.floor(requirements.gold * (1 + (depth - 1) * 0.15))
+    parts.push(`Requires ${scaledGold} gold`)
   }
   
   if (requirements.item) {

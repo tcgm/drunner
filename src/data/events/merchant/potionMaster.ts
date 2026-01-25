@@ -7,9 +7,9 @@ export const POTION_MASTER: DungeonEvent = {
   description: 'An alchemist offers various potions and elixirs with magical properties.',
   choices: [
     {
-      text: 'Buy healing elixir (costs 60 gold)',
+      text: 'Buy healing elixir',
       requirements: {
-        item: 'gold',
+        gold: 60,
       },
       outcome: {
         text: 'The elixir instantly heals your wounds!',
@@ -20,9 +20,9 @@ export const POTION_MASTER: DungeonEvent = {
       },
     },
     {
-      text: 'Buy experience potion (costs 100 gold)',
+      text: 'Buy experience potion',
       requirements: {
-        item: 'gold',
+        gold: 100,
       },
       outcome: {
         text: 'You drink the potion and gain knowledge!',

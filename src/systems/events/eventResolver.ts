@@ -1,4 +1,5 @@
 import type { Hero, EventOutcome, Item } from '@/types'
+import { GAME_CONFIG } from '@/config/game'
 
 export interface ResolvedOutcome {
   text: string
@@ -86,16 +87,18 @@ export function resolveEventOutcome(
         targets.forEach(hero => {
           hero.xp += xp
           // Check for level up
-          while (hero.xp >= hero.level * 100 && hero.level < 20) {
+          while (hero.xp >= hero.level * 100 && hero.level < GAME_CONFIG.levelUp.maxLevel) {
             hero.level++
             hero.xp -= (hero.level - 1) * 100
-            // Increase stats on level up (+5 to all stats)
-            hero.stats.attack += 5
-            hero.stats.defense += 5
-            hero.stats.speed += 5
-            hero.stats.luck += 5
-            hero.stats.maxHp += 5
-            hero.stats.hp = hero.stats.maxHp // Full heal on level up
+            // Increase stats on level up
+            hero.stats.attack += GAME_CONFIG.statGains.attack
+            hero.stats.defense += GAME_CONFIG.statGains.defense
+            hero.stats.speed += GAME_CONFIG.statGains.speed
+            hero.stats.luck += GAME_CONFIG.statGains.luck
+            hero.stats.maxHp += GAME_CONFIG.statGains.maxHp
+            if (GAME_CONFIG.levelUp.healToFull) {
+              hero.stats.hp = hero.stats.maxHp
+            }
           }
         })
         resolvedEffects.push({
@@ -198,9 +201,11 @@ export function checkRequirements(
     stat?: string
     minValue?: number
     item?: string
+    gold?: number
   } | undefined,
   party: Hero[],
-  depth: number = 1
+  depth: number = 1,
+  gold: number = 0
 ): boolean {
   if (!requirements) {
     return true
@@ -220,6 +225,12 @@ export function checkRequirements(
       return typeof statValue === 'number' && statValue >= scaledMinValue
     })
     if (!hasStat) return false
+  }
+  
+  if (requirements.gold !== undefined) {
+    // Scale gold requirements with depth (same as rewards - 15% per depth)
+    const scaledGold = scaleValue(requirements.gold, depth, 0.15)
+    if (gold < scaledGold) return false
   }
   
   if (requirements.item) {

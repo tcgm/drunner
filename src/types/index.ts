@@ -102,6 +102,7 @@ export interface EventChoice {
     stat?: keyof Stats
     minValue?: number
     item?: string
+    gold?: number
   }
   outcome: EventOutcome
 }

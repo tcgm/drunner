@@ -7,9 +7,9 @@ export const BLACK_MARKET: DungeonEvent = {
   description: 'A shady figure offers powerful items at steep prices. Some look... cursed.',
   choices: [
     {
-      text: 'Buy cursed weapon (costs 200 gold)',
+      text: 'Buy cursed weapon',
       requirements: {
-        item: 'gold',
+        gold: 200,
       },
       outcome: {
         text: 'You acquire a powerful but cursed weapon!',
@@ -20,9 +20,9 @@ export const BLACK_MARKET: DungeonEvent = {
       },
     },
     {
-      text: 'Buy rare artifact (costs 300 gold)',
+      text: 'Buy rare artifact',
       requirements: {
-        item: 'gold',
+        gold: 300,
       },
       outcome: {
         text: 'You purchase an incredibly rare artifact!',

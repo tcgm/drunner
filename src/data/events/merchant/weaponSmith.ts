@@ -7,9 +7,9 @@ export const WEAPON_SMITH: DungeonEvent = {
   description: 'A skilled smith offers to upgrade your weapons or repair your armor.',
   choices: [
     {
-      text: 'Upgrade weapons (costs 120 gold)',
+      text: 'Upgrade weapons',
       requirements: {
-        item: 'gold',
+        gold: 120,
       },
       outcome: {
         text: 'The smith forges superior weapons for your party!',
@@ -20,9 +20,9 @@ export const WEAPON_SMITH: DungeonEvent = {
       },
     },
     {
-      text: 'Repair armor (costs 80 gold)',
+      text: 'Repair armor',
       requirements: {
-        item: 'gold',
+        gold: 80,
       },
       outcome: {
         text: 'Your armor is restored to peak condition!',
@@ -33,9 +33,9 @@ export const WEAPON_SMITH: DungeonEvent = {
       },
     },
     {
-      text: 'Commission custom gear (costs 250 gold)',
+      text: 'Commission custom gear',
       requirements: {
-        item: 'gold',
+        gold: 250,
       },
       outcome: {
         text: 'The smith crafts masterwork equipment!',

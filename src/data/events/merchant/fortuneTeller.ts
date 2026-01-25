@@ -7,9 +7,9 @@ export const FORTUNE_TELLER: DungeonEvent = {
   description: 'A fortune teller offers to reveal your future... for a price.',
   choices: [
     {
-      text: 'Pay for fortune (costs 75 gold)',
+      text: 'Pay for fortune',
       requirements: {
-        item: 'gold',
+        gold: 75,
       },
       outcome: {
         text: 'She reveals secrets of the dungeon ahead!',

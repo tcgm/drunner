@@ -10,6 +10,7 @@ interface EventAreaProps {
   currentOutcome: ResolvedOutcome | null
   party: Hero[]
   depth: number
+  gold: number
   onSelectChoice: (choice: EventChoice) => void
   onContinue: () => void
   onAdvance: () => void
@@ -20,6 +21,7 @@ export default function EventArea({
   currentOutcome, 
   party, 
   depth,
+  gold,
   onSelectChoice, 
   onContinue,
   onAdvance
@@ -47,6 +49,7 @@ export default function EventArea({
           event={currentEvent} 
           party={party}
           depth={depth}
+          gold={gold}
           onSelectChoice={onSelectChoice}
         />
       ) : (

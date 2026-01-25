@@ -7,9 +7,9 @@ export const TRAVELING_MERCHANT: DungeonEvent = {
   description: 'A cheerful merchant has set up shop in the dungeon. His prices are fair.',
   choices: [
     {
-      text: 'Buy health potions (costs 50 gold)',
+      text: 'Buy health potions',
       requirements: {
-        item: 'gold',
+        gold: 50,
       },
       outcome: {
         text: 'You purchase potions and use them immediately.',
@@ -20,9 +20,9 @@ export const TRAVELING_MERCHANT: DungeonEvent = {
       },
     },
     {
-      text: 'Buy equipment upgrade (costs 100 gold)',
+      text: 'Buy equipment upgrade',
       requirements: {
-        item: 'gold',
+        gold: 100,
       },
       outcome: {
         text: 'You purchase better equipment!',
