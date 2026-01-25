@@ -11,6 +11,7 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
   const { isOpen, onToggle } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
   const hpPercent = (hero.stats.hp / hero.stats.maxHp) * 100
   const xpPercent = (hero.xp / (hero.level * 100)) * 100

@@ -1,37 +1,28 @@
 import type { HeroClass } from '@/types'
 
-// Import core classes
-import { WARRIOR } from './warrior'
-import { MAGE } from './mage'
-import { ROGUE } from './rogue'
-import { CLERIC } from './cleric'
-import { RANGER } from './ranger'
-import { PALADIN } from './paladin'
-import { NECROMANCER } from './necromancer'
-import { BARD } from './bard'
+// Auto-discover all hero class modules
+const classModules = import.meta.glob<{ default?: HeroClass; [key: string]: unknown }>('./*.ts', { eager: true })
 
-// Core classes (MVP)
-export const CORE_CLASSES: HeroClass[] = [
-  WARRIOR,
-  MAGE,
-  ROGUE,
-  CLERIC,
-  RANGER,
-  PALADIN,
-  NECROMANCER,
-  BARD,
-]
+// Extract all exported HeroClass objects
+const allClasses: HeroClass[] = Object.values(classModules)
+  .filter(module => module !== undefined)
+  .flatMap(module => 
+    Object.values(module).filter((exp): exp is HeroClass => 
+      exp !== null && 
+      typeof exp === 'object' && 
+      'name' in exp && 
+      'baseStats' in exp
+    )
+  )
 
-// Stretch goal classes (to be added later)
-export const STRETCH_CLASSES: HeroClass[] = [
-  // Artificer, Sorcerer, Barbarian, Druid, Monk, Warlock, Assassin, Shaman, Knight, Witch, Berserker, Alchemist
-]
+// Core classes (MVP) - automatically discovered
+export const CORE_CLASSES: HeroClass[] = allClasses
+
+// Stretch goal classes (to be added later) - will auto-discover when added
+export const STRETCH_CLASSES: HeroClass[] = []
 
 // All classes
-export const ALL_CLASSES: HeroClass[] = [
-  ...CORE_CLASSES,
-  ...STRETCH_CLASSES,
-]
+export const ALL_CLASSES: HeroClass[] = [...CORE_CLASSES, ...STRETCH_CLASSES]
 
 // Helper function to get a class by ID
 export function getClassById(id: string): HeroClass | undefined {
@@ -42,6 +33,3 @@ export function getClassById(id: string): HeroClass | undefined {
 export function getRandomClass(): HeroClass {
   return ALL_CLASSES[Math.floor(Math.random() * ALL_CLASSES.length)]
 }
-
-// Re-export individual classes for direct import
-export { WARRIOR, MAGE, ROGUE, CLERIC, RANGER, PALADIN, NECROMANCER, BARD }

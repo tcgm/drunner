@@ -1,0 +1,57 @@
+import type { DungeonEvent } from '@/types'
+
+export const WEAPON_SMITH: DungeonEvent = {
+  id: 'weapon-smith',
+  type: 'merchant',
+  title: 'Dungeon Weaponsmith',
+  description: 'A skilled smith offers to upgrade your weapons or repair your armor.',
+  choices: [
+    {
+      text: 'Upgrade weapons (costs 120 gold)',
+      requirements: {
+        item: 'gold',
+      },
+      outcome: {
+        text: 'The smith forges superior weapons for your party!',
+        effects: [
+          { type: 'gold', value: -120 },
+          { type: 'xp', value: 40 },
+        ],
+      },
+    },
+    {
+      text: 'Repair armor (costs 80 gold)',
+      requirements: {
+        item: 'gold',
+      },
+      outcome: {
+        text: 'Your armor is restored to peak condition!',
+        effects: [
+          { type: 'gold', value: -80 },
+          { type: 'heal', target: 'all', value: 30 },
+        ],
+      },
+    },
+    {
+      text: 'Commission custom gear (costs 250 gold)',
+      requirements: {
+        item: 'gold',
+      },
+      outcome: {
+        text: 'The smith crafts masterwork equipment!',
+        effects: [
+          { type: 'gold', value: -250 },
+          { type: 'xp', value: 80 },
+        ],
+      },
+    },
+    {
+      text: 'Just window shop',
+      outcome: {
+        text: 'You admire the craftsmanship but don\'t buy.',
+        effects: [],
+      },
+    },
+  ],
+  depth: 3,
+}
