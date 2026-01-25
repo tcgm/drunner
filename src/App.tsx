@@ -1,5 +1,6 @@
 import { Box, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Button } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
 import { PartySetupScreen } from '@components/screens/PartySetupScreen'
 import DungeonScreen from '@components/screens/DungeonScreen'
@@ -7,7 +8,30 @@ import RunHistoryScreen from '@components/screens/RunHistoryScreen'
 import DevTools from '@components/ui/DevTools'
 import { useGameStore } from '@store/gameStore'
 
+const MotionBox = motion.create(Box)
+
 type Screen = 'menu' | 'party-setup' | 'dungeon' | 'run-history'
+
+const screenVariants = {
+  initial: { opacity: 0, x: 20 },
+  animate: { 
+    opacity: 1, 
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+      duration: 0.4
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    x: -20,
+    transition: {
+      duration: 0.2
+    }
+  }
+}
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
@@ -44,25 +68,67 @@ function App() {
 
   return (
     <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden">
-      {currentScreen === 'menu' && (
-        <MainMenuScreen 
-          onNewRun={handleNewRun}
-          onContinue={handleContinue}
-          onRunHistory={() => setCurrentScreen('run-history')}
-        />
-      )}
-      {currentScreen === 'party-setup' && (
-        <PartySetupScreen 
-          onStart={handleStartDungeon}
-          onBack={() => setCurrentScreen('menu')}
-        />
-      )}
-      {currentScreen === 'dungeon' && (
-        <DungeonScreen onExit={() => setCurrentScreen('menu')} />
-      )}
-      {currentScreen === 'run-history' && (
-        <RunHistoryScreen onBack={() => setCurrentScreen('menu')} />
-      )}
+      <AnimatePresence mode="wait">
+        {currentScreen === 'menu' && (
+          <MotionBox
+            key="menu"
+            h="full"
+            w="full"
+            variants={screenVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <MainMenuScreen 
+              onNewRun={handleNewRun}
+              onContinue={handleContinue}
+              onRunHistory={() => setCurrentScreen('run-history')}
+            />
+          </MotionBox>
+        )}
+        {currentScreen === 'party-setup' && (
+          <MotionBox
+            key="party-setup"
+            h="full"
+            w="full"
+            variants={screenVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <PartySetupScreen 
+              onStart={handleStartDungeon}
+              onBack={() => setCurrentScreen('menu')}
+            />
+          </MotionBox>
+        )}
+        {currentScreen === 'dungeon' && (
+          <MotionBox
+            key="dungeon"
+            h="full"
+            w="full"
+            variants={screenVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <DungeonScreen onExit={() => setCurrentScreen('menu')} />
+          </MotionBox>
+        )}
+        {currentScreen === 'run-history' && (
+          <MotionBox
+            key="run-history"
+            h="full"
+            w="full"
+            variants={screenVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <RunHistoryScreen onBack={() => setCurrentScreen('menu')} />
+          </MotionBox>
+        )}
+      </AnimatePresence>
       
       {/* New Run Confirmation Dialog */}
       <AlertDialog

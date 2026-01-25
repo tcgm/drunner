@@ -10,9 +10,12 @@ import {
   Icon,
 } from '@chakra-ui/react'
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { GiGoldBar as GiTreasure } from 'react-icons/gi'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
+
+const MotionBox = motion.create(Box)
 
 interface ItemSlotProps {
   item: Item
@@ -163,7 +166,7 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
         p={3}
         isOpen={isHovered}
       >
-        <Box
+        <MotionBox
           className={`item-slot item-slot-${item.rarity} item-type-${item.type}`}
           width={SLOT_SIZES[size]}
           height={SLOT_SIZES[size]}
@@ -173,13 +176,6 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
           borderColor={RARITY_COLORS[item.rarity]?.border || '#4A5568'}
           position="relative"
           cursor={isClickable || onClick ? "pointer" : "default"}
-          transition="all 0.2s"
-          _hover={{
-            borderColor: RARITY_COLORS[item.rarity]?.borderHover || '#2D3748',
-            bg: RARITY_COLORS[item.rarity]?.borderHover || '#2D3748',
-            transform: isClickable || onClick ? "scale(1.05)" : "none",
-            boxShadow: `0 0 12px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40`
-          }}
           boxShadow={`0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
@@ -192,14 +188,60 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
           justifyContent="center"
           flexDirection="column"
           p={2}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            scale: isHovered && (isClickable || onClick) ? 1.08 : 1,
+            boxShadow: isHovered 
+              ? `0 0 24px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}60, 0 0 40px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40`
+              : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`
+          }}
+          whileTap={isClickable || onClick ? { scale: 0.95 } : {}}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 20,
+            opacity: { duration: 0.3 }
+          }}
         >
+          {/* Rarity Glow Animation */}
+          <AnimatePresence>
+            {isHovered && (
+              <motion.div
+                style={{
+                  position: 'absolute',
+                  inset: '-4px',
+                  borderRadius: '12px',
+                  background: `radial-gradient(circle, ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40 0%, transparent 70%)`,
+                  pointerEvents: 'none',
+                  zIndex: -1
+                }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1.1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+              />
+            )}
+          </AnimatePresence>
+
           {/* Item Icon */}
-          <Icon 
-            as={ItemIcon} 
-            boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : '36px'}
-            color="white"
-            mb={0.5}
-          />
+          <motion.div
+            animate={{
+              scale: isHovered ? 1.1 : 1,
+              rotate: isHovered ? [0, -5, 5, 0] : 0
+            }}
+            transition={{
+              scale: { duration: 0.2 },
+              rotate: { duration: 0.5, ease: "easeInOut" }
+            }}
+          >
+            <Icon 
+              as={ItemIcon} 
+              boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : '36px'}
+              color="white"
+              mb={0.5}
+            />
+          </motion.div>
           
           {/* Item Name */}
           <Text 
@@ -216,16 +258,27 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
           </Text>
           
           {/* Rarity indicator dot */}
-          <Box
-            position="absolute"
-            top="2px"
-            right="2px"
-            width="8px"
-            height="8px"
-            borderRadius="full"
-            bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
+          <motion.div
+            style={{
+              position: 'absolute',
+              top: '2px',
+              right: '2px',
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: RARITY_COLORS[item.rarity]?.border || '#4A5568'
+            }}
+            animate={{
+              scale: isHovered ? [1, 1.3, 1] : 1,
+              opacity: isHovered ? [1, 0.6, 1] : 1
+            }}
+            transition={{
+              duration: 1,
+              repeat: isHovered ? Infinity : 0,
+              ease: "easeInOut"
+            }}
           />
-        </Box>
+        </MotionBox>
       </Tooltip>
 
       <ItemDetailModal 

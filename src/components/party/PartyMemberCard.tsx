@@ -1,11 +1,14 @@
 import { Box, HStack, VStack, Text, Icon, useDisclosure } from '@chakra-ui/react'
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
 import HeroModal from './HeroModal'
 import HeroTooltip from './HeroTooltip'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
+
+const MotionBox = motion.create(Box)
 
 interface PartyMemberCardProps {
   hero: Hero
@@ -21,21 +24,40 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
   return (
     <>
       <HeroTooltip hero={hero}>
-        <Box
+        <MotionBox
           bg="gray.900"
           borderRadius="md"
           borderWidth="2px"
           borderColor={isHovered ? 'orange.500' : hero.isAlive ? 'gray.700' : 'red.600'}
           opacity={hero.isAlive ? 1 : 0.5}
-          transition="all 0.2s"
           cursor="pointer"
           onClick={onOpen}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          _hover={{ transform: 'translateX(4px)' }}
+          whileHover={{ 
+            x: 4,
+            boxShadow: hero.isAlive ? '0 0 12px rgba(237, 137, 54, 0.4)' : '0 0 12px rgba(245, 101, 101, 0.4)'
+          }}
+          whileTap={{ scale: 0.98 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 20
+          }}
         >
           <HStack spacing={2} p={2}>
-            <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
+            <motion.div
+              animate={isHovered ? {
+                rotate: [0, -5, 5, 0],
+                scale: [1, 1.1, 1]
+              } : {}}
+              transition={{
+                duration: 0.5,
+                ease: "easeInOut"
+              }}
+            >
+              <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
+            </motion.div>
             
             <VStack spacing={1} align="stretch" flex={1} minW={0}>
               <HStack spacing={2}>
@@ -60,7 +82,7 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
               />
             </VStack>
           </HStack>
-        </Box>
+        </MotionBox>
       </HeroTooltip>
 
       <HeroModal hero={hero} isOpen={isOpen} onClose={onClose} />

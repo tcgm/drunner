@@ -1,7 +1,11 @@
 import { Box, VStack, Heading, Text, Button, HStack, Badge } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
 import type { DungeonEvent, EventChoice } from '@/types'
 import { checkRequirements } from '@systems/events/eventResolver'
 import type { Hero } from '@/types'
+
+const MotionButton = motion.create(Button)
+const MotionBox = motion.create(Box)
 
 interface EventDisplayProps {
   event: DungeonEvent
@@ -25,7 +29,14 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
   return (
     <VStack spacing={3} align="stretch" h="full">
       {/* Event Header */}
-      <Box>
+      <MotionBox
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.3,
+          ease: "easeOut"
+        }}
+      >
         <HStack mb={1.5}>
           <Badge colorScheme={EVENT_TYPE_COLORS[event.type]} fontSize="xs" px={2} py={0.5}>
             {event.type.toUpperCase()}
@@ -37,7 +48,7 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
         <Text fontSize="sm" color="gray.300" lineHeight="short">
           {event.description}
         </Text>
-      </Box>
+      </MotionBox>
 
       {/* Choices */}
       <VStack spacing={2} align="stretch" flex={1}>
@@ -48,7 +59,7 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
           const canSelect = checkRequirements(choice.requirements, party, depth, gold)
           
           return (
-            <Button
+            <MotionButton
               key={index}
               size="sm"
               variant="outline"
@@ -61,12 +72,21 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
               py={3}
               px={4}
               justifyContent="flex-start"
-              _hover={canSelect ? {
-                bg: 'orange.900',
-                borderColor: 'orange.400',
-                transform: 'translateX(4px)'
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              whileHover={canSelect ? {
+                x: 4,
+                backgroundColor: 'rgba(237, 137, 54, 0.2)',
+                borderColor: '#ED8936',
+                boxShadow: '0 0 12px rgba(237, 137, 54, 0.4)'
               } : undefined}
-              transition="all 0.2s"
+              whileTap={canSelect ? { scale: 0.98 } : undefined}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: index * 0.05
+              }}
             >
               <VStack align="start" spacing={0.5}>
                 <Text fontWeight="bold" fontSize="sm">
@@ -78,7 +98,7 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
                   </Text>
                 )}
               </VStack>
-            </Button>
+            </MotionButton>
           )
         })}
       </VStack>
