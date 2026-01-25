@@ -360,7 +360,7 @@ export const useGameStore = create<GameStore>()(
           heroesUsed: state.party.map(h => ({
             name: h.name,
             class: h.class.name,
-            level: h.level
+            level: h.level // Store level BEFORE penalty
           }))
         }
         
@@ -379,7 +379,7 @@ export const useGameStore = create<GameStore>()(
           heroRoster: updatedRoster,
           isGameOver: true,
           hasPendingPenalty: false,
-          activeRun: null,
+          activeRun: completedRun, // Keep the run active to show pre-penalty levels
           runHistory: [completedRun, ...state.runHistory],
           dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
         }

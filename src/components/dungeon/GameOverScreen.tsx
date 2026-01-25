@@ -11,7 +11,7 @@ interface GameOverScreenProps {
 }
 
 export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
-  const { party, endGame } = useGameStore()
+  const { party, activeRun, endGame } = useGameStore()
   const penaltyType = GAME_CONFIG.deathPenalty.type
   
   // End the run when the game over screen is shown
@@ -22,11 +22,11 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
   const getPenaltyDescription = () => {
     switch (penaltyType) {
       case 'halve-levels':
-        return 'Heroes will lose half their levels (minimum level 1)'
+        return 'Heroes have lost half their levels (minimum level 1)'
       case 'reset-levels':
-        return 'Heroes will be reset to level 1'
+        return 'Heroes have been reset to level 1'
       case 'lose-equipment':
-        return 'Heroes will lose all equipment but keep their levels'
+        return 'Heroes have lost all equipment but kept their levels'
       case 'none':
         return 'No penalties - heroes keep everything'
       default:
@@ -34,17 +34,16 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
     }
   }
 
-  const calculatePenalty = (hero: typeof party[0]) => {
+  const calculatePenalty = (hero: typeof party[0], originalLevel: number) => {
     switch (penaltyType) {
       case 'halve-levels': {
-        const newLevel = Math.max(1, Math.floor(hero.level / 2))
-        return `Level ${hero.level} → ${newLevel}`
+        return `Level ${originalLevel} → ${hero.level}`
       }
       case 'reset-levels':
-        return `Level ${hero.level} → 1`
+        return `Level ${originalLevel} → ${hero.level}`
       case 'lose-equipment': {
         const equippedCount = Object.values(hero.equipment).filter(item => item !== null).length
-        return equippedCount > 0 ? `Lose ${equippedCount} item${equippedCount > 1 ? 's' : ''}` : 'No equipment'
+        return equippedCount > 0 ? `Lose ${equippedCount} item${equippedCount > 1 ? 's' : ''}` : 'No equipment lost'
       }
       case 'none':
         return 'No penalty'
@@ -81,31 +80,35 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
               {getPenaltyDescription()}
             </Text>
 
-            {party.length > 0 && (
+            {party.length > 0 && activeRun && (
               <Box w="full" pt={2}>
                 <Text fontSize="xs" color="red.300" mb={1.5} fontWeight="bold">
-                  Penalties per Hero:
+                  Penalties Applied:
                 </Text>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} w="full">
-                  {party.map(hero => (
-                    <Box
-                      key={hero.id}
-                      bg="red.950"
-                      borderRadius="md"
-                      p={2}
-                      borderWidth="1px"
-                      borderColor="red.700"
-                    >
-                      <Flex justify="space-between" align="center">
-                        <Text fontSize="sm" color="orange.200" fontWeight="bold">
-                          {hero.name}
-                        </Text>
-                        <Badge colorScheme="red" fontSize="xs">
-                          {calculatePenalty(hero)}
-                        </Badge>
-                      </Flex>
-                    </Box>
-                  ))}
+                  {party.map(hero => {
+                    const originalHero = activeRun.heroesUsed.find(h => h.name === hero.name)
+                    const originalLevel = originalHero?.level || hero.level
+                    return (
+                      <Box
+                        key={hero.id}
+                        bg="red.950"
+                        borderRadius="md"
+                        p={2}
+                        borderWidth="1px"
+                        borderColor="red.700"
+                      >
+                        <Flex justify="space-between" align="center">
+                          <Text fontSize="sm" color="orange.200" fontWeight="bold">
+                            {hero.name}
+                          </Text>
+                          <Badge colorScheme="red" fontSize="xs">
+                            {calculatePenalty(hero, originalLevel)}
+                          </Badge>
+                        </Flex>
+                      </Box>
+                    )
+                  })}
                 </SimpleGrid>
               </Box>
             )}
