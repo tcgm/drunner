@@ -201,6 +201,7 @@ interface GameStore extends GameState {
   advanceDungeon: () => void
   selectChoice: (choice: EventChoice) => void
   endGame: () => void
+  victoryGame: () => void
   retreatFromDungeon: () => void
   resetGame: () => void
   applyPenalty: () => void
@@ -373,6 +374,14 @@ export const useGameStore = create<GameStore>()(
   advanceDungeon: () => 
     set((state) => {
       const newDepth = state.dungeon.depth + 1
+      
+      // Check for victory at depth 100
+      if (newDepth > 100) {
+        // Player has completed depth 100, trigger victory
+        // This will be handled by calling victoryGame externally
+        return state
+      }
+      
       const event = getNextEvent(newDepth, state.dungeon.eventHistory)
       
       // Update active run
@@ -465,6 +474,51 @@ export const useGameStore = create<GameStore>()(
       }
       
       return { isGameOver: true, hasPendingPenalty: false }
+    }),
+  
+  victoryGame: () => 
+    set((state) => {
+      // Complete the active run as victory
+      if (state.activeRun) {
+        const completedRun: import('@/types').Run = {
+          ...state.activeRun,
+          endDate: Date.now(),
+          result: 'victory',
+          finalDepth: state.dungeon.depth,
+          heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
+            name: h.name,
+            class: h.class.name,
+            level: h.level
+          }))
+        }
+        
+        // Add in-run gold to bank on victory
+        const goldToBank = Math.max(0, state.dungeon.gold)
+        
+        // Handle inventory - items that fit go to bank, overflow goes to temporary storage
+        const availableSlots = state.bankStorageSlots - state.bankInventory.length
+        const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
+        const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
+        
+        return {
+          dungeon: {
+            depth: 0,
+            maxDepth: 100,
+            currentEvent: null,
+            eventHistory: [],
+            gold: 0,
+            inventory: [],
+          },
+          bankGold: state.bankGold + goldToBank,
+          bankInventory: [...state.bankInventory, ...itemsToBank],
+          overflowInventory: [...state.overflowInventory, ...itemsToOverflow],
+          isGameOver: true,
+          activeRun: completedRun,
+          runHistory: [completedRun, ...state.runHistory],
+        }
+      }
+      
+      return { isGameOver: true }
     }),
   
   retreatFromDungeon: () =>

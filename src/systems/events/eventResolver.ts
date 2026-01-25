@@ -174,7 +174,7 @@ export function resolveEventOutcome(
           type: 'gold',
           target: [],
           value: gold,
-          description: `Found ${gold} gold`
+          description: gold >= 0 ? `Found ${gold} gold` : `-${Math.abs(gold)} gold lost`
         })
         break
       }

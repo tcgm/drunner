@@ -7,6 +7,7 @@ import EventArea from '@components/dungeon/EventArea'
 import DungeonActionBar from '@components/dungeon/DungeonActionBar'
 import InfoSidebar from '@components/dungeon/InfoSidebar'
 import GameOverScreen from '@components/dungeon/GameOverScreen'
+import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import type { EventChoice } from '@/types'
 
@@ -32,6 +33,11 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     retreatFromDungeon()
     onClose()
     onExit()
+  }
+  
+  // Victory check - player completed depth 100
+  if (dungeon.depth > 100 && !isGameOver) {
+    return <VictoryScreen depth={100} onExit={onExit} />
   }
   
   // Game over check
