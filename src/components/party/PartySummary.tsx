@@ -1,5 +1,5 @@
-import { VStack, HStack, Box, Text } from '@chakra-ui/react'
-import type { Hero } from '@/types'
+import { HStack, Box, Text } from '@chakra-ui/react'
+import type { Hero } from '../../types'
 
 interface PartySummaryProps {
   party: Hero[]
@@ -14,25 +14,24 @@ export default function PartySummary({ party }: PartySummaryProps) {
   const avgSpeed = Math.round(party.reduce((sum, h) => sum + h.stats.speed, 0) / party.length)
   
   return (
-    <Box w="full" p={3} bg="gray.900" borderRadius="lg" borderWidth="2px" borderColor="gray.700" flexShrink={0}>
-      <Text fontSize="sm" color="gray.400" mb={2} fontWeight="bold">Party Summary</Text>
+    <Box w="full" p={2} bg="gray.900" borderRadius="lg" borderWidth="2px" borderColor="gray.700" flexShrink={0}>
       <HStack spacing={6} fontSize="sm" justify="center">
-        <VStack spacing={0}>
-          <Text color="gray.400">Total HP</Text>
-          <Text color="cyan.400" fontWeight="bold" fontSize="lg">{totalHp}</Text>
-        </VStack>
-        <VStack spacing={0}>
-          <Text color="gray.400">Avg ATK</Text>
-          <Text color="red.400" fontWeight="bold" fontSize="lg">{avgAttack}</Text>
-        </VStack>
-        <VStack spacing={0}>
-          <Text color="gray.400">Avg DEF</Text>
-          <Text color="blue.400" fontWeight="bold" fontSize="lg">{avgDefense}</Text>
-        </VStack>
-        <VStack spacing={0}>
-          <Text color="gray.400">Avg SPD</Text>
-          <Text color="green.400" fontWeight="bold" fontSize="lg">{avgSpeed}</Text>
-        </VStack>
+        <HStack spacing={1}>
+          <Text color="gray.400" fontSize="xs">Total HP:</Text>
+          <Text color="cyan.400" fontWeight="bold">{totalHp}</Text>
+        </HStack>
+        <HStack spacing={1}>
+          <Text color="gray.400" fontSize="xs">Avg ATK:</Text>
+          <Text color="red.400" fontWeight="bold">{avgAttack}</Text>
+        </HStack>
+        <HStack spacing={1}>
+          <Text color="gray.400" fontSize="xs">Avg DEF:</Text>
+          <Text color="blue.400" fontWeight="bold">{avgDefense}</Text>
+        </HStack>
+        <HStack spacing={1}>
+          <Text color="gray.400" fontSize="xs">Avg SPD:</Text>
+          <Text color="green.400" fontWeight="bold">{avgSpeed}</Text>
+        </HStack>
       </HStack>
     </Box>
   )

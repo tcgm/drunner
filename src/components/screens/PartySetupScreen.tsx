@@ -2,7 +2,7 @@ import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../store/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
 import { useState } from 'react'
-import { EquipmentSlot } from '../../types'
+import { EquipmentSlot, Hero } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
 import { PartySetupSlots } from '../party/PartySetupSlots'
@@ -10,6 +10,7 @@ import { EquipmentPanel } from '../party/EquipmentPanel'
 import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import { ConfirmStartWithOverflowModal } from '../party/ConfirmStartWithOverflowModal'
+import PartySummary from '../party/PartySummary'
 
 interface PartySetupScreenProps {
   onBack: () => void
@@ -168,12 +169,15 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         />
 
         {/* Center - Party Slots */}
-        <PartySetupSlots
-          party={party}
-          onAddHero={handleAddHeroClick}
-          onRemoveHero={removeHero}
-          onSelectHero={setSelectedHeroIndex}
-        />
+        <Box flex={1} minW={0} display="flex" flexDirection="column">
+          <PartySetupSlots
+            party={party}
+            onAddHero={handleAddHeroClick}
+            onRemoveHero={removeHero}
+            onSelectHero={setSelectedHeroIndex}
+          />
+          <PartySummary party={party.filter((h): h is Hero => h !== null)} />
+        </Box>
 
         {/* Right Sidebar - Equipment */}
         <EquipmentPanel

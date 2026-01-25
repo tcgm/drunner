@@ -1,4 +1,4 @@
-import { Box, Heading, VStack, Text, HStack, Tooltip, SimpleGrid, Badge } from '@chakra-ui/react'
+import { Box, Heading, VStack, Text, HStack, Tooltip, SimpleGrid } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'

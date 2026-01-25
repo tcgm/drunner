@@ -1,8 +1,7 @@
-import { Box, Flex, Center, VStack, Heading, Text, Badge, Button, HStack, SimpleGrid } from '@chakra-ui/react'
+import { Box, Flex, VStack, Heading, Text, Badge, Button, HStack, SimpleGrid } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import { CORE_CLASSES } from '../../data/classes'
 import type { Hero } from '../../types'
 
 interface PartySlotsProps {
@@ -23,18 +22,17 @@ export function PartySetupSlots({
   return (
     <Box flex={1} minW={0} display="flex" flexDirection="column" bg="gray.950" p={3}>
       <VStack spacing={2} h="full">
-        <HStack justify="space-between" w="full" flexShrink={0}>
+        <SimpleGrid columns={3} w="full" flexShrink={0} gap={4} alignItems="center">
           <Heading size="sm" color="orange.300">
             Your Party
           </Heading>
-          <Badge colorScheme="orange" fontSize="sm" px={2}>
+          <Text fontSize="xs" color="gray.400" textAlign="center">
+            Select a class or hero from the left, then click a slot to add
+          </Text>
+          <Badge colorScheme="orange" fontSize="sm" px={2} justifySelf="end">
             {partyCount}/{party.length}
           </Badge>
-        </HStack>
-        
-        <Text fontSize="xs" color="gray.400" w="full" textAlign="center" flexShrink={0}>
-          Select a class or hero from the left, then click a slot to add
-        </Text>
+        </SimpleGrid>
         
         <HStack spacing={4} w="full" flex={1} minH={0}>
           {party.map((hero, index) => {
