@@ -6,6 +6,7 @@ import type { Hero } from '@/types'
 interface EventDisplayProps {
   event: DungeonEvent
   party: Hero[]
+  depth: number
   onSelectChoice: (choice: EventChoice) => void
 }
 
@@ -19,7 +20,7 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
   boss: 'pink',
 }
 
-export default function EventDisplay({ event, party, onSelectChoice }: EventDisplayProps) {
+export default function EventDisplay({ event, party, depth, onSelectChoice }: EventDisplayProps) {
   return (
     <VStack spacing={2} align="stretch" flex={1}>
       {/* Event Header */}
@@ -43,7 +44,7 @@ export default function EventDisplay({ event, party, onSelectChoice }: EventDisp
           What will you do?
         </Heading>
         {event.choices.map((choice, index) => {
-          const canSelect = checkRequirements(choice.requirements, party)
+          const canSelect = checkRequirements(choice.requirements, party, depth)
           
           return (
             <Button
@@ -72,7 +73,7 @@ export default function EventDisplay({ event, party, onSelectChoice }: EventDisp
                 </Text>
                 {choice.requirements && (
                   <Text fontSize="sm" color={canSelect ? 'gray.400' : 'red.400'}>
-                    {getRequirementText(choice.requirements)}
+                    {getRequirementText(choice.requirements, depth)}
                   </Text>
                 )}
               </VStack>
@@ -84,7 +85,7 @@ export default function EventDisplay({ event, party, onSelectChoice }: EventDisp
   )
 }
 
-function getRequirementText(requirements: EventChoice['requirements']): string {
+function getRequirementText(requirements: EventChoice['requirements'], depth: number): string {
   if (!requirements) return ''
   
   const parts: string[] = []
@@ -94,7 +95,9 @@ function getRequirementText(requirements: EventChoice['requirements']): string {
   }
   
   if (requirements.stat && requirements.minValue) {
-    parts.push(`Requires ${requirements.stat} ≥ ${requirements.minValue}`)
+    // Show scaled requirement value
+    const scaledValue = Math.floor(requirements.minValue * (1 + (depth - 1) * 0.05))
+    parts.push(`Requires any hero with ${requirements.stat} ≥ ${scaledValue}`)
   }
   
   if (requirements.item) {

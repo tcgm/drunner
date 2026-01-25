@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { GameState, Hero, EventChoice } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome } from '@systems/events/eventResolver'
@@ -26,10 +27,13 @@ const initialState: GameState = {
   },
   isGameOver: false,
   isPaused: false,
+  lastOutcome: null,
 }
 
-export const useGameStore = create<GameStore>((set) => ({
-  ...initialState,
+export const useGameStore = create<GameStore>()(
+  persist(
+    (set) => ({
+      ...initialState,
   
   addHero: (hero) => 
     set((state) => ({ 
@@ -70,13 +74,14 @@ export const useGameStore = create<GameStore>((set) => ({
           depth: newDepth,
           currentEvent: event,
           eventHistory: event ? [...state.dungeon.eventHistory, event.id] : state.dungeon.eventHistory
-        }
+        },
+        lastOutcome: null
       }
     }),
   
   selectChoice: (choice) =>
     set((state) => {
-      const { updatedParty, updatedGold } = resolveEventOutcome(
+      const { updatedParty, updatedGold, resolvedOutcome } = resolveEventOutcome(
         choice.outcome,
         state.party,
         state.dungeon
@@ -92,7 +97,8 @@ export const useGameStore = create<GameStore>((set) => ({
           gold: updatedGold,
           currentEvent: null // Clear current event after resolution
         },
-        isGameOver: isWiped
+        isGameOver: isWiped,
+        lastOutcome: resolvedOutcome
       }
     }),
   
@@ -101,4 +107,19 @@ export const useGameStore = create<GameStore>((set) => ({
   
   resetGame: () => 
     set(initialState),
-}))
+    }),
+    {
+      name: 'dungeon-runner-storage',
+      storage: {
+        getItem: (name) => {
+          const str = sessionStorage.getItem(name)
+          return str ? JSON.parse(str) : null
+        },
+        setItem: (name, value) => {
+          sessionStorage.setItem(name, JSON.stringify(value))
+        },
+        removeItem: (name) => sessionStorage.removeItem(name),
+      },
+    }
+  )
+)

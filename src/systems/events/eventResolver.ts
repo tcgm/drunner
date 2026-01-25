@@ -14,27 +14,41 @@ export interface ResolvedEffect {
 }
 
 /**
+ * Scale a value based on dungeon depth
+ */
+function scaleValue(baseValue: number, depth: number, scalingFactor: number = 0.1): number {
+  return Math.floor(baseValue * (1 + (depth - 1) * scalingFactor))
+}
+
+/**
  * Apply event outcome effects to the party
  */
 export function resolveEventOutcome(
   outcome: EventOutcome,
   party: Hero[],
-  dungeon: { gold: number }
+  dungeon: { gold: number; depth: number }
 ): {
   updatedParty: Hero[]
   updatedGold: number
   resolvedOutcome: ResolvedOutcome
 } {
-  const updatedParty = [...party]
+  const updatedParty = party.map(h => ({ 
+    ...h, 
+    stats: { ...h.stats },
+    equipment: { ...h.equipment },
+    abilities: h.abilities.map(a => ({ ...a }))
+  }))
   let updatedGold = dungeon.gold
   const resolvedEffects: ResolvedEffect[] = []
+  const depth = dungeon.depth
 
   for (const effect of outcome.effects) {
     const targets = selectTargets(effect.target || 'all', updatedParty)
     
     switch (effect.type) {
       case 'damage': {
-        const damage = effect.value || 0
+        const baseDamage = effect.value || 0
+        const damage = scaleValue(baseDamage, depth, 0.1) // 10% per depth
         targets.forEach(hero => {
           const actualDamage = Math.max(1, damage - Math.floor(hero.stats.defense / 2))
           hero.stats.hp = Math.max(0, hero.stats.hp - actualDamage)
@@ -52,7 +66,8 @@ export function resolveEventOutcome(
       }
       
       case 'heal': {
-        const healing = effect.value || 0
+        const baseHealing = effect.value || 0
+        const healing = scaleValue(baseHealing, depth, 0.08) // 8% per depth (slightly less than damage)
         targets.forEach(hero => {
           hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healing)
         })
@@ -66,7 +81,8 @@ export function resolveEventOutcome(
       }
       
       case 'xp': {
-        const xp = effect.value || 0
+        const baseXp = effect.value || 0
+        const xp = scaleValue(baseXp, depth, 0.15) // 15% per depth (rewards scale faster)
         targets.forEach(hero => {
           hero.xp += xp
           // Check for level up
@@ -92,7 +108,8 @@ export function resolveEventOutcome(
       }
       
       case 'gold': {
-        const gold = effect.value || 0
+        const baseGold = effect.value || 0
+        const gold = scaleValue(baseGold, depth, 0.15) // 15% per depth (rewards scale faster)
         updatedGold += gold
         resolvedEffects.push({
           type: 'gold',
@@ -182,22 +199,25 @@ export function checkRequirements(
     minValue?: number
     item?: string
   } | undefined,
-  party: Hero[]
+  party: Hero[],
+  depth: number = 1
 ): boolean {
   if (!requirements) {
     return true
   }
   
   if (requirements.class) {
-    const hasClass = party.some(h => h.isAlive && h.class.id.toLowerCase() === requirements.class.toLowerCase())
+    const hasClass = party.some(h => h.isAlive && h.class.id.toLowerCase() === requirements.class!.toLowerCase())
     if (!hasClass) return false
   }
   
   if (requirements.stat && requirements.minValue !== undefined) {
+    // Scale stat requirements with depth (5% per depth, slower than damage scaling)
+    const scaledMinValue = scaleValue(requirements.minValue, depth, 0.05)
     const hasStat = party.some(h => {
       if (!h.isAlive) return false
       const statValue = h.stats[requirements.stat as keyof typeof h.stats]
-      return typeof statValue === 'number' && statValue >= requirements.minValue!
+      return typeof statValue === 'number' && statValue >= scaledMinValue
     })
     if (!hasStat) return false
   }

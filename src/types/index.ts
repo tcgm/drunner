@@ -138,4 +138,14 @@ export interface GameState {
   dungeon: Dungeon
   isGameOver: boolean
   isPaused: boolean
+  lastOutcome: {
+    text: string
+    effects: {
+      type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status'
+      target: string[]
+      value?: number
+      item?: Item
+      description: string
+    }[]
+  } | null
 }
