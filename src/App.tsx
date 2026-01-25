@@ -10,24 +10,18 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
 
   return (
-    <Box minH="100vh" bg="gray.900">
+    <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden">
       {currentScreen === 'menu' && (
-        <Box py={8} px={4} maxW="container.xl" mx="auto">
-          <MainMenuScreen onNewGame={() => setCurrentScreen('party-setup')} />
-        </Box>
+        <MainMenuScreen onNewGame={() => setCurrentScreen('party-setup')} />
       )}
       {currentScreen === 'party-setup' && (
-        <Box py={8} px={4} maxW="container.xl" mx="auto">
-          <PartySetupScreen 
-            onStart={() => setCurrentScreen('dungeon')}
-            onBack={() => setCurrentScreen('menu')}
-          />
-        </Box>
+        <PartySetupScreen 
+          onStart={() => setCurrentScreen('dungeon')}
+          onBack={() => setCurrentScreen('menu')}
+        />
       )}
       {currentScreen === 'dungeon' && (
-        <Box p={4}>
-          <DungeonScreen onExit={() => setCurrentScreen('menu')} />
-        </Box>
+        <DungeonScreen onExit={() => setCurrentScreen('menu')} />
       )}
     </Box>
   )
