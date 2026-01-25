@@ -246,10 +246,11 @@ export const useGameStore = create<GameStore>()(
   
   startDungeon: () => 
     set((state) => {
-      // Penalty should already be applied by PartySetupScreen
-      // Full heal all party members at dungeon start
+      // Penalty should already be applied by endGame
+      // Revive all party members and full heal at dungeon start
       const healedParty = state.party.map(hero => ({
         ...hero,
+        isAlive: true,
         stats: {
           ...hero.stats,
           hp: hero.stats.maxHp
