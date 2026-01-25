@@ -1,7 +1,7 @@
 import { Box, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Button } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
-import PartySetupScreen from '@components/screens/PartySetupScreen'
+import { PartySetupScreen } from '@components/screens/PartySetupScreen'
 import DungeonScreen from '@components/screens/DungeonScreen'
 import RunHistoryScreen from '@components/screens/RunHistoryScreen'
 import DevTools from '@components/ui/DevTools'
