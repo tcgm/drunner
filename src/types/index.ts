@@ -112,7 +112,16 @@ export interface EventChoice {
     item?: string
     gold?: number
   }
-  outcome: EventOutcome
+  outcome?: EventOutcome // Single outcome (original behavior)
+  possibleOutcomes?: Array<{ // Multiple chance-based outcomes
+    weight: number // Probability weight (higher = more likely)
+    outcome: EventOutcome
+  }>
+  // Success/Failure outcomes for skill checks
+  successChance?: number // Base chance (0-1) before stat modifiers
+  statModifier?: keyof Stats // Stat that affects success (adds bonus to chance)
+  successOutcome?: EventOutcome // On success
+  failureOutcome?: EventOutcome // On failure
 }
 
 export interface EventOutcome {

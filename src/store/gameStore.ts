@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
 import type { GameState, Hero, EventChoice, Item, ItemSlot } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
-import { resolveEventOutcome } from '@systems/events/eventResolver'
+import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/game'
 import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
@@ -405,8 +405,11 @@ export const useGameStore = create<GameStore>()(
   
   selectChoice: (choice) =>
     set((state) => {
+      // First resolve which outcome to use (handles weighted/success-fail/single)
+      const selectedOutcome = resolveChoiceOutcome(choice, state.party)
+      
       const { updatedParty, updatedGold, resolvedOutcome } = resolveEventOutcome(
-        choice.outcome,
+        selectedOutcome,
         state.party,
         state.dungeon
       )

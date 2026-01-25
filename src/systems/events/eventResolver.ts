@@ -1,8 +1,6 @@
-import type { Hero, EventOutcome, Item, Material, BaseTemplate } from '@/types'
+import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice } from '@/types'
 import { GAME_CONFIG } from '@/config/game'
 import { generateItem } from '@/systems/loot/lootGenerator'
-import { getRandomMaterial } from '@/data/items/materials'
-import { getRandomBase } from '@/data/items/bases'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
@@ -41,6 +39,52 @@ function selectWeightedChoice<T extends { weight: number }>(choices: T[]): T {
   }
   
   return choices[choices.length - 1] // Fallback to last choice
+}
+
+/**
+ * Resolve which outcome should occur based on choice configuration
+ * Handles: single outcome, weighted outcomes, and success/failure checks
+ */
+export function resolveChoiceOutcome(
+  choice: EventChoice,
+  party: (Hero | null)[]
+): EventOutcome {
+  // Success/Failure check (skill check)
+  if (choice.successOutcome && choice.failureOutcome) {
+    const baseChance = choice.successChance || 0.5
+    let finalChance = baseChance
+    
+    // Apply stat modifier if specified
+    if (choice.statModifier) {
+      const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
+      if (aliveHeroes.length > 0) {
+        // Use the average stat value of all alive heroes
+        const avgStat = aliveHeroes.reduce((sum, h) => sum + (h.stats[choice.statModifier!] || 0), 0) / aliveHeroes.length
+        // Each point in the stat adds 2% to success chance (capped at 95%)
+        finalChance = Math.min(0.95, baseChance + (avgStat * 0.02))
+      }
+    }
+    
+    const roll = Math.random()
+    return roll < finalChance ? choice.successOutcome : choice.failureOutcome
+  }
+  
+  // Weighted random outcomes
+  if (choice.possibleOutcomes && choice.possibleOutcomes.length > 0) {
+    const selected = selectWeightedChoice(choice.possibleOutcomes)
+    return selected.outcome
+  }
+  
+  // Single guaranteed outcome (original behavior)
+  if (choice.outcome) {
+    return choice.outcome
+  }
+  
+  // Fallback - should not happen if events are properly configured
+  return {
+    text: 'Nothing happens.',
+    effects: []
+  }
 }
 
 /**
