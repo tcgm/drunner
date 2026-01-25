@@ -146,7 +146,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   }
 
   return (
-    <Box h="100vh" display="flex" flexDirection="column" bg="gray.950">
+    <Box h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
       {/* Header */}
       <PartySetupHeader
         bankGold={bankGold}
@@ -155,7 +155,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onStart={handleStart}
       />
 
-      <Flex flex={1} overflow="hidden">
+      <Flex flex={1} minH={0} overflow="hidden">
         {/* Left Sidebar */}
         <HeroSelectionSidebar
           tabIndex={tabIndex}

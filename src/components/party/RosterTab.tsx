@@ -1,4 +1,4 @@
-import { VStack, Card, CardBody, Text, Badge, HStack } from '@chakra-ui/react'
+import { VStack, Card, CardBody, Text, Badge, HStack, Box, Heading } from '@chakra-ui/react'
 import { CORE_CLASSES } from '../../data/classes'
 import type { Hero } from '../../types'
 
@@ -11,6 +11,14 @@ interface RosterTabProps {
 export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroClick }: RosterTabProps) {
   return (
     <VStack align="stretch" spacing={2}>
+      <Box flexShrink={0} mb={2}>
+        <Heading size="xs" color="orange.300" mb={1}>
+          Stored Heroes
+        </Heading>
+        <Text fontSize="xs" color="gray.500">
+          {storedHeroes.length === 0 ? 'No stored heroes' : `${storedHeroes.length} hero${storedHeroes.length !== 1 ? 'es' : ''} available`}
+        </Text>
+      </Box>
       {storedHeroes.length === 0 ? (
         <Text fontSize="xs" color="gray.500" textAlign="center" py={4}>
           No heroes stored

@@ -1,4 +1,4 @@
-import { VStack, Card, CardBody, Text } from '@chakra-ui/react'
+import { Box, Heading, VStack, Card, CardBody, Text } from '@chakra-ui/react'
 import { CORE_CLASSES } from '../../data/classes'
 import type { HeroClass } from '../../types'
 
@@ -9,7 +9,15 @@ interface ClassSelectionTabProps {
 
 export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelectionTabProps) {
   return (
-    <VStack align="stretch" spacing={1}>
+    <VStack align="stretch" spacing={2}>
+      <Box flexShrink={0} mb={2}>
+        <Heading size="xs" color="orange.300" mb={1}>
+          Hero Classes
+        </Heading>
+        <Text fontSize="xs" color="gray.500">
+          {selectedClass ? `Selected: ${selectedClass.name}` : 'Select a class'}
+        </Text>
+      </Box>
       {CORE_CLASSES.map((cls) => (
         <Card
           key={cls.name}

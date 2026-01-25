@@ -23,17 +23,26 @@ export function EquipmentPanel({
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
 
   return (
-    <Box w="300px" bg="gray.900" borderLeft="1px solid" borderColor="gray.700" p={4} overflow="auto">
-      {selectedHeroIndex !== null && selectedHero ? (
-        <VStack align="stretch" spacing={3}>
-          <Heading size="sm" color="orange.400">Equipment</Heading>
-          <Text fontSize="sm" color="gray.400">
-            {selectedHero.name}
-          </Text>
-          
-          {/* Equipment Slots */}
-          <VStack align="stretch" spacing={2}>
-            {Object.entries(selectedHero.equipment).map(([slot, item]) => (
+    <Box w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={4} overflowY="auto">
+      <VStack spacing={3} h="full" align="stretch">
+        <HStack justify="space-between" w="full">
+          <Heading size="sm" color="orange.300">
+            Equipment
+          </Heading>
+          <Button size="xs" colorScheme="blue" variant="outline" onClick={onOpenBank}>
+            Bank ({bankInventory.length}/{bankStorageSlots})
+          </Button>
+        </HStack>
+        
+        {selectedHeroIndex !== null && selectedHero ? (
+          <>
+            <Text fontSize="sm" color="gray.400" fontWeight="medium">
+              {selectedHero.name}
+            </Text>
+            
+            {/* Equipment Slots */}
+            <VStack align="stretch" spacing={2} flex={1}>
+              {Object.entries(selectedHero.equipment).map(([slot, item]) => (
               <Box key={slot}>
                 <Text fontSize="xs" color="gray.500" mb={1} textTransform="capitalize">
                   {slot}
@@ -80,13 +89,21 @@ export function EquipmentPanel({
                 )}
               </Box>
             ))}
-          </VStack>
-        </VStack>
-      ) : (
-        <Center h="full">
-          <Text fontSize="sm" color="gray.600">Select a hero to manage equipment</Text>
-        </Center>
-      )}
+            </VStack>
+          </>
+        ) : (
+          <Box flex={1} display="flex" alignItems="center" justifyContent="center">
+            <VStack spacing={2}>
+              <Text fontSize="sm" color="gray.600" textAlign="center">
+                Select a hero
+              </Text>
+              <Text fontSize="xs" color="gray.700" textAlign="center">
+                Click a hero card to manage equipment
+              </Text>
+            </VStack>
+          </Box>
+        )}
+      </VStack>
     </Box>
   )
 }
