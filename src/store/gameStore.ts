@@ -150,6 +150,13 @@ interface GameStore extends GameState {
   equipItemToHero: (heroId: string, item: Item, slot: ItemSlot) => void
   unequipItemFromHero: (heroId: string, slot: ItemSlot) => Item | null
   sellItemForGold: (item: Item) => void
+  equipItemFromBank: (heroId: string, item: Item, slot: ItemSlot) => void
+  moveItemToBank: (item: Item) => void
+  removeItemFromBank: (itemId: string) => void
+  expandBankStorage: (slots: number) => void
+  keepOverflowItem: (itemId: string) => void
+  discardOverflowItem: (itemId: string) => void
+  clearOverflow: () => void
 }
 
 const initialState: GameState = {
@@ -161,7 +168,12 @@ const initialState: GameState = {
     currentEvent: null,
     eventHistory: [],
     gold: 0,
+    inventory: [],
   },
+  bankGold: 0,
+  bankInventory: [],
+  bankStorageSlots: 20, // Start with 20 slots
+  overflowInventory: [],
   isGameOver: false,
   isPaused: false,
   hasPendingPenalty: false,
@@ -254,7 +266,8 @@ export const useGameStore = create<GameStore>()(
           maxDepth: 100,
           currentEvent: event,
           eventHistory: event ? [event.id] : [],
-          gold: state.dungeon.gold, // Keep gold across runs
+          gold: 0, // Reset gold for each new run
+          inventory: [], // Reset inventory for each new run
         },
         isGameOver: false,
         hasPendingPenalty: false,
@@ -366,14 +379,26 @@ export const useGameStore = create<GameStore>()(
           }))
         }
         
+        // Add in-run gold to bank on successful retreat
+        const goldToBank = Math.max(0, state.dungeon.gold)
+        
+        // Handle inventory - items that fit go to bank, overflow goes to temporary storage
+        const availableSlots = state.bankStorageSlots - state.bankInventory.length
+        const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
+        const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
+        
         return {
           dungeon: {
             depth: 0,
             maxDepth: 100,
             currentEvent: null,
             eventHistory: [],
-            gold: state.dungeon.gold,
+            gold: 0,
+            inventory: [],
           },
+          bankGold: state.bankGold + goldToBank,
+          bankInventory: [...state.bankInventory, ...itemsToBank],
+          overflowInventory: itemsToOverflow,
           isGameOver: false,
           hasPendingPenalty: false,
           activeRun: null,
@@ -443,6 +468,71 @@ export const useGameStore = create<GameStore>()(
         gold: state.dungeon.gold + sellItem(item)
       }
     })),
+  
+  equipItemFromBank: (heroId, item, slot) =>
+    set((state) => {
+      const updatedParty = state.party.map(h =>
+        h.id === heroId ? equipItem(h, item, slot) : h
+      )
+      const updatedRoster = state.heroRoster.map(h =>
+        h.id === heroId ? equipItem(h, item, slot) : h
+      )
+      // Remove item from bank
+      const updatedBank = state.bankInventory.filter(i => i.id !== item.id)
+      
+      return {
+        party: updatedParty,
+        heroRoster: updatedRoster,
+        bankInventory: updatedBank
+      }
+    }),
+  
+  moveItemToBank: (item) =>
+    set((state) => ({
+      bankInventory: [...state.bankInventory, item]
+    })),
+  
+  removeItemFromBank: (itemId) =>
+    set((state) => ({
+      bankInventory: state.bankInventory.filter(i => i.id !== itemId)
+    })),
+  
+  expandBankStorage: (slots) =>
+    set((state) => {
+      const costPerSlot = 50 // 50 gold per slot
+      const totalCost = slots * costPerSlot
+      
+      if (state.bankGold >= totalCost) {
+        return {
+          bankStorageSlots: state.bankStorageSlots + slots,
+          bankGold: state.bankGold - totalCost
+        }
+      }
+      return {}
+    }),
+  
+  keepOverflowItem: (itemId) =>
+    set((state) => {
+      const item = state.overflowInventory.find(i => i.id === itemId)
+      if (!item) return {}
+      
+      const availableSlots = state.bankStorageSlots - state.bankInventory.length
+      if (availableSlots > 0) {
+        return {
+          overflowInventory: state.overflowInventory.filter(i => i.id !== itemId),
+          bankInventory: [...state.bankInventory, item]
+        }
+      }
+      return {}
+    }),
+  
+  discardOverflowItem: (itemId) =>
+    set((state) => ({
+      overflowInventory: state.overflowInventory.filter(i => i.id !== itemId)
+    })),
+  
+  clearOverflow: () =>
+    set({ overflowInventory: [] }),
   
   resetGame: () => 
     set(initialState),

@@ -133,6 +133,7 @@ export interface Dungeon {
   currentEvent: DungeonEvent | null
   eventHistory: string[]
   gold: number
+  inventory: Item[] // In-run inventory
 }
 
 export interface Run {
@@ -152,6 +153,10 @@ export interface GameState {
   party: Hero[]
   heroRoster: Hero[] // All heroes ever created, organized by class
   dungeon: Dungeon
+  bankGold: number // Gold stored outside runs (added on victory/retreat)
+  bankInventory: Item[] // Items stored outside runs
+  bankStorageSlots: number // Maximum bank storage capacity
+  overflowInventory: Item[] // Items from last run that exceed bank capacity
   isGameOver: boolean
   isPaused: boolean
   hasPendingPenalty: boolean

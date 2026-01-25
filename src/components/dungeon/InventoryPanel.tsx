@@ -6,6 +6,8 @@ import { useGameStore } from '@store/gameStore'
 
 interface InventoryPanelProps {
   hero: Hero
+  onSlotClick?: (heroId: string, slot: ItemSlot) => void
+  showBankOption?: boolean
 }
 
 const SLOT_ICONS: Record<ItemSlot, IconType> = {
@@ -36,7 +38,7 @@ const RARITY_COLORS: Record<string, string> = {
   mythic: 'pink',
 }
 
-export default function InventoryPanel({ hero }: InventoryPanelProps) {
+export default function InventoryPanel({ hero, onSlotClick, showBankOption }: InventoryPanelProps) {
   const { unequipItemFromHero, sellItemForGold } = useGameStore()
 
   const handleUnequip = (slot: ItemSlot) => {
@@ -44,6 +46,12 @@ export default function InventoryPanel({ hero }: InventoryPanelProps) {
     if (item) {
       // For now, auto-sell unequipped items
       sellItemForGold(item)
+    }
+  }
+  
+  const handleSlotClick = (slot: ItemSlot) => {
+    if (showBankOption && onSlotClick) {
+      onSlotClick(hero.id, slot)
     }
   }
 
@@ -90,9 +98,10 @@ export default function InventoryPanel({ hero }: InventoryPanelProps) {
           borderWidth="2px"
           borderColor={isEmpty ? 'gray.600' : `${RARITY_COLORS[item?.rarity || 'common']}.500`}
           p={3}
-          cursor={isEmpty ? 'default' : 'pointer'}
+          cursor={showBankOption || !isEmpty ? 'pointer' : 'default'}
           transition="all 0.2s"
-          _hover={isEmpty ? {} : { borderColor: `${RARITY_COLORS[item?.rarity || 'common']}.400`, transform: 'translateY(-2px)' }}
+          _hover={showBankOption || !isEmpty ? { borderColor: isEmpty ? 'blue.500' : `${RARITY_COLORS[item?.rarity || 'common']}.400`, transform: 'translateY(-2px)' } : {}}
+          onClick={() => isEmpty && showBankOption ? handleSlotClick(slot) : undefined}
         >
           {/* Slot Icon */}
           <Flex direction="column" align="center" gap={1}>

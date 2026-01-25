@@ -158,4 +158,29 @@ export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
       <Box flex={1} overflowY="auto" p={6}>
         <VStack spacing={4} maxW="800px" mx="auto">
           {allRuns.length === 0 ? (
-            <Box tex
+            <Box textAlign="center" py={12}>
+              <Text fontSize="lg" color="gray.500">
+                No runs yet. Start your first dungeon run!
+              </Text>
+            </Box>
+          ) : (
+            <>
+              <HStack justify="space-between" w="full" mb={2}>
+                <Text fontSize="sm" color="gray.400">
+                  Total Runs: {allRuns.length}
+                </Text>
+                <Text fontSize="sm" color="gray.400">
+                  Completed: {runHistory.length}
+                </Text>
+              </HStack>
+              
+              {allRuns.map((run) => (
+                <RunCard key={run.id} run={run} />
+              ))}
+            </>
+          )}
+        </VStack>
+      </Box>
+    </Box>
+  )
+}

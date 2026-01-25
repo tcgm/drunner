@@ -1,9 +1,9 @@
-import { VStack, Heading, Button, HStack, SimpleGrid, Box, Text, Badge, Flex, Tabs, TabList, Tab, TabPanels, TabPanel } from '@chakra-ui/react'
+import { VStack, Heading, Button, HStack, SimpleGrid, Box, Text, Badge, Flex, Tabs, TabList, Tab, TabPanels, TabPanel, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { CORE_CLASSES } from '@data/classes'
 import { createHero } from '@utils/heroUtils'
 import { useGameStore } from '@store/gameStore'
-import type { HeroClass, Hero } from '@/types'
+import type { HeroClass, Hero, Item, ItemSlot } from '@/types'
 import HeroSlot from '@components/party/HeroSlot'
 import ClassCard from '@components/party/ClassCard'
 import PartySummary from '@components/party/PartySummary'
@@ -15,12 +15,27 @@ interface PartySetupScreenProps {
 }
 
 export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenProps) {
-  const { party, heroRoster, addHero, addHeroByClass, removeHero, startDungeon, hasPendingPenalty, applyPenalty } = useGameStore()
+  const { 
+    party, heroRoster, bankGold, bankInventory, bankStorageSlots, overflowInventory,
+    addHero, addHeroByClass, removeHero, startDungeon, hasPendingPenalty, applyPenalty, 
+    equipItemFromBank, expandBankStorage, keepOverflowItem, discardOverflowItem, clearOverflow 
+  } = useGameStore()
   const [selectedClass, setSelectedClass] = useState<HeroClass | null>(null)
   const [selectedStoredHero, setSelectedStoredHero] = useState<Hero | null>(null)
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const [selectedHeroIndex, setSelectedHeroIndex] = useState<number>(0)
+  const [selectedSlotForEquip, setSelectedSlotForEquip] = useState<{ heroId: string; slot: ItemSlot } | null>(null)
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isOverflowOpen, onOpen: onOverflowOpen, onClose: onOverflowClose } = useDisclosure()
+  const { isOpen: isConfirmStartOpen, onOpen: onConfirmStartOpen, onClose: onConfirmStartClose } = useDisclosure()
   const maxPartySize = 4
+  
+  // Show overflow modal on mount if there are overflow items
+  useEffect(() => {
+    if (overflowInventory.length > 0) {
+      onOverflowOpen()
+    }
+  }, [overflowInventory.length, onOverflowOpen])
   
   // Apply penalty IMMEDIATELY when entering party setup if there's a pending penalty
   // This runs synchronously before the first render
@@ -52,19 +67,64 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
   }
   
   const handleStart = () => {
+    // Check if there are overflow items
+    if (overflowInventory.length > 0) {
+      onConfirmStartOpen()
+    } else {
+      startDungeon()
+      onStart()
+    }
+  }
+  
+  const handleConfirmStart = () => {
+    clearOverflow()
+    onConfirmStartClose()
     startDungeon()
     onStart()
   }
   
+  const handleEquipFromBank = (item: Item) => {
+    if (selectedSlotForEquip) {
+      equipItemFromBank(selectedSlotForEquip.heroId, item, selectedSlotForEquip.slot)
+      setSelectedSlotForEquip(null)
+      onClose()
+    }
+  }
+  
+  const handleOpenBankForSlot = (heroId: string, slot: ItemSlot) => {
+    setSelectedSlotForEquip({ heroId, slot })
+    onOpen()
+  }
+  
+  const handleExpandBank = (slots: number) => {
+    expandBankStorage(slots)
+  }
+  
+  const handleKeepOverflow = (itemId: string) => {
+    keepOverflowItem(itemId)
+  }
+  
+  const handleDiscardOverflow = (itemId: string) => {
+    discardOverflowItem(itemId)
+  }
+  
   const canStart = party.length > 0
   const partySlots = Array.from({ length: maxPartySize }, (_, i) => party[i] || null)
+  const availableSlots = bankStorageSlots - bankInventory.length
+  const costPerSlot = 50
   
   return (
     <Box h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
       {/* Top Bar - Fixed height */}
       <Box bg="gray.950" borderBottom="2px solid" borderColor="orange.800" px={4} py={2} flexShrink={0}>
         <HStack justify="space-between">
-          <Heading size="sm" color="orange.400">Assemble Your Party</Heading>
+          <HStack spacing={4}>
+            <Heading size="sm" color="orange.400">Assemble Your Party</Heading>
+            <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
+              <Text fontSize="xs" color="gray.400">Bank Gold:</Text>
+              <Text fontSize="sm" fontWeight="bold" color="yellow.300">{bankGold}</Text>
+            </HStack>
+          </HStack>
           <HStack spacing={2}>
             <Button variant="outline" colorScheme="gray" onClick={onBack} size="xs">
               Back
@@ -201,15 +261,11 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
 
         {/* Center: Party Slots - Main area */}
         <Box flex={1} minW={0} display="flex" flexDirection="column" bg="gray.950" p={3}>
-          <VStack spacing={2} h="full">
+          <VStack spacing={1} h="full">
             <HStack justify="space-between" w="full" flexShrink={0}>
               <Heading size="sm" color="orange.300">
                 Your Party
               </Heading>
-              <Badge colorScheme="orange" fontSize="sm" px={2}>
-                {party.length}/{maxPartySize}
-              </Badge>
-            </HStack>
             
             <Text fontSize="xs" color="gray.400" w="full" textAlign="center" flexShrink={0}>
               {selectedClass 
@@ -218,6 +274,10 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
                   ? `Click a slot to add ${selectedStoredHero.class.name} (Lvl ${selectedStoredHero.level})` 
                   : 'Select a hero from the left'}
             </Text>
+              <Badge colorScheme="orange" fontSize="sm" px={2}>
+                {party.length}/{maxPartySize}
+              </Badge>
+            </HStack>
             
             <HStack spacing={4} w="full" flex={1} minH={0}>
               {partySlots.map((hero, index) => (
@@ -255,9 +315,14 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
         {/* Right: Equipment Management */}
         <Box w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={4} overflowY="auto">
           <VStack spacing={3} h="full">
-            <Heading size="sm" color="orange.300">
-              Equipment
-            </Heading>
+            <HStack justify="space-between" w="full">
+              <Heading size="sm" color="orange.300">
+                Equipment
+              </Heading>
+              <Button size="xs" colorScheme="blue" variant="outline" onClick={onOpen}>
+                Bank ({bankInventory.length}/{bankStorageSlots})
+              </Button>
+            </HStack>
             {party.length > 0 ? (
               <>
                 {/* Hero selector tabs */}
@@ -281,7 +346,11 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
                 
                 {/* Inventory panel for selected hero */}
                 <Box flex={1} w="full">
-                  <InventoryPanel hero={party[selectedHeroIndex]} />
+                  <InventoryPanel 
+                    hero={party[selectedHeroIndex]} 
+                    onSlotClick={handleOpenBankForSlot}
+                    showBankOption
+                  />
                 </Box>
               </>
             ) : (
@@ -299,6 +368,258 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
           </VStack>
         </Box>
       </Flex>
+      
+      {/* Bank Inventory Modal */}
+      <Modal isOpen={isOpen} onClose={() => { onClose(); setSelectedSlotForEquip(null); }} size="xl">
+        <ModalOverlay />
+        <ModalContent bg="gray.800">
+          <ModalHeader color="orange.400">
+            Bank Inventory {selectedSlotForEquip && `- Select item for ${selectedSlotForEquip.slot}`}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            {bankInventory.length === 0 ? (
+              <Text color="gray.500" textAlign="center" py={8}>
+                No items in bank
+              </Text>
+            ) : (
+              <SimpleGrid columns={2} spacing={2}>
+                {bankInventory
+                  .filter(item => !selectedSlotForEquip || item.type === selectedSlotForEquip.slot || 
+                    (selectedSlotForEquip.slot.startsWith('accessory') && item.type.startsWith('accessory')))
+                  .map((item) => (
+                    <Box
+                      key={item.id}
+                      p={2}
+                      bg="gray.700"
+                      borderRadius="md"
+                      borderWidth="2px"
+                      borderColor={`${item.rarity}.500`}
+                      cursor={selectedSlotForEquip ? 'pointer' : 'default'}
+                      _hover={selectedSlotForEquip ? { bg: 'gray.600' } : {}}
+                      onClick={() => selectedSlotForEquip && handleEquipFromBank(item)}
+                    >
+                      <VStack align="start" spacing={1}>
+                        <HStack justify="space-between" w="full">
+                          <Text fontSize="sm" fontWeight="bold" color={`${item.rarity}.300`}>
+                            {item.name}
+                          </Text>
+                          <Badge colorScheme={item.rarity} fontSize="2xs">
+                            {item.type}
+                          </Badge>
+                        </HStack>
+                        <Text fontSize="2xs" color="gray.400">
+                          {item.description}
+                        </Text>
+                        {Object.keys(item.stats).length > 0 && (
+                          <SimpleGrid columns={2} spacing={1} w="full" fontSize="2xs" color="gray.400">
+                            {Object.entries(item.stats).map(([stat, value]) => (
+                              <Text key={stat}>
+                                {stat}: +{value}
+                              </Text>
+                            ))}
+                          </SimpleGrid>
+                        )}
+                      </VStack>
+                    </Box>
+                  ))}
+              </SimpleGrid>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      
+      {/* Overflow Inventory Modal */}
+      <Modal isOpen={isOverflowOpen} onClose={onOverflowClose} size="xl">
+        <ModalOverlay />
+        <ModalContent bg="gray.800">
+          <ModalHeader color="orange.400">
+            Items from Last Run
+          </ModalHeader>
+          <ModalBody pb={6}>
+            <VStack spacing={4} align="stretch">
+              <Box bg="gray.900" p={3} borderRadius="md">
+                <HStack justify="space-between" mb={2}>
+                  <Text fontSize="sm" color="gray.300">
+                    Bank Storage: {bankInventory.length}/{bankStorageSlots} slots used
+                  </Text>
+                  <Text fontSize="sm" color={availableSlots > 0 ? 'green.400' : 'red.400'}>
+                    {availableSlots} slots available
+                  </Text>
+                </HStack>
+                {availableSlots === 0 && (
+                  <HStack spacing={2} mt={2}>
+                    <Text fontSize="sm" color="yellow.400">
+                      Bank is full! Buy more slots:
+                    </Text>
+                    <Button 
+                      size="xs" 
+                      colorScheme="green"
+                      onClick={() => handleExpandBank(5)}
+                      isDisabled={bankGold < costPerSlot * 5}
+                    >
+                      +5 ({costPerSlot * 5}g)
+                    </Button>
+                    <Button 
+                      size="xs" 
+                      colorScheme="green"
+                      onClick={() => handleExpandBank(10)}
+                      isDisabled={bankGold < costPerSlot * 10}
+                    >
+                      +10 ({costPerSlot * 10}g)
+                    </Button>
+                  </HStack>
+                )}
+              </Box>
+              
+              <Text fontSize="sm" color="gray.400">
+                Items from your run ({overflowInventory.length}):
+              </Text>
+              
+              {overflowInventory.length === 0 ? (
+                <Text color="gray.500" textAlign="center" py={4}>
+                  No overflow items
+                </Text>
+              ) : (
+                <SimpleGrid columns={1} spacing={2} maxH="400px" overflowY="auto">
+                  {overflowInventory.map((item) => (
+                    <Box
+                      key={item.id}
+                      p={3}
+                      bg="gray.700"
+                      borderRadius="md"
+                      borderWidth="2px"
+                      borderColor={`${item.rarity}.500`}
+                    >
+                      <Flex justify="space-between" align="start">
+                        <VStack align="start" spacing={1} flex={1}>
+                          <HStack justify="space-between" w="full">
+                            <Text fontSize="sm" fontWeight="bold" color={`${item.rarity}.300`}>
+                              {item.name}
+                            </Text>
+                            <Badge colorScheme={item.rarity} fontSize="2xs">
+                              {item.type}
+                            </Badge>
+                          </HStack>
+                          <Text fontSize="2xs" color="gray.400">
+                            {item.description}
+                          </Text>
+                          {Object.keys(item.stats).length > 0 && (
+                            <SimpleGrid columns={3} spacing={1} w="full" fontSize="2xs" color="gray.400">
+                              {Object.entries(item.stats).map(([stat, value]) => (
+                                <Text key={stat}>
+                                  {stat}: +{value}
+                                </Text>
+                              ))}
+                            </SimpleGrid>
+                          )}
+                        </VStack>
+                        <VStack spacing={1} ml={2}>
+                          <Button
+                            size="xs"
+                            colorScheme="green"
+                            onClick={() => handleKeepOverflow(item.id)}
+                            isDisabled={availableSlots === 0}
+                          >
+                            Keep
+                          </Button>
+                          <Button
+                            size="xs"
+                            colorScheme="red"
+                            variant="outline"
+                            onClick={() => handleDiscardOverflow(item.id)}
+                          >
+                            Discard
+                          </Button>
+                        </VStack>
+                      </Flex>
+                    </Box>
+                  ))}
+                </SimpleGrid>
+              )}
+              
+              <HStack justify="space-between" mt={4}>
+                <Button
+                  size="sm"
+                  colorScheme="red"
+                  variant="outline"
+                  onClick={() => {
+                    clearOverflow()
+                    onOverflowClose()
+                  }}
+                >
+                  Discard All
+                </Button>
+                <Button
+                  size="sm"
+                  colorScheme="orange"
+                  onClick={onOverflowClose}
+                >
+                  Done
+                </Button>
+              </HStack>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+      
+      {/* Confirm Start with Overflow Items */}
+      <Modal isOpen={isConfirmStartOpen} onClose={onConfirmStartClose} size="md">
+        <ModalOverlay />
+        <ModalContent bg="gray.800">
+          <ModalHeader color="red.400">
+            Warning: Unresolved Items
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <VStack spacing={4} align="stretch">
+              <Text fontSize="sm" color="gray.300">
+                You have {overflowInventory.length} item{overflowInventory.length > 1 ? 's' : ''} from your last run that haven't been stored. 
+                Starting a new run will <Text as="span" fontWeight="bold" color="red.400">permanently lose</Text> these items:
+              </Text>
+              
+              <Box bg="gray.900" p={3} borderRadius="md" maxH="300px" overflowY="auto">
+                <VStack spacing={2} align="stretch">
+                  {overflowInventory.map((item) => (
+                    <HStack key={item.id} spacing={2}>
+                      <Badge colorScheme={item.rarity} fontSize="xs">
+                        {item.rarity}
+                      </Badge>
+                      <Text fontSize="sm" color={`${item.rarity}.300`} fontWeight="bold">
+                        {item.name}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        ({item.type})
+                      </Text>
+                    </HStack>
+                  ))}
+                </VStack>
+              </Box>
+              
+              <Text fontSize="xs" color="yellow.400" textAlign="center">
+                Are you sure you want to discard these items?
+              </Text>
+              
+              <HStack spacing={2}>
+                <Button
+                  flex={1}
+                  colorScheme="gray"
+                  onClick={onConfirmStartClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  flex={1}
+                  colorScheme="red"
+                  onClick={handleConfirmStart}
+                >
+                  Discard & Start Run
+                </Button>
+              </HStack>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   )
 }
