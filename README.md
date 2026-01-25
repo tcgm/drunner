@@ -1,53 +1,144 @@
-# React + TypeScript + Vite
+# Dungeon Runner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An event-based, procedurally generated roguelike dungeon crawler built with React, TypeScript, and Chakra UI.
 
-Currently, two official plugins are available:
+**Platform:** Web-first (browser-based), with optional Electron desktop packaging  
+**Tech Stack:** React 18+, TypeScript, Chakra UI v2, Zustand, Vite, react-icons/gi
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚀 Quick Start
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+```powershell
+# Install dependencies
+npm install
 
-## Expanding the ESLint configuration
+# Start development server
+npm run dev
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Build for production
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Visit `http://localhost:5173` to play the game.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
+---
+
+## 📚 Documentation
+
+### For Developers
+- **[Development Guidelines](docs/GUIDELINES.md)** - 🔴 **START HERE** - Essential rules and patterns
+- **[Setup Instructions](SETUP_INSTRUCTIONS.md)** - Initial project setup
+- **[Project Handoff](HANDOFF.md)** - Current status and next steps
+
+### Architecture & Technical
+- **[Architecture](docs/technical/architecture.md)** - System design and directives
+- **[File Structure](docs/technical/file-structure.md)** - Project organization
+- **[Data Models](docs/technical/data-models.md)** - TypeScript interfaces
+- **[State Management](docs/technical/state-management.md)** - Zustand patterns
+- **[UI Design](docs/technical/ui-design.md)** - Chakra UI guidelines
+
+### Game Design
+- **[Overview](docs/OVERVIEW.md)** - High-level game concept
+- **[Hero Classes](docs/game-design/classes.md)** - All 20 classes
+- **[Equipment](docs/game-design/equipment.md)** - Items and rarities
+- **[Events](docs/game-design/events.md)** - Event system
+- **[Combat](docs/game-design/combat.md)** - Turn-based combat (stretch)
+- **[Progression](docs/game-design/progression.md)** - XP and leveling
+- **[Balance](docs/game-design/balance.md)** - Formulas and tuning
+
+### Development
+- **[Roadmap](docs/development/roadmap.md)** - 5-phase development plan
+- **[Deployment](docs/development/deployment.md)** - Build and deploy guides
+
+---
+
+## 🎮 Current Features
+
+✅ Party creation with 8 hero classes  
+✅ Hero stats and abilities  
+✅ Basic UI with navigation  
+✅ Zustand state management  
+✅ Chakra UI dark theme  
+
+🚧 Event system (in progress)  
+🚧 Loot generation (planned)  
+🚧 Combat system (stretch goal)  
+
+---
+
+## 🔴 Critical Development Rules
+
+**Individual File Principle:**
+- ✅ One hero class per file: `warrior.ts`, `mage.ts`, etc.
+- ✅ One event type per file: `combat.ts`, `treasure.ts`, etc.
+- ✅ Use `index.ts` to aggregate and export
+- ❌ NEVER create `allClasses.ts` or similar monolithic files
+
+**See [docs/GUIDELINES.md](docs/GUIDELINES.md) for complete rules.**
+
+---
+
+## 📦 Project Structure
+
+```
+src/
+├── components/          # React components (screens, features, UI)
+├── systems/            # Game logic (events, loot, combat)
+├── store/              # Zustand state management
+├── data/               # Static content (classes, events, items)
+│   ├── classes/        # One file per class + index.ts
+│   ├── events/         # One file per event type + index.ts
+│   └── items/          # One file per item category + index.ts
+├── types/              # TypeScript type definitions
+├── utils/              # Utility functions
+└── theme/              # Chakra UI theme customization
+```
+
+**See [docs/technical/file-structure.md](docs/technical/file-structure.md) for details.**
+
+---
+
+## 🛠️ Tech Stack Details
+
+- **React 18+** - UI framework with hooks
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool with HMR
+- **@vitejs/plugin-react-swc** - Fast compilation with SWC
+- **Chakra UI v2** - Component library with dark mode
+- **Zustand** - Lightweight state management
+- **react-icons/gi** - Game Icons for fantasy/RPG iconography
+- **uuid** - Unique ID generation
+
+---
+
+## 📖 Legacy Files
+
+The following files contain the original design documentation and can be archived:
+- `DESIGN.md` (1062 lines) - Now split into `docs/technical/`
+- `GAME_DESIGN.md` (723 lines) - Now split into `docs/game-design/`
+
+All content has been migrated to the organized `docs/` structure with 100% parity.
+
+---
+
+## 🤝 Contributing
+
+1. Read **[docs/GUIDELINES.md](docs/GUIDELINES.md)** first
+2. Follow the individual file principle
+3. Use TypeScript strictly
+4. Test your changes
+5. Keep commits focused and atomic
+
+---
+
+## 📄 License
+
+[Add license information]
+
+---
+
+**Next Steps:** See [HANDOFF.md](HANDOFF.md) for current status and immediate next tasks.
 import reactDom from 'eslint-plugin-react-dom'
 
 export default defineConfig([

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { GameState, Hero } from '@types/index'
+import type { GameState, Hero } from '@/types'
 
 interface GameStore extends GameState {
   // Actions

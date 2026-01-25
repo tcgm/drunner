@@ -4,6 +4,86 @@ System architecture and high-level design for Dungeon Runner.
 
 ---
 
+## Architectural Directives
+
+### 1. Individual File Principle (MANDATORY)
+
+**All content data must be in individual files, never monolithic aggregations.**
+
+- ✅ **DO:** Create one file per hero class, event type, item category, enemy type
+- ✅ **DO:** Use `index.ts` files to aggregate and re-export content
+- ✅ **DO:** Keep each file focused on a single piece of content
+- ❌ **DON'T:** Create files like `allClasses.ts`, `allEvents.ts`, or `data.ts` containing everything
+- ❌ **DON'T:** Mix multiple unrelated content pieces in one file
+
+**Rationale:**
+- Clear ownership and responsibility per file
+- Better git merge/diff handling (no conflicts on massive files)
+- Easier to find and edit specific content
+- Enables parallel development without stepping on each other
+- Smaller files are easier to test and understand
+- Scales better as content grows
+
+**Example Structure:**
+```
+src/data/classes/
+  ├── index.ts          # Aggregates: import all, export collections
+  ├── warrior.ts        # WARRIOR class definition only
+  ├── mage.ts           # MAGE class definition only
+  └── rogue.ts          # ROGUE class definition only
+```
+
+### 2. Type-Safe Imports
+
+- Use `import type` for TypeScript types to avoid runtime imports
+- Use path aliases (`@/types`, `@components`, etc.) consistently
+- Never import from `@types/*` (conflicts with TypeScript's own convention)
+- Use `@/types` for our type definitions instead
+
+**Example:**
+```typescript
+// ✅ GOOD
+import type { HeroClass } from '@/types'
+import { WARRIOR } from '@data/classes'
+
+// ❌ BAD
+import { HeroClass } from '@types/index'  // conflicts with TS
+import { HeroClass } from '../types'      // no path alias
+```
+
+### 3. Separation of Concerns
+
+**Components:**
+- Screen components: Full-screen views, handle routing
+- Feature components: Domain-specific (party, dungeon, combat)
+- UI components: Generic, reusable across features
+
+**Systems:**
+- Pure TypeScript logic, no React dependencies
+- Stateless functions preferred
+- Side effects isolated to specific modules
+
+**Data:**
+- Static content definitions only
+- No logic, only data structures
+- Exported as constants
+
+### 4. State Management
+
+- Use Zustand for global state
+- Keep stores domain-specific (gameStore, partyStore, dungeonStore)
+- Actions colocated with state
+- Selectors for computed values
+
+### 5. Performance Considerations
+
+- Memoize expensive computations
+- Lazy load content where appropriate
+- Use React.memo for expensive components
+- Keep render trees shallow
+
+---
+
 ## System Overview
 
 ```
@@ -255,6 +335,52 @@ src/
 - Integration tests for combat engine
 - E2E tests for critical user flows
 - Snapshot tests for UI components
+
+---
+
+## Implementation Notes
+
+### File Organization Strategy
+
+**Hero Classes:**
+Each hero class should be in its own file for maintainability:
+- `src/data/classes/warrior.ts`
+- `src/data/classes/mage.ts`
+- `src/data/classes/rogue.ts`
+- etc.
+
+Then aggregate in `src/data/classes/index.ts` which exports:
+- `ALL_CLASSES` - array of all available classes
+- `CORE_CLASSES` - array of MVP classes
+- `STRETCH_CLASSES` - array of stretch goal classes
+- Helper functions like `getClassById()`, `getRandomClass()`
+
+**Events:**
+Events should be organized by type:
+- `src/data/events/combat.ts` - combat event templates
+- `src/data/events/treasure.ts` - treasure event templates
+- `src/data/events/choice.ts` - choice event templates
+- `src/data/events/rest.ts` - rest event templates
+- `src/data/events/merchant.ts` - merchant event templates
+- `src/data/events/trap.ts` - trap event templates
+- `src/data/events/boss.ts` - boss event templates
+- `src/data/events/index.ts` - aggregates all events
+
+**Items:**
+Item templates should be organized by slot type:
+- `src/data/items/weapons.ts`
+- `src/data/items/armor.ts`
+- `src/data/items/helmets.ts`
+- `src/data/items/boots.ts`
+- `src/data/items/accessories.ts`
+- `src/data/items/index.ts` - aggregates all item templates
+
+**Benefits:**
+- Easy to find and edit specific content
+- Better git diff/merge handling
+- Can work on different classes/events in parallel
+- Easier testing of individual components
+- Clear ownership of content pieces
 
 ---
 

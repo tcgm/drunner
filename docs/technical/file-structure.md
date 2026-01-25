@@ -2,6 +2,21 @@
 
 Recommended project structure for Dungeon Runner.
 
+> **CRITICAL DESIGN PRINCIPLE:**  
+> **Individual Files Over Monolithic Aggregations**  
+> - ✅ One hero class per file: `warrior.ts`, `mage.ts`, etc.  
+> - ✅ One event type per file: `combat.ts`, `treasure.ts`, etc.  
+> - ✅ One item category per file: `weapons.ts`, `armor.ts`, etc.  
+> - ✅ Aggregate via `index.ts` files that import and re-export  
+> - ❌ Never create files like `allClasses.ts` or `allEvents.ts` with all content  
+> 
+> **Benefits:**  
+> - Clear ownership and responsibility  
+> - Better git merge handling  
+> - Easier to find and edit specific content  
+> - Parallel development without conflicts  
+> - Smaller, focused files that are easier to test
+
 ---
 
 ## Directory Layout
@@ -108,41 +123,48 @@ drunner/
 │   │   └── combatStore.ts         # Combat state (stretch)
 │   │
 │   ├── data/                      # Static game data
-│   │   ├── classes/               # Hero class definitions
-│   │   │   ├── index.ts
-│   │   │   ├── warrior.ts
-│   │   │   ├── mage.ts
-│   │   │   ├── rogue.ts
-│   │   │   └── ... (17 more classes)
+│   │   ├── classes/               # Hero class definitions (ONE FILE PER CLASS)
+│   │   │   ├── index.ts           # Aggregates and exports all classes
+│   │   │   ├── warrior.ts         # Warrior class only
+│   │   │   ├── mage.ts            # Mage class only
+│   │   │   ├── rogue.ts           # Rogue class only
+│   │   │   ├── cleric.ts          # Cleric class only
+│   │   │   ├── ranger.ts          # Ranger class only
+│   │   │   ├── paladin.ts         # Paladin class only
+│   │   │   ├── necromancer.ts     # Necromancer class only
+│   │   │   ├── bard.ts            # Bard class only
+│   │   │   └── ... (12 more stretch classes, each in own file)
 │   │   │
-│   │   ├── abilities/             # Ability definitions
-│   │   │   ├── index.ts
+│   │   ├── abilities/             # Ability definitions (ONE FILE PER CLASS)
+│   │   │   ├── index.ts           # Aggregates all abilities
 │   │   │   ├── warriorAbilities.ts
 │   │   │   ├── mageAbilities.ts
-│   │   │   └── ...
+│   │   │   └── ... (one file per class)
 │   │   │
-│   │   ├── events/                # Event templates
-│   │   │   ├── index.ts
-│   │   │   ├── combatEvents.ts
-│   │   │   ├── treasureEvents.ts
-│   │   │   ├── choiceEvents.ts
-│   │   │   ├── restEvents.ts
-│   │   │   ├── merchantEvents.ts
-│   │   │   ├── trapEvents.ts
-│   │   │   └── bossEvents.ts
+│   │   ├── events/                # Event templates (ONE FILE PER EVENT TYPE)
+│   │   │   ├── index.ts           # Aggregates all event types
+│   │   │   ├── combat.ts          # Combat event templates only
+│   │   │   ├── treasure.ts        # Treasure event templates only
+│   │   │   ├── choice.ts          # Choice event templates only
+│   │   │   ├── rest.ts            # Rest event templates only
+│   │   │   ├── merchant.ts        # Merchant event templates only
+│   │   │   ├── trap.ts            # Trap event templates only
+│   │   │   └── boss.ts            # Boss event templates only
 │   │   │
-│   │   ├── items/                 # Item templates
-│   │   │   ├── index.ts
-│   │   │   ├── weapons.ts
-│   │   │   ├── armor.ts
-│   │   │   ├── accessories.ts
-│   │   │   └── consumables.ts
+│   │   ├── items/                 # Item templates (ONE FILE PER SLOT/CATEGORY)
+│   │   │   ├── index.ts           # Aggregates all items
+│   │   │   ├── weapons.ts         # Weapon templates only
+│   │   │   ├── armor.ts           # Armor templates only
+│   │   │   ├── helmets.ts         # Helmet templates only
+│   │   │   ├── boots.ts           # Boot templates only
+│   │   │   ├── accessories.ts     # Accessory templates only
+│   │   │   └── consumables.ts     # Consumable templates only
 │   │   │
-│   │   └── enemies/               # Enemy definitions
-│   │       ├── index.ts
-│   │       ├── basic.ts
-│   │       ├── elite.ts
-│   │       └── bosses.ts
+│   │   └── enemies/               # Enemy definitions (ONE FILE PER CATEGORY)
+│   │       ├── index.ts           # Aggregates all enemies
+│   │       ├── basic.ts           # Basic enemy types
+│   │       ├── elite.ts           # Elite enemy types
+│   │       └── bosses.ts          # Boss enemy types
 │   │
 │   ├── types/                     # TypeScript definitions
 │   │   ├── index.ts               # Main type exports
@@ -197,6 +219,191 @@ drunner/
 ├── vite.config.ts
 ├── README.md
 └── DESIGN.md                      # Legacy, can be archived
+```
+
+---
+
+## Data Organization Pattern
+
+### Individual Content Files
+
+**REQUIRED PATTERN:** Each piece of game content must be in its own file.
+
+#### Hero Classes Example
+```typescript
+// ❌ BAD: src/data/classes/allClasses.ts (monolithic)
+export const ALL_CLASSES = [
+  { id: 'warrior', name: 'Warrior', ... },
+  { id: 'mage', name: 'Mage', ... },
+  // ... all classes in one file
+]
+
+// ✅ GOOD: src/data/classes/warrior.ts (individual)
+import type { HeroClass } from '@/types'
+
+export const WARRIOR: HeroClass = {
+  id: 'warrior',
+  name: 'Warrior',
+  description: 'Tank / Frontline Fighter',
+  baseStats: { attack: 10, defense: 8, speed: 5, luck: 4 },
+  abilities: [/* ... */],
+  icon: 'GiSwordman',
+}
+
+// ✅ GOOD: src/data/classes/mage.ts (individual)
+import type { HeroClass } from '@/types'
+
+export const MAGE: HeroClass = {
+  id: 'mage',
+  name: 'Mage',
+  // ... mage-specific data
+}
+
+// ✅ GOOD: src/data/classes/index.ts (aggregator)
+import { WARRIOR } from './warrior'
+import { MAGE } from './mage'
+import { ROGUE } from './rogue'
+// ... import all classes
+
+export const CORE_CLASSES = [WARRIOR, MAGE, ROGUE, /* ... */]
+export const STRETCH_CLASSES = [/* ... */]
+export const ALL_CLASSES = [...CORE_CLASSES, ...STRETCH_CLASSES]
+
+// Re-export for direct imports
+export { WARRIOR, MAGE, ROGUE }
+```
+
+#### Events Example
+```typescript
+// ❌ BAD: All events in one file
+// src/data/events/allEvents.ts - DON'T DO THIS
+
+// ✅ GOOD: One file per event type
+// src/data/events/combat.ts
+import type { DungeonEvent } from '@/types'
+
+export const COMBAT_EVENTS: DungeonEvent[] = [
+  {
+    id: 'goblin-ambush',
+    type: 'combat',
+    title: 'Goblin Ambush!',
+    description: 'A group of goblins leaps out...',
+    // ... event data
+  },
+  {
+    id: 'skeleton-patrol',
+    type: 'combat',
+    // ... event data
+  },
+  // All combat events together
+]
+
+// src/data/events/treasure.ts
+export const TREASURE_EVENTS: DungeonEvent[] = [
+  // All treasure events together
+]
+
+// src/data/events/index.ts (aggregator)
+import { COMBAT_EVENTS } from './combat'
+import { TREASURE_EVENTS } from './treasure'
+import { CHOICE_EVENTS } from './choice'
+// ... import all event types
+
+export const ALL_EVENTS = [
+  ...COMBAT_EVENTS,
+  ...TREASURE_EVENTS,
+  ...CHOICE_EVENTS,
+  // ... all event types
+]
+
+export { COMBAT_EVENTS, TREASURE_EVENTS, CHOICE_EVENTS }
+```
+
+#### Items Example
+```typescript
+// ✅ GOOD: src/data/items/weapons.ts
+import type { Item } from '@/types'
+
+export const WEAPON_TEMPLATES: Partial<Item>[] = [
+  {
+    name: 'Iron Sword',
+    type: 'weapon',
+    description: 'A sturdy iron blade',
+    stats: { attack: 5 },
+  },
+  {
+    name: 'Steel Axe',
+    type: 'weapon',
+    stats: { attack: 7, speed: -1 },
+  },
+  // All weapon templates
+]
+
+// src/data/items/armor.ts
+export const ARMOR_TEMPLATES: Partial<Item>[] = [
+  // All armor templates
+]
+
+// src/data/items/index.ts
+import { WEAPON_TEMPLATES } from './weapons'
+import { ARMOR_TEMPLATES } from './armor'
+// ... import all item types
+
+export const ALL_ITEM_TEMPLATES = [
+  ...WEAPON_TEMPLATES,
+  ...ARMOR_TEMPLATES,
+  // ... all item types
+]
+```
+
+### Index File Pattern
+
+Every `data/` subdirectory MUST have an `index.ts` that:
+1. Imports all individual content files
+2. Aggregates them into collections (arrays, objects)
+3. Re-exports individual items for direct import
+4. Provides helper functions (getById, getRandom, etc.)
+
+```typescript
+// src/data/classes/index.ts - Standard Pattern
+import type { HeroClass } from '@/types'
+
+// Import all individual files
+import { WARRIOR } from './warrior'
+import { MAGE } from './mage'
+import { ROGUE } from './rogue'
+import { CLERIC } from './cleric'
+import { RANGER } from './ranger'
+import { PALADIN } from './paladin'
+import { NECROMANCER } from './necromancer'
+import { BARD } from './bard'
+
+// Aggregate into collections
+export const CORE_CLASSES: HeroClass[] = [
+  WARRIOR, MAGE, ROGUE, CLERIC,
+  RANGER, PALADIN, NECROMANCER, BARD,
+]
+
+export const STRETCH_CLASSES: HeroClass[] = [
+  // Stretch classes when added
+]
+
+export const ALL_CLASSES: HeroClass[] = [
+  ...CORE_CLASSES,
+  ...STRETCH_CLASSES,
+]
+
+// Helper functions
+export function getClassById(id: string): HeroClass | undefined {
+  return ALL_CLASSES.find(c => c.id === id)
+}
+
+export function getRandomClass(): HeroClass {
+  return ALL_CLASSES[Math.floor(Math.random() * ALL_CLASSES.length)]
+}
+
+// Re-export individual classes
+export { WARRIOR, MAGE, ROGUE, CLERIC, RANGER, PALADIN, NECROMANCER, BARD }
 ```
 
 ---
@@ -349,44 +556,91 @@ export function generateLoot(depth: number, quantity: number): Item[] {
 
 ## Data Files
 
-### Class Definitions
+### Class Definitions (ONE PER FILE)
 ```typescript
 // src/data/classes/warrior.ts
-import { HeroClass } from '@types/hero';
+import type { HeroClass } from '@/types'
 
 export const WARRIOR: HeroClass = {
+  id: 'warrior',
   name: 'Warrior',
-  description: 'A melee powerhouse...',
+  description: 'Tank / Frontline Fighter - Absorbs damage, deals consistent physical damage',
   baseStats: {
-    maxHealth: 50,
-    attack: 12,
+    attack: 10,
     defense: 8,
     speed: 5,
-    luck: 3
+    luck: 4,
   },
-  startingAbilities: ['power_strike', 'defensive_stance'],
-  icon: 'GiCrossedSwords'
-};
+  abilities: [
+    {
+      id: 'power-strike',
+      name: 'Power Strike',
+      description: 'High damage single attack',
+      cooldown: 2,
+      currentCooldown: 0,
+      effect: { type: 'damage', value: 20, target: 'enemy' },
+    },
+    // ... more abilities
+  ],
+  icon: 'GiSwordman',
+}
 ```
 
-### Event Templates
+### Event Templates (ONE FILE PER TYPE)
 ```typescript
-// src/data/events/combatEvents.ts
-import { DungeonEvent } from '@types/event';
+// src/data/events/combat.ts
+import type { DungeonEvent } from '@/types'
 
-export const GOBLIN_AMBUSH: DungeonEvent = {
-  id: 'goblin_ambush',
-  type: 'combat',
-  title: 'Goblin Ambush!',
-  description: 'A group of goblins leap out...',
-  icon: 'GiGoblin',
-  encounter: {
-    enemies: [/* ... */]
+export const COMBAT_EVENTS: DungeonEvent[] = [
+  {
+    id: 'goblin-ambush',
+    type: 'combat',
+    title: 'Goblin Ambush!',
+    description: 'A group of goblins leaps out from behind the rocks!',
+    choices: [
+      {
+        text: 'Fight them head-on',
+        outcome: {
+          text: 'You engage the goblins in combat!',
+          effects: [
+            { type: 'xp', value: 50 },
+            { type: 'gold', value: 25 },
+          ],
+        },
+      },
+      // ... more choices
+    ],
+    depth: 1,
   },
-  tags: ['combat', 'common', 'goblins']
-};
+  // ... more combat events
+]
+```
+
+### Item Templates (ONE FILE PER CATEGORY)
+```typescript
+// src/data/items/weapons.ts
+import type { Item } from '@/types'
+
+export const WEAPON_TEMPLATES: Partial<Item>[] = [
+  {
+    name: 'Iron Sword',
+    type: 'weapon',
+    description: 'A sturdy iron blade',
+    stats: { attack: 5 },
+    value: 50,
+  },
+  {
+    name: 'Steel Axe',
+    type: 'weapon',
+    description: 'A heavy two-handed axe',
+    stats: { attack: 7, speed: -1 },
+    value: 75,
+  },
+  // ... more weapon templates
+]
 ```
 
 ---
 
 See [architecture.md](./architecture.md) for system overview and [ui-design.md](./ui-design.md) for component guidelines.
+
