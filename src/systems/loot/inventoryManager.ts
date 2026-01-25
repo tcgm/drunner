@@ -1,4 +1,6 @@
 import type { Hero, Item, ItemSlot } from '@/types'
+import { getItemSetName, getSetBonuses } from '@data/items/sets'
+import { MATERIALS_BY_RARITY } from '@data/items/materials'
 
 /**
  * Check if a hero can equip an item in a specific slot
@@ -54,7 +56,7 @@ export function unequipItem(hero: Hero, slot: ItemSlot): { hero: Hero; item: Ite
 }
 
 /**
- * Calculate hero stats including equipment bonuses
+ * Calculate hero stats including equipment bonuses and set bonuses
  */
 export function calculateStatsWithEquipment(hero: Hero) {
   const baseStats = { ...hero.stats }
@@ -73,9 +75,12 @@ export function calculateStatsWithEquipment(hero: Hero) {
       : undefined,
   }
   
+  // Track equipped items for set bonus detection
+  const equippedItems = Object.values(hero.equipment).filter(item => item !== null) as Item[]
+  
   // Add equipment bonuses
-  Object.values(hero.equipment).forEach(item => {
-    if (item?.stats) {
+  equippedItems.forEach(item => {
+    if (item.stats) {
       if (item.stats.attack) stats.attack += item.stats.attack
       if (item.stats.defense) stats.defense += item.stats.defense
       if (item.stats.speed) stats.speed += item.stats.speed
@@ -86,6 +91,59 @@ export function calculateStatsWithEquipment(hero: Hero) {
       }
     }
   })
+  
+  // Calculate set bonuses
+  // 1. Named set bonuses (e.g., Kitsune set)
+  const setCounts: Record<string, number> = {}
+  equippedItems.forEach(item => {
+    const setName = getItemSetName(item.name)
+    if (setName) {
+      setCounts[setName] = (setCounts[setName] || 0) + 1
+    }
+  })
+  
+  // Apply named set bonuses
+  Object.entries(setCounts).forEach(([setName, count]) => {
+    const setBonus = getSetBonuses(setName, count)
+    if (setBonus?.stats) {
+      if (setBonus.stats.attack) stats.attack += setBonus.stats.attack
+      if (setBonus.stats.defense) stats.defense += setBonus.stats.defense
+      if (setBonus.stats.speed) stats.speed += setBonus.stats.speed
+      if (setBonus.stats.luck) stats.luck += setBonus.stats.luck
+      if (setBonus.stats.maxHp) stats.maxHp += setBonus.stats.maxHp
+      if (setBonus.stats.magicPower && stats.magicPower !== undefined) {
+        stats.magicPower += setBonus.stats.magicPower
+      }
+    }
+  })
+  
+  // 2. Material set bonus - check if all items are the same material
+  const materialCounts: Record<string, number> = {}
+  equippedItems.forEach(item => {
+    // Extract material from item name (e.g., "Iron Sword" -> "Iron")
+    const words = item.name.split(' ')
+    if (words.length > 1) {
+      const potentialMaterial = words[0]
+      // Check if this matches any known material
+      for (const materials of Object.values(MATERIALS_BY_RARITY)) {
+        if (materials.some(m => m.prefix === potentialMaterial)) {
+          materialCounts[potentialMaterial] = (materialCounts[potentialMaterial] || 0) + 1
+          break
+        }
+      }
+    }
+  })
+  
+  // Apply material set bonus if 4+ pieces of same material
+  for (const count of Object.values(materialCounts)) {
+    if (count >= 4) {
+      // Small bonus for matching material set
+      stats.defense += 5
+      stats.attack += 5
+      stats.luck += 3
+      break // Only apply once even if multiple material sets
+    }
+  }
   
   // Ensure HP doesn't exceed new maxHp
   stats.hp = Math.min(stats.hp, stats.maxHp)

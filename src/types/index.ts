@@ -82,7 +82,7 @@ export interface Item {
   description: string
   type: ItemSlot
   rarity: ItemRarity
-  stats: Partial<Omit<Stats, 'hp' | 'maxHp'>>
+  stats: Partial<Omit<Stats, 'hp'>> // Equipment can modify maxHp
   value: number
   setId?: string // For set items (stretch)
 }

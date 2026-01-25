@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase } from '@data/items/bases'
 import { getRandomMaterial } from '@data/items/materials'
 import { getRandomUnique } from '@data/items/uniques'
+import { getRandomSetItem } from '@data/items/sets'
 
 /**
  * Loot generation configuration
@@ -38,6 +39,9 @@ const LOOT_CONFIG = {
     legendary: 0.30, // 30% chance for legendary uniques
     mythic: 0.50,    // 50% chance for mythic uniques
   },
+
+  // Chance for set items (independent roll, very rare)
+  setChance: 0.05,   // 5% chance for any set item drop
 }
 
 /**
@@ -200,11 +204,22 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
 }
 
 /**
- * Generate a random item by combining material + base template, or unique item
+ * Generate a random item by combining material + base template, unique item, or set item
  */
 export function generateItem(depth: number): Item {
   const rarity = selectRarity(depth)
   const type = selectItemType()
+  
+  // Check if we should generate a set item (independent of rarity)
+  if (depth >= 15 && Math.random() < LOOT_CONFIG.setChance) {
+    const setTemplate = getRandomSetItem()
+    if (setTemplate) {
+      return {
+        ...setTemplate,
+        id: uuidv4(),
+      }
+    }
+  }
   
   // Check if we should generate a unique item
   const uniqueChances: Record<string, number> = LOOT_CONFIG.uniqueChance
