@@ -137,6 +137,7 @@ export interface Dungeon {
 
 export interface GameState {
   party: Hero[]
+  heroRoster: Hero[] // All heroes ever created, organized by class
   dungeon: Dungeon
   isGameOver: boolean
   isPaused: boolean

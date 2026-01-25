@@ -5,7 +5,7 @@ import type { GameState, Hero, EventChoice, Item, ItemSlot } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/game'
-import { calculateMaxHp } from '@/utils/heroUtils'
+import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 
 /**
@@ -135,6 +135,7 @@ function applyPenaltyToParty(party: Hero[]): Hero[] {
 interface GameStore extends GameState {
   // Actions
   addHero: (hero: Hero) => void
+  addHeroByClass: (heroClass: any) => void
   removeHero: (heroId: string) => void
   updateHero: (heroId: string, updates: Partial<Hero>) => void
   startDungeon: () => void
@@ -152,6 +153,7 @@ interface GameStore extends GameState {
 
 const initialState: GameState = {
   party: [],
+  heroRoster: [],
   dungeon: {
     depth: 0,
     maxDepth: 100,
@@ -172,9 +174,36 @@ export const useGameStore = create<GameStore>()(
         ...initialState,
   
   addHero: (hero) => 
-    set((state) => ({ 
-      party: [...state.party, hero] 
-    })),
+    set((state) => {
+      // Add to roster if not already there
+      const existingInRoster = state.heroRoster.find(h => h.id === hero.id)
+      return {
+        party: [...state.party, hero],
+        heroRoster: existingInRoster ? state.heroRoster : [...state.heroRoster, hero]
+      }
+    }),
+  
+  addHeroByClass: (heroClass) => 
+    set((state) => {
+      // Find existing hero of this class in roster that's not currently in party
+      const existingHero = state.heroRoster.find(
+        h => h.class.id === heroClass.id && !state.party.some(p => p.id === h.id)
+      )
+      
+      if (existingHero) {
+        // Reuse existing hero
+        return {
+          party: [...state.party, existingHero]
+        }
+      } else {
+        // Create new hero
+        const newHero = createHero(heroClass, heroClass.name)
+        return {
+          party: [...state.party, newHero],
+          heroRoster: [...state.heroRoster, newHero]
+        }
+      }
+    }),
   
   removeHero: (heroId) => 
     set((state) => ({ 
@@ -182,23 +211,25 @@ export const useGameStore = create<GameStore>()(
     })),
   
   updateHero: (heroId, updates) => 
-    set((state) => ({
-      party: state.party.map(h => 
+    set((state) => {
+      const updatedParty = state.party.map(h => 
         h.id === heroId ? { ...h, ...updates } : h
       )
-    })),
+      const updatedRoster = state.heroRoster.map(h => 
+        h.id === heroId ? { ...h, ...updates } : h
+      )
+      return {
+        party: updatedParty,
+        heroRoster: updatedRoster
+      }
+    }),
   
   startDungeon: () => 
     set((state) => {
-      // Apply death penalty to heroes if pending
-      let penalizedParty = state.party
-      if (state.hasPendingPenalty) {
-        penalizedParty = applyPenaltyToParty(state.party)
-      }
-      
+      // Penalty should already be applied by PartySetupScreen
+      // Just start the dungeon
       const event = getNextEvent(1, [])
       return {
-        party: penalizedParty,
         dungeon: { 
           depth: 1,
           maxDepth: 100,
@@ -254,10 +285,19 @@ export const useGameStore = create<GameStore>()(
     set({ isGameOver: true, hasPendingPenalty: true }),
   
   applyPenalty: () =>
-    set((state) => ({
-      party: applyPenaltyToParty(state.party),
-      hasPendingPenalty: false,
-    })),
+    set((state) => {
+      const penalizedParty = applyPenaltyToParty(state.party)
+      // Update roster with penalized heroes
+      const updatedRoster = state.heroRoster.map(rosterHero => {
+        const penalizedVersion = penalizedParty.find(h => h.id === rosterHero.id)
+        return penalizedVersion || rosterHero
+      })
+      return {
+        party: penalizedParty,
+        heroRoster: updatedRoster,
+        hasPendingPenalty: false,
+      }
+    }),
   
   repairParty: () =>
     set((state) => {
@@ -271,11 +311,18 @@ export const useGameStore = create<GameStore>()(
     }),
   
   equipItemToHero: (heroId, item, slot) =>
-    set((state) => ({
-      party: state.party.map(h =>
+    set((state) => {
+      const updatedParty = state.party.map(h =>
         h.id === heroId ? equipItem(h, item, slot) : h
       )
-    })),
+      const updatedRoster = state.heroRoster.map(h =>
+        h.id === heroId ? equipItem(h, item, slot) : h
+      )
+      return {
+        party: updatedParty,
+        heroRoster: updatedRoster
+      }
+    }),
   
   unequipItemFromHero: (heroId, slot) => {
     const hero = useGameStore.getState().party.find(h => h.id === heroId)
@@ -315,6 +362,15 @@ export const useGameStore = create<GameStore>()(
             )
             if (needsRepair) {
               state.party = state.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
+            }
+          }
+          // Also repair heroRoster
+          if (state.heroRoster?.length > 0) {
+            const needsRepair = state.heroRoster.some(hero => 
+              isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
+            )
+            if (needsRepair) {
+              state.heroRoster = state.heroRoster.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
             }
           }
           return state
