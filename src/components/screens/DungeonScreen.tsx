@@ -7,6 +7,7 @@ import EventArea from '@components/dungeon/EventArea'
 import DungeonActionBar from '@components/dungeon/DungeonActionBar'
 import InfoSidebar from '@components/dungeon/InfoSidebar'
 import GameOverScreen from '@components/dungeon/GameOverScreen'
+import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import type { EventChoice } from '@/types'
 
 interface DungeonScreenProps {
@@ -16,6 +17,7 @@ interface DungeonScreenProps {
 export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const { dungeon, party, advanceDungeon, selectChoice, isGameOver, lastOutcome, retreatFromDungeon } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
   
   const handleSelectChoice = (choice: EventChoice) => {
@@ -62,6 +64,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         <DungeonActionBar
           showContinue={!dungeon.currentEvent && !lastOutcome}
           onContinue={advanceDungeon}
+          onInventory={onInventoryOpen}
           onRetreat={onOpen}
           onExit={onExit}
         />
@@ -97,6 +100,14 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
+      {/* Inventory Modal */}
+      <DungeonInventoryModal
+        isOpen={isInventoryOpen}
+        onClose={onInventoryClose}
+        inventory={dungeon.inventory}
+        gold={dungeon.gold}
+      />
     </Flex>
   )
 }

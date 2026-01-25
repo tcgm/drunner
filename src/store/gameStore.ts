@@ -156,6 +156,7 @@ interface GameStore extends GameState {
   expandBankStorage: (slots: number) => void
   keepOverflowItem: (itemId: string) => void
   discardOverflowItem: (itemId: string) => void
+  discardItems: (itemIds: string[]) => void
   clearOverflow: () => void
 }
 
@@ -171,6 +172,7 @@ const initialState: GameState = {
     inventory: [],
   },
   bankGold: 0,
+  alkahest: 0,
   bankInventory: [],
   bankStorageSlots: 20, // Start with 20 slots
   overflowInventory: [],
@@ -544,6 +546,18 @@ export const useGameStore = create<GameStore>()(
   
   clearOverflow: () =>
     set({ overflowInventory: [] }),
+  
+  discardItems: (itemIds) =>
+    set((state) => {
+      const itemsToDiscard = state.bankInventory.filter(item => itemIds.includes(item.id))
+      const totalValue = itemsToDiscard.reduce((sum, item) => sum + item.value, 0)
+      const alkahestGained = Math.floor(totalValue * GAME_CONFIG.items.alkahestConversionRate)
+      
+      return {
+        bankInventory: state.bankInventory.filter(item => !itemIds.includes(item.id)),
+        alkahest: state.alkahest + alkahestGained
+      }
+    }),
   
   resetGame: () => 
     set(initialState),

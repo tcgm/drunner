@@ -84,6 +84,7 @@ export interface Item {
   rarity: ItemRarity
   stats: Partial<Omit<Stats, 'hp'>> // Equipment can modify maxHp
   value: number
+  icon: string // react-icons/gi name
   setId?: string // For set items (stretch)
 }
 
@@ -167,6 +168,7 @@ export interface GameState {
   heroRoster: Hero[] // All heroes ever created, organized by class
   dungeon: Dungeon
   bankGold: number // Gold stored outside runs (added on victory/retreat)
+  alkahest: number // Currency from discarded items
   bankInventory: Item[] // Items stored outside runs
   bankStorageSlots: number // Maximum bank storage capacity
   overflowInventory: Item[] // Items from last run that exceed bank capacity

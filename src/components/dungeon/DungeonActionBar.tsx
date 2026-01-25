@@ -5,11 +5,12 @@ import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor, GiReturnArrow } from 
 interface DungeonActionBarProps {
   showContinue: boolean
   onContinue: () => void
+  onInventory: () => void
   onRetreat: () => void
   onExit: () => void
 }
 
-export default function DungeonActionBar({ showContinue, onContinue, onRetreat, onExit }: DungeonActionBarProps) {
+export default function DungeonActionBar({ showContinue, onContinue, onInventory, onRetreat, onExit }: DungeonActionBarProps) {
   return (
     <Box bg="gray.800" borderRadius="lg" p={4}>
       <HStack spacing={4}>
@@ -27,7 +28,7 @@ export default function DungeonActionBar({ showContinue, onContinue, onRetreat, 
           colorScheme="blue" 
           variant="outline"
           leftIcon={<Icon as={GiBackpack} />}
-          isDisabled
+          onClick={onInventory}
         >
           Inventory
         </Button>

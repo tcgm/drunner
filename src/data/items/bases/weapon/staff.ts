@@ -6,6 +6,7 @@ import type { Item } from '@/types'
 export const STAFF_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'A mystical channeling weapon',
   type: 'weapon',
+  icon: 'GiWizardStaff',
   stats: {
     attack: 8,
     magicPower: 5,

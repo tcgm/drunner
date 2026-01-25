@@ -29,6 +29,8 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     bankStorageSlots,
     expandBankStorage,
     equipItemFromBank,
+    unequipItemFromHero,
+    moveItemToBank,
     overflowInventory,
     keepOverflowItem,
     discardOverflowItem,
@@ -113,6 +115,16 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     setPendingSlot(null)
   }
 
+  const handleUnequipItem = (heroIndex: number, slot: ItemSlot) => {
+    const hero = party[heroIndex]
+    if (hero) {
+      const unequippedItem = unequipItemFromHero(hero.id, slot)
+      if (unequippedItem) {
+        moveItemToBank(unequippedItem)
+      }
+    }
+  }
+
   const handleExpandBank = (count: number) => {
     expandBankStorage(count)
   }
@@ -181,6 +193,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
           onSelectHero={setSelectedHeroIndex}
           onOpenBank={onOpen}
           onSlotClick={handleOpenBankForSlot}
+          onUnequipItem={handleUnequipItem}
         />
       </Flex>
 

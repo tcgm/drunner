@@ -25,6 +25,11 @@ export const GAME_CONFIG = {
     bossFloorInterval: 10, // Boss every N floors
   },
 
+  // Item Management
+  items: {
+    alkahestConversionRate: 0.25, // 25% of item value converted to alkahest when discarded
+  },
+
   // Scaling
   scaling: {
     damage: 0.1, // 10% per depth

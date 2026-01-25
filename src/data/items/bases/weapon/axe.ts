@@ -6,6 +6,7 @@ import type { Item } from '@/types'
 export const AXE_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'A heavy chopping weapon',
   type: 'weapon',
+  icon: 'GiBattleAxe',
   stats: {
     attack: 12,
     speed: -2,

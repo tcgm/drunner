@@ -6,6 +6,7 @@ import type { Item } from '@/types'
 export const DAGGER_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'A quick stabbing weapon',
   type: 'weapon',
+  icon: 'GiStiletto',
   stats: {
     attack: 6,
     speed: 4,

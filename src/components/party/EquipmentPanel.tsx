@@ -1,7 +1,9 @@
-import { VStack, Box, Text, SimpleGrid, Badge, Tooltip, Flex, Button, Icon, HStack } from '@chakra-ui/react'
+import { VStack, Box, Text, SimpleGrid, HStack, Button } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, ItemSlot, Item } from '../../types'
+import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
+import { useGameStore } from '@/store/gameStore'
 
 const SLOT_ICONS: Record<ItemSlot, IconType> = {
   weapon: GameIcons.GiSwordman,
@@ -39,6 +41,7 @@ interface EquipmentPanelProps {
   onSelectHero: (index: number) => void
   onOpenBank: () => void
   onSlotClick: (heroIndex: number, slot: ItemSlot) => void
+  onUnequipItem: (heroIndex: number, slot: ItemSlot) => void
 }
 
 export function EquipmentPanel({
@@ -48,7 +51,8 @@ export function EquipmentPanel({
   bankStorageSlots,
   onSelectHero,
   onOpenBank,
-  onSlotClick
+  onSlotClick,
+  onUnequipItem
 }: EquipmentPanelProps) {
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
   const activeParty = party.filter((h): h is Hero => h !== null)
@@ -60,92 +64,67 @@ export function EquipmentPanel({
     const SlotIcon = SLOT_ICONS[slot]
     const isEmpty = !item
 
-    return (
-      <Tooltip
-        key={slot}
-        label={
-          item ? (
-            <VStack align="start" spacing={1} p={1}>
-              <Text fontWeight="bold" fontSize="sm" color={`${RARITY_COLORS[item.rarity]}.300`}>
-                {item.name}
-              </Text>
-              <Text fontSize="xs" color="gray.300">{item.description}</Text>
-              {item.stats && Object.keys(item.stats).length > 0 && (
-                <Box pt={1}>
-                  {Object.entries(item.stats).map(([stat, value]) => (
-                    <Text key={stat} fontSize="xs" color="green.300">
-                      +{String(value)} {stat.toUpperCase()}
-                    </Text>
-                  ))}
-                </Box>
-              )}
-              <Text fontSize="xs" color="yellow.300" pt={1}>
-                Value: {item.value} gold
-              </Text>
-            </VStack>
-          ) : (
-            <Text fontSize="xs">{SLOT_NAMES[slot]} slot empty</Text>
-          )
-        }
-        placement="top"
-        hasArrow
-        bg="gray.800"
-      >
+    if (isEmpty) {
+      // Empty slot - clickable to equip
+      return (
         <Box
+          key={slot}
           position="relative"
-          bg={isEmpty ? 'gray.800' : 'gray.700'}
-          borderRadius="md"
+          bg="gray.800"
+          borderRadius="lg"
           borderWidth="2px"
-          borderColor={isEmpty ? 'gray.600' : `${RARITY_COLORS[item?.rarity || 'common']}.500`}
+          borderColor="gray.600"
           p={3}
-          cursor={isEmpty ? 'pointer' : 'default'}
+          cursor="pointer"
           transition="all 0.2s"
-          _hover={isEmpty ? { borderColor: 'orange.500', transform: 'translateY(-2px)' } : { borderColor: `${RARITY_COLORS[item?.rarity || 'common']}.400`, transform: 'translateY(-2px)' }}
-          onClick={() => isEmpty && selectedHeroIndex !== null && onSlotClick(selectedHeroIndex, slot)}
+          _hover={{ borderColor: 'orange.500', transform: 'translateY(-2px)' }}
+          onClick={() => selectedHeroIndex !== null && onSlotClick(selectedHeroIndex, slot)}
+          height="80px"
+          width="80px"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
         >
-          {/* Slot Icon */}
-          <Flex direction="column" align="center" gap={1}>
-            <Icon
-              as={SlotIcon}
-              boxSize={8}
-              color={isEmpty ? 'gray.600' : `${RARITY_COLORS[item?.rarity || 'common']}.300`}
-            />
-            <Text fontSize="xs" color="gray.500" textAlign="center">
-              {SLOT_NAMES[slot]}
-            </Text>
-          </Flex>
-
-          {/* Item indicator */}
-          {!isEmpty && (
-            <>
-              <Badge
-                position="absolute"
-                top={1}
-                right={1}
-                fontSize="xx-small"
-                colorScheme={RARITY_COLORS[item.rarity]}
-              >
-                {item.rarity}
-              </Badge>
-              <Button
-                position="absolute"
-                bottom={1}
-                right={1}
-                size="xs"
-                colorScheme="red"
-                variant="ghost"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  // unequip handler
-                }}
-                fontSize="xs"
-              >
-                Sell
-              </Button>
-            </>
-          )}
+          <SlotIcon size={32} color="#4A5568" />
+          <Text fontSize="2xs" color="gray.600" textAlign="center" mt={1}>
+            {SLOT_NAMES[slot]}
+          </Text>
         </Box>
-      </Tooltip>
+      )
+    }
+
+    // Equipped item - use ItemSlot component
+    return (
+      <Box key={slot} position="relative">
+        <ItemSlotComponent
+          item={item}
+          size="md"
+          isClickable={true}
+        />
+        <Button
+          position="absolute"
+          top="-8px"
+          right="-8px"
+          size="xs"
+          colorScheme="orange"
+          variant="solid"
+          onClick={(e) => {
+            e.stopPropagation()
+            if (selectedHeroIndex !== null) {
+              onUnequipItem(selectedHeroIndex, slot)
+            }
+          }}
+          fontSize="2xs"
+          borderRadius="full"
+          minW="auto"
+          w="24px"
+          h="24px"
+          p={0}
+        >
+          ×
+        </Button>
+      </Box>
     )
   }
 

@@ -166,22 +166,22 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
   
   // Map keywords to base names
   if (description.includes('sword') || description.includes('blade')) return `${materialPrefix} Sword`
-  if (description.includes('axe')) return `${materialPrefix} Axe`
-  if (description.includes('dagger')) return `${materialPrefix} Dagger`
-  if (description.includes('staff') || description.includes('mystical')) return `${materialPrefix} Staff`
-  if (description.includes('bow') || description.includes('ranged')) return `${materialPrefix} Bow`
-  if (description.includes('mace') || description.includes('bludgeon')) return `${materialPrefix} Mace`
+  if (description.includes('axe') || description.includes('chopping')) return `${materialPrefix} Axe`
+  if (description.includes('dagger') || description.includes('stabbing') || description.includes('quick')) return `${materialPrefix} Dagger`
+  if (description.includes('staff') || description.includes('mystical') || description.includes('channeling')) return `${materialPrefix} Staff`
+  if (description.includes('bow') || description.includes('ranged') || description.includes('distance')) return `${materialPrefix} Bow`
+  if (description.includes('mace') || description.includes('bludgeon') || description.includes('crushing')) return `${materialPrefix} Mace`
   
   if (description.includes('plate') || description.includes('plating')) return `${materialPrefix} Plate Armor`
-  if (description.includes('chainmail') || description.includes('chain')) return `${materialPrefix} Chainmail`
+  if (description.includes('chainmail') || description.includes('chain') || description.includes('interlocking') || description.includes('rings')) return `${materialPrefix} Chainmail`
   if (description.includes('vest') || description.includes('garment')) return `${materialPrefix} Vest`
   if (description.includes('robe') || description.includes('vestment')) return `${materialPrefix} Robe`
   
-  if (description.includes('helmet') || description.includes('headgear')) return `${materialPrefix} Helmet`
+  if (description.includes('helmet') || description.includes('headgear') || description.includes('protective head')) return `${materialPrefix} Helmet`
   if (description.includes('hood')) return `${materialPrefix} Hood`
   if (description.includes('crown') || description.includes('regal')) return `${materialPrefix} Crown`
   
-  if (description.includes('boots') || description.includes('footwear')) return `${materialPrefix} Boots`
+  if (description.includes('boots') || description.includes('footwear') || description.includes('sturdy')) return `${materialPrefix} Boots`
   if (description.includes('greaves') || description.includes('leg protection')) return `${materialPrefix} Greaves`
   if (description.includes('sandals')) return `${materialPrefix} Sandals`
   
@@ -263,6 +263,7 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
       rarity,
       stats: {},
       value: Math.floor(50 * material.valueMultiplier),
+      icon: 'GiTreasure', // Default icon for fallback items
     }
   }
   
@@ -293,6 +294,7 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
     rarity,
     stats: modifiedStats,
     value,
+    icon: base.icon || 'GiTreasure', // Include icon from base template
   }
 }
 

@@ -5,8 +5,7 @@ import type { Item } from '@/types'
  */
 export const HELMET_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'Protective headgear',
-  type: 'helmet',
-  stats: {
+  type: 'helmet',  icon: 'GiLeatherHelm',  stats: {
     defense: 5,
     maxHp: 5,
   },

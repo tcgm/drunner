@@ -6,6 +6,7 @@ import type { Item } from '@/types'
 export const CHAINMAIL_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'Interlocking metal rings',
   type: 'armor',
+  icon: 'GiChestArmor',
   stats: {
     defense: 10,
     maxHp: 15,
