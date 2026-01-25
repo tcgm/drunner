@@ -1,5 +1,5 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, VStack, HStack, Box, Text, Button, Badge } from '@chakra-ui/react'
-import type { Item } from '@/types'
+import type { Item } from '../../types'
 
 interface ConfirmStartWithOverflowModalProps {
   isOpen: boolean
@@ -35,7 +35,7 @@ export function ConfirmStartWithOverflowModal({ isOpen, onClose, overflowInvento
                       {item.name}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
-                      ({item.type})
+                      ({item.slot})
                     </Text>
                   </HStack>
                 ))}

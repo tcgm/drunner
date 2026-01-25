@@ -1,11 +1,11 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, VStack, HStack, Box, Text, Button, SimpleGrid, Badge, Flex } from '@chakra-ui/react'
-import type { Item } from '@/types'
+import type { Item } from '../../types'
 
 interface OverflowInventoryModalProps {
   isOpen: boolean
   onClose: () => void
   overflowInventory: Item[]
-  bankInventoryCount: number
+  bankInventory: Item[]
   bankStorageSlots: number
   bankGold: number
   onExpandBank: (slots: number) => void
@@ -20,7 +20,7 @@ export function OverflowInventoryModal({
   isOpen,
   onClose,
   overflowInventory,
-  bankInventoryCount,
+  bankInventory,
   bankStorageSlots,
   bankGold,
   onExpandBank,
@@ -28,6 +28,7 @@ export function OverflowInventoryModal({
   onDiscardItem,
   onClearAll
 }: OverflowInventoryModalProps) {
+  const bankInventoryCount = bankInventory.length
   const availableSlots = bankStorageSlots - bankInventoryCount
 
   return (

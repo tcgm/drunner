@@ -1,21 +1,21 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, SimpleGrid, Box, VStack, HStack, Text, Badge } from '@chakra-ui/react'
-import type { Item, ItemSlot } from '@/types'
+import type { Item, EquipmentSlot } from '../../types'
 
 interface BankInventoryModalProps {
   isOpen: boolean
   onClose: () => void
   bankInventory: Item[]
-  selectedSlotForEquip: { heroId: string; slot: ItemSlot } | null
-  onEquipItem: (item: Item) => void
+  pendingSlot: EquipmentSlot | null
+  onEquipItem: (itemId: string) => void
 }
 
-export function BankInventoryModal({ isOpen, onClose, bankInventory, selectedSlotForEquip, onEquipItem }: BankInventoryModalProps) {
+export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot, onEquipItem }: BankInventoryModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent bg="gray.800">
         <ModalHeader color="orange.400">
-          Bank Inventory {selectedSlotForEquip && `- Select item for ${selectedSlotForEquip.slot}`}
+          Bank Inventory {pendingSlot && `- Select item for ${pendingSlot}`}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
@@ -26,8 +26,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, selectedSlo
           ) : (
             <SimpleGrid columns={2} spacing={2}>
               {bankInventory
-                .filter(item => !selectedSlotForEquip || item.type === selectedSlotForEquip.slot || 
-                  (selectedSlotForEquip.slot.startsWith('accessory') && item.type.startsWith('accessory')))
+                .filter(item => !pendingSlot || item.slot === pendingSlot)
                 .map((item) => (
                   <Box
                     key={item.id}
@@ -36,9 +35,9 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, selectedSlo
                     borderRadius="md"
                     borderWidth="2px"
                     borderColor={`${item.rarity}.500`}
-                    cursor={selectedSlotForEquip ? 'pointer' : 'default'}
-                    _hover={selectedSlotForEquip ? { bg: 'gray.600' } : {}}
-                    onClick={() => selectedSlotForEquip && onEquipItem(item)}
+                    cursor={pendingSlot ? 'pointer' : 'default'}
+                    _hover={pendingSlot ? { bg: 'gray.600' } : {}}
+                    onClick={() => pendingSlot && onEquipItem(item.id)}
                   >
                     <VStack align="start" spacing={1}>
                       <HStack justify="space-between" w="full">
@@ -46,7 +45,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, selectedSlo
                           {item.name}
                         </Text>
                         <Badge colorScheme={item.rarity} fontSize="2xs">
-                          {item.type}
+                          {item.slot}
                         </Badge>
                       </HStack>
                       <Text fontSize="2xs" color="gray.400">
