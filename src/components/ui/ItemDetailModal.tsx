@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -18,6 +19,20 @@ import type { IconType } from 'react-icons'
 import type { Item } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
+
+// Gem icons for each rarity - increasing complexity and fanciness
+const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
+  junk: GameIcons.GiStoneBlock,
+  common: GameIcons.GiGems,
+  uncommon: GameIcons.GiCutDiamond,
+  rare: GameIcons.GiDiamondTrophy,
+  epic: GameIcons.GiCrystalCluster,
+  legendary: GameIcons.GiCrystalShine,
+  mythic: GameIcons.GiBatwingEmblem,
+  artifact: GameIcons.GiCrystalEye,
+  cursed: GameIcons.GiCursedStar,
+  set: GameIcons.GiCagedBall,
+}
 
 const RARITY_COLORS = {
   junk: {
@@ -102,25 +117,20 @@ const RARITY_COLORS = {
   }
 }
 
-// Animations
+// Optimized animations - use transform and opacity only for performance
 const shimmer = keyframes`
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 `
 
 const pulse = keyframes`
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
 `
 
 const float = keyframes`
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-3px); }
-`
-
-const glow = keyframes`
-  0%, 100% { box-shadow: 0 0 20px var(--glow-color), 0 0 40px var(--glow-color); }
-  50% { box-shadow: 0 0 30px var(--glow-color), 0 0 60px var(--glow-color); }
 `
 
 interface ItemDetailModalProps {
@@ -129,9 +139,10 @@ interface ItemDetailModalProps {
   onClose: () => void
 }
 
-export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
+export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
   const rarityTheme = RARITY_COLORS[item.rarity] || RARITY_COLORS.common
   const IconComponent = item.icon || GameIcons.GiSwordman
+  const GemIcon = RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond
   
   // Split stats into left and right columns
   const stats = item.stats ? Object.entries(item.stats) : []
@@ -167,9 +178,9 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
         overflow="hidden"
         position="relative"
         maxH="90vh"
+        boxShadow={`0 0 20px ${item.isUnique ? 'rgba(255, 215, 0, 0.4)' : rarityTheme.glow}`}
         sx={{
-          '--glow-color': item.isUnique ? 'rgba(255, 215, 0, 0.4)' : rarityTheme.glow,
-          animation: `${glow} 2s ease-in-out infinite`,
+          willChange: 'opacity',
         }}
       >
         {/* Decorative corner accents */}
@@ -284,7 +295,8 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
                     h="140px"
                     borderRadius="full"
                     bg={`radial-gradient(circle, ${rarityTheme.glow} 0%, transparent 70%)`}
-                    sx={{ animation: `${pulse} 2s ease-in-out infinite` }}
+                    opacity={0.6}
+                    pointerEvents="none"
                   />
                   
                   {/* Icon frame */}
@@ -301,22 +313,25 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
                     alignItems="center"
                     justifyContent="center"
                     overflow="hidden"
+                    boxShadow={`0 0 20px ${rarityTheme.glow}`}
                     sx={{
-                      animation: `${float} 3s ease-in-out infinite`,
-                      boxShadow: `0 0 30px ${rarityTheme.glow}, inset 0 0 20px ${rarityTheme.bg}`
+                      willChange: 'transform',
                     }}
                   >
                     {/* Shimmer effect overlay */}
                     <Box
                       position="absolute"
                       top={0}
-                      left={0}
-                      right={0}
-                      bottom={0}
+                      left="-100%"
+                      w="50%"
+                      h="100%"
                       bg={`linear-gradient(90deg, transparent 0%, ${rarityTheme.glow} 50%, transparent 100%)`}
-                      backgroundSize="200% 100%"
-                      sx={{ animation: `${shimmer} 3s linear infinite` }}
-                      opacity={0.3}
+                      sx={{ 
+                        animation: `${shimmer} 4s ease-in-out infinite`,
+                        willChange: 'transform',
+                      }}
+                      opacity={0.2}
+                      pointerEvents="none"
                     />
                     
                     {/* Icon */}
@@ -324,7 +339,6 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
                       as={IconComponent} 
                       boxSize="65px" 
                       color={item.isUnique ? '#FFD700' : rarityTheme.text}
-                      filter={`drop-shadow(0 0 8px ${rarityTheme.glow})`}
                       position="relative"
                       zIndex={1}
                     />
@@ -357,11 +371,9 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
                     cursor="help"
                   >
                     <Icon 
-                      as={GameIcons.GiCutDiamond} 
+                      as={GemIcon} 
                       boxSize="32px" 
                       color={rarityTheme.gem}
-                      filter={`drop-shadow(0 0 6px ${rarityTheme.glow})`}
-                      sx={{ animation: `${pulse} 2s ease-in-out infinite` }}
                     />
                     <Box
                       position="absolute"
@@ -372,8 +384,9 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
                       h="40px"
                       borderRadius="full"
                       bg={`radial-gradient(circle, ${rarityTheme.glow} 0%, transparent 70%)`}
-                      sx={{ animation: `${pulse} 2s ease-in-out infinite` }}
+                      opacity={0.5}
                       zIndex={-1}
+                      pointerEvents="none"
                     />
                   </Box>
                 </Tooltip>
@@ -433,4 +446,4 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
       </ModalContent>
     </Modal>
   )
-}
+})
