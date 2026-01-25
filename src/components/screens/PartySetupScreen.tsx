@@ -2,7 +2,7 @@ import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../store/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
 import { useState } from 'react'
-import { EquipmentSlot, Hero } from '../../types'
+import type { ItemSlot, Hero } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
 import { PartySetupSlots } from '../party/PartySetupSlots'
@@ -20,16 +20,15 @@ interface PartySetupScreenProps {
 export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   const {
     party,
-    addHeroToParty,
-    removeHeroFromParty,
+    addHero,
+    removeHero,
     heroRoster,
-    addHeroToRoster,
+    addHeroByClass,
     bankInventory,
     bankGold,
     bankStorageSlots,
     expandBankStorage,
     equipItemFromBank,
-    unequipItem,
     overflowInventory,
     keepOverflowItem,
     discardOverflowItem,
@@ -41,7 +40,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   const [selectedHeroIndex, setSelectedHeroIndex] = useState<number | null>(null)
   const [tabIndex, setTabIndex] = useState(0)
   const [pendingSlotIndex, setPendingSlotIndex] = useState<number | null>(null)
-  const [pendingSlot, setPendingSlot] = useState<EquipmentSlot | null>(null)
+  const [pendingSlot, setPendingSlot] = useState<ItemSlot | null>(null)
 
   // Bank modal
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -77,32 +76,25 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     if (selectedHeroFromRoster !== null) {
       // Add hero from roster
       const hero = heroRoster[selectedHeroFromRoster]
-      addHeroToParty(index, hero)
+      addHero(hero)
       setSelectedHeroFromRoster(null)
     } else if (selectedClass) {
       // Create new hero from class
-      const heroName = `${selectedClass.name} ${Math.floor(Math.random() * 1000)}`
-      addHeroToRoster(selectedClass.id, heroName)
-      const newHero = useGameStore.getState().heroRoster[useGameStore.getState().heroRoster.length - 1]
-      addHeroToParty(index, newHero)
+      addHeroByClass(selectedClass)
     }
   }
 
-  const removeHero = (index: number) => {
-    removeHeroFromParty(index)
-    if (selectedHeroIndex === index) {
-      setSelectedHeroIndex(null)
-    }
-  }
-
-  const handleUnequipItem = (heroIndex: number, slot: EquipmentSlot) => {
-    const hero = party[heroIndex]
+  const handleRemoveHero = (index: number) => {
+    const hero = party[index]
     if (hero) {
-      unequipItem(hero.id, slot)
+      removeHero(hero.id)
+      if (selectedHeroIndex === index) {
+        setSelectedHeroIndex(null)
+      }
     }
   }
 
-  const handleOpenBankForSlot = (heroIndex: number, slot: EquipmentSlot) => {
+  const handleOpenBankForSlot = (heroIndex: number, slot: ItemSlot) => {
     setPendingSlotIndex(heroIndex)
     setPendingSlot(slot)
     onOpen()
@@ -111,8 +103,9 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   const handleEquipFromBank = (itemId: string) => {
     if (pendingSlotIndex !== null && pendingSlot !== null) {
       const hero = party[pendingSlotIndex]
-      if (hero) {
-        equipItemFromBank(hero.id, itemId, pendingSlot)
+      const item = bankInventory.find(i => i.id === itemId)
+      if (hero && item) {
+        equipItemFromBank(hero.id, item, pendingSlot)
       }
     }
     onClose()
@@ -173,7 +166,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
           <PartySetupSlots
             party={party}
             onAddHero={handleAddHeroClick}
-            onRemoveHero={removeHero}
+            onRemoveHero={handleRemoveHero}
             onSelectHero={setSelectedHeroIndex}
           />
           <PartySummary party={party.filter((h): h is Hero => h !== null)} />

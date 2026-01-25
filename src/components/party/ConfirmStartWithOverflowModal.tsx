@@ -35,7 +35,7 @@ export function ConfirmStartWithOverflowModal({ isOpen, onClose, overflowInvento
                       {item.name}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
-                      ({item.slot})
+                      ({item.type})
                     </Text>
                   </HStack>
                 ))}

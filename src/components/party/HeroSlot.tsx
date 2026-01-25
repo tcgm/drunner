@@ -44,7 +44,7 @@ export default function HeroSlot({
     >
       {isEmpty ? (
         <Flex h="120px" align="center" justify="center" direction="column">
-          <ChakraIcon as={GameIcons.GiPlusCircle} boxSize={12} color="gray.600" mb={2} />
+          <ChakraIcon as={GameIcons.GiCircle} boxSize={12} color="gray.600" mb={2} />
           <Text color="gray.500" fontSize="sm" fontWeight="bold" textAlign="center" px={2}>
             {selectedClass ? selectedClass.name : 'Empty Slot'}
           </Text>

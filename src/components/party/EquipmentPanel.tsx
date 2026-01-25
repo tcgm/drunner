@@ -1,9 +1,9 @@
 import { VStack, Box, Text, SimpleGrid, Badge, Tooltip, Flex, Button, Icon, HStack } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Hero, EquipmentSlot, Item } from '../../types'
+import type { Hero, ItemSlot, Item } from '../../types'
 
-const SLOT_ICONS: Record<EquipmentSlot, IconType> = {
+const SLOT_ICONS: Record<ItemSlot, IconType> = {
   weapon: GameIcons.GiSwordman,
   armor: GameIcons.GiChestArmor,
   helmet: GameIcons.GiHelmet,
@@ -12,7 +12,7 @@ const SLOT_ICONS: Record<EquipmentSlot, IconType> = {
   accessory2: GameIcons.GiGemNecklace,
 }
 
-const SLOT_NAMES: Record<EquipmentSlot, string> = {
+const SLOT_NAMES: Record<ItemSlot, string> = {
   weapon: 'Weapon',
   armor: 'Armor',
   helmet: 'Helmet',
@@ -38,7 +38,7 @@ interface EquipmentPanelProps {
   bankStorageSlots: number
   onSelectHero: (index: number) => void
   onOpenBank: () => void
-  onSlotClick: (heroIndex: number, slot: EquipmentSlot) => void
+  onSlotClick: (heroIndex: number, slot: ItemSlot) => void
 }
 
 export function EquipmentPanel({
@@ -53,7 +53,7 @@ export function EquipmentPanel({
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
   const activeParty = party.filter((h): h is Hero => h !== null)
 
-  const renderEquipmentSlot = (slot: EquipmentSlot) => {
+  const renderEquipmentSlot = (slot: ItemSlot) => {
     if (!selectedHero) return null
     
     const item = selectedHero.equipment[slot]
@@ -74,7 +74,7 @@ export function EquipmentPanel({
                 <Box pt={1}>
                   {Object.entries(item.stats).map(([stat, value]) => (
                     <Text key={stat} fontSize="xs" color="green.300">
-                      +{value} {stat.toUpperCase()}
+                      +{String(value)} {stat.toUpperCase()}
                     </Text>
                   ))}
                 </Box>

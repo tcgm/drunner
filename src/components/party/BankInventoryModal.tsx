@@ -1,11 +1,11 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, SimpleGrid, Box, VStack, HStack, Text, Badge } from '@chakra-ui/react'
-import type { Item, EquipmentSlot } from '../../types'
+import type { Item, ItemSlot } from '../../types'
 
 interface BankInventoryModalProps {
   isOpen: boolean
   onClose: () => void
   bankInventory: Item[]
-  pendingSlot: EquipmentSlot | null
+  pendingSlot: ItemSlot | null
   onEquipItem: (itemId: string) => void
 }
 
@@ -26,7 +26,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
           ) : (
             <SimpleGrid columns={2} spacing={2}>
               {bankInventory
-                .filter(item => !pendingSlot || item.slot === pendingSlot)
+                .filter(item => !pendingSlot || item.type === pendingSlot)
                 .map((item) => (
                   <Box
                     key={item.id}
@@ -45,7 +45,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                           {item.name}
                         </Text>
                         <Badge colorScheme={item.rarity} fontSize="2xs">
-                          {item.slot}
+                          {item.type}
                         </Badge>
                       </HStack>
                       <Text fontSize="2xs" color="gray.400">

@@ -58,7 +58,7 @@ export function PartySetupSlots({
               >
                 {isEmpty ? (
                   <Flex h="full" align="center" justify="center" direction="column">
-                    <Icon as={GameIcons.GiPlusCircle} boxSize={12} color="gray.600" mb={2} />
+                    <Icon as={GameIcons.GiCircle} boxSize={12} color="gray.600" mb={2} />
                     <Text color="gray.500" fontSize="sm" fontWeight="bold" textAlign="center" px={2}>
                       Empty Slot
                     </Text>
