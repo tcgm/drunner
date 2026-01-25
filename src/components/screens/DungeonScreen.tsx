@@ -57,7 +57,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     // Clear effects after animation completes
     const clearTimer = setTimeout(() => {
       setHeroEffects({})
-    }, 100) // Just enough time for PartyMemberCard to pick them up
+    }, GAME_CONFIG.floatingNumbers.duration + 100)
     
     return () => {
       clearTimeout(effectTimer)

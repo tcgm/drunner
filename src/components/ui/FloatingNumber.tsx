@@ -15,37 +15,37 @@ const TYPE_CONFIG = {
   damage: {
     color: GAME_CONFIG.colors.damage.hex,
     prefix: '-',
-    fontSize: 'xl',
+    fontSize: GAME_CONFIG.floatingNumbers.fontSizes.damage,
     glow: `0 0 8px ${GAME_CONFIG.colors.damage.glow}, 0 0 16px ${GAME_CONFIG.colors.damage.glow.replace('0.8', '0.4')}`
   },
   heal: {
     color: GAME_CONFIG.colors.heal.hex,
     prefix: '+',
-    fontSize: 'lg',
+    fontSize: GAME_CONFIG.floatingNumbers.fontSizes.heal,
     glow: `0 0 8px ${GAME_CONFIG.colors.heal.glow}, 0 0 16px ${GAME_CONFIG.colors.heal.glow.replace('0.8', '0.4')}`
   },
   xp: {
     color: GAME_CONFIG.colors.xp.hex,
     prefix: '+',
-    fontSize: 'md',
+    fontSize: GAME_CONFIG.floatingNumbers.fontSizes.xp,
     glow: `0 0 6px ${GAME_CONFIG.colors.xp.glow}`
   },
   gold: {
     color: GAME_CONFIG.colors.gold.hex,
     prefix: '+',
-    fontSize: 'md',
+    fontSize: GAME_CONFIG.floatingNumbers.fontSizes.gold,
     glow: `0 0 6px ${GAME_CONFIG.colors.gold.glow}`
   }
 }
 
 export function FloatingNumber({ value, type, onComplete }: FloatingNumberProps) {
   const config = TYPE_CONFIG[type]
-  const [randomX] = useState(() => (Math.random() - 0.5) * 30) // Random horizontal drift
+  const [randomX] = useState(() => (Math.random() - 0.5) * GAME_CONFIG.floatingNumbers.horizontalDrift)
   
   useEffect(() => {
     const timer = setTimeout(() => {
       onComplete?.()
-    }, 1500)
+    }, GAME_CONFIG.floatingNumbers.duration)
     return () => clearTimeout(timer)
   }, [onComplete])
   
@@ -61,29 +61,21 @@ export function FloatingNumber({ value, type, onComplete }: FloatingNumberProps)
         opacity: 0, 
         y: 0,
         x: '-50%',
-        scale: 0.3
+        scale: 1
       }}
       animate={{ 
-        opacity: [0, 1, 1, 0.8, 0],
-        y: -80,
+        opacity: 1,
+        y: -GAME_CONFIG.floatingNumbers.travelDistance,
         x: `calc(-50% + ${randomX}px)`,
-        scale: [0.3, 1.3, 1, 0.95, 0.8]
+        scale: 1
       }}
       exit={{ 
         opacity: 0,
-        scale: 0.5
+        scale: 1
       }}
       transition={{
-        duration: 1.5,
-        ease: [0.34, 1.56, 0.64, 1], // Custom easing curve for bounce
-        opacity: {
-          times: [0, 0.1, 0.5, 0.8, 1],
-          ease: "easeOut"
-        },
-        scale: {
-          times: [0, 0.15, 0.3, 0.6, 1],
-          ease: "easeOut"
-        }
+        duration: GAME_CONFIG.floatingNumbers.duration / 1000,
+        ease: "easeOut"
       }}
     >
       <Text
