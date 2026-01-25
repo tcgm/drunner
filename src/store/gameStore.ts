@@ -7,6 +7,7 @@ import { resolveEventOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/game'
 import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
+import { repairItemNames } from '@/systems/loot/lootGenerator'
 
 /**
  * Sanitize hero stats to fix any NaN values - mutates the hero in place
@@ -589,6 +590,16 @@ export const useGameStore = create<GameStore>()(
             if (needsRepair) {
               state.heroRoster = state.heroRoster.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
             }
+          }
+          // Repair item names if they have generic names
+          if (state.bankInventory?.length > 0) {
+            state.bankInventory = repairItemNames(state.bankInventory)
+          }
+          if (state.dungeon?.inventory?.length > 0) {
+            state.dungeon.inventory = repairItemNames(state.dungeon.inventory)
+          }
+          if (state.overflowInventory?.length > 0) {
+            state.overflowInventory = repairItemNames(state.overflowInventory)
           }
           return state
         },

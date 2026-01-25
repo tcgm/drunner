@@ -88,6 +88,10 @@ export interface Item {
   value: number
   icon: IconType // react-icons icon component
   setId?: string // For set items (stretch)
+  // Item generation metadata - for regenerating names if needed
+  materialId?: string // Material used to craft this item
+  baseTemplateId?: string // Base template used for this item
+  isUnique?: boolean // True if this is a unique/set item (not crafted)
 }
 
 export type EventType = 

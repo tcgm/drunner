@@ -1,7 +1,7 @@
 import type { Item, ItemSlot, ItemRarity } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase } from '@data/items/bases'
-import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity } from '@data/items/materials'
+import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById } from '@data/items/materials'
 import { getRandomUnique } from '@data/items/uniques'
 import { getRandomSetItem } from '@data/items/sets'
 import { GiCrystalShine } from 'react-icons/gi'
@@ -163,9 +163,10 @@ function applyMaterialToStats(
  */
 function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): string {
   // Extract base name from description or use type mapping
-  const description = baseTemplate.description.toLowerCase()
+  const description = (baseTemplate.description || '').toLowerCase()
   
-  // Map keywords to base names
+  // Map keywords to base names - check more specific terms first
+  // Weapons
   if (description.includes('sword') || description.includes('blade')) return `${materialPrefix} Sword`
   if (description.includes('axe') || description.includes('chopping')) return `${materialPrefix} Axe`
   if (description.includes('dagger') || description.includes('stabbing') || description.includes('quick')) return `${materialPrefix} Dagger`
@@ -173,21 +174,25 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
   if (description.includes('bow') || description.includes('ranged') || description.includes('distance')) return `${materialPrefix} Bow`
   if (description.includes('mace') || description.includes('bludgeon') || description.includes('crushing')) return `${materialPrefix} Mace`
   
+  // Armor
   if (description.includes('plate') || description.includes('plating')) return `${materialPrefix} Plate Armor`
-  if (description.includes('chainmail') || description.includes('chain') || description.includes('interlocking') || description.includes('rings')) return `${materialPrefix} Chainmail`
+  if (description.includes('chainmail') || description.includes('chain mail') || description.includes('interlocking') || description.includes('metal rings')) return `${materialPrefix} Chainmail`
   if (description.includes('vest') || description.includes('garment')) return `${materialPrefix} Vest`
   if (description.includes('robe') || description.includes('vestment')) return `${materialPrefix} Robe`
   
-  if (description.includes('helmet') || description.includes('headgear') || description.includes('protective head')) return `${materialPrefix} Helmet`
-  if (description.includes('hood')) return `${materialPrefix} Hood`
+  // Helmets
   if (description.includes('crown') || description.includes('regal')) return `${materialPrefix} Crown`
+  if (description.includes('hood') && !description.includes('helmet')) return `${materialPrefix} Hood`
+  if (description.includes('helmet') || description.includes('headgear') || description.includes('head')) return `${materialPrefix} Helmet`
   
-  if (description.includes('boots') || description.includes('footwear') || description.includes('sturdy')) return `${materialPrefix} Boots`
-  if (description.includes('greaves') || description.includes('leg protection')) return `${materialPrefix} Greaves`
-  if (description.includes('sandals')) return `${materialPrefix} Sandals`
+  // Boots
+  if (description.includes('greaves') || description.includes('leg protection') || description.includes('leg armor')) return `${materialPrefix} Greaves`
+  if (description.includes('sandals') || description.includes('open footwear')) return `${materialPrefix} Sandals`
+  if (description.includes('boots') || description.includes('footwear')) return `${materialPrefix} Boots`
   
+  // Accessories
   if (description.includes('ring')) return `${materialPrefix} Ring`
-  if (description.includes('amulet')) return `${materialPrefix} Amulet`
+  if (description.includes('amulet') || description.includes('necklace')) return `${materialPrefix} Amulet`
   if (description.includes('charm')) return `${materialPrefix} Charm`
   if (description.includes('talisman')) return `${materialPrefix} Talisman`
   
@@ -224,6 +229,7 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
           ...setTemplate,
           id: uuidv4(),
           type: forceType || setTemplate.type, // Use forced type for specific accessory slots
+          isUnique: true, // Mark as unique/set item
         }
       }
     }
@@ -243,6 +249,7 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
           ...uniqueTemplate,
           id: uuidv4(),
           type: forceType || uniqueTemplate.type, // Use forced type for specific accessory slots
+          isUnique: true, // Mark as unique item
         }
       }
       // If forced type doesn't match unique, generate procedural item instead
@@ -299,7 +306,7 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
   // Generate item name
   const name = generateItemName(material.prefix, base)
   
-  // Create final item
+  // Create final item with metadata for repair
   return {
     id: uuidv4(),
     name,
@@ -309,6 +316,9 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
     stats: modifiedStats,
     value,
     icon: base.icon,
+    materialId: material.id,
+    baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
+    isUnique: false, // Procedurally generated item
   }
 }
 
@@ -317,4 +327,54 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
  */
 export function generateItems(count: number, depth: number): Item[] {
   return Array.from({ length: count }, () => generateItem(depth))
+}
+
+/**
+ * Repair an item's name if it has a generic name and metadata available
+ * This is used to fix items loaded from old saves that may have incorrect names
+ */
+export function repairItemName(item: Item): Item {
+  // Skip if item is unique/set or already has a proper name
+  if (item.isUnique || !item.materialId) {
+    return item
+  }
+  
+  // Check if the name is generic (contains just the type name)
+  const genericTypeNames = ['Weapon', 'Armor', 'Helmet', 'Boots', 'Ring', 'Amulet']
+  const hasGenericName = genericTypeNames.some(typeName => 
+    item.name.includes(typeName) && item.name.split(' ').length === 2
+  )
+  
+  if (!hasGenericName) {
+    return item // Name seems fine
+  }
+  
+  // Try to regenerate the name using stored metadata
+  const material = getMaterialById(item.materialId)
+  if (!material) {
+    return item // Can't repair without material info
+  }
+  
+  // Create a minimal base template from the item data
+  const baseTemplate = {
+    description: item.description.split(' - ')[0] || item.description, // Get original base description
+    type: item.type,
+    stats: item.stats,
+    icon: item.icon,
+  }
+  
+  // Generate proper name
+  const newName = generateItemName(material.prefix, baseTemplate)
+  
+  return {
+    ...item,
+    name: newName,
+  }
+}
+
+/**
+ * Repair multiple items at once
+ */
+export function repairItemNames(items: Item[]): Item[] {
+  return items.map(repairItemName)
 }
