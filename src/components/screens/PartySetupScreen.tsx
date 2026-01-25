@@ -102,6 +102,12 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     onOpen()
   }
 
+  const handleOpenBank = () => {
+    setPendingSlotIndex(null)
+    setPendingSlot(null)
+    onOpen()
+  }
+
   const handleEquipFromBank = (itemId: string) => {
     if (pendingSlotIndex !== null && pendingSlot !== null) {
       const hero = party[pendingSlotIndex]
@@ -191,7 +197,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
           bankInventory={bankInventory}
           bankStorageSlots={bankStorageSlots}
           onSelectHero={setSelectedHeroIndex}
-          onOpenBank={onOpen}
+          onOpenBank={handleOpenBank}
           onSlotClick={handleOpenBankForSlot}
           onUnequipItem={handleUnequipItem}
         />
