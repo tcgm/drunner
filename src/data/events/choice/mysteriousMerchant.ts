@@ -20,6 +20,9 @@ export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
     },
     {
       text: 'Haggle for a better price',
+      requirements: {
+        gold: 100,
+      },
       outcome: {
         text: 'He laughs and lowers the price slightly.',
         effects: [

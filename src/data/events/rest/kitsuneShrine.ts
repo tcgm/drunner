@@ -64,6 +64,9 @@ export const KITSUNE_SHRINE: DungeonEvent = {
     },
     {
       text: 'Try to trick the trickster',
+      requirements: {
+        gold: 50,
+      },
       outcome: {
         text: 'You attempt to outwit the fox spirit, but she sees through your ruse immediately! She laughs and plays a trick on you instead!',
         effects: [

@@ -1,6 +1,7 @@
 import { VStack, Heading, Button, Text, Flex, Box, SimpleGrid, Badge } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiDeathSkull } from 'react-icons/gi'
+import { useEffect } from 'react'
 import { useGameStore } from '@store/gameStore'
 import { GAME_CONFIG } from '@/config/game'
 
@@ -10,8 +11,13 @@ interface GameOverScreenProps {
 }
 
 export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
-  const { party } = useGameStore()
+  const { party, endGame } = useGameStore()
   const penaltyType = GAME_CONFIG.deathPenalty.type
+  
+  // End the run when the game over screen is shown
+  useEffect(() => {
+    endGame()
+  }, [])
 
   const getPenaltyDescription = () => {
     switch (penaltyType) {

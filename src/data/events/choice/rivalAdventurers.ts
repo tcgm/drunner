@@ -19,6 +19,9 @@ export const RIVAL_ADVENTURERS: DungeonEvent = {
     },
     {
       text: 'Negotiate passage',
+      requirements: {
+        gold: 50,
+      },
       outcome: {
         text: 'You agree to split any treasure found on this floor.',
         effects: [

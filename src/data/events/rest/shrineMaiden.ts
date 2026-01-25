@@ -20,7 +20,7 @@ export const SHRINE_MAIDEN: DungeonEvent = {
       },
     },
     {
-      text: 'Offer gold for resurrection (costs 200 gold)',
+      text: 'Offer gold for resurrection',
       requirements: {
         gold: 200,
       },

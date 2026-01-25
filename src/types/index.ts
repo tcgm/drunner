@@ -135,6 +135,19 @@ export interface Dungeon {
   gold: number
 }
 
+export interface Run {
+  id: string
+  startDate: number // timestamp
+  endDate?: number // timestamp when run ended
+  startDepth: number
+  finalDepth: number
+  result: 'active' | 'victory' | 'defeat' | 'retreat'
+  goldEarned: number
+  goldSpent: number
+  eventsCompleted: number
+  heroesUsed: { name: string; class: string; level: number }[]
+}
+
 export interface GameState {
   party: Hero[]
   heroRoster: Hero[] // All heroes ever created, organized by class
@@ -142,6 +155,8 @@ export interface GameState {
   isGameOver: boolean
   isPaused: boolean
   hasPendingPenalty: boolean
+  activeRun: Run | null
+  runHistory: Run[]
   lastOutcome: {
     text: string
     effects: {

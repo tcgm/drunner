@@ -33,6 +33,9 @@ export const DRAGON_WYRMLING: DungeonEvent = {
     },
     {
       text: 'Attempt to negotiate',
+      requirements: {
+        gold: 200,
+      },
       outcome: {
         text: 'The dragon is amused but demands tribute.',
         effects: [

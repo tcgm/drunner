@@ -21,6 +21,9 @@ export const FORTUNE_TELLER: DungeonEvent = {
     },
     {
       text: 'Bargain for discount',
+      requirements: {
+        gold: 40,
+      },
       outcome: {
         text: 'She agrees to a reduced price for her services.',
         effects: [
@@ -31,6 +34,9 @@ export const FORTUNE_TELLER: DungeonEvent = {
     },
     {
       text: 'Ask for blessing instead',
+      requirements: {
+        gold: 30,
+      },
       outcome: {
         text: 'She blesses your journey and heals you.',
         effects: [

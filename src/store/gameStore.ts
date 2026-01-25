@@ -142,6 +142,7 @@ interface GameStore extends GameState {
   advanceDungeon: () => void
   selectChoice: (choice: EventChoice) => void
   endGame: () => void
+  retreatFromDungeon: () => void
   resetGame: () => void
   applyPenalty: () => void
   repairParty: () => void
@@ -164,6 +165,8 @@ const initialState: GameState = {
   isGameOver: false,
   isPaused: false,
   hasPendingPenalty: false,
+  activeRun: null,
+  runHistory: [],
   lastOutcome: null,
 }
 
@@ -227,7 +230,23 @@ export const useGameStore = create<GameStore>()(
   startDungeon: () => 
     set((state) => {
       // Penalty should already be applied by PartySetupScreen
-      // Just start the dungeon
+      // Create a new run
+      const newRun: import('@/types').Run = {
+        id: `run-${Date.now()}`,
+        startDate: Date.now(),
+        startDepth: 1,
+        finalDepth: 1,
+        result: 'active',
+        goldEarned: 0,
+        goldSpent: 0,
+        eventsCompleted: 0,
+        heroesUsed: state.party.map(h => ({
+          name: h.name,
+          class: h.class.name,
+          level: h.level
+        }))
+      }
+      
       const event = getNextEvent(1, [])
       return {
         dungeon: { 
@@ -239,6 +258,7 @@ export const useGameStore = create<GameStore>()(
         },
         isGameOver: false,
         hasPendingPenalty: false,
+        activeRun: newRun,
         lastOutcome: null,
       }
     }),
@@ -247,6 +267,14 @@ export const useGameStore = create<GameStore>()(
     set((state) => {
       const newDepth = state.dungeon.depth + 1
       const event = getNextEvent(newDepth, state.dungeon.eventHistory)
+      
+      // Update active run
+      const updatedRun = state.activeRun ? {
+        ...state.activeRun,
+        finalDepth: newDepth,
+        eventsCompleted: state.activeRun.eventsCompleted + 1
+      } : null
+      
       return {
         dungeon: { 
           ...state.dungeon, 
@@ -254,6 +282,7 @@ export const useGameStore = create<GameStore>()(
           currentEvent: event,
           eventHistory: event ? [...state.dungeon.eventHistory, event.id] : state.dungeon.eventHistory
         },
+        activeRun: updatedRun,
         lastOutcome: null
       }
     }),
@@ -269,6 +298,14 @@ export const useGameStore = create<GameStore>()(
       // Check if wiped
       const isWiped = updatedParty.every(h => !h.isAlive)
       
+      // Track gold changes in active run
+      const goldDiff = updatedGold - state.dungeon.gold
+      const updatedRun = state.activeRun ? {
+        ...state.activeRun,
+        goldEarned: state.activeRun.goldEarned + (goldDiff > 0 ? goldDiff : 0),
+        goldSpent: state.activeRun.goldSpent + (goldDiff < 0 ? -goldDiff : 0)
+      } : null
+      
       return {
         party: updatedParty,
         dungeon: {
@@ -277,12 +314,75 @@ export const useGameStore = create<GameStore>()(
           currentEvent: null // Clear current event after resolution
         },
         isGameOver: isWiped,
-        lastOutcome: resolvedOutcome
+        lastOutcome: resolvedOutcome,
+        activeRun: updatedRun
       }
     }),
   
   endGame: () => 
-    set({ isGameOver: true, hasPendingPenalty: true }),
+    set((state) => {
+      // Complete the active run
+      if (state.activeRun) {
+        const completedRun: import('@/types').Run = {
+          ...state.activeRun,
+          endDate: Date.now(),
+          result: 'defeat',
+          finalDepth: state.dungeon.depth,
+          heroesUsed: state.party.map(h => ({
+            name: h.name,
+            class: h.class.name,
+            level: h.level
+          }))
+        }
+        
+        // Lose all gold on defeat if penalty is enabled
+        const loseGold = import('@/config/game').GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
+        
+        return {
+          isGameOver: true,
+          hasPendingPenalty: true,
+          activeRun: null,
+          runHistory: [completedRun, ...state.runHistory],
+          dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
+        }
+      }
+      
+      return { isGameOver: true, hasPendingPenalty: true }
+    }),
+  
+  retreatFromDungeon: () =>
+    set((state) => {
+      // Complete the active run as retreat (no death penalty)
+      if (state.activeRun) {
+        const completedRun: import('@/types').Run = {
+          ...state.activeRun,
+          endDate: Date.now(),
+          result: 'retreat',
+          finalDepth: state.dungeon.depth,
+          heroesUsed: state.party.map(h => ({
+            name: h.name,
+            class: h.class.name,
+            level: h.level
+          }))
+        }
+        
+        return {
+          dungeon: {
+            depth: 0,
+            maxDepth: 100,
+            currentEvent: null,
+            eventHistory: [],
+            gold: state.dungeon.gold,
+          },
+          isGameOver: false,
+          hasPendingPenalty: false,
+          activeRun: null,
+          runHistory: [completedRun, ...state.runHistory]
+        }
+      }
+      
+      return {}
+    }),
   
   applyPenalty: () =>
     set((state) => {
@@ -352,7 +452,7 @@ export const useGameStore = create<GameStore>()(
       name: 'dungeon-runner-storage',
       storage: {
         getItem: (name) => {
-          const str = sessionStorage.getItem(name)
+          const str = localStorage.getItem(name)
           if (!str) return null
           const state = JSON.parse(str) as GameState
           // Repair any NaN values when loading from storage
@@ -376,9 +476,9 @@ export const useGameStore = create<GameStore>()(
           return state
         },
         setItem: (name, value) => {
-          sessionStorage.setItem(name, JSON.stringify(value))
+          localStorage.setItem(name, JSON.stringify(value))
         },
-        removeItem: (name) => sessionStorage.removeItem(name),
+        removeItem: (name) => localStorage.removeItem(name),
       },
     }
   )

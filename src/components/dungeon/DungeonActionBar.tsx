@@ -1,14 +1,15 @@
 import { Button, Box, HStack, Spacer } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
-import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor } from 'react-icons/gi'
+import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor, GiReturnArrow } from 'react-icons/gi'
 
 interface DungeonActionBarProps {
   showContinue: boolean
   onContinue: () => void
+  onRetreat: () => void
   onExit: () => void
 }
 
-export default function DungeonActionBar({ showContinue, onContinue, onExit }: DungeonActionBarProps) {
+export default function DungeonActionBar({ showContinue, onContinue, onRetreat, onExit }: DungeonActionBarProps) {
   return (
     <Box bg="gray.800" borderRadius="lg" p={4}>
       <HStack spacing={4}>
@@ -42,12 +43,22 @@ export default function DungeonActionBar({ showContinue, onContinue, onExit }: D
         <Spacer />
         
         <Button 
-          colorScheme="red" 
+          colorScheme="yellow" 
+          variant="outline"
+          leftIcon={<Icon as={GiReturnArrow} />}
+          onClick={onRetreat}
+        >
+          Retreat
+        </Button>
+        
+        <Button 
+          colorScheme="gray" 
           variant="ghost"
           onClick={onExit}
           leftIcon={<Icon as={GiExitDoor} />}
+          size="sm"
         >
-          Exit Dungeon
+          Exit to Menu
         </Button>
       </HStack>
     </Box>

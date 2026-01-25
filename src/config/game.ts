@@ -45,5 +45,6 @@ export const GAME_CONFIG = {
     // 'halve-levels': Heroes lose half their levels (rounded down, min 1)
     // 'reset-levels': Heroes reset to level 1
     // 'lose-equipment': Heroes keep levels but lose all equipment
+    loseAllGoldOnDefeat: true, // Whether defeated heroes lose all gold
   },
 } as const

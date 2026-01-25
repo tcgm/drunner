@@ -7,7 +7,7 @@ export const BLACK_MARKET: DungeonEvent = {
   description: 'A shady figure offers powerful items at steep prices. Some look... cursed.',
   choices: [
     {
-      text: 'Buy cursed weapon',
+      text: 'Buy cursed item',
       requirements: {
         gold: 200,
       },

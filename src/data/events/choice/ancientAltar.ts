@@ -7,9 +7,9 @@ export const ANCIENT_ALTAR: DungeonEvent = {
   description: 'An altar dedicated to a forgotten god. It demands an offering.',
   choices: [
     {
-      text: 'Offer gold (costs 100 gold)',
+      text: 'Offer gold',
       requirements: {
-        item: 'gold',
+        gold: 100,
       },
       outcome: {
         text: 'The altar glows and blesses your party!',
