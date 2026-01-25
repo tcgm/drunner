@@ -545,42 +545,43 @@ export const useGameStore = create<GameStore>()(
   
   endGame: () => 
     set((state) => {
-      // Complete the active run
-      if (state.activeRun) {
-        const completedRun: import('@/types').Run = {
-          ...state.activeRun,
-          endDate: Date.now(),
-          result: 'defeat',
-          finalDepth: state.dungeon.depth,
-          heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
-            name: h.name,
-            class: h.class.name,
-            level: h.level // Store level BEFORE penalty
-          }))
-        }
-        
-        // Lose all gold on defeat if penalty is enabled
-        const loseGold = GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
-        
-        // Apply death penalty immediately
-        const penalizedParty = applyPenaltyToParty(state.party)
-        const updatedRoster = state.heroRoster.map(rosterHero => {
-          const penalizedVersion = penalizedParty.find(h => h?.id === rosterHero.id)
-          return penalizedVersion || rosterHero
-        })
-        
-        return {
-          party: penalizedParty,
-          heroRoster: updatedRoster,
-          isGameOver: true,
-          hasPendingPenalty: false,
-          activeRun: completedRun, // Keep the run active to show pre-penalty levels
-          runHistory: [completedRun, ...state.runHistory],
-          dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
-        }
+      // Prevent applying penalty multiple times
+      if (!state.activeRun || state.activeRun.result !== 'active') {
+        return state
       }
       
-      return { isGameOver: true, hasPendingPenalty: false }
+      // Complete the active run
+      const completedRun: import('@/types').Run = {
+        ...state.activeRun,
+        endDate: Date.now(),
+        result: 'defeat',
+        finalDepth: state.dungeon.depth,
+        heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
+          name: h.name,
+          class: h.class.name,
+          level: h.level // Store level BEFORE penalty
+        }))
+      }
+      
+      // Lose all gold on defeat if penalty is enabled
+      const loseGold = GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
+      
+      // Apply death penalty immediately
+      const penalizedParty = applyPenaltyToParty(state.party)
+      const updatedRoster = state.heroRoster.map(rosterHero => {
+        const penalizedVersion = penalizedParty.find(h => h?.id === rosterHero.id)
+        return penalizedVersion || rosterHero
+      })
+      
+      return {
+        party: penalizedParty,
+        heroRoster: updatedRoster,
+        isGameOver: true,
+        hasPendingPenalty: false,
+        activeRun: completedRun, // Keep the run active to show pre-penalty levels
+        runHistory: [completedRun, ...state.runHistory],
+        dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
+      }
     }),
   
   victoryGame: () => 

@@ -21,7 +21,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
   // End the run when the game over screen is shown
   useEffect(() => {
     endGame()
-  }, [])
+  }, [endGame])
 
   const getPenaltyDescription = () => {
     switch (penaltyType) {
@@ -57,12 +57,13 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
   }
 
   return (
-    <Flex className="game-over-screen" h="100vh" align="center" justify="center" p={4}>
+    <Flex className="game-over-screen" h="100vh" align="center" justify="center" p={2} overflowY="auto">
       <MotionVStack 
         className="game-over-screen-content"
-        spacing={4} 
-        maxW="700px" 
+        spacing={2} 
+        maxW="600px" 
         w="full"
+        py={4}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{
@@ -89,7 +90,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
             }
           }}
         >
-          <Icon as={GiDeathSkull} boxSize={20} color="red.400" />
+          <Icon as={GiDeathSkull} boxSize={12} color="red.400" />
         </motion.div>
         
         <motion.div
@@ -97,7 +98,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Heading size="xl" color="red.400">
+          <Heading size="lg" color="red.400">
             Party Defeated
           </Heading>
         </motion.div>
@@ -107,7 +108,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <Text fontSize="lg" color="gray.400">
+          <Text fontSize="md" color="gray.400">
             Your party has fallen on Floor {depth}
           </Text>
         </motion.div>
@@ -116,7 +117,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
         {activeRun && (
           <MotionBox
             bg="rgba(0,0,0,0.3)"
-            p={4}
+            p={3}
             borderRadius="md"
             border="1px solid"
             borderColor="gray.700"
@@ -125,12 +126,12 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <VStack spacing={3} align="stretch">
-              <Text color="gray.300" fontSize="sm" fontWeight="semibold" textAlign="center">
+            <VStack spacing={2} align="stretch">
+              <Text color="gray.300" fontSize="xs" fontWeight="semibold" textAlign="center">
                 Run Statistics
               </Text>
               
-              <SimpleGrid columns={3} spacing={3}>
+              <SimpleGrid columns={3} spacing={2}>
                 <Box textAlign="center">
                   <Icon as={GiTwoCoins} boxSize={5} color="yellow.400" mb={1} />
                   <Text color="gray.400" fontSize="xs">Gold Earned</Text>
@@ -182,7 +183,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
         {activeRun?.deathDetails && (
           <MotionBox
             bg="rgba(139, 0, 0, 0.2)"
-            p={4}
+            p={3}
             borderRadius="md"
             border="2px solid"
             borderColor="red.600"
@@ -191,19 +192,19 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <VStack spacing={3} align="stretch">
+            <VStack spacing={2} align="stretch">
               <HStack justify="center" spacing={2}>
-                <Icon as={GiDeathSkull} boxSize={5} color="red.400" />
-                <Text color="red.300" fontSize="md" fontWeight="bold">
+                <Icon as={GiDeathSkull} boxSize={4} color="red.400" />
+                <Text color="red.300" fontSize="sm" fontWeight="bold">
                   Killing Blow
                 </Text>
               </HStack>
               
-              <Box textAlign="center" mb={2}>
-                <Badge colorScheme="red" fontSize="sm" px={3} py={1}>
+              <Box textAlign="center" mb={1}>
+                <Badge colorScheme="red" fontSize="xs" px={2} py={0.5}>
                   {activeRun.deathDetails.eventType.toUpperCase()}
                 </Badge>
-                <Text color="red.200" fontSize="lg" fontWeight="semibold" mt={1}>
+                <Text color="red.200" fontSize="md" fontWeight="semibold" mt={0.5}>
                   {activeRun.deathDetails.eventTitle}
                 </Text>
               </Box>
@@ -211,10 +212,10 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
               {activeRun.deathDetails.heroDamage.length > 0 && (
                 <>
                   <Divider borderColor="red.800" />
-                  <Text color="red.300" fontSize="xs" fontWeight="semibold" textAlign="center">
+                  <Text color="red.300" fontSize="2xs" fontWeight="semibold" textAlign="center">
                     Damage Dealt to Heroes
                   </Text>
-                  <SimpleGrid columns={2} spacing={2}>
+                  <SimpleGrid columns={2} spacing={1.5}>
                     {activeRun.deathDetails.heroDamage.map((damage, idx) => (
                       <motion.div
                         key={idx}
@@ -224,18 +225,18 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
                       >
                         <Box
                           bg="rgba(0,0,0,0.3)"
-                          p={2}
+                          p={1.5}
                           borderRadius="md"
                           border="1px solid"
                           borderColor="red.900"
                         >
                           <HStack justify="space-between">
-                            <Text color="gray.300" fontSize="sm">
+                            <Text color="gray.300" fontSize="xs">
                               {damage.heroName}
                             </Text>
-                            <HStack spacing={1}>
-                              <Icon as={GiSwordWound} boxSize={4} color="red.400" />
-                              <Text color="red.400" fontSize="sm" fontWeight="bold">
+                            <HStack spacing={0.5}>
+                              <Icon as={GiSwordWound} boxSize={3} color="red.400" />
+                              <Text color="red.400" fontSize="xs" fontWeight="bold">
                                 {damage.damageReceived}
                               </Text>
                             </HStack>
@@ -255,26 +256,26 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           borderWidth="2px"
           borderColor="red.500"
           borderRadius="lg"
-          p={3}
+          p={2.5}
           w="full"
-          maxH="40vh"
+          maxH="200px"
           overflowY="auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <VStack spacing={2} align="start">
-            <Heading size="sm" color="red.300">Death Penalty: {penaltyType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</Heading>
-            <Text fontSize="sm" color="red.200">
+          <VStack spacing={1.5} align="start">
+            <Heading size="xs" color="red.300">Death Penalty: {penaltyType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</Heading>
+            <Text fontSize="xs" color="red.200">
               {getPenaltyDescription()}
             </Text>
 
             {party.length > 0 && activeRun && (
-              <Box w="full" pt={2}>
-                <Text fontSize="xs" color="red.300" mb={1.5} fontWeight="bold">
+              <Box w="full" pt={1.5}>
+                <Text fontSize="2xs" color="red.300" mb={1} fontWeight="bold">
                   Penalties Applied:
                 </Text>
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} w="full">
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={1.5} w="full">
                   {party.map((hero, index) => {
                     const originalHero = activeRun.heroesUsed.find(h => h.name === hero.name)
                     const originalLevel = originalHero?.level || hero.level
@@ -288,15 +289,15 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
                         <Box
                           bg="red.950"
                           borderRadius="md"
-                          p={2}
+                          p={1.5}
                           borderWidth="1px"
                           borderColor="red.700"
                         >
                           <Flex justify="space-between" align="center">
-                            <Text fontSize="sm" color="orange.200" fontWeight="bold">
+                            <Text fontSize="xs" color="orange.200" fontWeight="bold">
                               {hero.name}
                             </Text>
-                            <Badge colorScheme="red" fontSize="xs">
+                            <Badge colorScheme="red" fontSize="2xs">
                               {calculatePenalty(hero, originalLevel)}
                             </Badge>
                           </Flex>
@@ -315,7 +316,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
         >
-          <Button size="lg" colorScheme="orange" onClick={onExit} mt={2}>
+          <Button size="md" colorScheme="orange" onClick={onExit} mt={1}>
             Return to Main Menu
           </Button>
         </motion.div>
