@@ -94,9 +94,9 @@ export function meetsRequirements(
   }
 
   // Check stat requirement
-  if (req.stat && req.value) {
+  if (req.stat && req.minValue) {
     const statValue = stats[req.stat] || 0
-    if (statValue < req.value) {
+    if (statValue < req.minValue) {
       return false
     }
   }

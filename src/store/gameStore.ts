@@ -1,5 +1,7 @@
 import { create } from 'zustand'
-import type { GameState, Hero } from '@/types'
+import type { GameState, Hero, EventChoice } from '@/types'
+import { getNextEvent } from '@systems/events/eventSelector'
+import { resolveEventOutcome } from '@systems/events/eventResolver'
 
 interface GameStore extends GameState {
   // Actions
@@ -8,6 +10,7 @@ interface GameStore extends GameState {
   updateHero: (heroId: string, updates: Partial<Hero>) => void
   startDungeon: () => void
   advanceDungeon: () => void
+  selectChoice: (choice: EventChoice) => void
   endGame: () => void
   resetGame: () => void
 }
@@ -46,14 +49,52 @@ export const useGameStore = create<GameStore>((set) => ({
     })),
   
   startDungeon: () => 
-    set((state) => ({
-      dungeon: { ...state.dungeon, depth: 1 }
-    })),
+    set((state) => {
+      const event = getNextEvent(1, [])
+      return {
+        dungeon: { 
+          ...state.dungeon, 
+          depth: 1,
+          currentEvent: event
+        }
+      }
+    }),
   
   advanceDungeon: () => 
-    set((state) => ({
-      dungeon: { ...state.dungeon, depth: state.dungeon.depth + 1 }
-    })),
+    set((state) => {
+      const newDepth = state.dungeon.depth + 1
+      const event = getNextEvent(newDepth, state.dungeon.eventHistory)
+      return {
+        dungeon: { 
+          ...state.dungeon, 
+          depth: newDepth,
+          currentEvent: event,
+          eventHistory: event ? [...state.dungeon.eventHistory, event.id] : state.dungeon.eventHistory
+        }
+      }
+    }),
+  
+  selectChoice: (choice) =>
+    set((state) => {
+      const { updatedParty, updatedGold } = resolveEventOutcome(
+        choice.outcome,
+        state.party,
+        state.dungeon
+      )
+      
+      // Check if party is wiped
+      const isWiped = updatedParty.every(h => !h.isAlive)
+      
+      return {
+        party: updatedParty,
+        dungeon: {
+          ...state.dungeon,
+          gold: updatedGold,
+          currentEvent: null // Clear current event after resolution
+        },
+        isGameOver: isWiped
+      }
+    }),
   
   endGame: () => 
     set({ isGameOver: true }),
