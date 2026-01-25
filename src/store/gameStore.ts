@@ -97,10 +97,10 @@ const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): State
       const state = get() as GameState
       if (state.party?.length > 0) {
         const needsSanitization = state.party.some(hero => 
-          isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
+          hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp))
         )
         if (needsSanitization) {
-          set({ party: state.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } })) } as Partial<T>)
+          set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats } }) : null) } as Partial<T>)
         }
       }
     })
@@ -111,10 +111,10 @@ const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): State
         const state = get() as GameState
         if (state.party?.length > 0) {
           const needsSanitization = state.party.some(hero => 
-            isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
+            hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp))
           )
           if (needsSanitization) {
-            set({ party: state.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } })) } as Partial<T>)
+            set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats } }) : null) } as Partial<T>)
           }
         }
       },
@@ -126,8 +126,10 @@ const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): State
 /**
  * Apply death penalty to a party of heroes
  */
-function applyPenaltyToParty(party: Hero[]): Hero[] {
+function applyPenaltyToParty(party: (Hero | null)[]): (Hero | null)[] {
   return party.map(hero => {
+    if (!hero) return null
+    
     const newHero = { ...hero }
     
     switch (GAME_CONFIG.deathPenalty.type) {
@@ -190,9 +192,9 @@ function applyPenaltyToParty(party: Hero[]): Hero[] {
 
 interface GameStore extends GameState {
   // Actions
-  addHero: (hero: Hero) => void
+  addHero: (hero: Hero, slotIndex?: number) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  addHeroByClass: (heroClass: any) => void
+  addHeroByClass: (heroClass: any, slotIndex?: number) => void
   removeHero: (heroId: string) => void
   updateHero: (heroId: string, updates: Partial<Hero>) => void
   startDungeon: () => void
@@ -221,7 +223,7 @@ interface GameStore extends GameState {
 }
 
 const initialState: GameState = {
-  party: [],
+  party: Array(GAME_CONFIG.party.maxSize).fill(null),
   heroRoster: [],
   dungeon: {
     depth: 0,
@@ -248,50 +250,68 @@ export const useGameStore = create<GameStore>()(
   persist(
     sanitizeMiddleware(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      (set, get) => ({
+      (set, _get) => ({
         ...initialState,
   
-  addHero: (hero) => 
+  addHero: (hero, slotIndex) => 
     set((state) => {
+      // If no slot specified, find first empty slot
+      const targetIndex = slotIndex !== undefined ? slotIndex : state.party.findIndex(h => h === null)
+      if (targetIndex === -1 || targetIndex >= state.party.length) return state // Party full or invalid slot
+      if (state.party[targetIndex] !== null) return state // Slot occupied
+      
       // Add to roster if not already there
       const existingInRoster = state.heroRoster.find(h => h.id === hero.id)
+      const newParty = [...state.party]
+      newParty[targetIndex] = hero
+      
       return {
-        party: [...state.party, hero],
+        party: newParty,
         heroRoster: existingInRoster ? state.heroRoster : [...state.heroRoster, hero]
       }
     }),
   
-  addHeroByClass: (heroClass) => 
+  addHeroByClass: (heroClass, slotIndex) => 
     set((state) => {
+      // If no slot specified, find first empty slot
+      const targetIndex = slotIndex !== undefined ? slotIndex : state.party.findIndex(h => h === null)
+      if (targetIndex === -1 || targetIndex >= state.party.length) return state // Party full or invalid slot
+      if (state.party[targetIndex] !== null) return state // Slot occupied
+      
       // Find existing hero of this class in roster that's not currently in party
       const existingHero = state.heroRoster.find(
-        h => h.class.id === heroClass.id && !state.party.some(p => p.id === h.id)
+        h => h.class.id === heroClass.id && !state.party.some(p => p !== null && p.id === h.id)
       )
+      
+      const newParty = [...state.party]
       
       if (existingHero) {
         // Reuse existing hero
+        newParty[targetIndex] = existingHero
         return {
-          party: [...state.party, existingHero]
+          party: newParty
         }
       } else {
         // Create new hero
         const newHero = createHero(heroClass, heroClass.name)
+        newParty[targetIndex] = newHero
         return {
-          party: [...state.party, newHero],
+          party: newParty,
           heroRoster: [...state.heroRoster, newHero]
         }
       }
     }),
   
   removeHero: (heroId) => 
-    set((state) => ({ 
-      party: state.party.filter(h => h.id !== heroId) 
-    })),
+    set((state) => {
+      const newParty = state.party.map(h => h?.id === heroId ? null : h)
+      return { party: newParty }
+    }),
   
   updateHero: (heroId, updates) => 
     set((state) => {
       const updatedParty = state.party.map(h => 
-        h.id === heroId ? { ...h, ...updates } : h
+        h?.id === heroId ? { ...h, ...updates } : h
       )
       const updatedRoster = state.heroRoster.map(h => 
         h.id === heroId ? { ...h, ...updates } : h
@@ -306,14 +326,14 @@ export const useGameStore = create<GameStore>()(
     set((state) => {
       // Penalty should already be applied by endGame
       // Revive all party members and full heal at dungeon start
-      const healedParty = state.party.map(hero => ({
+      const healedParty = state.party.map(hero => hero ? ({
         ...hero,
         isAlive: true,
         stats: {
           ...hero.stats,
           hp: hero.stats.maxHp
         }
-      }))
+      }) : null)
       
       // Create a new run
       const newRun: import('@/types').Run = {
@@ -325,7 +345,7 @@ export const useGameStore = create<GameStore>()(
         goldEarned: 0,
         goldSpent: 0,
         eventsCompleted: 0,
-        heroesUsed: state.party.map(h => ({
+        heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
           name: h.name,
           class: h.class.name,
           level: h.level
@@ -383,7 +403,7 @@ export const useGameStore = create<GameStore>()(
       )
       
       // Check if wiped
-      const isWiped = updatedParty.every(h => !h.isAlive)
+      const isWiped = updatedParty.every(h => h !== null && !h.isAlive)
       
       // Track gold changes in active run
       const goldDiff = updatedGold - state.dungeon.gold
@@ -416,7 +436,7 @@ export const useGameStore = create<GameStore>()(
           endDate: Date.now(),
           result: 'defeat',
           finalDepth: state.dungeon.depth,
-          heroesUsed: state.party.map(h => ({
+          heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
             name: h.name,
             class: h.class.name,
             level: h.level // Store level BEFORE penalty
@@ -429,7 +449,7 @@ export const useGameStore = create<GameStore>()(
         // Apply death penalty immediately
         const penalizedParty = applyPenaltyToParty(state.party)
         const updatedRoster = state.heroRoster.map(rosterHero => {
-          const penalizedVersion = penalizedParty.find(h => h.id === rosterHero.id)
+          const penalizedVersion = penalizedParty.find(h => h?.id === rosterHero.id)
           return penalizedVersion || rosterHero
         })
         
@@ -456,7 +476,7 @@ export const useGameStore = create<GameStore>()(
           endDate: Date.now(),
           result: 'retreat',
           finalDepth: state.dungeon.depth,
-          heroesUsed: state.party.map(h => ({
+          heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
             name: h.name,
             class: h.class.name,
             level: h.level
@@ -498,7 +518,7 @@ export const useGameStore = create<GameStore>()(
       const penalizedParty = applyPenaltyToParty(state.party)
       // Update roster with penalized heroes
       const updatedRoster = state.heroRoster.map(rosterHero => {
-        const penalizedVersion = penalizedParty.find(h => h.id === rosterHero.id)
+        const penalizedVersion = penalizedParty.find(h => h?.id === rosterHero.id)
         return penalizedVersion || rosterHero
       })
       return {
@@ -511,10 +531,10 @@ export const useGameStore = create<GameStore>()(
   repairParty: () =>
     set((state) => {
       const needsRepair = state.party.some(hero => 
-        isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
+        hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp))
       )
       if (needsRepair) {
-        return { party: state.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } })) }
+        return { party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats } }) : null) }
       }
       return {}
     }),
@@ -522,7 +542,7 @@ export const useGameStore = create<GameStore>()(
   equipItemToHero: (heroId, item, slot) =>
     set((state) => {
       const updatedParty = state.party.map(h =>
-        h.id === heroId ? equipItem(h, item, slot) : h
+        h?.id === heroId ? equipItem(h, item, slot) : h
       )
       const updatedRoster = state.heroRoster.map(h =>
         h.id === heroId ? equipItem(h, item, slot) : h
@@ -534,12 +554,12 @@ export const useGameStore = create<GameStore>()(
     }),
   
   unequipItemFromHero: (heroId, slot) => {
-    const hero = useGameStore.getState().party.find(h => h.id === heroId)
+    const hero = useGameStore.getState().party.find(h => h?.id === heroId)
     if (!hero) return null
     
     const { hero: updatedHero, item } = unequipItem(hero, slot)
     useGameStore.setState((state) => ({
-      party: state.party.map(h => h.id === heroId ? updatedHero : h)
+      party: state.party.map(h => h?.id === heroId ? updatedHero : h)
     }))
     
     return item
@@ -556,7 +576,7 @@ export const useGameStore = create<GameStore>()(
   equipItemFromBank: (heroId, item, slot) =>
     set((state) => {
       const updatedParty = state.party.map(h =>
-        h.id === heroId ? equipItem(h, item, slot) : h
+        h?.id === heroId ? equipItem(h, item, slot) : h
       )
       const updatedRoster = state.heroRoster.map(h =>
         h.id === heroId ? equipItem(h, item, slot) : h
@@ -665,9 +685,31 @@ export const useGameStore = create<GameStore>()(
             const actualState = state?.state
             if (!actualState) return state
             
+            // Repair party array size if it doesn't match config
+            if (actualState.party) {
+              const expectedSize = GAME_CONFIG.party.maxSize
+              if (!Array.isArray(actualState.party) || actualState.party.length !== expectedSize) {
+                // Create new array with correct size
+                const newParty = Array(expectedSize).fill(null)
+                // Copy existing heroes to new array
+                if (Array.isArray(actualState.party)) {
+                  actualState.party.forEach((hero: Hero | null, index: number) => {
+                    if (index < expectedSize && hero !== null) {
+                      newParty[index] = hero
+                    }
+                  })
+                }
+                actualState.party = newParty
+              }
+            } else {
+              // If party is missing entirely, initialize it
+              actualState.party = Array(GAME_CONFIG.party.maxSize).fill(null)
+            }
+            
             // Repair any NaN values when loading from storage
             if (actualState.party?.length > 0) {
-              actualState.party = actualState.party.map((h: Hero) => {
+              actualState.party = actualState.party.map((h: Hero | null) => {
+                if (!h) return null
                 if (isNaN(h.stats?.hp) || isNaN(h.stats?.maxHp)) {
                   return sanitizeHeroStats({ ...h, stats: { ...h.stats } })
                 }
@@ -698,7 +740,8 @@ export const useGameStore = create<GameStore>()(
             
             // Repair equipped items on heroes in party
             if (actualState.party?.length > 0) {
-              actualState.party = actualState.party.map((hero: Hero) => {
+              actualState.party = actualState.party.map((hero: Hero | null) => {
+                if (!hero) return null
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
                   const repairedItems = repairItemNames(equippedItems)
@@ -713,6 +756,42 @@ export const useGameStore = create<GameStore>()(
                   return { ...hero, equipment: newEquipment }
                 }
                 return hero
+              })
+            }
+            
+            // Sync roster from party if roster heroes are corrupted
+            // Party data is the source of truth for active heroes
+            if (actualState.party && actualState.heroRoster) {
+              const validPartyHeroes = actualState.party.filter((h: Hero | null): h is Hero => h !== null)
+              
+              // For each hero in party, check if roster version is outdated or corrupted
+              validPartyHeroes.forEach((partyHero: Hero) => {
+                const rosterIndex = actualState.heroRoster.findIndex((h: Hero) => h.id === partyHero.id)
+                
+                if (rosterIndex !== -1) {
+                  const rosterHero = actualState.heroRoster[rosterIndex]
+                  
+                  // If roster version is level 1 but party version is higher, roster is corrupted
+                  // Or if roster has no equipment but party does
+                  const rosterCorrupted = (
+                    rosterHero.level === 1 && partyHero.level > 1
+                  ) || (
+                    rosterHero.level < partyHero.level
+                  ) || (
+                    Object.values(rosterHero.equipment || {}).every(item => item === null) &&
+                    Object.values(partyHero.equipment || {}).some(item => item !== null)
+                  )
+                  
+                  if (rosterCorrupted) {
+                    // Replace roster version with party version
+                    actualState.heroRoster[rosterIndex] = { ...partyHero }
+                    console.log(`[Repair] Synced roster hero ${partyHero.name} from party (level ${partyHero.level})`)
+                  }
+                } else {
+                  // Hero in party but not in roster, add them
+                  actualState.heroRoster.push({ ...partyHero })
+                  console.log(`[Repair] Added missing hero ${partyHero.name} to roster`)
+                }
               })
             }
             

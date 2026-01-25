@@ -76,13 +76,13 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   const handleAddHeroClick = (index: number) => {
     if (selectedHeroFromRoster !== null) {
-      // Add hero from roster
+      // Add hero from roster to the clicked slot
       const hero = heroRoster[selectedHeroFromRoster]
-      addHero(hero)
+      addHero(hero, index)
       setSelectedHeroFromRoster(null)
     } else if (selectedClass) {
-      // Create new hero from class
-      addHeroByClass(selectedClass)
+      // Create new hero from class in the clicked slot
+      addHeroByClass(selectedClass, index)
     }
   }
 

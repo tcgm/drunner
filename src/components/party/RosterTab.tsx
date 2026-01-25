@@ -3,7 +3,17 @@ import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import { CORE_CLASSES } from '../../data/classes'
-import type { Hero } from '../../types'
+import type { Hero, Item } from '../../types'
+
+// Rarity color mapping
+const RARITY_COLORS: Record<string, string> = {
+  common: 'gray.500',
+  uncommon: 'green.400',
+  rare: 'blue.400',
+  epic: 'purple.400',
+  legendary: 'orange.400',
+  mythic: 'red.400'
+}
 
 interface RosterTabProps {
   storedHeroes: Hero[]
@@ -36,6 +46,9 @@ export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroCl
           const isSelected = selectedHeroFromRoster === index
           const IconComponent = ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType
           
+          // Get equipped items for pip display
+          const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
+          
           const tooltipLabel = (
             <VStack align="start" spacing={1} p={1}>
               <Text fontWeight="bold" fontSize="sm">{hero.name}</Text>
@@ -46,6 +59,16 @@ export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroCl
                 <Text>DEF: <Text as="span" fontWeight="bold" color="blue.300">{hero.stats.defense}</Text></Text>
                 <Text>SPD: <Text as="span" fontWeight="bold" color="green.300">{hero.stats.speed}</Text></Text>
               </SimpleGrid>
+              {equippedItems.length > 0 && (
+                <VStack align="start" spacing={0.5} pt={2} w="full">
+                  <Text fontSize="2xs" color="gray.400" fontWeight="bold">Equipped:</Text>
+                  {equippedItems.map((item, idx) => (
+                    <Text key={idx} fontSize="2xs" color={RARITY_COLORS[item.rarity] || 'gray.400'}>
+                      • {item.name}
+                    </Text>
+                  ))}
+                </VStack>
+              )}
             </VStack>
           )
           
@@ -101,6 +124,21 @@ export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroCl
                       <Text color="red.400">❤ {hero.stats.hp}/{hero.stats.maxHp}</Text>
                       <Text color="blue.400">🛡 {hero.stats.defense}</Text>
                     </HStack>
+                    {equippedItems.length > 0 && (
+                      <HStack spacing={1} mt={0.5}>
+                        {equippedItems.map((item, idx) => (
+                          <Tooltip key={idx} label={item.name} fontSize="xs" placement="top">
+                            <Box
+                              w="6px"
+                              h="6px"
+                              borderRadius="full"
+                              bg={RARITY_COLORS[item.rarity] || 'gray.500'}
+                              boxShadow={`0 0 4px ${RARITY_COLORS[item.rarity] || 'gray.500'}`}
+                            />
+                          </Tooltip>
+                        ))}
+                      </HStack>
+                    )}
                   </VStack>
                 </HStack>
                 

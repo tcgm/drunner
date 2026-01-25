@@ -1,12 +1,22 @@
-import { Box, HStack, VStack, Text, Icon, useDisclosure } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, Icon, useDisclosure, Tooltip } from '@chakra-ui/react'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import type { Hero } from '@/types'
+import type { Hero, Item } from '@/types'
 import * as GameIcons from 'react-icons/gi'
 import HeroModal from './HeroModal'
 import HeroTooltip from './HeroTooltip'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
+
+// Rarity color mapping
+const RARITY_COLORS: Record<string, string> = {
+  common: 'gray.500',
+  uncommon: 'green.400',
+  rare: 'blue.400',
+  epic: 'purple.400',
+  legendary: 'orange.400',
+  mythic: 'red.400'
+}
 
 const MotionBox = motion.create(Box)
 
@@ -46,18 +56,35 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
           }}
         >
           <HStack spacing={2} p={2}>
-            <motion.div
-              animate={isHovered ? {
-                rotate: [0, -5, 5, 0],
-                scale: [1, 1.1, 1]
-              } : {}}
-              transition={{
-                duration: 0.5,
-                ease: "easeInOut"
-              }}
-            >
-              <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
-            </motion.div>
+            <HStack spacing={1}>
+              <motion.div
+                animate={isHovered ? {
+                  rotate: [0, -5, 5, 0],
+                  scale: [1, 1.1, 1]
+                } : {}}
+                transition={{
+                  duration: 0.5,
+                  ease: "easeInOut"
+                }}
+              >
+                <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
+              </motion.div>
+              
+              {/* Equipment pips */}
+              <VStack spacing={0.5} align="start">
+                {Object.values(hero.equipment || {}).filter((item): item is Item => item !== null).map((item, idx) => (
+                  <Tooltip key={idx} label={item.name} fontSize="xs" placement="right">
+                    <Box
+                      w="6px"
+                      h="6px"
+                      borderRadius="full"
+                      bg={RARITY_COLORS[item.rarity] || 'gray.500'}
+                      boxShadow={`0 0 4px ${RARITY_COLORS[item.rarity] || 'gray.500'}`}
+                    />
+                  </Tooltip>
+                ))}
+              </VStack>
+            </HStack>
             
             <VStack spacing={1} align="stretch" flex={1} minW={0}>
               <HStack spacing={2}>

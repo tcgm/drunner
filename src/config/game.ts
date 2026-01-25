@@ -43,6 +43,11 @@ export const GAME_CONFIG = {
     recentEventMemory: 10, // How many recent events to avoid repeating
   },
 
+  // Party
+  party: {
+    maxSize: 4, // Maximum party size (can be expanded later)
+  },
+
   // Death penalties
   deathPenalty: {
     type: 'halve-levels' as 'none' | 'halve-levels' | 'reset-levels' | 'lose-equipment',

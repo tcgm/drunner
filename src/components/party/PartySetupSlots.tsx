@@ -1,8 +1,18 @@
-import { Box, Flex, VStack, Heading, Text, Badge, Button, HStack, SimpleGrid } from '@chakra-ui/react'
+import { Box, Flex, VStack, Heading, Text, Badge, Button, HStack, SimpleGrid, Tooltip } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Hero } from '../../types'
+import type { Hero, Item } from '../../types'
+
+// Rarity color mapping
+const RARITY_COLORS: Record<string, string> = {
+  common: 'gray.500',
+  uncommon: 'green.400',
+  rare: 'blue.400',
+  epic: 'purple.400',
+  legendary: 'orange.400',
+  mythic: 'red.400'
+}
 
 interface PartySlotsProps {
   party: (Hero | null)[]
@@ -49,10 +59,13 @@ export function PartySetupSlots({
                 borderRadius="xl"
                 borderWidth="3px"
                 borderColor={isEmpty ? 'gray.700' : 'orange.800'}
-                cursor={hero ? 'pointer' : 'default'}
-                onClick={() => hero && onSelectHero(index)}
+                cursor="pointer"
+                onClick={() => isEmpty ? onAddHero(index) : onSelectHero(index)}
                 transition="all 0.3s"
-                _hover={hero ? { borderColor: 'orange.500', transform: 'scale(1.02)', boxShadow: '0 8px 24px rgba(251, 146, 60, 0.3)' } : {}}
+                _hover={isEmpty 
+                  ? { borderColor: 'gray.500', transform: 'scale(1.02)', bg: 'gray.750' }
+                  : { borderColor: 'orange.500', transform: 'scale(1.02)', boxShadow: '0 8px 24px rgba(251, 146, 60, 0.3)' }
+                }
                 overflow="hidden"
                 boxShadow={isEmpty ? 'none' : '0 4px 16px rgba(0,0,0,0.4)'}
               >
@@ -63,15 +76,6 @@ export function PartySetupSlots({
                       Empty Slot
                     </Text>
                     <Text color="gray.600" fontSize="xs" mt={1}>Slot {index + 1}</Text>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      colorScheme="gray"
-                      onClick={() => onAddHero(index)}
-                      mt={2}
-                    >
-                      Add Hero
-                    </Button>
                   </Flex>
                 ) : (
                   <>
@@ -107,6 +111,35 @@ export function PartySetupSlots({
                           opacity={0.1}
                           filter="blur(10px)"
                         />
+                        {/* Equipment pips around icon */}
+                        {(() => {
+                          const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
+                          if (equippedItems.length === 0) return null
+                          const angleStep = 360 / equippedItems.length
+                          const radius = 35
+                          return equippedItems.map((item, idx) => {
+                            const angle = (angleStep * idx - 90) * (Math.PI / 180)
+                            const x = Math.cos(angle) * radius
+                            const y = Math.sin(angle) * radius
+                            return (
+                              <Tooltip key={idx} label={item.name} fontSize="xs" placement="top">
+                                <Box
+                                  position="absolute"
+                                  left="50%"
+                                  top="50%"
+                                  transform={`translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`}
+                                  w="8px"
+                                  h="8px"
+                                  borderRadius="full"
+                                  bg={RARITY_COLORS[item.rarity] || 'gray.500'}
+                                  boxShadow={`0 0 6px ${RARITY_COLORS[item.rarity] || 'gray.500'}`}
+                                  borderWidth="1px"
+                                  borderColor="gray.900"
+                                />
+                              </Tooltip>
+                            )
+                          })
+                        })()}
                       </Box>
                       
                       {/* Hero Info */}

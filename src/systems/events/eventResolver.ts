@@ -81,19 +81,19 @@ function generateItemFromSpec(spec: {
  */
 export function resolveEventOutcome(
   outcome: EventOutcome,
-  party: Hero[],
+  party: (Hero | null)[],
   dungeon: { gold: number; depth: number }
 ): {
-  updatedParty: Hero[]
+  updatedParty: (Hero | null)[]
   updatedGold: number
   resolvedOutcome: ResolvedOutcome
 } {
-  const updatedParty = party.map(h => ({ 
+  const updatedParty = party.map(h => h ? ({ 
     ...h, 
     stats: { ...h.stats },
     equipment: { ...h.equipment },
     abilities: h.abilities.map(a => ({ ...a }))
-  }))
+  }) : null)
   let updatedGold = dungeon.gold
   const resolvedEffects: ResolvedEffect[] = []
   const foundItems: Item[] = []
@@ -263,9 +263,9 @@ export function resolveEventOutcome(
  */
 function selectTargets(
   targeting: 'random' | 'all' | 'weakest' | 'strongest' | undefined,
-  party: Hero[]
+  party: (Hero | null)[]
 ): Hero[] {
-  const aliveHeroes = party.filter(h => h.isAlive)
+  const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
   
   if (aliveHeroes.length === 0) {
     return []
@@ -302,7 +302,7 @@ export function checkRequirements(
     item?: string
     gold?: number
   } | undefined,
-  party: Hero[],
+  party: (Hero | null)[],
   depth: number = 1,
   gold: number = 0
 ): boolean {
@@ -311,7 +311,7 @@ export function checkRequirements(
   }
   
   if (requirements.class) {
-    const hasClass = party.some(h => h.isAlive && h.class.id.toLowerCase() === requirements.class!.toLowerCase())
+    const hasClass = party.some(h => h !== null && h.isAlive && h.class.id.toLowerCase() === requirements.class!.toLowerCase())
     if (!hasClass) return false
   }
   
@@ -319,7 +319,7 @@ export function checkRequirements(
     // Scale stat requirements with depth (5% per depth, slower than damage scaling)
     const scaledMinValue = scaleValue(requirements.minValue, depth, 0.05)
     const hasStat = party.some(h => {
-      if (!h.isAlive) return false
+      if (!h || !h.isAlive) return false
       const statValue = h.stats[requirements.stat as keyof typeof h.stats]
       return typeof statValue === 'number' && statValue >= scaledMinValue
     })

@@ -170,7 +170,7 @@ export interface Run {
 }
 
 export interface GameState {
-  party: Hero[]
+  party: (Hero | null)[]
   heroRoster: Hero[] // All heroes ever created, organized by class
   dungeon: Dungeon
   bankGold: number // Gold stored outside runs (added on victory/retreat)
