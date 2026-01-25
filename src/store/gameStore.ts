@@ -10,6 +10,61 @@ import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManage
 import { repairItemNames } from '@/systems/loot/lootGenerator'
 
 /**
+ * Create a backup of the current state
+ */
+function createBackup(name: string): void {
+  try {
+    const current = localStorage.getItem(name)
+    if (current) {
+      const timestamp = Date.now()
+      localStorage.setItem(`${name}-backup-${timestamp}`, current)
+      
+      // Keep only the last 5 backups
+      const backupKeys = Object.keys(localStorage)
+        .filter(key => key.startsWith(`${name}-backup-`))
+        .sort()
+      
+      while (backupKeys.length > 5) {
+        const oldestKey = backupKeys.shift()
+        if (oldestKey) localStorage.removeItem(oldestKey)
+      }
+      
+      console.log(`[Backup] Created backup: ${name}-backup-${timestamp}`)
+    }
+  } catch (error) {
+    console.error('[Backup] Failed to create backup:', error)
+  }
+}
+
+/**
+ * List available backups
+ */
+function listBackups(name: string): string[] {
+  return Object.keys(localStorage)
+    .filter(key => key.startsWith(`${name}-backup-`))
+    .sort()
+    .reverse()
+}
+
+/**
+ * Restore from a backup
+ */
+function restoreBackup(name: string, backupKey: string): boolean {
+  try {
+    const backup = localStorage.getItem(backupKey)
+    if (backup) {
+      localStorage.setItem(name, backup)
+      console.log(`[Backup] Restored from: ${backupKey}`)
+      return true
+    }
+    return false
+  } catch (error) {
+    console.error('[Backup] Failed to restore backup:', error)
+    return false
+  }
+}
+
+/**
  * Sanitize hero stats to fix any NaN values - mutates the hero in place
  */
 function sanitizeHeroStats(hero: Hero): Hero {
@@ -160,6 +215,9 @@ interface GameStore extends GameState {
   discardOverflowItem: (itemId: string) => void
   discardItems: (itemIds: string[]) => void
   clearOverflow: () => void
+  // Backup/Recovery actions
+  listBackups: () => string[]
+  restoreFromBackup: (backupKey: string) => boolean
 }
 
 const initialState: GameState = {
@@ -574,6 +632,20 @@ export const useGameStore = create<GameStore>()(
   
   resetGame: () => 
     set(initialState),
+  
+  // Backup/Recovery functions
+  listBackups: () => {
+    return listBackups('dungeon-runner-storage')
+  },
+  
+  restoreFromBackup: (backupKey: string) => {
+    const success = restoreBackup('dungeon-runner-storage', backupKey)
+    if (success) {
+      // Reload the page to apply restored state
+      window.location.reload()
+    }
+    return success
+  },
       })
     ),
     {
@@ -582,40 +654,93 @@ export const useGameStore = create<GameStore>()(
         getItem: (name) => {
           const str = localStorage.getItem(name)
           if (!str) return null
-          const state = JSON.parse(str) as GameState
           
-          // Access the actual nested state
-          const actualState = (state as any).state as GameState
+          // Create backup before attempting repair
+          createBackup(name)
           
-          // Repair any NaN values when loading from storage
-          if (actualState.party?.length > 0) {
-            const needsRepair = actualState.party.some(hero => 
-              isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
-            )
-            if (needsRepair) {
-              actualState.party = actualState.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
+          try {
+            const state = JSON.parse(str)
+            
+            // Access the actual nested state
+            const actualState = state?.state
+            if (!actualState) return state
+            
+            // Repair any NaN values when loading from storage
+            if (actualState.party?.length > 0) {
+              actualState.party = actualState.party.map((h: Hero) => {
+                if (isNaN(h.stats?.hp) || isNaN(h.stats?.maxHp)) {
+                  return sanitizeHeroStats({ ...h, stats: { ...h.stats } })
+                }
+                return h
+              })
             }
-          }
-          // Also repair heroRoster
-          if (actualState.heroRoster?.length > 0) {
-            const needsRepair = actualState.heroRoster.some(hero => 
-              isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
-            )
-            if (needsRepair) {
-              actualState.heroRoster = actualState.heroRoster.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } }))
+            
+            // Also repair heroRoster
+            if (actualState.heroRoster?.length > 0) {
+              actualState.heroRoster = actualState.heroRoster.map((h: Hero) => {
+                if (isNaN(h.stats?.hp) || isNaN(h.stats?.maxHp)) {
+                  return sanitizeHeroStats({ ...h, stats: { ...h.stats } })
+                }
+                return h
+              })
             }
+            
+            // Repair item names and icons in inventories
+            if (actualState.bankInventory?.length > 0) {
+              actualState.bankInventory = repairItemNames(actualState.bankInventory)
+            }
+            if (actualState.dungeon?.inventory?.length > 0) {
+              actualState.dungeon.inventory = repairItemNames(actualState.dungeon.inventory)
+            }
+            if (actualState.overflowInventory?.length > 0) {
+              actualState.overflowInventory = repairItemNames(actualState.overflowInventory)
+            }
+            
+            // Repair equipped items on heroes in party
+            if (actualState.party?.length > 0) {
+              actualState.party = actualState.party.map((hero: Hero) => {
+                const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
+                if (equippedItems.length > 0) {
+                  const repairedItems = repairItemNames(equippedItems)
+                  const newEquipment = { ...hero.equipment }
+                  let itemIndex = 0
+                  for (const slot in newEquipment) {
+                    if (newEquipment[slot as ItemSlot] !== null) {
+                      newEquipment[slot as ItemSlot] = repairedItems[itemIndex]
+                      itemIndex++
+                    }
+                  }
+                  return { ...hero, equipment: newEquipment }
+                }
+                return hero
+              })
+            }
+            
+            // Repair equipped items on heroes in roster
+            if (actualState.heroRoster?.length > 0) {
+              actualState.heroRoster = actualState.heroRoster.map((hero: Hero) => {
+                const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
+                if (equippedItems.length > 0) {
+                  const repairedItems = repairItemNames(equippedItems)
+                  const newEquipment = { ...hero.equipment }
+                  let itemIndex = 0
+                  for (const slot in newEquipment) {
+                    if (newEquipment[slot as ItemSlot] !== null) {
+                      newEquipment[slot as ItemSlot] = repairedItems[itemIndex]
+                      itemIndex++
+                    }
+                  }
+                  return { ...hero, equipment: newEquipment }
+                }
+                return hero
+              })
+            }
+            
+            return state
+          } catch (error) {
+            console.error('Error loading game state:', error)
+            return null
           }
-          // Repair item names and icons if they have generic names or default icons
-          if (actualState.bankInventory?.length > 0) {
-            actualState.bankInventory = repairItemNames(actualState.bankInventory)
-          }
-          if (actualState.dungeon?.inventory?.length > 0) {
-            actualState.dungeon.inventory = repairItemNames(actualState.dungeon.inventory)
-          }
-          if (actualState.overflowInventory?.length > 0) {
-            actualState.overflowInventory = repairItemNames(actualState.overflowInventory)
-          }
-          return state
         },
         setItem: (name, value) => {
           localStorage.setItem(name, JSON.stringify(value))

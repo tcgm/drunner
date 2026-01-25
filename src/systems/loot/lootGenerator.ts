@@ -2,7 +2,7 @@ import type { Item, ItemSlot, ItemRarity } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
-import { getRandomUnique } from '@data/items/uniques'
+import { getRandomUnique, ALL_UNIQUE_ITEMS } from '@data/items/uniques'
 import { getRandomSetItem } from '@data/items/sets'
 import { GiCrystalShine } from 'react-icons/gi'
 
@@ -466,8 +466,15 @@ export function repairItemName(item: Item): Item {
  * Repair an item's icon if it's using the default bar icon
  */
 export function repairItemIcon(item: Item): Item {
-  // Skip unique items
+  // For unique items, look up by name in the unique items catalog
   if (item.isUnique) {
+    const uniqueItem = ALL_UNIQUE_ITEMS.find(u => u.name === item.name)
+    if (uniqueItem?.icon) {
+      return {
+        ...item,
+        icon: uniqueItem.icon,
+      }
+    }
     return item
   }
   

@@ -50,7 +50,7 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
       <MotionBox
         bg="gray.800"
         borderRadius="lg"
-        p={4}
+        p={2}
         borderLeft="4px solid"
         borderColor="orange.400"
         initial={{ opacity: 0, x: -20 }}
@@ -61,14 +61,14 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
           damping: 20
         }}
       >
-        <Text fontSize="md" color="gray.200" lineHeight="short">
+        <Text fontSize="md" color="white.200" lineHeight="short">
           {outcome.text}
         </Text>
       </MotionBox>
 
       {/* Effects */}
       {outcome.effects.length > 0 && (
-        <VStack spacing={2} align="stretch" flex={1} overflowY="auto">
+        <VStack spacing={1} align="stretch" flex={1} overflowY="auto" overflowX="hidden">
           <Text fontSize="xs" color="gray.500" textTransform="uppercase" fontWeight="bold">
             Results
           </Text>
@@ -78,7 +78,7 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
                 key={index}
                 bg="gray.800"
                 borderRadius="md"
-                p={3}
+                p={2}
                 spacing={3}
                 initial={{ opacity: 0, scale: 0.8, y: 20 }}
                 animate={visibleEffects.includes(index) ? { 
@@ -93,8 +93,8 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
                   delay: index * 0.05
                 }}
                 whileHover={{
-                  scale: 1.02,
-                  boxShadow: `0 0 12px ${EFFECT_COLORS[effect.type]}40`
+                  boxShadow: `0 0 12px ${EFFECT_COLORS[effect.type]}40`,
+                  backgroundColor: 'rgba(45, 55, 72, 0.8)'
                 }}
               >
                 <motion.div

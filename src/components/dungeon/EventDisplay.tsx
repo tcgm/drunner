@@ -73,19 +73,21 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
               px={4}
               justifyContent="flex-start"
               initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={canSelect ? {
-                x: 4,
+              animate={{ opacity: canSelect ? 1 : 0.4, x: 0 }}
+              transition={{
+                duration: 0.4,
+                delay: index * 0.05,
+                ease: "easeOut"
+              }}
+              _hover={canSelect ? {
                 backgroundColor: 'rgba(237, 137, 54, 0.2)',
                 borderColor: '#ED8936',
-                boxShadow: '0 0 12px rgba(237, 137, 54, 0.4)'
+                boxShadow: '0 0 12px rgba(237, 137, 54, 0.4)',
+                paddingLeft: '20px',
+                transition: 'all 0.2s ease-out'
               } : undefined}
-              whileTap={canSelect ? { scale: 0.98 } : undefined}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 20,
-                delay: index * 0.05
+              sx={{
+                transition: 'background-color 0.2s, border-color 0.2s, box-shadow 0.2s, padding 0.2s'
               }}
             >
               <VStack align="start" spacing={0.5}>

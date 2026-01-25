@@ -29,8 +29,9 @@ type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
 
 export default function DevTools() {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { party, dungeon, resetGame, applyPenalty } = useGameStore()
+  const { party, dungeon, resetGame, applyPenalty, listBackups, restoreFromBackup } = useGameStore()
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
+  const [backups, setBackups] = useState<string[]>([])
   const cancelRef = useRef<HTMLButtonElement>(null)
 
   // Only show in development
@@ -174,6 +175,22 @@ export default function DevTools() {
     })
   }
 
+  const handleLoadBackups = () => {
+    const availableBackups = listBackups()
+    setBackups(availableBackups)
+  }
+
+  const handleRestoreBackup = (backupKey: string) => {
+    if (confirm(`Restore backup from ${new Date(parseInt(backupKey.split('-').pop() || '0')).toLocaleString()}?`)) {
+      restoreFromBackup(backupKey)
+    }
+  }
+
+  const formatBackupName = (key: string) => {
+    const timestamp = parseInt(key.split('-').pop() || '0')
+    return new Date(timestamp).toLocaleString()
+  }
+
   return (
     <>
       <Box position="fixed" bottom={4} right={4} zIndex={9999}>
@@ -245,6 +262,30 @@ export default function DevTools() {
               <Button size="sm" colorScheme="red" variant="outline" onClick={() => setConfirmAction('reset-game')}>
                 Reset Entire Game
               </Button>
+
+              <Divider my={2} />
+
+              <Text fontSize="sm" fontWeight="bold" color="gray.400">
+                Backup & Recovery
+              </Text>
+              <Button size="sm" colorScheme="green" onClick={handleLoadBackups}>
+                Load Backup List ({backups.length})
+              </Button>
+              {backups.length > 0 && (
+                <VStack align="stretch" spacing={1} maxH="200px" overflowY="auto" bg="gray.900" p={2} borderRadius="md">
+                  {backups.map(backup => (
+                    <Button
+                      key={backup}
+                      size="xs"
+                      colorScheme="blue"
+                      variant="outline"
+                      onClick={() => handleRestoreBackup(backup)}
+                    >
+                      Restore: {formatBackupName(backup)}
+                    </Button>
+                  ))}
+                </VStack>
+              )}
             </VStack>
           </ModalBody>
         </ModalContent>
