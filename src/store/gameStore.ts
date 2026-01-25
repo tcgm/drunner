@@ -8,6 +8,7 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
+import { migrateGameState } from '@/utils/migration'
 
 /**
  * Create a backup of the current state
@@ -230,11 +231,14 @@ const initialState: GameState = {
   heroRoster: [],
   dungeon: {
     depth: 0,
-    maxDepth: 100,
+    floor: 0,
+    eventsThisFloor: 0,
+    eventsRequiredThisFloor: 4,
     currentEvent: null,
     eventHistory: [],
     gold: 0,
     inventory: [],
+    isNextEventBoss: false,
   },
   bankGold: 0,
   alkahest: 0,
@@ -344,6 +348,8 @@ export const useGameStore = create<GameStore>()(
         startDate: Date.now(),
         startDepth: 1,
         finalDepth: 1,
+        startFloor: 1,
+        finalFloor: 1,
         result: 'active',
         goldEarned: 0,
         goldSpent: 0,
@@ -362,16 +368,24 @@ export const useGameStore = create<GameStore>()(
         }))
       }
       
-      const event = getNextEvent(1, [])
+      // Roll random number of events for first floor
+      const eventsRequired = Math.floor(
+        Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
+      ) + GAME_CONFIG.dungeon.minEventsPerFloor
+      
+      const event = getNextEvent(1, 1, false, false, [])
       return {
         party: healedParty,
         dungeon: { 
           depth: 1,
-          maxDepth: 100,
+          floor: 1,
+          eventsThisFloor: 0,
+          eventsRequiredThisFloor: eventsRequired,
           currentEvent: event,
           eventHistory: event ? [event.id] : [],
           gold: 0, // Reset gold for each new run
           inventory: [], // Reset inventory for each new run
+          isNextEventBoss: false,
         },
         isGameOver: false,
         hasPendingPenalty: false,
@@ -383,20 +397,41 @@ export const useGameStore = create<GameStore>()(
   advanceDungeon: () => 
     set((state) => {
       const newDepth = state.dungeon.depth + 1
+      const newEventsThisFloor = state.dungeon.eventsThisFloor + 1
       
-      // Check for victory at depth 100
-      if (newDepth > 100) {
-        // Player has completed depth 100, trigger victory
+      // Check if we just completed the boss event (eventsThisFloor was at the required amount, meaning we just did the boss)
+      // The boss is event #(eventsRequired + 1), so we advance floor when eventsThisFloor > eventsRequired
+      const completingFloor = state.dungeon.eventsThisFloor > state.dungeon.eventsRequiredThisFloor
+      const newFloor = completingFloor ? state.dungeon.floor + 1 : state.dungeon.floor
+      const resetEvents = completingFloor ? 0 : newEventsThisFloor
+      
+      // Roll new random target for next floor
+      const newEventsRequired = completingFloor 
+        ? Math.floor(
+            Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
+          ) + GAME_CONFIG.dungeon.minEventsPerFloor
+        : state.dungeon.eventsRequiredThisFloor
+      
+      // Check if next event should be a boss (when we've completed the required number of normal events)
+      const isNextEventBoss = resetEvents >= newEventsRequired
+      
+      // Check if this is a major boss (zone completion)
+      const isMajorBoss = isNextEventBoss && (newFloor % GAME_CONFIG.dungeon.majorBossInterval === 0)
+      
+      // Check for victory - completed max floors
+      if (newFloor > GAME_CONFIG.dungeon.maxFloors) {
+        // Player has completed all floors, trigger victory
         // This will be handled by calling victoryGame externally
         return state
       }
       
-      const event = getNextEvent(newDepth, state.dungeon.eventHistory)
+      const event = getNextEvent(newDepth, newFloor, isNextEventBoss, isMajorBoss, state.dungeon.eventHistory)
       
       // Update active run
       const updatedRun = state.activeRun ? {
         ...state.activeRun,
         finalDepth: newDepth,
+        finalFloor: newFloor,
         eventsCompleted: state.activeRun.eventsCompleted + 1
       } : null
       
@@ -404,6 +439,10 @@ export const useGameStore = create<GameStore>()(
         dungeon: { 
           ...state.dungeon, 
           depth: newDepth,
+          floor: newFloor,
+          eventsThisFloor: completingFloor ? 0 : resetEvents,
+          eventsRequiredThisFloor: newEventsRequired,
+          isNextEventBoss,
           currentEvent: event,
           eventHistory: event ? [...state.dungeon.eventHistory, event.id] : state.dungeon.eventHistory
         },
@@ -571,11 +610,14 @@ export const useGameStore = create<GameStore>()(
         return {
           dungeon: {
             depth: 0,
-            maxDepth: 100,
+            floor: 0,
+            eventsThisFloor: 0,
+            eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
             gold: 0,
             inventory: [],
+            isNextEventBoss: false,
           },
           bankGold: state.bankGold + goldToBank,
           bankInventory: [...state.bankInventory, ...itemsToBank],
@@ -616,11 +658,14 @@ export const useGameStore = create<GameStore>()(
         return {
           dungeon: {
             depth: 0,
-            maxDepth: 100,
+            floor: 0,
+            eventsThisFloor: 0,
+            eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
             gold: 0,
             inventory: [],
+            isNextEventBoss: false,
           },
           bankGold: state.bankGold + goldToBank,
           bankInventory: [...state.bankInventory, ...itemsToBank],
@@ -987,6 +1032,10 @@ export const useGameStore = create<GameStore>()(
                 return hero
               })
             }
+            
+            // Migrate to new floor-based system
+            const migratedState = migrateGameState(actualState)
+            state.state = migratedState
             
             return state
           } catch (error) {

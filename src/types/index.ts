@@ -164,12 +164,15 @@ export interface DungeonEvent {
 }
 
 export interface Dungeon {
-  depth: number
-  maxDepth: number
+  depth: number // Total events completed (legacy, for migration)
+  floor: number // Current floor number (new system)
+  eventsThisFloor: number // Events completed on current floor
+  eventsRequiredThisFloor: number // Random target (min-max) for this floor before boss
   currentEvent: DungeonEvent | null
   eventHistory: string[]
   gold: number
   inventory: Item[] // In-run inventory
+  isNextEventBoss?: boolean // Indicates if next event is a floor boss
 }
 
 export interface Run {
@@ -178,6 +181,8 @@ export interface Run {
   endDate?: number // timestamp when run ended
   startDepth: number
   finalDepth: number
+  startFloor?: number // Current floor when run started (new system)
+  finalFloor?: number // Final floor reached (new system)
   result: 'active' | 'victory' | 'defeat' | 'retreat'
   goldEarned: number
   goldSpent: number

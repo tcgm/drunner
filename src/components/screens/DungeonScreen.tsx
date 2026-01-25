@@ -1,6 +1,7 @@
 import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from '@chakra-ui/react'
 import { useRef, useState, useEffect } from 'react'
 import { useGameStore } from '@store/gameStore'
+import { GAME_CONFIG } from '@/config/gameConfig'
 import PartySidebar from '@components/dungeon/PartySidebar'
 import DungeonHeader from '@components/dungeon/DungeonHeader'
 import EventArea from '@components/dungeon/EventArea'
@@ -88,8 +89,9 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
       
       <Flex className="dungeon-screen-main" direction="column" flex={1} gap={2} minH={0}>
         <DungeonHeader 
-          depth={dungeon.depth} 
-          maxDepth={dungeon.maxDepth} 
+          floor={dungeon.floor}
+          maxFloors={GAME_CONFIG.dungeon.maxFloors}
+          depth={dungeon.depth}
           gold={dungeon.gold} 
         />
         

@@ -86,8 +86,12 @@ export const GAME_CONFIG = {
 
   // Dungeon
   dungeon: {
-    maxDepth: 100,
-    bossFloorInterval: 10, // Boss every N floors
+    maxFloors: 100, // Maximum number of floors before victory
+    majorBossInterval: 10, // Major boss every N floors (zone completion)
+    minEventsPerFloor: 3, // Minimum number of normal events before floor boss
+    maxEventsPerFloor: 15, // Maximum number of normal events before floor boss
+    allowMerchantBeforeBoss: true, // Can merchant appear as last event before boss
+    allowRestBeforeBoss: true, // Can rest appear before boss
   },
 
   // Item Management

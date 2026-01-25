@@ -1,4 +1,5 @@
 import type { DungeonEvent, EventType } from '@/types'
+import { GAME_CONFIG } from '@/config/gameConfig'
 import { 
   ALL_EVENTS, 
   EVENT_TYPE_WEIGHTS, 
@@ -6,20 +7,27 @@ import {
 } from '@data/events'
 
 /**
- * Select a random event based on current dungeon depth and weighted probabilities
+ * Select a random event based on current dungeon state and weighted probabilities
  */
-export function selectRandomEvent(depth: number, excludeIds: string[] = []): DungeonEvent | null {
-  // Check for boss events at depths divisible by 10
-  if (depth % 10 === 0 && depth > 0) {
+export function selectRandomEvent(
+  depth: number, 
+  floor: number,
+  isFloorBoss: boolean,
+  isMajorBoss: boolean,
+  excludeIds: string[] = []
+): DungeonEvent | null {
+  // If this should be a floor boss or major boss
+  if (isFloorBoss || isMajorBoss) {
     const bossEvents = getEventsByType('boss').filter(e => 
       e.depth <= depth && !excludeIds.includes(e.id)
     )
     if (bossEvents.length > 0) {
-      // At depth 100, prioritize the exact depth 100 boss (final boss)
-      const exactDepthBoss = bossEvents.find(e => e.depth === depth)
-      if (exactDepthBoss) {
-        return exactDepthBoss
+      // For major bosses (every N floors), prefer higher depth bosses
+      if (isMajorBoss) {
+        const sortedBosses = [...bossEvents].sort((a, b) => b.depth - a.depth)
+        return sortedBosses[0]
       }
+      // For regular floor bosses, random selection
       return bossEvents[Math.floor(Math.random() * bossEvents.length)]
     }
   }
@@ -81,10 +89,13 @@ export function getEventsForDepth(depth: number): DungeonEvent[] {
  * Get next event, respecting recently seen events to avoid repetition
  */
 export function getNextEvent(
-  depth: number, 
+  depth: number,
+  floor: number,
+  isFloorBoss: boolean,
+  isMajorBoss: boolean,
   recentEventIds: string[], 
   maxRecent: number = 10
 ): DungeonEvent | null {
   const excludeIds = recentEventIds.slice(-maxRecent)
-  return selectRandomEvent(depth, excludeIds)
+  return selectRandomEvent(depth, floor, isFloorBoss, isMajorBoss, excludeIds)
 }
