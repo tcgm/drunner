@@ -26,6 +26,16 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
       },
     },
     {
+      text: 'Lay among the plants and... explore',
+      outcome: {
+        text: 'As you relax among the vegetation, some vines begin to move of their own accord. They wrap gently around you in ways that are surprisingly... pleasant. You emerge feeling oddly invigorated.',
+        effects: [
+          { type: 'heal', target: 'all', value: 80 },
+          { type: 'xp', value: 50 },
+        ],
+      },
+    },
+    {
       text: 'Study the plants (Ranger bonus)',
       requirements: {
         class: 'Ranger',

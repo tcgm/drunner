@@ -58,6 +58,15 @@ export const DRAGON_WYRMLING: DungeonEvent = {
         ],
       },
     },
+    {
+      text: 'Attempt to hug the dragon',
+      outcome: {
+        text: 'The dragon is confused by your affection, but accepts the hug awkwardly. It lets you pass unharmed.',
+        effects: [
+          { type: 'xp', value: 200 },
+        ],
+      },
+    },
   ],
   depth: 7,
 }

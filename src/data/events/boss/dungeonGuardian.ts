@@ -4,7 +4,7 @@ export const DUNGEON_GUARDIAN: DungeonEvent = {
   id: 'dungeon-guardian',
   type: 'boss',
   title: 'Dungeon Guardian',
-  description: 'A massive golem of stone and iron awakens. It is the dungeon\'s final defense.',
+  description: 'A massive golem of stone and iron awakens. It is this floor\'s final defense.',
   choices: [
     {
       text: 'Attack with everything',

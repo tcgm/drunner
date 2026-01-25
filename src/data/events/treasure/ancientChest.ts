@@ -31,6 +31,16 @@ export const ANCIENT_CHEST: DungeonEvent = {
       },
     },
     {
+      text: 'Kick it aggressively',
+      outcome: {
+        text: 'You kick the chest hard! The lock breaks... but so does something inside. Also, it was a mimic. Oops.',
+        effects: [
+          { type: 'damage', target: 'random', value: 25 },
+          { type: 'gold', value: 50 },
+        ],
+      },
+    },
+    {
       text: 'Leave it alone',
       outcome: {
         text: 'You decide it\'s not worth the risk.',

@@ -15,6 +15,11 @@ export function selectRandomEvent(depth: number, excludeIds: string[] = []): Dun
       e.depth <= depth && !excludeIds.includes(e.id)
     )
     if (bossEvents.length > 0) {
+      // At depth 100, prioritize the exact depth 100 boss (final boss)
+      const exactDepthBoss = bossEvents.find(e => e.depth === depth)
+      if (exactDepthBoss) {
+        return exactDepthBoss
+      }
       return bossEvents[Math.floor(Math.random() * bossEvents.length)]
     }
   }
