@@ -242,6 +242,15 @@ export const useGameStore = create<GameStore>()(
   startDungeon: () => 
     set((state) => {
       // Penalty should already be applied by PartySetupScreen
+      // Full heal all party members at dungeon start
+      const healedParty = state.party.map(hero => ({
+        ...hero,
+        stats: {
+          ...hero.stats,
+          hp: hero.stats.maxHp
+        }
+      }))
+      
       // Create a new run
       const newRun: import('@/types').Run = {
         id: `run-${Date.now()}`,
@@ -261,6 +270,7 @@ export const useGameStore = create<GameStore>()(
       
       const event = getNextEvent(1, [])
       return {
+        party: healedParty,
         dungeon: { 
           depth: 1,
           maxDepth: 100,
