@@ -18,6 +18,9 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
         <Text fontSize="xl" color="gray.400">
           Your party has fallen on Floor {depth}
         </Text>
+        <Text fontSize="md" color="gray.500">
+          Return to main menu to try again with penalties
+        </Text>
         <Button size="lg" colorScheme="orange" onClick={onExit}>
           Return to Main Menu
         </Button>

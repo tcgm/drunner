@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware'
 import type { GameState, Hero, EventChoice } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome } from '@systems/events/eventResolver'
+import { GAME_CONFIG } from '@/config/game'
+import { calculateMaxHp } from '@/utils/heroUtils'
 
 interface GameStore extends GameState {
   // Actions
@@ -54,13 +56,82 @@ export const useGameStore = create<GameStore>()(
   
   startDungeon: () => 
     set((state) => {
+      // Apply death penalty to heroes if this is a retry after game over
+      let penalizedParty = state.party
+      if (state.isGameOver) {
+        penalizedParty = state.party.map(hero => {
+          const newHero = { ...hero }
+          
+          switch (GAME_CONFIG.deathPenalty.type) {
+            case 'halve-levels':
+              // Halve level (min 1)
+              newHero.level = Math.max(1, Math.floor(hero.level / 2))
+              newHero.xp = 0
+              // Recalculate stats based on new level
+              const levelDifference = hero.level - newHero.level
+              newHero.stats = { ...hero.stats }
+              newHero.stats.attack = Math.max(hero.class.baseStats.attack, hero.stats.attack - (levelDifference * GAME_CONFIG.statGains.attack))
+              newHero.stats.defense = Math.max(hero.class.baseStats.defense, hero.stats.defense - (levelDifference * GAME_CONFIG.statGains.defense))
+              newHero.stats.speed = Math.max(hero.class.baseStats.speed, hero.stats.speed - (levelDifference * GAME_CONFIG.statGains.speed))
+              newHero.stats.luck = Math.max(hero.class.baseStats.luck, hero.stats.luck - (levelDifference * GAME_CONFIG.statGains.luck))
+              newHero.stats.maxHp = calculateMaxHp(hero.class.baseStats, newHero.level)
+              newHero.stats.hp = newHero.stats.maxHp
+              break
+              
+            case 'reset-levels':
+              // Reset to level 1
+              newHero.level = 1
+              newHero.xp = 0
+              newHero.stats = {
+                hp: calculateMaxHp(hero.class.baseStats, 1),
+                maxHp: calculateMaxHp(hero.class.baseStats, 1),
+                attack: hero.class.baseStats.attack,
+                defense: hero.class.baseStats.defense,
+                speed: hero.class.baseStats.speed,
+                luck: hero.class.baseStats.luck,
+                magicPower: hero.class.baseStats.magicPower,
+              }
+              break
+              
+            case 'lose-equipment':
+              // Keep levels but reset equipment
+              newHero.equipment = {
+                weapon: null,
+                armor: null,
+                accessory: null,
+                helmet: null,
+                boots: null,
+                ring: null,
+              }
+              newHero.stats = { ...hero.stats }
+              newHero.stats.hp = newHero.stats.maxHp
+              break
+              
+            case 'none':
+            default:
+              // Just revive with full HP
+              newHero.stats = { ...hero.stats }
+              newHero.stats.hp = newHero.stats.maxHp
+              break
+          }
+          
+          newHero.isAlive = true
+          return newHero
+        })
+      }
+      
       const event = getNextEvent(1, [])
       return {
+        party: penalizedParty,
         dungeon: { 
-          ...state.dungeon, 
           depth: 1,
-          currentEvent: event
-        }
+          maxDepth: 100,
+          currentEvent: event,
+          eventHistory: event ? [event.id] : [],
+          gold: state.dungeon.gold, // Keep gold across runs
+        },
+        isGameOver: false,
+        lastOutcome: null,
       }
     }),
   

@@ -37,4 +37,13 @@ export const GAME_CONFIG = {
   events: {
     recentEventMemory: 10, // How many recent events to avoid repeating
   },
+
+  // Death penalties
+  deathPenalty: {
+    type: 'halve-levels' as 'none' | 'halve-levels' | 'reset-levels' | 'lose-equipment',
+    // 'none': No penalty, heroes keep everything
+    // 'halve-levels': Heroes lose half their levels (rounded down, min 1)
+    // 'reset-levels': Heroes reset to level 1
+    // 'lose-equipment': Heroes keep levels but lose all equipment
+  },
 } as const
