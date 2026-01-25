@@ -1,9 +1,11 @@
-import { Box, HStack, VStack, Text, Progress, Icon, useDisclosure } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, Icon, useDisclosure } from '@chakra-ui/react'
 import { useState } from 'react'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
 import HeroModal from './HeroModal'
 import HeroTooltip from './HeroTooltip'
+import StatBar from '@components/ui/StatBar'
+import { calculateXpForLevel } from '@utils/heroUtils'
 
 interface PartyMemberCardProps {
   hero: Hero
@@ -15,7 +17,6 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  const hpPercent = (hero.stats.hp / hero.stats.maxHp) * 100
   
   return (
     <>
@@ -33,41 +34,37 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
           onMouseLeave={() => setIsHovered(false)}
           _hover={{ transform: 'translateX(4px)' }}
         >
-        <HStack spacing={2} p={2}>
-          <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
-          
-          <VStack spacing={1} align="stretch" flex={1} minW={0}>
-            <HStack spacing={2}>
-              <Text fontWeight="bold" fontSize="xs" noOfLines={1} flex={1}>
-                {hero.name}
-              </Text>
-              <Text fontSize="xs" color="orange.300" flexShrink={0}>
-                Lv{hero.level}
-              </Text>
-            </HStack>
+          <HStack spacing={2} p={2}>
+            <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
             
-            {/* HP Bar */}
-            <Box>
-              <Progress 
-                value={hpPercent} 
-                size="xs"
-                colorScheme={hpPercent > 50 ? 'green' : hpPercent > 25 ? 'yellow' : 'red'}
-                borderRadius="full"
-                bg="gray.700"
-              />
-              <HStack justify="space-between" mt={0.5}>
-                <Text fontSize="2xs" color="gray.500">HP</Text>
-                <Text fontSize="2xs" color="gray.400">
-                  {hero.stats.hp}/{hero.stats.maxHp}
+            <VStack spacing={1} align="stretch" flex={1} minW={0}>
+              <HStack spacing={2}>
+                <Text fontWeight="bold" fontSize="xs" noOfLines={1} flex={1}>
+                  {hero.name}
                 </Text>
-          </VStack>
-        </HStack>
+                <Text fontSize="xs" color="orange.300" flexShrink={0}>
+                  Lv{hero.level}
+                </Text>
+              </HStack>
+              
+              <StatBar 
+                label="HP"
+                current={hero.stats.hp}
+                max={hero.stats.maxHp}
+              />
+              
+              <StatBar 
+                label="XP"
+                current={hero.xp}
+                max={calculateXpForLevel(hero.level)}
+              />
+            </VStack>
+          </HStack>
         </Box>
       </HeroTooltip>
 
       <HeroModal hero={hero} isOpen={isOpen} onClose={onClose} />
     </>
   )
-}   </>
-  )
 }
+

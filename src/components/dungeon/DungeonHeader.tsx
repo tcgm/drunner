@@ -1,4 +1,4 @@
-import { VStack, Heading, Text, Box, HStack, Spacer } from '@chakra-ui/react'
+import { Heading, Text, Box, HStack, Spacer } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiTwoCoins } from 'react-icons/gi'
 
@@ -15,7 +15,7 @@ export default function DungeonHeader({ depth, maxDepth, gold }: DungeonHeaderPr
         <HStack align="start" spacing={0}>
           <Text fontSize="sm" color="gray.400">Current Location</Text>
           <Spacer w={1} />
-          <Heading size="md" color="orange.400">
+          <Heading size="sm" color="orange.400">
             Floor {depth}
           </Heading>
         </HStack>
@@ -28,14 +28,14 @@ export default function DungeonHeader({ depth, maxDepth, gold }: DungeonHeaderPr
             <Spacer w={1} />
             <HStack>
               <Icon as={GiTwoCoins} color="yellow.400" />
-              <Text fontSize="lg" fontWeight="bold">{gold}</Text>
+              <Text fontSize="sm" fontWeight="bold">{gold}</Text>
             </HStack>
           </HStack>
           
           <HStack spacing={0}>
             <Text fontSize="sm" color="gray.400">Depth</Text>
             <Spacer w={1} />
-            <Text fontSize="lg" fontWeight="bold">
+            <Text fontSize="sm" fontWeight="bold">
               {depth}/{maxDepth}
             </Text>
           </HStack>

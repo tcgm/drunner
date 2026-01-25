@@ -9,7 +9,6 @@ import {
   HStack,
   Text,
   Box,
-  Progress,
   Icon,
   Divider,
   Grid,
@@ -18,6 +17,8 @@ import {
 } from '@chakra-ui/react'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
+import StatBar from '@components/ui/StatBar'
+import { calculateXpForLevel } from '@utils/heroUtils'
 
 interface HeroModalProps {
   hero: Hero
@@ -28,8 +29,6 @@ interface HeroModalProps {
 export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  const hpPercent = (hero.stats.hp / hero.stats.maxHp) * 100
-  const xpPercent = (hero.xp / (hero.level * 100)) * 100
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
@@ -68,41 +67,22 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
 
             {/* HP and XP Bars */}
             <VStack spacing={3} align="stretch">
-              <Box>
-                <HStack justify="space-between" mb={1}>
-                  <Text fontSize="sm" fontWeight="bold" color="green.400">
-                    Health
-                  </Text>
-                  <Text fontSize="sm" color="gray.300">
-                    {hero.stats.hp} / {hero.stats.maxHp}
-                  </Text>
-                </HStack>
-                <Progress
-                  value={hpPercent}
-                  size="md"
-                  colorScheme={hpPercent > 50 ? 'green' : hpPercent > 25 ? 'yellow' : 'red'}
-                  borderRadius="full"
-                  bg="gray.700"
-                />
-              </Box>
+              <StatBar 
+                label="Health"
+                current={hero.stats.hp}
+                max={hero.stats.maxHp}
+                size="md"
+                valueSize="sm"
+              />
 
-              <Box>
-                <HStack justify="space-between" mb={1}>
-                  <Text fontSize="sm" fontWeight="bold" color="blue.400">
-                    Experience
-                  </Text>
-                  <Text fontSize="sm" color="gray.300">
-                    {hero.xp} / {hero.level * 100}
-                  </Text>
-                </HStack>
-                <Progress
-                  value={xpPercent}
-                  size="md"
-                  colorScheme="blue"
-                  borderRadius="full"
-                  bg="gray.700"
-                />
-              </Box>
+              <StatBar 
+                label="Experience"
+                current={hero.xp}
+                max={calculateXpForLevel(hero.level)}
+                colorScheme="blue"
+                size="md"
+                valueSize="sm"
+              />
             </VStack>
 
             <Divider borderColor="gray.600" />

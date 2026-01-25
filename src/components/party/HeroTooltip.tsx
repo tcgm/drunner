@@ -3,13 +3,13 @@ import {
   VStack,
   HStack,
   Text,
-  Box,
-  Progress,
   Icon,
   Badge,
 } from '@chakra-ui/react'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
+import StatBar from '@components/ui/StatBar'
+import { calculateXpForLevel } from '@utils/heroUtils'
 
 interface HeroTooltipProps {
   hero: Hero
@@ -19,8 +19,6 @@ interface HeroTooltipProps {
 export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  const hpPercent = (hero.stats.hp / hero.stats.maxHp) * 100
-  const xpPercent = (hero.xp / (hero.level * 100)) * 100
 
   return (
     <Tooltip
@@ -45,42 +43,23 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
           </HStack>
 
           {/* HP Bar */}
-          <Box>
-            <HStack justify="space-between" mb={1}>
-              <Text fontSize="xs" fontWeight="bold" color="green.400">
-                HP
-              </Text>
-              <Text fontSize="xs" color="gray.200">
-                {hero.stats.hp} / {hero.stats.maxHp}
-              </Text>
-            </HStack>
-            <Progress
-              value={hpPercent}
-              size="sm"
-              colorScheme={hpPercent > 50 ? 'green' : hpPercent > 25 ? 'yellow' : 'red'}
-              borderRadius="full"
-              bg="gray.700"
-            />
-          </Box>
+          <StatBar 
+            label="HP"
+            current={hero.stats.hp}
+            max={hero.stats.maxHp}
+            size="sm"
+            valueSize="xs"
+          />
 
           {/* XP Bar */}
-          <Box>
-            <HStack justify="space-between" mb={1}>
-              <Text fontSize="xs" fontWeight="bold" color="blue.400">
-                XP
-              </Text>
-              <Text fontSize="xs" color="gray.200">
-                {hero.xp} / {hero.level * 100}
-              </Text>
-            </HStack>
-            <Progress
-              value={xpPercent}
-              size="sm"
-              colorScheme="blue"
-              borderRadius="full"
-              bg="gray.700"
-            />
-          </Box>
+          <StatBar 
+            label="XP"
+            current={hero.xp}
+            max={calculateXpForLevel(hero.level)}
+            colorScheme="blue"
+            size="sm"
+            valueSize="xs"
+          />
 
           {/* Stats Grid */}
           <HStack spacing={3} justify="space-around" pt={1}>
