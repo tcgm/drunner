@@ -189,7 +189,7 @@ export function checkRequirements(
   }
   
   if (requirements.class) {
-    const hasClass = party.some(h => h.isAlive && h.class.id === requirements.class)
+    const hasClass = party.some(h => h.isAlive && h.class.id.toLowerCase() === requirements.class.toLowerCase())
     if (!hasClass) return false
   }
   
