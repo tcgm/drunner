@@ -167,7 +167,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
         {renderEquipmentSlot('accessory2')}
       </SimpleGrid>
 
-      {/* Stats summary */}
+      {/* Equipment bonuses summary */}
       <Box
         bg="gray.800"
         borderRadius="md"
@@ -177,17 +177,74 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
         w="full"
       >
         <Text fontSize="xs" color="gray.400" mb={1}>Equipment Bonuses:</Text>
-        <SimpleGrid columns={3} spacing={1} fontSize="xs">
-          <Text color="red.300">
-            ATK: {hero.stats.attack - (hero.class.baseStats.attack + (hero.level - 1) * 5)}
-          </Text>
-          <Text color="blue.300">
-            DEF: {hero.stats.defense - (hero.class.baseStats.defense + (hero.level - 1) * 5)}
-          </Text>
-          <Text color="green.300">
-            SPD: {hero.stats.speed - (hero.class.baseStats.speed + (hero.level - 1) * 5)}
-          </Text>
-        </SimpleGrid>
+        {(() => {
+          // Calculate equipment bonuses by summing up item stats
+          const equipmentBonuses = {
+            attack: 0,
+            defense: 0,
+            speed: 0,
+            luck: 0,
+            maxHp: 0,
+            magicPower: 0,
+          }
+          
+          // Sum stats from all equipped items
+          Object.values(hero.equipment).forEach(item => {
+            if (item && item.stats) {
+              if (item.stats.attack) equipmentBonuses.attack += item.stats.attack
+              if (item.stats.defense) equipmentBonuses.defense += item.stats.defense
+              if (item.stats.speed) equipmentBonuses.speed += item.stats.speed
+              if (item.stats.luck) equipmentBonuses.luck += item.stats.luck
+              if (item.stats.maxHp) equipmentBonuses.maxHp += item.stats.maxHp
+              if (item.stats.magicPower) equipmentBonuses.magicPower += item.stats.magicPower
+            }
+          })
+
+          const hasAnyBonuses = Object.values(equipmentBonuses).some(bonus => bonus > 0)
+          
+          if (!hasAnyBonuses) {
+            return (
+              <Text fontSize="xs" color="gray.500" textAlign="center">
+                No equipment bonuses
+              </Text>
+            )
+          }
+
+          return (
+            <SimpleGrid columns={2} spacing={1} fontSize="xs">
+              {equipmentBonuses.attack > 0 && (
+                <Text color="red.300">
+                  ATK: +{equipmentBonuses.attack}
+                </Text>
+              )}
+              {equipmentBonuses.defense > 0 && (
+                <Text color="blue.300">
+                  DEF: +{equipmentBonuses.defense}
+                </Text>
+              )}
+              {equipmentBonuses.speed > 0 && (
+                <Text color="green.300">
+                  SPD: +{equipmentBonuses.speed}
+                </Text>
+              )}
+              {equipmentBonuses.luck > 0 && (
+                <Text color="yellow.300">
+                  LUCK: +{equipmentBonuses.luck}
+                </Text>
+              )}
+              {equipmentBonuses.maxHp > 0 && (
+                <Text color="cyan.300">
+                  HP: +{equipmentBonuses.maxHp}
+                </Text>
+              )}
+              {equipmentBonuses.magicPower > 0 && (
+                <Text color="purple.300">
+                  MP: +{equipmentBonuses.magicPower}
+                </Text>
+              )}
+            </SimpleGrid>
+          )
+        })()}
       </Box>
     </VStack>
   )

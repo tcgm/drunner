@@ -4,6 +4,7 @@ import type { IconType } from 'react-icons'
 import type { Hero, ItemSlot, Item } from '../../types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
 import { useGameStore } from '@/store/gameStore'
+import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 
 const SLOT_ICONS: Record<ItemSlot, IconType> = {
   weapon: GameIcons.GiSwordman,
@@ -180,7 +181,7 @@ export function EquipmentPanel({
                   {renderEquipmentSlot('accessory2')}
                 </SimpleGrid>
 
-                {/* Stats summary */}
+                {/* Equipment bonuses summary */}
                 <Box
                   bg="gray.800"
                   borderRadius="md"
@@ -190,17 +191,74 @@ export function EquipmentPanel({
                   w="full"
                 >
                   <Text fontSize="xs" color="gray.400" mb={1}>Equipment Bonuses:</Text>
-                  <SimpleGrid columns={3} spacing={1} fontSize="xs">
-                    <Text color="red.300">
-                      ATK: {selectedHero.stats.attack - (selectedHero.class.baseStats.attack + (selectedHero.level - 1) * 5)}
-                    </Text>
-                    <Text color="blue.300">
-                      DEF: {selectedHero.stats.defense - (selectedHero.class.baseStats.defense + (selectedHero.level - 1) * 5)}
-                    </Text>
-                    <Text color="green.300">
-                      SPD: {selectedHero.stats.speed - (selectedHero.class.baseStats.speed + (selectedHero.level - 1) * 5)}
-                    </Text>
-                  </SimpleGrid>
+                  {(() => {
+                    // Calculate equipment bonuses by summing up item stats
+                    const equipmentBonuses = {
+                      attack: 0,
+                      defense: 0,
+                      speed: 0,
+                      luck: 0,
+                      maxHp: 0,
+                      magicPower: 0,
+                    }
+                    
+                    // Sum stats from all equipped items
+                    Object.values(selectedHero.equipment).forEach(item => {
+                      if (item && item.stats) {
+                        if (item.stats.attack) equipmentBonuses.attack += item.stats.attack
+                        if (item.stats.defense) equipmentBonuses.defense += item.stats.defense
+                        if (item.stats.speed) equipmentBonuses.speed += item.stats.speed
+                        if (item.stats.luck) equipmentBonuses.luck += item.stats.luck
+                        if (item.stats.maxHp) equipmentBonuses.maxHp += item.stats.maxHp
+                        if (item.stats.magicPower) equipmentBonuses.magicPower += item.stats.magicPower
+                      }
+                    })
+
+                    const hasAnyBonuses = Object.values(equipmentBonuses).some(bonus => bonus > 0)
+                    
+                    if (!hasAnyBonuses) {
+                      return (
+                        <Text fontSize="xs" color="gray.500" textAlign="center">
+                          No equipment bonuses
+                        </Text>
+                      )
+                    }
+
+                    return (
+                      <SimpleGrid columns={2} spacing={1} fontSize="xs">
+                        {equipmentBonuses.attack > 0 && (
+                          <Text color="red.300">
+                            ATK: +{equipmentBonuses.attack}
+                          </Text>
+                        )}
+                        {equipmentBonuses.defense > 0 && (
+                          <Text color="blue.300">
+                            DEF: +{equipmentBonuses.defense}
+                          </Text>
+                        )}
+                        {equipmentBonuses.speed > 0 && (
+                          <Text color="green.300">
+                            SPD: +{equipmentBonuses.speed}
+                          </Text>
+                        )}
+                        {equipmentBonuses.luck > 0 && (
+                          <Text color="yellow.300">
+                            LUCK: +{equipmentBonuses.luck}
+                          </Text>
+                        )}
+                        {equipmentBonuses.maxHp > 0 && (
+                          <Text color="cyan.300">
+                            HP: +{equipmentBonuses.maxHp}
+                          </Text>
+                        )}
+                        {equipmentBonuses.magicPower > 0 && (
+                          <Text color="purple.300">
+                            MP: +{equipmentBonuses.magicPower}
+                          </Text>
+                        )}
+                      </SimpleGrid>
+                    )
+                  })()}
                 </Box>
               </VStack>
             )}
