@@ -78,7 +78,7 @@ export function getEventsForDepth(depth: number): DungeonEvent[] {
 export function getNextEvent(
   depth: number, 
   recentEventIds: string[], 
-  maxRecent: number = 5
+  maxRecent: number = 10
 ): DungeonEvent | null {
   const excludeIds = recentEventIds.slice(-maxRecent)
   return selectRandomEvent(depth, excludeIds)
