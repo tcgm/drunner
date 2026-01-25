@@ -367,16 +367,25 @@ export const useGameStore = create<GameStore>()(
         // Lose all gold on defeat if penalty is enabled
         const loseGold = GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
         
+        // Apply death penalty immediately
+        const penalizedParty = applyPenaltyToParty(state.party)
+        const updatedRoster = state.heroRoster.map(rosterHero => {
+          const penalizedVersion = penalizedParty.find(h => h.id === rosterHero.id)
+          return penalizedVersion || rosterHero
+        })
+        
         return {
+          party: penalizedParty,
+          heroRoster: updatedRoster,
           isGameOver: true,
-          hasPendingPenalty: true,
+          hasPendingPenalty: false,
           activeRun: null,
           runHistory: [completedRun, ...state.runHistory],
           dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
         }
       }
       
-      return { isGameOver: true, hasPendingPenalty: true }
+      return { isGameOver: true, hasPendingPenalty: false }
     }),
   
   retreatFromDungeon: () =>
