@@ -1,3 +1,5 @@
+import type { IconType } from 'react-icons'
+
 // Core game types
 
 export interface Stats {
@@ -84,7 +86,7 @@ export interface Item {
   rarity: ItemRarity
   stats: Partial<Omit<Stats, 'hp'>> // Equipment can modify maxHp
   value: number
-  icon: string // react-icons/gi name
+  icon: IconType // react-icons icon component
   setId?: string // For set items (stretch)
 }
 
@@ -180,7 +182,7 @@ export interface GameState {
   lastOutcome: {
     text: string
     effects: {
-      type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status'
+      type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive'
       target: string[]
       value?: number
       item?: Item

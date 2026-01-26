@@ -54,13 +54,13 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
   }
 
   return (
-    <Flex h="calc(100vh - 4rem)" align="center" justify="center" p={4}>
-      <VStack spacing={6} maxW="800px" w="full">
-        <Icon as={GiDeathSkull} boxSize={32} color="red.400" />
-        <Heading size="2xl" color="red.400">
+    <Flex h="100vh" align="center" justify="center" p={4}>
+      <VStack spacing={4} maxW="700px" w="full">
+        <Icon as={GiDeathSkull} boxSize={20} color="red.400" />
+        <Heading size="xl" color="red.400">
           Party Defeated
         </Heading>
-        <Text fontSize="xl" color="gray.400">
+        <Text fontSize="lg" color="gray.400">
           Your party has fallen on Floor {depth}
         </Text>
 
@@ -70,10 +70,12 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           borderWidth="2px"
           borderColor="red.500"
           borderRadius="lg"
-          p={4}
+          p={3}
           w="full"
+          maxH="40vh"
+          overflowY="auto"
         >
-          <VStack spacing={3} align="start">
+          <VStack spacing={2} align="start">
             <Heading size="sm" color="red.300">Death Penalty: {penaltyType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</Heading>
             <Text fontSize="sm" color="red.200">
               {getPenaltyDescription()}
@@ -81,7 +83,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
 
             {party.length > 0 && (
               <Box w="full" pt={2}>
-                <Text fontSize="xs" color="red.300" mb={2} fontWeight="bold">
+                <Text fontSize="xs" color="red.300" mb={1.5} fontWeight="bold">
                   Penalties per Hero:
                 </Text>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} w="full">
@@ -110,10 +112,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           </VStack>
         </Box>
 
-        <Text fontSize="md" color="gray.500">
-          Return to main menu to start a new run
-        </Text>
-        <Button size="lg" colorScheme="orange" onClick={onExit}>
+        <Button size="lg" colorScheme="orange" onClick={onExit} mt={2}>
           Return to Main Menu
         </Button>
       </VStack>

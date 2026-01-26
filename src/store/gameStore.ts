@@ -44,7 +44,7 @@ const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): State
           isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)
         )
         if (needsSanitization) {
-          set({ party: state.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } })) } as Partial<T>, true)
+          set({ party: state.party.map(h => sanitizeHeroStats({ ...h, stats: { ...h.stats } })) } as Partial<T>)
         }
       }
     })
@@ -77,7 +77,7 @@ function applyPenaltyToParty(party: Hero[]): Hero[] {
     switch (GAME_CONFIG.deathPenalty.type) {
       case 'halve-levels':
         // Halve level (min 1)
-        newHero.level = Math.max(1, Math.floor(hero.level / 2))
+        { newHero.level = Math.max(1, Math.floor(hero.level / 2))
         newHero.xp = 0
         // Recalculate stats based on new level
         const levelDifference = hero.level - newHero.level
@@ -88,7 +88,7 @@ function applyPenaltyToParty(party: Hero[]): Hero[] {
         newHero.stats.luck = Math.max(hero.class.baseStats.luck, hero.stats.luck - (levelDifference * GAME_CONFIG.statGains.luck))
         newHero.stats.maxHp = calculateMaxHp(newHero.level, hero.class.baseStats.defense)
         newHero.stats.hp = newHero.stats.maxHp
-        break
+        break }
         
       case 'reset-levels':
         // Reset to level 1
@@ -135,6 +135,7 @@ function applyPenaltyToParty(party: Hero[]): Hero[] {
 interface GameStore extends GameState {
   // Actions
   addHero: (hero: Hero) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   addHeroByClass: (heroClass: any) => void
   removeHero: (heroId: string) => void
   updateHero: (heroId: string, updates: Partial<Hero>) => void
@@ -187,6 +188,7 @@ const initialState: GameState = {
 export const useGameStore = create<GameStore>()(
   persist(
     sanitizeMiddleware(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (set, get) => ({
         ...initialState,
   
@@ -362,7 +364,7 @@ export const useGameStore = create<GameStore>()(
         }
         
         // Lose all gold on defeat if penalty is enabled
-        const loseGold = import('@/config/game').GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
+        const loseGold = GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
         
         return {
           isGameOver: true,
