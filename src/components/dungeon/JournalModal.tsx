@@ -33,6 +33,7 @@ export default function JournalModal({ isOpen, onClose }: JournalModalProps) {
     <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside">
       <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
       <ModalContent 
+        className="journal-modal"
         bg="gray.900" 
         color="gray.200"
         border="3px solid"

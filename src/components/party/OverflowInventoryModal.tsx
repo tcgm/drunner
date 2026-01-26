@@ -34,7 +34,7 @@ export function OverflowInventoryModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent bg="gray.800">
+      <ModalContent className="overflow-inventory-modal" bg="gray.800">
         <ModalHeader color="orange.400">
           Items from Last Run
         </ModalHeader>

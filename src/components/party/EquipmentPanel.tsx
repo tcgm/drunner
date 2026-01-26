@@ -71,6 +71,7 @@ export function EquipmentPanel({
       // Empty slot - clickable to equip
       return (
         <Box
+          className={`equipment-slot equipment-slot--empty equipment-slot--${slot}`}
           key={slot}
           position="relative"
           bg="gray.800"
@@ -99,7 +100,7 @@ export function EquipmentPanel({
 
     // Equipped item - use ItemSlot component
     return (
-      <Box key={slot} position="relative">
+      <Box className={`equipment-slot equipment-slot--filled equipment-slot--${slot}`} key={slot} position="relative">
         <ItemSlotComponent
           item={restoreItemIcon(item)}
           size="md"
@@ -132,7 +133,7 @@ export function EquipmentPanel({
   }
 
   return (
-    <Box w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={4} overflowY="auto">
+    <Box className="equipment-panel" w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={4} overflowY="auto">
       <VStack spacing={3} h="full">
         <HStack justify="space-between" w="full">
           <Text fontSize="sm" fontWeight="bold" color="orange.300">
@@ -147,7 +148,7 @@ export function EquipmentPanel({
           <>
             {/* Hero selector tabs */}
             {activeParty.length > 1 && (
-              <HStack spacing={1} w="full" flexWrap="wrap">
+              <HStack className="equipment-panel-hero-tabs" spacing={1} w="full" flexWrap="wrap">
                 {activeParty.map((hero, index) => (
                   <Button
                     key={hero.id}
@@ -166,7 +167,7 @@ export function EquipmentPanel({
 
             {/* Inventory panel for selected hero */}
             {selectedHero && (
-              <VStack spacing={3} w="full" flex={1}>
+              <VStack className="equipment-panel-hero-equipment" spacing={3} w="full" flex={1}>
                 <Text fontSize="sm" fontWeight="bold" color="orange.300">
                   {selectedHero.name}'s Equipment
                 </Text>
@@ -185,6 +186,7 @@ export function EquipmentPanel({
 
                 {/* Equipment bonuses summary */}
                 <Box
+                  className="equipment-panel-bonuses"
                   bg="gray.800"
                   borderRadius="md"
                   borderWidth="1px"

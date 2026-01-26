@@ -52,22 +52,22 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   const { alkahest, discardItems, bankStorageSlots, bankGold, expandBankStorage } = useGameStore()
   const toast = useToast()
 
-  // Rarity order for sorting
-  const rarityOrder: Record<ItemRarity, number> = {
-    junk: 0,
-    common: 1,
-    uncommon: 2,
-    rare: 3,
-    epic: 4,
-    legendary: 5,
-    mythic: 6,
-    artifact: 7,
-    cursed: 8,
-    set: 9,
-  }
-
   // Filter and sort items
   const filteredAndSortedItems = useMemo(() => {
+    // Rarity order for sorting
+    const rarityOrder: Record<ItemRarity, number> = {
+      junk: 0,
+      common: 1,
+      uncommon: 2,
+      rare: 3,
+      epic: 4,
+      legendary: 5,
+      mythic: 6,
+      artifact: 7,
+      cursed: 8,
+      set: 9,
+    }
+    
     let items = [...bankInventory]
 
     // Apply pending slot filter first (overrides other filters)
@@ -242,7 +242,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="6xl" scrollBehavior="inside" isCentered={false}>
       <ModalOverlay bg="blackAlpha.700" />
-      <ModalContent bg="gray.900" maxH="90vh" border="2px solid" borderColor="gray.700" mt={4}>
+      <ModalContent className="bank-inventory-modal" bg="gray.900" maxH="90vh" border="2px solid" borderColor="gray.700" mt={4}>
         <ModalHeader bg="gray.800" borderBottom="2px solid" borderColor="gray.700">
           <Flex align="center" gap={4}>
             <Icon as={GiSwapBag} boxSize={8} color="orange.400" />

@@ -10,7 +10,7 @@ interface RosterTabProps {
 
 export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroClick }: RosterTabProps) {
   return (
-    <VStack align="stretch" spacing={3}>
+    <VStack className="roster-tab" align="stretch" spacing={3}>
       <Box flexShrink={0}>
         <Heading size="xs" color="orange.300" mb={1}>
           Stored Heroes
@@ -21,7 +21,7 @@ export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroCl
       </Box>
       
       {storedHeroes.length === 0 ? (
-        <Box bg="gray.850" p={4} borderRadius="md" textAlign="center">
+        <Box className="roster-tab-empty" bg="gray.850" p={4} borderRadius="md" textAlign="center">
           <Text fontSize="xs" color="gray.600">
             No heroes in your roster yet.
           </Text>

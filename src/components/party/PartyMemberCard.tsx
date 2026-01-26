@@ -35,6 +35,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
     <>
       <HeroTooltip hero={hero}>
         <MotionBox
+          className={`party-member-card ${hero.isAlive ? 'party-member-card--alive' : 'party-member-card--dead'}`}
           position="relative"
           bg={hero.isAlive ? 'gray.800' : 'gray.900'}
           borderRadius="md"
@@ -68,8 +69,8 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
             ))}
           </AnimatePresence>
 
-          <HStack spacing={2} p={2}>
-            <HStack spacing={1}>
+          <HStack className="party-member-card-content" spacing={2} p={2}>
+            <HStack className="party-member-card-icon-section" spacing={1}>
               <motion.div
                 animate={isHovered ? {
                   rotate: [0, -5, 5, 0],
@@ -84,7 +85,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
               </motion.div>
               
               {/* Equipment pips */}
-              <VStack spacing={0.5} align="start">
+              <VStack className="party-member-card-equipment-pips" spacing={0.5} align="start">
                 {Object.values(hero.equipment || {}).filter((item): item is Item => item !== null).map((item, idx) => (
                   <Tooltip key={idx} label={item.name} fontSize="xs" placement="right">
                     <Box
@@ -99,12 +100,12 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
               </VStack>
             </HStack>
             
-            <VStack spacing={1} align="stretch" flex={1} minW={0}>
-              <HStack spacing={2}>
-                <Text fontWeight="bold" fontSize="xs" noOfLines={1} flex={1}>
+            <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0}>
+              <HStack className="party-member-card-header" spacing={2}>
+                <Text className="party-member-card-name" fontWeight="bold" fontSize="xs" noOfLines={1} flex={1}>
                   {hero.name}
                 </Text>
-                <Text fontSize="xs" color="orange.300" flexShrink={0}>
+                <Text className="party-member-card-level" fontSize="xs" color="orange.300" flexShrink={0}>
                   Lv{hero.level}
                 </Text>
               </HStack>

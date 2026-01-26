@@ -57,8 +57,9 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
   }
 
   return (
-    <Flex h="100vh" align="center" justify="center" p={4}>
+    <Flex className="game-over-screen" h="100vh" align="center" justify="center" p={4}>
       <MotionVStack 
+        className="game-over-screen-content"
         spacing={4} 
         maxW="700px" 
         w="full"

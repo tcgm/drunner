@@ -3,6 +3,7 @@ import type { Hero, Run } from '@/types'
 import FloorStats from './FloorStats'
 import PartyStatusStats from './PartyStatusStats'
 import QuickStats from './QuickStats'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 interface InfoSidebarProps {
   party: Hero[]
@@ -23,7 +24,7 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
   const totalMagic = party.reduce((sum, h) => sum + (h.stats.magicPower ?? 0), 0)
 
   return (
-    <Box w="250px" bg="gray.800" borderRadius="lg" p={4} overflowY="auto" maxH="100%">
+    <Box className="info-sidebar" w="250px" bg="gray.800" borderRadius="lg" p={4} overflowY="auto" maxH="100%">
       <VStack spacing={4} align="stretch">
         <Heading size="md" color="orange.400">Info</Heading>
         

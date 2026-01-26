@@ -69,6 +69,7 @@ export default function StatBar({
 
   return (
     <MotionBox
+      className="stat-bar"
       animate={{
         scale: isHealing ? [1, 1.03, 1] : isDamaged ? [1, 0.97, 1] : 1
       }}
@@ -78,6 +79,7 @@ export default function StatBar({
       }}
     >
       <MotionBox
+        className={`stat-bar-container ${isHealing ? 'stat-bar--healing' : ''} ${isDamaged ? 'stat-bar--damaged' : ''}`}
         position="relative"
         overflow="hidden"
         animate={{
@@ -92,6 +94,7 @@ export default function StatBar({
         }}
       >
         <Progress 
+          className="stat-bar-progress"
           value={percent} 
           size={size}
           colorScheme={getColorScheme()}
@@ -105,9 +108,10 @@ export default function StatBar({
         />
       </MotionBox>
       {showValues && (
-        <HStack justify="space-between" mt={0.5}>
-          <Text fontSize={valueSize} color="gray.500">{label}</Text>
+        <HStack className="stat-bar-values" justify="space-between" mt={0.5}>
+          <Text className="stat-bar-label" fontSize={valueSize} color="gray.500">{label}</Text>
           <MotionBox
+            className="stat-bar-value"
             key={displayValue}
             initial={current !== prevValue ? { scale: 1.2, color: isHealing ? '#48bb78' : '#f56565' } : false}
             animate={{ scale: 1, color: '#A0AEC0' }}

@@ -12,8 +12,8 @@ interface PartyStatusStatsProps {
 export default function PartyStatusStats({ aliveCount, totalCount, avgLevel, currentHp, maxHp }: PartyStatusStatsProps) {
   return (
     <>
-      <Text fontSize="sm" fontWeight="bold" mb={2}>Party Status</Text>
-      <VStack align="stretch" spacing={1} fontSize="xs" color="gray.400">
+      <Text className="party-status-stats-title" fontSize="sm" fontWeight="bold" mb={2}>Party Status</Text>
+      <VStack className="party-status-stats" align="stretch" spacing={1} fontSize="xs" color="gray.400">
         <HStack justify="space-between">
           <Text>Alive:</Text>
           <Text color="green.400" fontWeight="bold">

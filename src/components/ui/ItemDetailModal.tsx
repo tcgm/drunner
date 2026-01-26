@@ -100,6 +100,7 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
     <Modal isOpen={isOpen} onClose={onClose} size="md" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent 
+        className={`item-detail-modal item-detail-modal--${item.rarity}${item.isUnique ? ' item-detail-modal--unique' : ''}`}
         bg="gray.800" 
         color="white"
         borderWidth={item.isUnique ? "3px" : "0"}
@@ -108,9 +109,9 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
           ? "0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)" 
           : "none"}
       >
-        <ModalHeader>
-          <HStack justify="space-between">
-            <VStack align="start" spacing={1}>
+        <ModalHeader className="item-detail-modal-header">
+          <HStack className="item-detail-modal-header-content" justify="space-between">
+            <VStack className="item-detail-modal-name-section" align="start" spacing={1}>
               <HStack>
                 <Text fontSize="lg" fontWeight="bold" color={item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.text || '#9CA3AF'}>
                   {item.name}
@@ -155,7 +156,7 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
             {item.stats && Object.keys(item.stats).length > 0 && (
               <>
                 <Divider borderColor="gray.600" />
-                <VStack align="start" spacing={2} w="full">
+                <VStack className="item-detail-modal-stats" align="start" spacing={2} w="full">
                   <Text fontSize="sm" fontWeight="bold" color="gray.200">
                     Item Statistics
                   </Text>

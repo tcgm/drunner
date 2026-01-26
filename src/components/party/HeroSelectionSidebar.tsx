@@ -23,7 +23,7 @@ export function HeroSelectionSidebar({
   onRosterHeroClick
 }: HeroSelectionSidebarProps) {
   return (
-    <Box w="280px" minW="280px" overflowY="auto" px={3} py={3} bg="gray.900" borderRight="2px solid" borderColor="gray.800">
+    <Box className="hero-selection-sidebar" w="280px" minW="280px" overflowY="auto" px={3} py={3} bg="gray.900" borderRight="2px solid" borderColor="gray.800">
       <Tabs size="sm" colorScheme="orange" isLazy index={tabIndex} onChange={onTabChange}>
         <TabList mb={3}>
           <Tab>Classes</Tab>

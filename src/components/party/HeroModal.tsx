@@ -33,9 +33,9 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered scrollBehavior="inside">
       <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
-      <ModalContent bg="gray.800" borderWidth="2px" borderColor="orange.500" maxW="600px">
-        <ModalHeader pb={2}>
-          <HStack spacing={4}>
+      <ModalContent className="hero-modal" bg="gray.800" borderWidth="2px" borderColor="orange.500" maxW="600px">
+        <ModalHeader className="hero-modal-header" pb={2}>
+          <HStack className="hero-modal-header-content" spacing={4}>
             <Icon as={IconComponent} boxSize={12} color="orange.400" />
             <VStack align="start" spacing={0} flex={1}>
               <Text fontSize="2xl" fontWeight="bold" color="orange.400">
@@ -57,7 +57,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
         <ModalBody pb={6}>
           <VStack spacing={4} align="stretch">
             {/* Class Description */}
-            <Box>
+            <Box className="hero-modal-description">
               <Text fontSize="sm" color="gray.400" fontStyle="italic">
                 {hero.class.description}
               </Text>
@@ -89,8 +89,8 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
             <Divider borderColor="gray.600" />
 
             {/* Stats Grid */}
-            <Box>
-              <Text fontSize="md" fontWeight="bold" mb={3} color="orange.400">
+            <Box className="hero-modal-stats-section">
+              <Text className="hero-modal-section-title" fontSize="md" fontWeight="bold" mb={3} color="orange.400">
                 Statistics
               </Text>
               <Grid templateColumns="repeat(2, 1fr)" gap={3}>
@@ -171,8 +171,8 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
             <Divider borderColor="gray.600" />
 
             {/* Abilities */}
-            <Box>
-              <Text fontSize="md" fontWeight="bold" mb={3} color="orange.400">
+            <Box className="hero-modal-abilities-section">
+              <Text className="hero-modal-section-title" fontSize="md" fontWeight="bold" mb={3} color="orange.400">
                 Abilities
               </Text>
               <VStack spacing={2} align="stretch">
@@ -210,8 +210,8 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
             <Divider borderColor="gray.600" />
 
             {/* Equipment (Placeholder) */}
-            <Box>
-              <Text fontSize="md" fontWeight="bold" mb={3} color="orange.400">
+            <Box className="hero-modal-equipment-section">
+              <Text className="hero-modal-section-title" fontSize="md" fontWeight="bold" mb={3} color="orange.400">
                 Equipment
               </Text>
               <Grid templateColumns="repeat(2, 1fr)" gap={2}>

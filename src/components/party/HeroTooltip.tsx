@@ -24,15 +24,15 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
   return (
     <Tooltip
       label={
-        <VStack spacing={2} align="stretch" p={2} minW="250px">
+        <VStack className="hero-tooltip" spacing={2} align="stretch" p={2} minW="250px">
           {/* Header */}
-          <HStack spacing={3}>
-            <Icon as={IconComponent} boxSize={10} color="orange.400" />
-            <VStack align="start" spacing={0} flex={1}>
-              <Text fontSize="md" fontWeight="bold" color="orange.400">
+          <HStack className="hero-tooltip-header" spacing={3}>
+            <Icon className="hero-tooltip-icon" as={IconComponent} boxSize={10} color="orange.400" />
+            <VStack className="hero-tooltip-info" align="start" spacing={0} flex={1}>
+              <Text className="hero-tooltip-name" fontSize="md" fontWeight="bold" color="orange.400">
                 {hero.name}
               </Text>
-              <HStack spacing={2}>
+              <HStack className="hero-tooltip-badges" spacing={2}>
                 <Badge colorScheme="orange" fontSize="xs">
                   Lv {hero.level}
                 </Badge>
@@ -64,29 +64,29 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
           />
 
           {/* Stats Grid */}
-          <HStack spacing={3} justify="space-around" pt={1}>
-            <VStack spacing={0}>
+          <HStack className="hero-tooltip-stats" spacing={3} justify="space-around" pt={1}>
+            <VStack className="hero-tooltip-stat hero-tooltip-stat--attack" spacing={0}>
               <Icon as={GameIcons.GiSwordman} color={GAME_CONFIG.colors.stats.attack} boxSize={4} />
               <Text fontSize="xs" color="gray.400">ATK</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>
                 {hero.stats.attack}
               </Text>
             </VStack>
-            <VStack spacing={0}>
+            <VStack className="hero-tooltip-stat hero-tooltip-stat--defense" spacing={0}>
               <Icon as={GameIcons.GiShield} color={GAME_CONFIG.colors.stats.defense} boxSize={4} />
               <Text fontSize="xs" color="gray.400">DEF</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
                 {hero.stats.defense}
               </Text>
             </VStack>
-            <VStack spacing={0}>
+            <VStack className="hero-tooltip-stat hero-tooltip-stat--speed" spacing={0}>
               <Icon as={GameIcons.GiRun} color={GAME_CONFIG.colors.stats.speed} boxSize={4} />
               <Text fontSize="xs" color="gray.400">SPD</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>
                 {hero.stats.speed}
               </Text>
             </VStack>
-            <VStack spacing={0}>
+            <VStack className="hero-tooltip-stat hero-tooltip-stat--luck" spacing={0}>
               <Icon as={GameIcons.GiClover} color={GAME_CONFIG.colors.stats.luck} boxSize={4} />
               <Text fontSize="xs" color="gray.400">LCK</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>
@@ -97,7 +97,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
 
           {/* Abilities Count */}
           {hero.abilities.length > 0 && (
-            <HStack justify="center" pt={1}>
+            <HStack className="hero-tooltip-abilities" justify="center" pt={1}>
               <Icon as={GameIcons.GiSparkles} boxSize={3} color="purple.400" />
               <Text fontSize="xs" color="gray.400">
                 {hero.abilities.length} {hero.abilities.length === 1 ? 'Ability' : 'Abilities'}

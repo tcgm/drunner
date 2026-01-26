@@ -19,37 +19,37 @@ export default function QuickStats({ totalAttack, totalDefense, totalSpeed, tota
 
   return (
     <>
-      <Text fontSize="sm" fontWeight="bold" mb={2}>Quick Stats</Text>
-      <VStack align="stretch" spacing={2} fontSize="xs">
-        <HStack>
+      <Text className="quick-stats-title" fontSize="sm" fontWeight="bold" mb={2}>Quick Stats</Text>
+      <VStack className="quick-stats" align="stretch" spacing={2} fontSize="xs">
+        <HStack className="quick-stats-stat quick-stats-stat--attack">
           <Icon as={GiSwordman} color={GAME_CONFIG.colors.stats.attack} />
           <Text color="gray.400">ATK:</Text>
           <Text color={GAME_CONFIG.colors.stats.attack} fontWeight="bold">
             {totalAttack}
           </Text>
         </HStack>
-        <HStack>
+        <HStack className="quick-stats-stat quick-stats-stat--defense">
           <Icon as={GiShield} color={GAME_CONFIG.colors.stats.defense} />
           <Text color="gray.400">DEF:</Text>
           <Text color={GAME_CONFIG.colors.stats.defense} fontWeight="bold">
             {totalDefense}
           </Text>
         </HStack>
-        <HStack>
+        <HStack className="quick-stats-stat quick-stats-stat--speed">
           <Icon as={GiRun} color={GAME_CONFIG.colors.stats.speed} />
           <Text color="gray.400">SPD:</Text>
           <Text color={GAME_CONFIG.colors.stats.speed} fontWeight="bold">
             {totalSpeed} ({avgSpeed})
           </Text>
         </HStack>
-        <HStack>
+        <HStack className="quick-stats-stat quick-stats-stat--luck">
           <Icon as={GiClover} color={GAME_CONFIG.colors.stats.luck} />
           <Text color="gray.400">LCK:</Text>
           <Text color={GAME_CONFIG.colors.stats.luck} fontWeight="bold">
             {totalLuck} ({avgLuck})
           </Text>
         </HStack>
-        <HStack>
+        <HStack className="quick-stats-stat quick-stats-stat--magic">
           <Icon as={GiMagicSwirl} color={GAME_CONFIG.colors.stats.magicPower} />
           <Text color="gray.400">MAG:</Text>
           <Text color={GAME_CONFIG.colors.stats.magicPower} fontWeight="bold">

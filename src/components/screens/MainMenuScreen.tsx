@@ -122,16 +122,17 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
   }
   
   return (
-    <Box h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="center" overflow="hidden">
-      <VStack spacing={8}>
-        <Heading size="2xl" color="orange.400">
+    <Box className="main-menu-screen" h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="center" overflow="hidden">
+      <VStack className="main-menu-content" spacing={8}>
+        <Heading className="main-menu-title" size="2xl" color="orange.400">
           Dungeon Runner
         </Heading>
-        <VStack spacing={4}>
-          <Button colorScheme="orange" size="lg" onClick={onNewRun}>
+        <VStack className="main-menu-buttons" spacing={4}>
+          <Button className="btn-new-run" colorScheme="orange" size="lg" onClick={onNewRun}>
             New Run
           </Button>
           <Button 
+            className="btn-continue-run"
             colorScheme="orange" 
             variant="outline"
             size="lg" 
@@ -141,6 +142,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             Continue Run
           </Button>
           <Button 
+            className="btn-run-history"
             colorScheme="gray" 
             size="lg" 
             onClick={onRunHistory}
@@ -148,26 +150,27 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             Run History
           </Button>
           <Button 
+            className="btn-manage-saves"
             colorScheme="blue" 
             size="lg" 
             onClick={handleOpenSaveManager}
           >
             Manage Saves
           </Button>
-          <Button colorScheme="gray" size="lg" isDisabled>
+          <Button className="btn-settings" colorScheme="gray" size="lg" isDisabled>
             Settings (Coming Soon)
           </Button>
         </VStack>
       </VStack>
 
       {/* Save Management Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} size="lg" scrollBehavior="inside">
+      <Modal className="save-management-modal" isOpen={isOpen} onClose={onClose} size="lg" scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent bg="gray.800">
-          <ModalHeader color="blue.400">Save Management</ModalHeader>
+        <ModalContent className="save-management-content" bg="gray.800">
+          <ModalHeader className="save-management-header" color="blue.400">Save Management</ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={6}>
-            <VStack spacing={4} align="stretch">
+          <ModalBody className="save-management-body" pb={6}>
+            <VStack className="save-management-sections" spacing={4} align="stretch">
               <Box>
                 <Text fontSize="sm" color="gray.400" mb={2}>
                   Automatic backups are created when the game loads. Restoring a backup will reload the page.
@@ -175,12 +178,13 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
               </Box>
 
               {/* Export/Import Section */}
-              <Box bg="gray.900" p={4} borderRadius="md" borderWidth="1px" borderColor="gray.700">
-                <Text fontSize="md" fontWeight="bold" color="gray.300" mb={3}>
+              <Box className="save-file-management" bg="gray.900" p={4} borderRadius="md" borderWidth="1px" borderColor="gray.700">
+                <Text className="save-file-management-title" fontSize="md" fontWeight="bold" color="gray.300" mb={3}>
                   Save File Management
                 </Text>
-                <HStack spacing={3}>
+                <HStack className="save-file-actions" spacing={3}>
                   <Button
+                    className="btn-export-save"
                     size="md"
                     colorScheme="green"
                     onClick={handleExportSave}
@@ -189,6 +193,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
                     Export Save
                   </Button>
                   <Button
+                    className="btn-import-save"
                     size="md"
                     colorScheme="purple"
                     onClick={handleImportSave}
@@ -204,27 +209,28 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
 
               <Divider />
 
-              <Box>
-                <HStack justify="space-between" mb={3}>
-                  <Text fontSize="md" fontWeight="bold" color="gray.300">
+              <Box className="backups-section">
+                <HStack className="backups-header" justify="space-between" mb={3}>
+                  <Text className="backups-title" fontSize="md" fontWeight="bold" color="gray.300">
                     Available Backups
                   </Text>
-                  <Badge colorScheme="blue">{backups.length} saves</Badge>
+                  <Badge className="backups-count" colorScheme="blue">{backups.length} saves</Badge>
                 </HStack>
 
                 {backups.length === 0 ? (
-                  <Box bg="gray.900" p={4} borderRadius="md" textAlign="center">
+                  <Box className="no-backups" bg="gray.900" p={4} borderRadius="md" textAlign="center">
                     <Text color="gray.500" fontSize="sm">
                       No backups found. Backups are created automatically when the game loads.
                     </Text>
                   </Box>
                 ) : (
-                  <VStack spacing={2} align="stretch" maxH="400px" overflowY="auto">
+                  <VStack className="backups-list" spacing={2} align="stretch" maxH="400px" overflowY="auto">
                     {backups.map((backup, index) => {
                       const { date, time, relative } = formatBackupDate(backup)
                       return (
                         <Box
                           key={backup}
+                          className="backup-item"
                           bg="gray.900"
                           p={3}
                           borderRadius="md"
@@ -233,21 +239,22 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
                           _hover={{ borderColor: 'blue.500', bg: 'gray.850' }}
                           transition="all 0.2s"
                         >
-                          <HStack justify="space-between" align="start">
-                            <VStack align="start" spacing={0} flex={1}>
-                              <HStack>
-                                <Text fontSize="sm" fontWeight="bold" color="gray.200">
+                          <HStack className="backup-item-content" justify="space-between" align="start">
+                            <VStack className="backup-item-info" align="start" spacing={0} flex={1}>
+                              <HStack className="backup-item-header">
+                                <Text className="backup-item-number" fontSize="sm" fontWeight="bold" color="gray.200">
                                   Backup #{backups.length - index}
                                 </Text>
-                                <Badge colorScheme="green" fontSize="xs">
+                                <Badge className="backup-item-relative-time" colorScheme="green" fontSize="xs">
                                   {relative}
                                 </Badge>
                               </HStack>
-                              <Text fontSize="xs" color="gray.500">
+                              <Text className="backup-item-timestamp" fontSize="xs" color="gray.500">
                                 {date} at {time}
                               </Text>
                             </VStack>
                             <Button
+                              className="btn-restore-backup"
                               size="sm"
                               colorScheme="blue"
                               onClick={() => handleRestoreBackup(backup)}

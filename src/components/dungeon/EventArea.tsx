@@ -28,6 +28,7 @@ export default function EventArea({
 }: EventAreaProps) {
   return (
     <Box 
+      className="event-area"
       flex={1} 
       bg="gray.800" 
       borderRadius="lg" 

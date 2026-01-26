@@ -10,9 +10,9 @@ interface DungeonHeaderProps {
 
 export default function DungeonHeader({ depth, maxDepth, gold }: DungeonHeaderProps) {
   return (
-    <Box bg="gray.800" borderRadius="lg" p={2}>
-      <HStack>
-        <HStack align="start" spacing={0}>
+    <Box className="dungeon-header" bg="gray.800" borderRadius="lg" p={2}>
+      <HStack className="dungeon-header-content">
+        <HStack className="dungeon-header-floor" align="start" spacing={0}>
           <Text fontSize="sm" color="gray.400">Current Location</Text>
           <Spacer w={1} />
           <Heading size="sm" color="orange.400">
@@ -22,8 +22,8 @@ export default function DungeonHeader({ depth, maxDepth, gold }: DungeonHeaderPr
         
         <Spacer />
         
-        <HStack spacing={6}>
-          <HStack spacing={0}>
+        <HStack className="dungeon-header-stats" spacing={6}>
+          <HStack className="dungeon-header-gold" spacing={0}>
             <Text fontSize="sm" color="gray.400">Gold</Text>
             <Spacer w={1} />
             <HStack>
@@ -32,7 +32,7 @@ export default function DungeonHeader({ depth, maxDepth, gold }: DungeonHeaderPr
             </HStack>
           </HStack>
           
-          <HStack spacing={0}>
+          <HStack className="dungeon-header-depth" spacing={0}>
             <Text fontSize="sm" color="gray.400">Depth</Text>
             <Spacer w={1} />
             <Text fontSize="sm" fontWeight="bold">

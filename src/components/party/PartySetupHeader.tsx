@@ -11,20 +11,20 @@ interface PartySetupHeaderProps {
 
 export function PartySetupHeader({ bankGold, metaXp, onBack, onStart, canStart }: PartySetupHeaderProps) {
   return (
-    <Box bg="gray.950" borderBottom="2px solid" borderColor="orange.800" px={4} py={2} flexShrink={0}>
-      <HStack justify="space-between">
-        <HStack spacing={4}>
+    <Box className="party-setup-header" bg="gray.950" borderBottom="2px solid" borderColor="orange.800" px={4} py={2} flexShrink={0}>
+      <HStack className="party-setup-header-content" justify="space-between">
+        <HStack className="party-setup-header-info" spacing={4}>
           <Heading size="sm" color="orange.400">Assemble Your Party</Heading>
-          <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
+          <HStack className="party-setup-header-gold" spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
             <Text fontSize="xs" color="gray.400">Bank Gold:</Text>
             <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.gold.light}>{bankGold}</Text>
           </HStack>
-          <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
+          <HStack className="party-setup-header-metaxp" spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
             <Text fontSize="xs" color="gray.400">Meta XP:</Text>
             <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.xp.light}>{metaXp}</Text>
           </HStack>
         </HStack>
-        <HStack spacing={2}>
+        <HStack className="party-setup-header-actions" spacing={2}>
           <Button variant="outline" colorScheme="gray" onClick={onBack} size="xs">
             Back
           </Button>

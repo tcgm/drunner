@@ -66,7 +66,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
         key={slot}
         label={
           item ? (
-            <VStack align="start" spacing={1} p={1}>
+            <VStack className="inventory-panel-tooltip" align="start" spacing={1} p={1}>
               <Text fontWeight="bold" fontSize="sm" color={`${RARITY_COLORS[item.rarity]}.300`}>
                 {item.name}
               </Text>

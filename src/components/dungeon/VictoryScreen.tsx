@@ -23,8 +23,9 @@ export default function VictoryScreen({ depth, onExit }: VictoryScreenProps) {
   }, [victoryGame])
 
   return (
-    <Flex h="100vh" align="center" justify="center" p={4}>
+    <Flex className="victory-screen" h="100vh" align="center" justify="center" p={4}>
       <MotionVStack 
+        className="victory-screen-content"
         spacing={4} 
         maxW="700px" 
         w="full"

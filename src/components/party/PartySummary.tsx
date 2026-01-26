@@ -15,8 +15,8 @@ export default function PartySummary({ party }: PartySummaryProps) {
   const avgSpeed = Math.round(party.reduce((sum, h) => sum + h.stats.speed, 0) / party.length)
   
   return (
-    <Box w="full" p={2} bg="gray.900" borderRadius="lg" borderWidth="2px" borderColor="gray.700" flexShrink={0}>
-      <HStack spacing={6} fontSize="sm" justify="center">
+    <Box className="party-summary" w="full" p={2} bg="gray.900" borderRadius="lg" borderWidth="2px" borderColor="gray.700" flexShrink={0}>
+      <HStack className="party-summary-stats" spacing={6} fontSize="sm" justify="center">
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Total HP:</Text>
           <Text color={GAME_CONFIG.colors.hp.base} fontWeight="bold">{totalHp}</Text>

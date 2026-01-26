@@ -83,10 +83,10 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }
   
   return (
-    <Flex h="100vh" gap={2} p={2}>
+    <Flex className="dungeon-screen" h="100vh" gap={2} p={2}>
       <PartySidebar party={party} />
       
-      <Flex direction="column" flex={1} gap={2} minH={0}>
+      <Flex className="dungeon-screen-main" direction="column" flex={1} gap={2} minH={0}>
         <DungeonHeader 
           depth={dungeon.depth} 
           maxDepth={dungeon.maxDepth} 

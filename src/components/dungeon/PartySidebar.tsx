@@ -9,9 +9,9 @@ interface PartySidebarProps {
 
 export default function PartySidebar({ party, heroEffects = {} }: PartySidebarProps) {
   return (
-    <Box w="240px" bg="gray.800" borderRadius="lg" p={3} overflowY="auto">
-      <VStack spacing={3} align="stretch">
-        <Heading size="sm" color="orange.400" px={1}>
+    <Box className="party-sidebar" w="240px" bg="gray.800" borderRadius="lg" p={3} overflowY="auto">
+      <VStack className="party-sidebar-content" spacing={3} align="stretch">
+        <Heading className="party-sidebar-title" size="sm" color="orange.400" px={1}>
           Party ({party.length})
         </Heading>
         
@@ -24,7 +24,7 @@ export default function PartySidebar({ party, heroEffects = {} }: PartySidebarPr
         ))}
         
         {party.length === 0 && (
-          <Text fontSize="sm" color="gray.500" textAlign="center" py={4}>
+          <Text className="party-sidebar-empty" fontSize="sm" color="gray.500" textAlign="center" py={4}>
             No party members
           </Text>
         )}

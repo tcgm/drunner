@@ -13,10 +13,11 @@ interface DungeonActionBarProps {
 
 export default function DungeonActionBar({ showContinue, onContinue, onInventory, onJournal, onRetreat, onExit }: DungeonActionBarProps) {
   return (
-    <Box bg="gray.800" borderRadius="lg" p={4}>
-      <HStack spacing={4}>
+    <Box className="dungeon-action-bar" bg="gray.800" borderRadius="lg" p={4}>
+      <HStack className="dungeon-action-bar-content" spacing={4}>
         {showContinue && (
           <Button 
+            className="dungeon-action-bar-continue"
             colorScheme="orange" 
             leftIcon={<Icon as={GiFootprint} />}
             size="lg"
@@ -26,6 +27,7 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
           </Button>
         )}
         <Button 
+          className="dungeon-action-bar-inventory"
           colorScheme="blue" 
           variant="outline"
           leftIcon={<Icon as={GiBackpack} />}
@@ -34,6 +36,7 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
           Inventory
         </Button>
         <Button 
+          className="dungeon-action-bar-journal"
           colorScheme="purple" 
           variant="outline"
           leftIcon={<Icon as={GiBookCover} />}
@@ -45,6 +48,7 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
         <Spacer />
         
         <Button 
+          className="dungeon-action-bar-retreat"
           colorScheme="yellow" 
           variant="outline"
           leftIcon={<Icon as={GiReturnArrow} />}
@@ -54,6 +58,7 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
         </Button>
         
         <Button 
+          className="dungeon-action-bar-exit"
           colorScheme="gray" 
           variant="ghost"
           onClick={onExit}

@@ -163,7 +163,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   }
 
   return (
-    <Box h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
+    <Box className="party-setup-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
       {/* Header */}
       <PartySetupHeader
         bankGold={bankGold}
@@ -173,7 +173,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onStart={handleStart}
       />
 
-      <Flex flex={1} minH={0} overflow="hidden">
+      <Flex className="party-setup-screen-content" flex={1} minH={0} overflow="hidden">
         {/* Left Sidebar */}
         <HeroSelectionSidebar
           tabIndex={tabIndex}
@@ -186,7 +186,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         />
 
         {/* Center - Party Slots */}
-        <Box flex={1} minW={0} display="flex" flexDirection="column">
+        <Box className="party-setup-screen-center" flex={1} minW={0} display="flex" flexDirection="column">
           <PartySetupSlots
             party={party}
             onAddHero={handleAddHeroClick}

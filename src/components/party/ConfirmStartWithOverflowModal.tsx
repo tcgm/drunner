@@ -12,7 +12,7 @@ export function ConfirmStartWithOverflowModal({ isOpen, onClose, overflowInvento
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md" scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent bg="gray.800">
+      <ModalContent className="confirm-start-overflow-modal" bg="gray.800">
         <ModalHeader color="red.400">
           Warning: Unresolved Items
         </ModalHeader>

@@ -23,10 +23,10 @@ export default function ClassCard({
   const maxHp = calculateMaxHp(1, heroClass.baseStats.defense)
   
   const tooltipLabel = (
-    <VStack align="start" spacing={1} p={1}>
-      <Text fontWeight="bold" fontSize="sm">{heroClass.name}</Text>
-      <Text fontSize="xs" color="gray.300">{heroClass.description}</Text>
-      <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
+    <VStack className="class-card-tooltip" align="start" spacing={1} p={1}>
+      <Text className="class-card-tooltip-name" fontWeight="bold" fontSize="sm">{heroClass.name}</Text>
+      <Text className="class-card-tooltip-desc" fontSize="xs" color="gray.300">{heroClass.description}</Text>
+      <SimpleGrid className="class-card-tooltip-stats" columns={2} spacing={2} pt={1} fontSize="xs">
         <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{maxHp}</Text></Text>
         <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{heroClass.baseStats.attack}</Text></Text>
         <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{heroClass.baseStats.defense}</Text></Text>
@@ -39,6 +39,7 @@ export default function ClassCard({
   return (
     <Tooltip label={tooltipLabel} placement="top" hasArrow bg="gray.800" color="white" p={2}>
       <Box
+        className={`class-card ${isSelected ? 'class-card--selected' : ''} ${partyHasClass ? 'class-card--in-party' : ''}`}
         position="relative"
         h="12vh"
         bg={isSelected ? 'orange.900' : 'gray.800'}
@@ -56,12 +57,13 @@ export default function ClassCard({
         }}
       >
         {/* Icon Background */}
-        <Box position="absolute" top={-2} right={-2} opacity={0.08}>
+        <Box className="class-card-icon-bg" position="absolute" top={-2} right={-2} opacity={0.08}>
           <Icon as={IconComponent} boxSize={18} color="orange.400" />
         </Box>
         
-        <HStack h="full" spacing={2} p={2} position="relative" zIndex={1}>
+        <HStack className="class-card-content" h="full" spacing={2} p={2} position="relative" zIndex={1}>
           <Box
+            className="class-card-icon"
             bg={isSelected ? 'orange.800' : 'gray.900'}
             borderRadius="md"
             p={2}
@@ -72,23 +74,24 @@ export default function ClassCard({
             <Icon as={IconComponent} boxSize={9} color="orange.300" />
           </Box>
           
-          <VStack align="start" spacing={0} flex={1} minW={0}>
-            <Text fontWeight="bold" fontSize="sm" color="orange.200" isTruncated w="full">
+          <VStack className="class-card-info" align="start" spacing={0} flex={1} minW={0}>
+            <Text className="class-card-name" fontWeight="bold" fontSize="sm" color="orange.200" isTruncated w="full">
               {heroClass.name}
             </Text>
-            <HStack spacing={1} fontSize="xs" color="gray.400" flexWrap="wrap">
+            <HStack className="class-card-quick-stats" spacing={1} fontSize="xs" color="gray.400" flexWrap="wrap">
               <Text>HP:{maxHp}</Text>
               <Text>•</Text>
               <Text>ATK:{heroClass.baseStats.attack}</Text>
             </HStack>
             {partyHasClass && (
-              <Badge colorScheme="green" fontSize="xs" mt={0.5}>In Party</Badge>
+              <Badge className="class-card-in-party-badge" colorScheme="green" fontSize="xs" mt={0.5}>In Party</Badge>
             )}
           </VStack>
         </HStack>
         
         {isSelected && (
           <Box
+            className="class-card-selected-indicator"
             position="absolute"
             top={0}
             left={0}

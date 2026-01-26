@@ -27,6 +27,7 @@ export default function HeroSlot({
   
   return (
     <Box
+      className={`hero-slot ${isEmpty ? 'hero-slot--empty' : 'hero-slot--filled'} ${isHovered ? 'hero-slot--hovered' : ''}`}
       position="relative"
       h="auto"
       w="full"
@@ -44,17 +45,18 @@ export default function HeroSlot({
       boxShadow={isEmpty ? 'none' : '0 4px 16px rgba(0,0,0,0.4)'}
     >
       {isEmpty ? (
-        <Flex h="120px" align="center" justify="center" direction="column">
-          <ChakraIcon as={GameIcons.GiCircle} boxSize={12} color="gray.600" mb={2} />
-          <Text color="gray.500" fontSize="sm" fontWeight="bold" textAlign="center" px={2}>
+        <Flex className="hero-slot-empty" h="120px" align="center" justify="center" direction="column">
+          <ChakraIcon className="hero-slot-empty-icon" as={GameIcons.GiCircle} boxSize={12} color="gray.600" mb={2} />
+          <Text className="hero-slot-empty-text" color="gray.500" fontSize="sm" fontWeight="bold" textAlign="center" px={2}>
             {selectedClass ? selectedClass.name : 'Empty Slot'}
           </Text>
-          <Text color="gray.600" fontSize="xs" mt={1}>Slot {index + 1}</Text>
+          <Text className="hero-slot-number" color="gray.600" fontSize="xs" mt={1}>Slot {index + 1}</Text>
         </Flex>
       ) : (
         <>
           {/* Background Icon Effect */}
           <Box
+            className="hero-slot-bg-icon"
             position="absolute"
             top="-20px"
             right="-20px"
@@ -68,9 +70,10 @@ export default function HeroSlot({
             />
           </Box>
           
-          <VStack spacing={1} p={1} position="relative" zIndex={1}>
+          <VStack className="hero-slot-content" spacing={1} p={1} position="relative" zIndex={1}>
             {/* Main Icon */}
             <Box
+              className="hero-slot-icon"
               bg="linear-gradient(135deg, rgba(194, 65, 12, 0.3) 0%, rgba(234, 88, 12, 0.3) 100%)"
               borderRadius="lg"
               p={1}
@@ -96,29 +99,29 @@ export default function HeroSlot({
             </Box>
             
             {/* Hero Info */}
-            <VStack spacing={0.5} w="full">
-              <Text fontWeight="bold" fontSize="sm" color="orange.200" w="full" textAlign="center">
+            <VStack className="hero-slot-info" spacing={0.5} w="full">
+              <Text className="hero-slot-name" fontWeight="bold" fontSize="sm" color="orange.200" w="full" textAlign="center">
                 {hero.name}
               </Text>
-              <Badge colorScheme="orange" fontSize="xs">
+              <Badge className="hero-slot-level" colorScheme="orange" fontSize="xs">
                 Lv{hero.level}
               </Badge>
               
               {/* Stats Grid */}
-              <SimpleGrid columns={2} spacing={1} w="full" pt={1} fontSize="xs">
-                <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
+              <SimpleGrid className="hero-slot-stats" columns={2} spacing={1} w="full" pt={1} fontSize="xs">
+                <VStack className="hero-slot-stat hero-slot-stat--hp" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">HP</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{hero.stats.maxHp}</Text>
                 </VStack>
-                <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
+                <VStack className="hero-slot-stat hero-slot-stat--attack" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">ATK</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text>
                 </VStack>
-                <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
+                <VStack className="hero-slot-stat hero-slot-stat--defense" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">DEF</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text>
                 </VStack>
-                <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
+                <VStack className="hero-slot-stat hero-slot-stat--speed" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">SPD</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text>
                 </VStack>
@@ -127,6 +130,7 @@ export default function HeroSlot({
             
             {/* Remove Button */}
             <Button
+              className="hero-slot-remove-btn"
               size="sm"
               colorScheme="red"
               variant="solid"
@@ -147,6 +151,7 @@ export default function HeroSlot({
       
       {/* Slot Number Badge */}
       <Box
+        className="hero-slot-badge"
         position="absolute"
         top={2}
         right={2}
@@ -169,6 +174,7 @@ export default function HeroSlot({
       {/* Selected glow */}
       {!isEmpty && (
         <Box
+          className="hero-slot-glow"
           position="absolute"
           top={0}
           left={0}

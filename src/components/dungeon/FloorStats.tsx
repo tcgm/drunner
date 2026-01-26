@@ -9,8 +9,8 @@ interface FloorStatsProps {
 export default function FloorStats({ eventsCleared, enemiesDefeated, treasureFound }: FloorStatsProps) {
   return (
     <>
-      <Text fontSize="sm" fontWeight="bold" mb={2}>Current Floor</Text>
-      <VStack align="stretch" spacing={1} fontSize="xs" color="gray.400">
+      <Text className="floor-stats-title" fontSize="sm" fontWeight="bold" mb={2}>Current Floor</Text>
+      <VStack className="floor-stats" align="stretch" spacing={1} fontSize="xs" color="gray.400">
         <HStack justify="space-between">
           <Text>Events Cleared:</Text>
           <Text color="white" fontWeight="bold">{eventsCleared}</Text>

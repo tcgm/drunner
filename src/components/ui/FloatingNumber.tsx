@@ -51,6 +51,7 @@ export function FloatingNumber({ value, type, onComplete }: FloatingNumberProps)
   
   return (
     <MotionBox
+      className={`floating-number floating-number--${type}`}
       position="absolute"
       top="50%"
       left="50%"

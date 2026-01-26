@@ -14,7 +14,7 @@ interface ClassSelectionTabProps {
 
 export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelectionTabProps) {
   return (
-    <VStack align="stretch" spacing={2}>
+    <VStack className="class-selection-tab" align="stretch" spacing={2}>
       <Box flexShrink={0} mb={2}>
         <Heading size="xs" color="orange.300" mb={1}>
           Hero Classes
@@ -46,6 +46,7 @@ export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelecti
         return (
           <Tooltip key={cls.id} label={tooltipLabel} placement="right" hasArrow bg="gray.800" color="white" p={2}>
             <Box
+              className={`class-selection-card ${isSelected ? 'class-selection-card--selected' : ''}`}
               position="relative"
               h="12vh"
               bg={isSelected ? 'orange.900' : 'gray.800'}

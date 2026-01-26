@@ -32,6 +32,7 @@ export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
 
   const RunCard = ({ run }: { run: Run }) => (
     <Box
+      className={`run-card run-card--${run.result}`}
       bg="gray.800"
       borderRadius="lg"
       p={4}
@@ -143,9 +144,9 @@ export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
   const allRuns = activeRun ? [activeRun, ...runHistory] : runHistory
 
   return (
-    <Box h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
+    <Box className="run-history-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
       {/* Top Bar */}
-      <Box bg="gray.950" borderBottom="2px solid" borderColor="orange.800" px={4} py={3} flexShrink={0}>
+      <Box className="run-history-screen-header" bg="gray.950" borderBottom="2px solid" borderColor="orange.800" px={4} py={3} flexShrink={0}>
         <HStack justify="space-between">
           <Heading size="md" color="orange.400">Run History</Heading>
           <Button variant="outline" colorScheme="gray" onClick={onBack} size="sm">
@@ -155,8 +156,8 @@ export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
       </Box>
 
       {/* Main Content */}
-      <Box flex={1} overflowY="auto" p={6}>
-        <VStack spacing={4} maxW="800px" mx="auto">
+      <Box className="run-history-screen-content" flex={1} overflowY="auto" p={6}>
+        <VStack className="run-history-screen-list" spacing={4} maxW="800px" mx="auto">
           {allRuns.length === 0 ? (
             <Box textAlign="center" py={12}>
               <Text fontSize="lg" color="gray.500">

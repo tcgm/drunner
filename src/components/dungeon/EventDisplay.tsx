@@ -27,9 +27,10 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
 
 export default function EventDisplay({ event, party, depth, gold, onSelectChoice }: EventDisplayProps) {
   return (
-    <VStack spacing={3} align="stretch" h="full">
+    <VStack className="event-display" spacing={3} align="stretch" h="full">
       {/* Event Header */}
       <MotionBox
+        className="event-display-header"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -37,21 +38,21 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
           ease: "easeOut"
         }}
       >
-        <HStack mb={1.5}>
+        <HStack className="event-display-type" mb={1.5}>
           <Badge colorScheme={EVENT_TYPE_COLORS[event.type]} fontSize="xs" px={2} py={0.5}>
             {event.type.toUpperCase()}
           </Badge>
         </HStack>
-        <Heading size="sm" color="orange.400" mb={2}>
+        <Heading className="event-display-title" size="sm" color="orange.400" mb={2}>
           {event.title}
         </Heading>
-        <Text fontSize="sm" color="gray.300" lineHeight="short">
+        <Text className="event-display-description" fontSize="sm" color="gray.300" lineHeight="short">
           {event.description}
         </Text>
       </MotionBox>
 
       {/* Choices */}
-      <VStack spacing={2} align="stretch" flex={1}>
+      <VStack className="event-display-choices" spacing={2} align="stretch" flex={1}>
         <Heading size="sm" color="gray.400" fontSize="md">
           What will you do?
         </Heading>
@@ -60,6 +61,7 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
           
           return (
             <MotionButton
+              className={`event-display-choice ${canSelect ? 'event-display-choice--enabled' : 'event-display-choice--disabled'}`}
               key={index}
               size="sm"
               variant="outline"

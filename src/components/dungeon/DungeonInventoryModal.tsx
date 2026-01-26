@@ -25,7 +25,7 @@ export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold
   return (
     <Modal scrollBehavior={"inside"} isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
-      <ModalContent bg="gray.800" color="white">
+      <ModalContent className="dungeon-inventory-modal" bg="gray.800" color="white">
         <ModalHeader color="orange.400">
           <HStack justify="space-between">
             <Text>Dungeon Inventory</Text>
@@ -43,7 +43,7 @@ export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold
               <Text fontSize="sm" color="gray.400" mb={4}>
                 Items found during this run ({inventory.length} items):
               </Text>
-              <SimpleGrid columns={6} spacing={3} justifyItems="center">
+              <SimpleGrid className="dungeon-inventory-grid" columns={6} spacing={3} justifyItems="center">
                 {inventory.map((item, index) => (
                   <ItemSlot
                     key={`${item.id}-${index}`}

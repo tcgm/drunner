@@ -24,7 +24,7 @@ export function PartySetupSlots({
   const partyCount = party.filter(h => h !== null).length
   
   return (
-    <Box flex={1} minW={0} display="flex" flexDirection="column" bg="gray.950" p={3}>
+    <Box className="party-setup-slots" flex={1} minW={0} display="flex" flexDirection="column" bg="gray.950" p={3}>
       <VStack spacing={2} h="full">
         <SimpleGrid columns={3} w="full" flexShrink={0} gap={4} alignItems="center">
           <Heading size="sm" color="orange.300">
@@ -45,6 +45,7 @@ export function PartySetupSlots({
             
             return (
               <Box
+                className={`party-setup-slot ${isEmpty ? 'party-setup-slot--empty' : 'party-setup-slot--filled'}`}
                 key={index}
                 position="relative"
                 flex={1}

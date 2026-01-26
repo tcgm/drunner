@@ -46,9 +46,10 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
   }, [outcome.effects])
 
   return (
-    <VStack spacing={4} align="stretch" h="full">
+    <VStack className="outcome-display" spacing={4} align="stretch" h="full">
       {/* Outcome Text */}
       <MotionBox
+        className="outcome-display-text"
         bg="gray.800"
         borderRadius="lg"
         p={2}
@@ -69,13 +70,14 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
 
       {/* Effects */}
       {outcome.effects.length > 0 && (
-        <VStack spacing={1} align="stretch" flex={1} overflowY="auto" overflowX="hidden">
+        <VStack className="outcome-display-effects" spacing={1} align="stretch" flex={1} overflowY="auto" overflowX="hidden">
           <Text fontSize="xs" color="gray.500" textTransform="uppercase" fontWeight="bold">
             Results
           </Text>
           <AnimatePresence mode="popLayout">
             {outcome.effects.map((effect, index) => (
               <MotionHStack
+                className={`outcome-display-effect outcome-display-effect--${effect.type}`}
                 key={index}
                 bg="gray.800"
                 borderRadius="md"
