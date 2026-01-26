@@ -24,6 +24,7 @@ import { GiWrench } from 'react-icons/gi'
 import { useGameStore } from '@store/gameStore'
 import { GAME_CONFIG } from '@/config/game'
 import { useRef, useState } from 'react'
+import { HiWrench } from 'react-icons/hi2'
 
 type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
 
@@ -196,8 +197,8 @@ export default function DevTools() {
       <Box position="fixed" bottom={4} right={4} zIndex={9999}>
         <IconButton
           aria-label="Dev Tools"
-          icon={<Icon as={GiWrench} boxSize={6} />}
-          size="lg"
+          icon={<Icon as={HiWrench} boxSize={6} />}
+          size="sm"
           colorScheme="yellow"
           onClick={onOpen}
           variant="solid"

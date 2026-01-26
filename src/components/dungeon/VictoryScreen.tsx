@@ -100,6 +100,22 @@ export default function VictoryScreen({ depth, onExit }: VictoryScreenProps) {
                   {activeRun?.eventsCompleted || 0}
                 </Text>
               </Box>
+              {activeRun && activeRun.xpMentored > 0 && (
+                <Box textAlign="center">
+                  <Text color="gray.300" fontSize="sm">XP Mentored</Text>
+                  <Text color="cyan.300" fontSize="lg" fontWeight="bold">
+                    {activeRun.xpMentored}
+                  </Text>
+                </Box>
+              )}
+              {activeRun && activeRun.metaXpGained > 0 && (
+                <Box textAlign="center">
+                  <Text color="gray.300" fontSize="sm">Meta XP Gained</Text>
+                  <Text color="purple.300" fontSize="lg" fontWeight="bold">
+                    {activeRun.metaXpGained}
+                  </Text>
+                </Box>
+              )}
             </SimpleGrid>
           </VStack>
         </MotionBox>

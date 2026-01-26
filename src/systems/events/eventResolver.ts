@@ -140,6 +140,8 @@ export function resolveEventOutcome(
 ): {
   updatedParty: (Hero | null)[]
   updatedGold: number
+  metaXpGained: number
+  xpMentored: number
   resolvedOutcome: ResolvedOutcome
 } {
   const updatedParty = party.map(h => h ? ({ 
@@ -149,6 +151,8 @@ export function resolveEventOutcome(
     abilities: h.abilities.map(a => ({ ...a }))
   }) : null)
   let updatedGold = dungeon.gold
+  let metaXpGained = 0
+  let xpMentored = 0
   const resolvedEffects: ResolvedEffect[] = []
   const foundItems: Item[] = []
   const depth = dungeon.depth
@@ -194,23 +198,119 @@ export function resolveEventOutcome(
       case 'xp': {
         const baseXp = effect.value || 0
         const xp = scaleValue(baseXp, depth, 0.15) // 15% per depth (rewards scale faster)
-        targets.forEach(hero => {
-          hero.xp += xp
-          // Check for level up
-          while (hero.xp >= hero.level * 100 && hero.level < GAME_CONFIG.levelUp.maxLevel) {
-            hero.level++
-            hero.xp -= (hero.level - 1) * 100
-            // Increase stats on level up
-            hero.stats.attack += GAME_CONFIG.statGains.attack
-            hero.stats.defense += GAME_CONFIG.statGains.defense
-            hero.stats.speed += GAME_CONFIG.statGains.speed
-            hero.stats.luck += GAME_CONFIG.statGains.luck
-            hero.stats.maxHp += GAME_CONFIG.statGains.maxHp
-            if (GAME_CONFIG.levelUp.healToFull) {
-              hero.stats.hp = hero.stats.maxHp
+        let totalOverflowXp = 0
+        
+        // First, capture any existing overflow XP from max-level heroes
+        updatedParty.forEach(hero => {
+          if (hero && hero.level >= GAME_CONFIG.levelUp.maxLevel && hero.xp > 0) {
+            const maxXpForLevel = hero.level * 100
+            if (hero.xp > maxXpForLevel) {
+              totalOverflowXp += (hero.xp - maxXpForLevel)
+              hero.xp = maxXpForLevel
             }
           }
         })
+        
+        targets.forEach(hero => {
+          const xpToGain = xp
+          
+          // If hero is already max level, fill bar first, then overflow
+          if (hero.level >= GAME_CONFIG.levelUp.maxLevel) {
+            const maxXpForLevel = hero.level * 100
+            const spaceRemaining = maxXpForLevel - hero.xp
+            
+            if (spaceRemaining > 0) {
+              // Fill the bar first
+              const xpToApply = Math.min(xpToGain, spaceRemaining)
+              hero.xp += xpToApply
+              const overflow = xpToGain - xpToApply
+              if (overflow > 0) {
+                totalOverflowXp += overflow
+              }
+            } else {
+              // Bar already full, all XP overflows
+              totalOverflowXp += xpToGain
+            }
+          } else {
+            hero.xp += xpToGain
+            
+            // Check for level up
+            while (hero.xp >= hero.level * 100 && hero.level < GAME_CONFIG.levelUp.maxLevel) {
+              hero.level++
+              hero.xp -= (hero.level - 1) * 100
+              // Increase stats on level up
+              hero.stats.attack += GAME_CONFIG.statGains.attack
+              hero.stats.defense += GAME_CONFIG.statGains.defense
+              hero.stats.speed += GAME_CONFIG.statGains.speed
+              hero.stats.luck += GAME_CONFIG.statGains.luck
+              hero.stats.maxHp += GAME_CONFIG.statGains.maxHp
+              if (GAME_CONFIG.levelUp.healToFull) {
+                hero.stats.hp = hero.stats.maxHp
+              }
+            }
+            
+            // After level-ups, check if hero is at max level with remaining XP
+            if (hero.level >= GAME_CONFIG.levelUp.maxLevel && hero.xp > 0) {
+              const maxXpForLevel = hero.level * 100
+              if (hero.xp > maxXpForLevel) {
+                totalOverflowXp += (hero.xp - maxXpForLevel)
+                hero.xp = maxXpForLevel
+              }
+            }
+          }
+        })
+        
+        // Mentor System: Distribute overflow to lower-level party members
+        if (totalOverflowXp > 0) {
+          const lowerLevelHeroes = updatedParty.filter(
+            (h): h is Hero => h !== null && h.isAlive && h.level < GAME_CONFIG.levelUp.maxLevel
+          )
+          
+          if (lowerLevelHeroes.length > 0) {
+            // Distribute 50% of overflow evenly to lower level heroes
+            const mentorXpPerHero = Math.floor((totalOverflowXp * 0.5) / lowerLevelHeroes.length)
+            const mentorXpDistributed = mentorXpPerHero * lowerLevelHeroes.length
+            
+            // Track mentored XP
+            xpMentored += mentorXpDistributed
+            
+            lowerLevelHeroes.forEach(hero => {
+              hero.xp += mentorXpPerHero
+              
+              // Check for level up from mentored XP
+              while (hero.xp >= hero.level * 100 && hero.level < GAME_CONFIG.levelUp.maxLevel) {
+                hero.level++
+                hero.xp -= (hero.level - 1) * 100
+                hero.stats.attack += GAME_CONFIG.statGains.attack
+                hero.stats.defense += GAME_CONFIG.statGains.defense
+                hero.stats.speed += GAME_CONFIG.statGains.speed
+                hero.stats.luck += GAME_CONFIG.statGains.luck
+                hero.stats.maxHp += GAME_CONFIG.statGains.maxHp
+                if (GAME_CONFIG.levelUp.healToFull) {
+                  hero.stats.hp = hero.stats.maxHp
+                }
+              }
+              
+              // After mentored level-ups, check if hero hit max level with remaining XP
+              if (hero.level >= GAME_CONFIG.levelUp.maxLevel && hero.xp > 0) {
+                const maxXpForLevel = hero.level * 100
+                if (hero.xp > maxXpForLevel) {
+                  totalOverflowXp += (hero.xp - maxXpForLevel)
+                  hero.xp = maxXpForLevel
+                }
+              }
+            })
+            
+            // Remaining overflow goes to meta XP
+            totalOverflowXp -= mentorXpDistributed
+          }
+        }
+        
+        // Add remaining overflow to meta XP pool
+        if (totalOverflowXp > 0) {
+          metaXpGained += totalOverflowXp
+        }
+        
         resolvedEffects.push({
           type: 'xp',
           target: targets.map(h => h.id),
@@ -369,6 +469,8 @@ export function resolveEventOutcome(
   return {
     updatedParty,
     updatedGold,
+    metaXpGained,
+    xpMentored,
     resolvedOutcome: {
       text: outcome.text,
       effects: resolvedEffects,

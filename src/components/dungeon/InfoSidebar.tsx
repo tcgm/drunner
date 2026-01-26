@@ -1,14 +1,15 @@
-import { VStack, Heading, Box } from '@chakra-ui/react'
-import type { Hero } from '@/types'
+import { VStack, Heading, Box, Text, HStack, Divider } from '@chakra-ui/react'
+import type { Hero, Run } from '@/types'
 import FloorStats from './FloorStats'
 import PartyStatusStats from './PartyStatusStats'
 import QuickStats from './QuickStats'
 
 interface InfoSidebarProps {
   party: Hero[]
+  activeRun: Run | null
 }
 
-export default function InfoSidebar({ party }: InfoSidebarProps) {
+export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
   const aliveCount = party.filter(h => h.isAlive).length
   const avgLevel = party.length > 0 
     ? Math.floor(party.reduce((sum, h) => sum + h.level, 0) / party.length) 
@@ -22,7 +23,7 @@ export default function InfoSidebar({ party }: InfoSidebarProps) {
   const totalMagic = party.reduce((sum, h) => sum + (h.stats.magicPower ?? 0), 0)
 
   return (
-    <Box w="250px" bg="gray.800" borderRadius="lg" p={4}>
+    <Box w="250px" bg="gray.800" borderRadius="lg" p={4} overflowY="auto" maxH="100%">
       <VStack spacing={4} align="stretch">
         <Heading size="md" color="orange.400">Info</Heading>
         
@@ -54,6 +55,23 @@ export default function InfoSidebar({ party }: InfoSidebarProps) {
             partySize={party.length}
           />
         </Box>
+        
+        {activeRun && (
+          <>
+            <Divider />
+            <Box>
+              <Heading size="xs" color="purple.400" mb={2}>Overflow XP</Heading>
+              <HStack justify="space-between" fontSize="xs">
+                <Text color="gray.400">Mentored:</Text>
+                <Text color="cyan.300" fontWeight="bold">{activeRun.xpMentored || 0}</Text>
+              </HStack>
+              <HStack justify="space-between" fontSize="xs">
+                <Text color="gray.400">Meta XP:</Text>
+                <Text color="purple.300" fontWeight="bold">{activeRun.metaXpGained || 0}</Text>
+              </HStack>
+            </Box>
+          </>
+        )}
       </VStack>
     </Box>
   )

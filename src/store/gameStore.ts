@@ -241,6 +241,7 @@ const initialState: GameState = {
   bankInventory: [],
   bankStorageSlots: 20, // Start with 20 slots
   overflowInventory: [],
+  metaXp: 0,
   isGameOver: false,
   isPaused: false,
   hasPendingPenalty: false,
@@ -348,6 +349,8 @@ export const useGameStore = create<GameStore>()(
         goldEarned: 0,
         goldSpent: 0,
         eventsCompleted: 0,
+        xpMentored: 0,
+        metaXpGained: 0,
         heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
           name: h.name,
           class: h.class.name,
@@ -410,7 +413,7 @@ export const useGameStore = create<GameStore>()(
       // First resolve which outcome to use (handles weighted/success-fail/single)
       const selectedOutcome = resolveChoiceOutcome(choice, state.party)
       
-      const { updatedParty, updatedGold, resolvedOutcome } = resolveEventOutcome(
+      const { updatedParty, updatedGold, metaXpGained, xpMentored, resolvedOutcome } = resolveEventOutcome(
         selectedOutcome,
         state.party,
         state.dungeon
@@ -431,12 +434,19 @@ export const useGameStore = create<GameStore>()(
       const goldDiff = updatedGold - state.dungeon.gold
       const updatedRun = state.activeRun ? {
         ...state.activeRun,
+        // Patch legacy runs with missing fields
+        xpMentored: state.activeRun.xpMentored ?? 0,
+        metaXpGained: state.activeRun.metaXpGained ?? 0,
+        // Update with new values
         goldEarned: state.activeRun.goldEarned + (goldDiff > 0 ? goldDiff : 0),
         goldSpent: state.activeRun.goldSpent + (goldDiff < 0 ? -goldDiff : 0),
+        xpMentored: (state.activeRun.xpMentored ?? 0) + xpMentored,
+        metaXpGained: (state.activeRun.metaXpGained ?? 0) + metaXpGained,
         ...(prePenaltyLevels ? { heroesUsed: prePenaltyLevels } : {}) // Store pre-penalty levels
       } : null
       
       return {
+        metaXp: state.metaXp + metaXpGained,
         party: updatedParty,
         dungeon: {
           ...state.dungeon,

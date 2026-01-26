@@ -182,6 +182,8 @@ export interface Run {
   goldEarned: number
   goldSpent: number
   eventsCompleted: number
+  xpMentored: number // XP shared from max-level heroes to lower-level party members
+  metaXpGained: number // Overflow XP sent to the meta XP pool
   heroesUsed: { name: string; class: string; level: number }[]
 }
 
@@ -194,6 +196,7 @@ export interface GameState {
   bankInventory: Item[] // Items stored outside runs
   bankStorageSlots: number // Maximum bank storage capacity
   overflowInventory: Item[] // Items from last run that exceed bank capacity
+  metaXp: number // Account-wide XP for meta-progression unlocks
   isGameOver: boolean
   isPaused: boolean
   hasPendingPenalty: boolean
@@ -202,7 +205,7 @@ export interface GameState {
   lastOutcome: {
     text: string
     effects: {
-      type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive'
+      type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive' | 'upgradeItem'
       target: string[]
       value?: number
       item?: Item

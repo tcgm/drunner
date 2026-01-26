@@ -35,6 +35,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     keepOverflowItem,
     discardOverflowItem,
     clearOverflow,
+    metaXp,
   } = useGameStore()
 
   const [selectedClass, setSelectedClass] = useState(CORE_CLASSES[0])
@@ -162,6 +163,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
       {/* Header */}
       <PartySetupHeader
         bankGold={bankGold}
+        metaXp={metaXp}
         canStart={canStart}
         onBack={onBack}
         onStart={handleStart}

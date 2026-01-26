@@ -16,7 +16,7 @@ interface DungeonScreenProps {
 }
 
 export default function DungeonScreen({ onExit }: DungeonScreenProps) {
-  const { dungeon, party, advanceDungeon, selectChoice, isGameOver, lastOutcome, retreatFromDungeon } = useGameStore()
+  const { dungeon, party, advanceDungeon, selectChoice, isGameOver, lastOutcome, retreatFromDungeon, activeRun } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
@@ -76,7 +76,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         />
       </Flex>
       
-      <InfoSidebar party={party} />
+      <InfoSidebar party={party} activeRun={activeRun} />
       
       {/* Retreat Confirmation Dialog */}
       <AlertDialog
