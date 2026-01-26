@@ -8,27 +8,66 @@ export const ANCIENT_CHEST: DungeonEvent = {
   choices: [
     {
       text: 'Force it open',
-      outcome: {
-        text: 'The chest opens with a loud crack!',
-        effects: [
-          { type: 'gold', value: 100 },
-          { type: 'damage', target: 'random', value: 10 },
-          { type: 'item', itemType: 'random' }, // Generate random item
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 75,
+          outcome: {
+            text: 'The chest opens with a loud crack!',
+            effects: [
+              { type: 'gold', value: 100 },
+              { type: 'damage', target: 'random', value: 10 },
+              { type: 'item', itemType: 'random' },
+            ],
+          },
+        },
+        {
+          weight: 25,
+          outcome: {
+            text: 'It was a mimic! It snaps at you as you force it open!',
+            effects: [
+              { type: 'damage', target: 'random', value: 35 },
+              { type: 'gold', value: 60 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Pick the lock carefully (requires Rogue)',
       requirements: {
         class: 'rogue',
       },
-      outcome: {
-        text: 'The lock clicks open smoothly!',
-        effects: [
-          { type: 'gold', value: 150 },
-          { type: 'item', itemType: 'random' }, // Generate random item
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 70,
+          outcome: {
+            text: 'The lock clicks open smoothly!',
+            effects: [
+              { type: 'gold', value: 150 },
+              { type: 'item', itemType: 'random' },
+            ],
+          },
+        },
+        {
+          weight: 20,
+          outcome: {
+            text: 'Your trained eye spots the mimic before it attacks! You steer the party away safely.',
+            effects: [
+              { type: 'xp', value: 80 },
+            ],
+          },
+        },
+        {
+          weight: 10,
+          outcome: {
+            text: 'You detect the mimic and alert the party! Your warriors strike it down before it can react!',
+            effects: [
+              { type: 'gold', value: 120 },
+              { type: 'xp', value: 100 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Kick it aggressively',

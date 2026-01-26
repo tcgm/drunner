@@ -26,7 +26,7 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
         text: 'A poison dart shoots out as you open it!',
         effects: [
           { type: 'damage', target: 'random', value: 35 },
-          { type: 'gold', value: 50 }, // Still get some gold
+          { type: 'gold', value: 50 },
         ],
       },
     },
@@ -74,14 +74,39 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
       requirements: {
         class: 'rogue',
       },
-      outcome: {
-        text: 'Your nimble fingers pick the lock expertly!',
-        effects: [
-          { type: 'gold', value: 180 },
-          { type: 'item', itemType: 'random' },
-          { type: 'xp', value: 60 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 65,
+          outcome: {
+            text: 'Your nimble fingers pick the lock expertly!',
+            effects: [
+              { type: 'gold', value: 180 },
+              { type: 'item', itemType: 'random' },
+              { type: 'xp', value: 60 },
+            ],
+          },
+        },
+        {
+          weight: 25,
+          outcome: {
+            text: 'Your Rogue senses danger - this is a mimic! You back away cautiously.',
+            effects: [
+              { type: 'xp', value: 90 },
+            ],
+          },
+        },
+        {
+          weight: 10,
+          outcome: {
+            text: 'Mimic detected! Your Rogue calls for backup and together you slay it!',
+            effects: [
+              { type: 'damage', target: 'random', value: 15 },
+              { type: 'gold', value: 150 },
+              { type: 'xp', value: 120 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Leave it alone',
