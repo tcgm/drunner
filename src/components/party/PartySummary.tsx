@@ -1,5 +1,6 @@
 import { HStack, Box, Text } from '@chakra-ui/react'
 import type { Hero } from '../../types'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 interface PartySummaryProps {
   party: Hero[]
@@ -18,19 +19,19 @@ export default function PartySummary({ party }: PartySummaryProps) {
       <HStack spacing={6} fontSize="sm" justify="center">
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Total HP:</Text>
-          <Text color="cyan.400" fontWeight="bold">{totalHp}</Text>
+          <Text color={GAME_CONFIG.colors.hp.base} fontWeight="bold">{totalHp}</Text>
         </HStack>
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Avg ATK:</Text>
-          <Text color="red.400" fontWeight="bold">{avgAttack}</Text>
+          <Text color={GAME_CONFIG.colors.stats.attack} fontWeight="bold">{avgAttack}</Text>
         </HStack>
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Avg DEF:</Text>
-          <Text color="blue.400" fontWeight="bold">{avgDefense}</Text>
+          <Text color={GAME_CONFIG.colors.stats.defense} fontWeight="bold">{avgDefense}</Text>
         </HStack>
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Avg SPD:</Text>
-          <Text color="green.400" fontWeight="bold">{avgSpeed}</Text>
+          <Text color={GAME_CONFIG.colors.stats.speed} fontWeight="bold">{avgSpeed}</Text>
         </HStack>
       </HStack>
     </Box>

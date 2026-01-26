@@ -1,6 +1,7 @@
 import { VStack, Text, HStack } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiSwordman, GiShield, GiRun, GiClover, GiMagicSwirl } from 'react-icons/gi'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 interface QuickStatsProps {
   totalAttack: number
@@ -21,37 +22,37 @@ export default function QuickStats({ totalAttack, totalDefense, totalSpeed, tota
       <Text fontSize="sm" fontWeight="bold" mb={2}>Quick Stats</Text>
       <VStack align="stretch" spacing={2} fontSize="xs">
         <HStack>
-          <Icon as={GiSwordman} color="orange.400" />
+          <Icon as={GiSwordman} color={GAME_CONFIG.colors.stats.attack} />
           <Text color="gray.400">ATK:</Text>
-          <Text color="white" fontWeight="bold">
+          <Text color={GAME_CONFIG.colors.stats.attack} fontWeight="bold">
             {totalAttack}
           </Text>
         </HStack>
         <HStack>
-          <Icon as={GiShield} color="blue.400" />
+          <Icon as={GiShield} color={GAME_CONFIG.colors.stats.defense} />
           <Text color="gray.400">DEF:</Text>
-          <Text color="white" fontWeight="bold">
+          <Text color={GAME_CONFIG.colors.stats.defense} fontWeight="bold">
             {totalDefense}
           </Text>
         </HStack>
         <HStack>
-          <Icon as={GiRun} color="green.400" />
+          <Icon as={GiRun} color={GAME_CONFIG.colors.stats.speed} />
           <Text color="gray.400">SPD:</Text>
-          <Text color="white" fontWeight="bold">
+          <Text color={GAME_CONFIG.colors.stats.speed} fontWeight="bold">
             {totalSpeed} ({avgSpeed})
           </Text>
         </HStack>
         <HStack>
-          <Icon as={GiClover} color="yellow.400" />
+          <Icon as={GiClover} color={GAME_CONFIG.colors.stats.luck} />
           <Text color="gray.400">LCK:</Text>
-          <Text color="white" fontWeight="bold">
+          <Text color={GAME_CONFIG.colors.stats.luck} fontWeight="bold">
             {totalLuck} ({avgLuck})
           </Text>
         </HStack>
         <HStack>
-          <Icon as={GiMagicSwirl} color="purple.400" />
+          <Icon as={GiMagicSwirl} color={GAME_CONFIG.colors.stats.magicPower} />
           <Text color="gray.400">MAG:</Text>
-          <Text color="white" fontWeight="bold">
+          <Text color={GAME_CONFIG.colors.stats.magicPower} fontWeight="bold">
             {totalMagic} ({avgMagic})
           </Text>
         </HStack>

@@ -35,10 +35,10 @@ export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelecti
             <Text fontSize="xs" color="gray.300">{cls.description}</Text>
             <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
               <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{maxHp}</Text></Text>
-              <Text>ATK: <Text as="span" fontWeight="bold" color="red.300">{cls.baseStats.attack}</Text></Text>
-              <Text>DEF: <Text as="span" fontWeight="bold" color="blue.300">{cls.baseStats.defense}</Text></Text>
-              <Text>SPD: <Text as="span" fontWeight="bold" color="green.300">{cls.baseStats.speed}</Text></Text>
-              <Text>LCK: <Text as="span" fontWeight="bold" color="yellow.300">{cls.baseStats.luck}</Text></Text>
+              <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{cls.baseStats.attack}</Text></Text>
+              <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{cls.baseStats.defense}</Text></Text>
+              <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{cls.baseStats.speed}</Text></Text>
+              <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>{cls.baseStats.luck}</Text></Text>
             </SimpleGrid>
           </VStack>
         )

@@ -22,10 +22,10 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
       <Text fontWeight="bold" fontSize="sm">{hero.name}</Text>
       <Text fontSize="xs" color="gray.300">{hero.class.name}</Text>
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
-        <Text>HP: <Text as="span" fontWeight="bold" color="red.300">{hero.stats.hp}/{hero.stats.maxHp}</Text></Text>
-        <Text>ATK: <Text as="span" fontWeight="bold" color="orange.300">{hero.stats.attack}</Text></Text>
-        <Text>DEF: <Text as="span" fontWeight="bold" color="blue.300">{hero.stats.defense}</Text></Text>
-        <Text>SPD: <Text as="span" fontWeight="bold" color="green.300">{hero.stats.speed}</Text></Text>
+        <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{hero.stats.maxHp}</Text></Text>
+        <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text></Text>
+        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text></Text>
+        <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text></Text>
       </SimpleGrid>
       {equippedItems.length > 0 && (
         <VStack align="start" spacing={0.5} pt={2} w="full">
@@ -123,19 +123,19 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
             
             <HStack spacing={3} fontSize="xs" color="gray.500" pt={1}>
               <HStack spacing={1}>
-                <Text color="red.400">❤</Text>
+                <Text color={GAME_CONFIG.colors.hp.base}>❤</Text>
                 <Text>{hero.stats.hp}/{hero.stats.maxHp}</Text>
               </HStack>
               <HStack spacing={1}>
-                <Text color="orange.400">⚔</Text>
+                <Text color={GAME_CONFIG.colors.stats.attack}>⚔</Text>
                 <Text>{hero.stats.attack}</Text>
               </HStack>
               <HStack spacing={1}>
-                <Text color="blue.400">🛡</Text>
+                <Text color={GAME_CONFIG.colors.stats.defense}>🛡</Text>
                 <Text>{hero.stats.defense}</Text>
               </HStack>
               <HStack spacing={1}>
-                <Text color="green.400">⚡</Text>
+                <Text color={GAME_CONFIG.colors.stats.speed}>⚡</Text>
                 <Text>{hero.stats.speed}</Text>
               </HStack>
             </HStack>

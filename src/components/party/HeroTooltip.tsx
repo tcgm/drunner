@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
+import { GAME_CONFIG } from '@/config/gameConfig'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
 
@@ -65,30 +66,30 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
           {/* Stats Grid */}
           <HStack spacing={3} justify="space-around" pt={1}>
             <VStack spacing={0}>
-              <Icon as={GameIcons.GiSwordman} color="red.400" boxSize={4} />
+              <Icon as={GameIcons.GiSwordman} color={GAME_CONFIG.colors.stats.attack} boxSize={4} />
               <Text fontSize="xs" color="gray.400">ATK</Text>
-              <Text fontSize="sm" fontWeight="bold" color="red.300">
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>
                 {hero.stats.attack}
               </Text>
             </VStack>
             <VStack spacing={0}>
-              <Icon as={GameIcons.GiShield} color="blue.400" boxSize={4} />
+              <Icon as={GameIcons.GiShield} color={GAME_CONFIG.colors.stats.defense} boxSize={4} />
               <Text fontSize="xs" color="gray.400">DEF</Text>
-              <Text fontSize="sm" fontWeight="bold" color="blue.300">
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
                 {hero.stats.defense}
               </Text>
             </VStack>
             <VStack spacing={0}>
-              <Icon as={GameIcons.GiRun} color="green.400" boxSize={4} />
+              <Icon as={GameIcons.GiRun} color={GAME_CONFIG.colors.stats.speed} boxSize={4} />
               <Text fontSize="xs" color="gray.400">SPD</Text>
-              <Text fontSize="sm" fontWeight="bold" color="green.300">
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>
                 {hero.stats.speed}
               </Text>
             </VStack>
             <VStack spacing={0}>
-              <Icon as={GameIcons.GiClover} color="yellow.400" boxSize={4} />
+              <Icon as={GameIcons.GiClover} color={GAME_CONFIG.colors.stats.luck} boxSize={4} />
               <Text fontSize="xs" color="gray.400">LCK</Text>
-              <Text fontSize="sm" fontWeight="bold" color="yellow.300">
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>
                 {hero.stats.luck}
               </Text>
             </VStack>

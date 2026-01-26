@@ -1,4 +1,5 @@
 import { VStack, Text, HStack } from '@chakra-ui/react'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 interface PartyStatusStatsProps {
   aliveCount: number
@@ -27,7 +28,7 @@ export default function PartyStatusStats({ aliveCount, totalCount, avgLevel, cur
         </HStack>
         <HStack justify="space-between">
           <Text>Total HP:</Text>
-          <Text color="white" fontWeight="bold">
+          <Text color={GAME_CONFIG.colors.hp.base} fontWeight="bold">
             {currentHp}/{maxHp}
           </Text>
         </HStack>

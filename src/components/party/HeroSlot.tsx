@@ -2,6 +2,7 @@ import { VStack, SimpleGrid, Box, Text, Badge, Flex, Icon as ChakraIcon, Button 
 import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { HeroClass, Hero } from '@/types'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 interface HeroSlotProps {
   hero: Hero | null
@@ -107,19 +108,19 @@ export default function HeroSlot({
               <SimpleGrid columns={2} spacing={1} w="full" pt={1} fontSize="xs">
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">HP</Text>
-                  <Text fontWeight="bold" color="cyan.400">{hero.stats.maxHp}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{hero.stats.maxHp}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">ATK</Text>
-                  <Text fontWeight="bold" color="red.400">{hero.stats.attack}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">DEF</Text>
-                  <Text fontWeight="bold" color="blue.400">{hero.stats.defense}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">SPD</Text>
-                  <Text fontWeight="bold" color="green.400">{hero.stats.speed}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text>
                 </VStack>
               </SimpleGrid>
             </VStack>

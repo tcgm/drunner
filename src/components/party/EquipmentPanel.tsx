@@ -4,6 +4,7 @@ import type { IconType } from 'react-icons'
 import type { Hero, ItemSlot, Item } from '../../types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { GAME_CONFIG } from '@/config/gameConfig'
 // import { useGameStore } from '@/store/gameStore'
 // import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 
@@ -228,32 +229,32 @@ export function EquipmentPanel({
                     return (
                       <SimpleGrid columns={2} spacing={1} fontSize="xs">
                         {equipmentBonuses.attack > 0 && (
-                          <Text color="red.300">
+                          <Text color={GAME_CONFIG.colors.stats.attack}>
                             ATK: +{equipmentBonuses.attack}
                           </Text>
                         )}
                         {equipmentBonuses.defense > 0 && (
-                          <Text color="blue.300">
+                          <Text color={GAME_CONFIG.colors.stats.defense}>
                             DEF: +{equipmentBonuses.defense}
                           </Text>
                         )}
                         {equipmentBonuses.speed > 0 && (
-                          <Text color="green.300">
+                          <Text color={GAME_CONFIG.colors.stats.speed}>
                             SPD: +{equipmentBonuses.speed}
                           </Text>
                         )}
                         {equipmentBonuses.luck > 0 && (
-                          <Text color="yellow.300">
+                          <Text color={GAME_CONFIG.colors.stats.luck}>
                             LUCK: +{equipmentBonuses.luck}
                           </Text>
                         )}
                         {equipmentBonuses.maxHp > 0 && (
-                          <Text color="cyan.300">
+                          <Text color={GAME_CONFIG.colors.hp.light}>
                             HP: +{equipmentBonuses.maxHp}
                           </Text>
                         )}
                         {equipmentBonuses.magicPower > 0 && (
-                          <Text color="purple.300">
+                          <Text color={GAME_CONFIG.colors.stats.magicPower}>
                             MP: +{equipmentBonuses.magicPower}
                           </Text>
                         )}
