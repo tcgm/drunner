@@ -2,6 +2,7 @@ import { VStack, HStack, SimpleGrid, Box, Text, Badge, Tooltip } from '@chakra-u
 import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { HeroClass } from '@/types'
+import { calculateMaxHp } from '@/utils/heroUtils'
 
 interface ClassCardProps {
   heroClass: HeroClass
@@ -17,13 +18,14 @@ export default function ClassCard({
   onClick 
 }: ClassCardProps) {
   const IconComponent = (GameIcons as any)[heroClass.icon] || GameIcons.GiSwordman
+  const maxHp = calculateMaxHp(1, heroClass.baseStats.defense)
   
   const tooltipLabel = (
     <VStack align="start" spacing={1} p={1}>
       <Text fontWeight="bold" fontSize="sm">{heroClass.name}</Text>
       <Text fontSize="xs" color="gray.300">{heroClass.description}</Text>
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
-        <Text>HP: <Text as="span" fontWeight="bold" color="cyan.300">{heroClass.baseStats.hp}</Text></Text>
+        <Text>HP: <Text as="span" fontWeight="bold" color="cyan.300">{maxHp}</Text></Text>
         <Text>ATK: <Text as="span" fontWeight="bold" color="red.300">{heroClass.baseStats.attack}</Text></Text>
         <Text>DEF: <Text as="span" fontWeight="bold" color="blue.300">{heroClass.baseStats.defense}</Text></Text>
         <Text>SPD: <Text as="span" fontWeight="bold" color="green.300">{heroClass.baseStats.speed}</Text></Text>
@@ -73,7 +75,7 @@ export default function ClassCard({
               {heroClass.name}
             </Text>
             <HStack spacing={1} fontSize="xs" color="gray.400" flexWrap="wrap">
-              <Text>HP:{heroClass.baseStats.hp}</Text>
+              <Text>HP:{maxHp}</Text>
               <Text>•</Text>
               <Text>ATK:{heroClass.baseStats.attack}</Text>
             </HStack>

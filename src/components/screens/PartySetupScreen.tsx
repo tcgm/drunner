@@ -1,5 +1,5 @@
 import { VStack, Heading, Button, HStack, SimpleGrid, Box, Text, Badge, Flex } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CORE_CLASSES } from '@data/classes'
 import { createHero } from '@utils/heroUtils'
 import { useGameStore } from '@store/gameStore'
@@ -14,10 +14,17 @@ interface PartySetupScreenProps {
 }
 
 export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenProps) {
-  const { party, addHero, removeHero } = useGameStore()
+  const { party, addHero, removeHero, startDungeon, hasPendingPenalty, applyPenalty } = useGameStore()
   const [selectedClass, setSelectedClass] = useState<HeroClass | null>(null)
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
   const maxPartySize = 4
+  
+  // Apply penalty when entering party setup if there's a pending penalty
+  useEffect(() => {
+    if (hasPendingPenalty) {
+      applyPenalty()
+    }
+  }, [hasPendingPenalty, applyPenalty])
   
   const handleAddHero = (slotIndex: number) => {
     if (selectedClass && !party[slotIndex]) {
@@ -30,6 +37,11 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
   
   const handleRemoveHero = (heroId: string) => {
     removeHero(heroId)
+  }
+  
+  const handleStart = () => {
+    startDungeon()
+    onStart()
   }
   
   const canStart = party.length > 0
@@ -47,7 +59,7 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
             </Button>
             <Button 
               colorScheme="orange" 
-              onClick={onStart}
+              onClick={handleStart}
               isDisabled={!canStart}
               size="sm"
               px={6}

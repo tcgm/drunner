@@ -139,6 +139,7 @@ export interface GameState {
   dungeon: Dungeon
   isGameOver: boolean
   isPaused: boolean
+  hasPendingPenalty: boolean
   lastOutcome: {
     text: string
     effects: {
