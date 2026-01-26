@@ -50,6 +50,15 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
       <HeroTooltip hero={hero}>
         <MotionBox
           position="relative"
+          bg={hero.isAlive ? 'gray.800' : 'gray.900'}
+          borderRadius="md"
+          borderWidth="2px"
+          borderColor={hero.isAlive ? 'orange.600' : 'red.900'}
+          opacity={hero.isAlive ? 1 : 0.6}
+          cursor="pointer"
+          onClick={onOpen}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           whileHover={{ 
             x: 4,
             boxShadow: hero.isAlive ? '0 0 12px rgba(237, 137, 54, 0.4)' : '0 0 12px rgba(245, 101, 101, 0.4)'
@@ -73,12 +82,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
             ))}
           </AnimatePresence>
 
-          <HStack spacing={2} p={2}
-            onClick={onOpen}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            cursor="pointer"
-          >
+          <HStack spacing={2} p={2}>
             <HStack spacing={1}>
               <motion.div
                 animate={isHovered ? {
