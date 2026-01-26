@@ -173,6 +173,7 @@ export interface Dungeon {
   gold: number
   inventory: Item[] // In-run inventory
   isNextEventBoss?: boolean // Indicates if next event is a floor boss
+  bossType?: 'floor' | 'major' | null // Type of current boss (floor boss vs major boss)
 }
 
 export interface Run {

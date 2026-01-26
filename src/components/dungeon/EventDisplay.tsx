@@ -12,6 +12,7 @@ interface EventDisplayProps {
   party: Hero[]
   depth: number
   gold: number
+  bossType?: 'floor' | 'major' | null
   onSelectChoice: (choice: EventChoice) => void
 }
 
@@ -25,7 +26,7 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
   boss: 'pink',
 }
 
-export default function EventDisplay({ event, party, depth, gold, onSelectChoice }: EventDisplayProps) {
+export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice }: EventDisplayProps) {
   return (
     <VStack className="event-display" spacing={3} align="stretch" h="full">
       {/* Event Header */}
@@ -42,6 +43,16 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
           <Badge colorScheme={EVENT_TYPE_COLORS[event.type]} fontSize="xs" px={2} py={0.5}>
             {event.type.toUpperCase()}
           </Badge>
+          {bossType === 'floor' && (
+            <Badge colorScheme="purple" fontSize="xs" px={2} py={0.5} variant="solid">
+              FLOOR BOSS
+            </Badge>
+          )}
+          {bossType === 'major' && (
+            <Badge colorScheme="red" fontSize="xs" px={2} py={0.5} variant="solid">
+              🔥 ZONE BOSS
+            </Badge>
+          )}
         </HStack>
         <Heading className="event-display-title" size="sm" color="orange.400" mb={2}>
           {event.title}

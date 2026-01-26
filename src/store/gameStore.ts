@@ -239,6 +239,7 @@ const initialState: GameState = {
     gold: 0,
     inventory: [],
     isNextEventBoss: false,
+    bossType: null,
   },
   bankGold: 0,
   alkahest: 0,
@@ -399,9 +400,9 @@ export const useGameStore = create<GameStore>()(
       const newDepth = state.dungeon.depth + 1
       const newEventsThisFloor = state.dungeon.eventsThisFloor + 1
       
-      // Check if we just completed the boss event (eventsThisFloor was at the required amount, meaning we just did the boss)
-      // The boss is event #(eventsRequired + 1), so we advance floor when eventsThisFloor > eventsRequired
-      const completingFloor = state.dungeon.eventsThisFloor > state.dungeon.eventsRequiredThisFloor
+      // Check if we just completed a boss (which means we're completing the floor)
+      // We use the stored bossType flag which was set when the boss event was generated
+      const completingFloor = state.dungeon.bossType !== null
       const newFloor = completingFloor ? state.dungeon.floor + 1 : state.dungeon.floor
       const resetEvents = completingFloor ? 0 : newEventsThisFloor
       
@@ -412,8 +413,9 @@ export const useGameStore = create<GameStore>()(
           ) + GAME_CONFIG.dungeon.minEventsPerFloor
         : state.dungeon.eventsRequiredThisFloor
       
-      // Check if next event should be a boss (when we've completed the required number of normal events)
-      const isNextEventBoss = resetEvents >= newEventsRequired
+      // Check if we've completed the required events (next event should be boss)
+      // eventsRequiredThisFloor is the number of events BEFORE the boss, so boss comes when we exceed that
+      const isNextEventBoss = resetEvents > newEventsRequired
       
       // Check if this is a major boss (zone completion)
       const isMajorBoss = isNextEventBoss && (newFloor % GAME_CONFIG.dungeon.majorBossInterval === 0)
@@ -443,6 +445,7 @@ export const useGameStore = create<GameStore>()(
           eventsThisFloor: completingFloor ? 0 : resetEvents,
           eventsRequiredThisFloor: newEventsRequired,
           isNextEventBoss,
+          bossType: isNextEventBoss ? (isMajorBoss ? 'major' : 'floor') : null,
           currentEvent: event,
           eventHistory: event ? [...state.dungeon.eventHistory, event.id] : state.dungeon.eventHistory
         },

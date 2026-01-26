@@ -11,6 +11,7 @@ interface EventAreaProps {
   party: Hero[]
   depth: number
   gold: number
+  bossType?: 'floor' | 'major' | null
   onSelectChoice: (choice: EventChoice) => void
   onContinue: () => void
   onAdvance: () => void
@@ -22,6 +23,7 @@ export default function EventArea({
   party, 
   depth,
   gold,
+  bossType,
   onSelectChoice, 
   onContinue,
   onAdvance
@@ -51,6 +53,7 @@ export default function EventArea({
           party={party}
           depth={depth}
           gold={gold}
+          bossType={bossType}
           onSelectChoice={onSelectChoice}
         />
       ) : (

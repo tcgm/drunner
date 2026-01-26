@@ -110,6 +110,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           party={activeParty}
           depth={dungeon.depth}
           gold={dungeon.gold}
+          bossType={dungeon.bossType}
           onSelectChoice={handleSelectChoice}
           onContinue={handleContinue}
           onAdvance={advanceDungeon}
