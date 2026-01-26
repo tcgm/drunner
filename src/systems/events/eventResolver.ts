@@ -7,7 +7,7 @@ export interface ResolvedOutcome {
 }
 
 export interface ResolvedEffect {
-  type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status'
+  type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive'
   target: string[] // Hero IDs affected
   value?: number
   item?: Item
@@ -144,6 +144,34 @@ export function resolveEventOutcome(
           target: targets.map(h => h.id),
           description: 'Status effect applied'
         })
+        break
+      }
+      
+      case 'revive': {
+        // Revive dead heroes
+        const deadHeroes = updatedParty.filter(h => !h.isAlive)
+        const toRevive = effect.target === 'all' 
+          ? deadHeroes 
+          : deadHeroes.length > 0 
+            ? [deadHeroes[Math.floor(Math.random() * deadHeroes.length)]]
+            : []
+        
+        const healAmount = effect.value || 0
+        const scaledHeal = scaleValue(healAmount, depth, 0.08)
+        
+        toRevive.forEach(hero => {
+          hero.isAlive = true
+          hero.stats.hp = scaledHeal > 0 ? Math.min(hero.stats.maxHp, scaledHeal) : Math.floor(hero.stats.maxHp * 0.5) // Default 50% HP if no value specified
+        })
+        
+        if (toRevive.length > 0) {
+          resolvedEffects.push({
+            type: 'revive',
+            target: toRevive.map(h => h.id),
+            value: scaledHeal,
+            description: `${toRevive.map(h => h.name).join(', ')} revived with ${toRevive[0].stats.hp} HP`
+          })
+        }
         break
       }
     }

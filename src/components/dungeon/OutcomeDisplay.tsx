@@ -1,5 +1,5 @@
 import { Box, VStack, Text, Button, HStack, Icon, Divider } from '@chakra-ui/react'
-import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced } from 'react-icons/gi'
+import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced, GiAngelWings } from 'react-icons/gi'
 import type { ResolvedOutcome } from '@systems/events/eventResolver'
 
 interface OutcomeDisplayProps {
@@ -14,6 +14,7 @@ const EFFECT_ICONS = {
   gold: GiCoins,
   item: GiChest,
   status: GiLevelFourAdvanced,
+  revive: GiAngelWings,
 }
 
 const EFFECT_COLORS = {
@@ -23,6 +24,7 @@ const EFFECT_COLORS = {
   gold: 'yellow.400',
   item: 'blue.400',
   status: 'cyan.400',
+  revive: 'cyan.300',
 }
 
 export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayProps) {

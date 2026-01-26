@@ -31,7 +31,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
+    <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered scrollBehavior="inside">
       <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
       <ModalContent bg="gray.800" borderWidth="2px" borderColor="orange.500" maxW="600px">
         <ModalHeader pb={2}>

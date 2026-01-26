@@ -3,6 +3,7 @@ import { useState } from 'react'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
 import PartySetupScreen from '@components/screens/PartySetupScreen'
 import DungeonScreen from '@components/screens/DungeonScreen'
+import DevTools from '@components/ui/DevTools'
 
 type Screen = 'menu' | 'party-setup' | 'dungeon'
 
@@ -23,6 +24,8 @@ function App() {
       {currentScreen === 'dungeon' && (
         <DungeonScreen onExit={() => setCurrentScreen('menu')} />
       )}
+      
+      <DevTools />
     </Box>
   )
 }
