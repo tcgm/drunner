@@ -30,14 +30,16 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
 
   const calculatePenalty = (hero: typeof party[0]) => {
     switch (penaltyType) {
-      case 'halve-levels':
+      case 'halve-levels': {
         const newLevel = Math.max(1, Math.floor(hero.level / 2))
         return `Level ${hero.level} → ${newLevel}`
+      }
       case 'reset-levels':
         return `Level ${hero.level} → 1`
-      case 'lose-equipment':
+      case 'lose-equipment': {
         const equippedCount = Object.values(hero.equipment).filter(item => item !== null).length
         return equippedCount > 0 ? `Lose ${equippedCount} item${equippedCount > 1 ? 's' : ''}` : 'No equipment'
+      }
       case 'none':
         return 'No penalty'
       default:

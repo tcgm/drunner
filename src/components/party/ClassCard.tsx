@@ -1,6 +1,7 @@
 import { VStack, HStack, SimpleGrid, Box, Text, Badge, Tooltip } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
+import type { IconType } from 'react-icons'
 import type { HeroClass } from '@/types'
 import { calculateMaxHp } from '@/utils/heroUtils'
 
@@ -17,7 +18,7 @@ export default function ClassCard({
   partyHasClass, 
   onClick 
 }: ClassCardProps) {
-  const IconComponent = (GameIcons as any)[heroClass.icon] || GameIcons.GiSwordman
+  const IconComponent = ((GameIcons as Record<string, IconType>)[heroClass.icon] || GameIcons.GiSwordman) as IconType
   const maxHp = calculateMaxHp(1, heroClass.baseStats.defense)
   
   const tooltipLabel = (

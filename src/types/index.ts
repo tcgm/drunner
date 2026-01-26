@@ -61,7 +61,8 @@ export interface Equipment {
   gloves?: Item | null
 }
 
-export type ItemSlot = keyof Equipment
+// Only core equipment slots (excludes stretch goal slots)
+export type ItemSlot = 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2'
 
 export type ItemRarity = 
   | 'junk' 

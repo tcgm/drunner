@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, EventChoice } from '@/types'
+import type { GameState, Hero, EventChoice, Item, ItemSlot } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/game'
 import { calculateMaxHp } from '@/utils/heroUtils'
+import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 
 /**
  * Sanitize hero stats to fix any NaN values - mutates the hero in place
@@ -143,6 +144,10 @@ interface GameStore extends GameState {
   resetGame: () => void
   applyPenalty: () => void
   repairParty: () => void
+  // Inventory actions
+  equipItemToHero: (heroId: string, item: Item, slot: ItemSlot) => void
+  unequipItemFromHero: (heroId: string, slot: ItemSlot) => Item | null
+  sellItemForGold: (item: Item) => void
 }
 
 const initialState: GameState = {
@@ -264,6 +269,33 @@ export const useGameStore = create<GameStore>()(
       }
       return {}
     }),
+  
+  equipItemToHero: (heroId, item, slot) =>
+    set((state) => ({
+      party: state.party.map(h =>
+        h.id === heroId ? equipItem(h, item, slot) : h
+      )
+    })),
+  
+  unequipItemFromHero: (heroId, slot) => {
+    const hero = useGameStore.getState().party.find(h => h.id === heroId)
+    if (!hero) return null
+    
+    const { hero: updatedHero, item } = unequipItem(hero, slot)
+    useGameStore.setState((state) => ({
+      party: state.party.map(h => h.id === heroId ? updatedHero : h)
+    }))
+    
+    return item
+  },
+  
+  sellItemForGold: (item) =>
+    set((state) => ({
+      dungeon: {
+        ...state.dungeon,
+        gold: state.dungeon.gold + sellItem(item)
+      }
+    })),
   
   resetGame: () => 
     set(initialState),

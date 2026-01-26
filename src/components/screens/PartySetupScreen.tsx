@@ -7,6 +7,7 @@ import type { HeroClass } from '@/types'
 import HeroSlot from '@components/party/HeroSlot'
 import ClassCard from '@components/party/ClassCard'
 import PartySummary from '@components/party/PartySummary'
+import InventoryPanel from '@components/dungeon/InventoryPanel'
 
 interface PartySetupScreenProps {
   onStart: () => void
@@ -17,6 +18,7 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
   const { party, addHero, removeHero, startDungeon, hasPendingPenalty, applyPenalty } = useGameStore()
   const [selectedClass, setSelectedClass] = useState<HeroClass | null>(null)
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null)
+  const [selectedHeroIndex, setSelectedHeroIndex] = useState<number>(0)
   const maxPartySize = 4
   
   // Apply penalty when entering party setup if there's a pending penalty
@@ -114,16 +116,24 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
             
             <HStack spacing={4} w="full" flex={1} minH={0}>
               {partySlots.map((hero, index) => (
-                <HeroSlot
+                <Box
                   key={index}
-                  hero={hero}
-                  index={index}
-                  selectedClass={selectedClass}
-                  isHovered={hoveredSlot === index}
-                  onAdd={() => handleAddHero(index)}
-                  onRemove={handleRemoveHero}
-                  onHover={setHoveredSlot}
-                />
+                  onClick={() => hero && setSelectedHeroIndex(index)}
+                  cursor={hero ? 'pointer' : 'default'}
+                  opacity={hero && selectedHeroIndex === index ? 1 : hero ? 0.7 : 1}
+                  transition="opacity 0.2s"
+                  _hover={hero ? { opacity: 1 } : {}}
+                >
+                  <HeroSlot
+                    hero={hero}
+                    index={index}
+                    selectedClass={selectedClass}
+                    isHovered={hoveredSlot === index}
+                    onAdd={() => handleAddHero(index)}
+                    onRemove={handleRemoveHero}
+                    onHover={setHoveredSlot}
+                  />
+                </Box>
               ))}
             </HStack>
             
@@ -131,22 +141,50 @@ export default function PartySetupScreen({ onStart, onBack }: PartySetupScreenPr
           </VStack>
         </Box>
 
-        {/* Right: Future area (artifacts, powers, etc) */}
-        <Box w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={4}>
+        {/* Right: Equipment Management */}
+        <Box w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={4} overflowY="auto">
           <VStack spacing={3} h="full">
             <Heading size="sm" color="orange.300">
-              Equipment & Powers
+              Equipment
             </Heading>
-            <Box flex={1} display="flex" alignItems="center" justifyContent="center">
-              <VStack spacing={2}>
-                <Text color="gray.600" fontSize="sm" textAlign="center">
-                  Coming Soon
-                </Text>
-                <Text color="gray.700" fontSize="xs" textAlign="center">
-                  Artifacts, abilities, and party buffs will appear here
-                </Text>
-              </VStack>
-            </Box>
+            {party.length > 0 ? (
+              <>
+                {/* Hero selector tabs */}
+                {party.length > 1 && (
+                  <HStack spacing={1} w="full" flexWrap="wrap">
+                    {party.map((hero, index) => (
+                      <Button
+                        key={hero.id}
+                        size="xs"
+                        variant={selectedHeroIndex === index ? 'solid' : 'outline'}
+                        colorScheme="orange"
+                        onClick={() => setSelectedHeroIndex(index)}
+                        flex={1}
+                        minW="60px"
+                      >
+                        {hero.name.split(' ')[0]}
+                      </Button>
+                    ))}
+                  </HStack>
+                )}
+                
+                {/* Inventory panel for selected hero */}
+                <Box flex={1} w="full">
+                  <InventoryPanel hero={party[selectedHeroIndex]} />
+                </Box>
+              </>
+            ) : (
+              <Box flex={1} display="flex" alignItems="center" justifyContent="center">
+                <VStack spacing={2}>
+                  <Text color="gray.600" fontSize="sm" textAlign="center">
+                    No Heroes
+                  </Text>
+                  <Text color="gray.700" fontSize="xs" textAlign="center">
+                    Add heroes to manage their equipment
+                  </Text>
+                </VStack>
+              </Box>
+            )}
           </VStack>
         </Box>
       </Flex>
