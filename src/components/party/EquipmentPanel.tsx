@@ -3,8 +3,8 @@ import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, ItemSlot, Item } from '../../types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
-import { useGameStore } from '@/store/gameStore'
-import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
+// import { useGameStore } from '@/store/gameStore'
+// import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 
 const SLOT_ICONS: Record<ItemSlot, IconType> = {
   weapon: GameIcons.GiSwordman,
@@ -24,15 +24,15 @@ const SLOT_NAMES: Record<ItemSlot, string> = {
   accessory2: 'Accessory',
 }
 
-const RARITY_COLORS: Record<string, string> = {
-  junk: 'gray',
-  common: 'gray',
-  uncommon: 'green',
-  rare: 'blue',
-  epic: 'purple',
-  legendary: 'orange',
-  mythic: 'pink',
-}
+// const RARITY_COLORS: Record<string, string> = {
+//   junk: 'gray',
+//   common: 'gray',
+//   uncommon: 'green',
+//   rare: 'blue',
+//   epic: 'purple',
+//   legendary: 'orange',
+//   mythic: 'pink',
+// }
 
 interface EquipmentPanelProps {
   party: (Hero | null)[]

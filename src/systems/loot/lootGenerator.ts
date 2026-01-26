@@ -1,7 +1,7 @@
 import type { Item, ItemSlot, ItemRarity } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase } from '@data/items/bases'
-import { getRandomMaterial, getCompatibleMaterial } from '@data/items/materials'
+import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity } from '@data/items/materials'
 import { getRandomUnique } from '@data/items/uniques'
 import { getRandomSetItem } from '@data/items/sets'
 
@@ -249,62 +249,67 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
   }
   
   // Generate procedural item from material + base
-  // Strategy: Get material first, then find a compatible base
-  const material = getRandomMaterial(rarity)
+  // Strategy: Keep trying until we find a compatible combination
+  let material = getCompatibleMaterial(rarity, type)
+  let baseTemplate = getCompatibleBase(type, material.id)
   
-  // Get a base template that's compatible with this material
-  const baseTemplate = getCompatibleBase(type, material.id)
+  // Retry up to 10 times if we can't find a compatible combination
+  let attempts = 0
+  const maxAttempts = 10
   
-  // Double-check: if base blacklists the material, try to get a compatible material for this base
-  let finalMaterial = material
-  if (baseTemplate?.materialBlacklist?.includes(material.id)) {
-    finalMaterial = getCompatibleMaterial(rarity, baseTemplate.type)
+  while (!baseTemplate && attempts < maxAttempts) {
+    material = getCompatibleMaterial(rarity, type)
+    baseTemplate = getCompatibleBase(type, material.id)
+    attempts++
   }
   
-  // Fallback if no base template found
+  // If we still failed after retries, give alkahest instead
   if (!baseTemplate) {
-    // Create a minimal item
+    console.warn(`Failed to generate compatible item for type ${type} with rarity ${rarity} after ${maxAttempts} attempts - giving alkahest`)
+    // Create an alkahest shard item that represents raw crafting material
+    const alkahestValue = Math.floor(50 * (material?.valueMultiplier || 1))
     return {
       id: uuidv4(),
-      name: `${finalMaterial.prefix} Item`,
-      description: finalMaterial.description || 'A mysterious item',
-      type,
+      name: 'Alkahest Shard',
+      description: 'A crystallized essence of incompatible materials. Can be used for crafting.',
+      type: type, // Keep requested type so it doesn't break inventory logic
       rarity,
-      stats: {},
-      value: Math.floor(50 * finalMaterial.valueMultiplier),
-      icon: 'GiTreasure', // Default icon for fallback items
+      stats: {}, // No stats - just crafting material
+      value: alkahestValue,
+      icon: 'GiTreasure',
     }
   }
   
-  // TypeScript now knows baseTemplate is defined
+  // Generate the item from the base and material
   const base: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = baseTemplate
   
   // Apply material multiplier to base stats
-  const modifiedStats = applyMaterialToStats(base.stats, finalMaterial.statMultiplier)
+  const modifiedStats = applyMaterialToStats(base.stats, material.statMultiplier)
   
-  // Calculate value (base 50 gold * material multiplier)
+  // Calculate value
   const baseValue = 50
-  const value = Math.floor(baseValue * finalMaterial.valueMultiplier)
+  const value = Math.floor(baseValue * material.valueMultiplier)
   
-  // Combine material description with base description if needed
-  const description = finalMaterial.description 
-    ? `${base.description} - ${finalMaterial.description}`
+  // Combine descriptions
+  const description = material.description 
+    ? `${base.description} - ${material.description}`
     : base.description
   
-  // Generate item name using base template
-  const name = generateItemName(finalMaterial.prefix, base)
+  // Generate item name
+  const name = generateItemName(material.prefix, base)
   
   // Create final item
   return {
     id: uuidv4(),
     name,
     description,
-    type: forceType || base.type, // Use forced type for specific accessory slots, otherwise use base type
+    type: forceType || base.type,
     rarity,
     stats: modifiedStats,
     value,
-    icon: base.icon || 'GiTreasure', // Include icon from base template
+    icon: base.icon || 'GiTreasure',
   }
+}
 }
 
 /**

@@ -65,8 +65,8 @@ export function getCompatibleBase(type: ItemSlot, materialId: string): BaseItemT
   const compatible = bases.filter(b => !b.materialBlacklist || !b.materialBlacklist.includes(materialId))
   
   if (compatible.length === 0) {
-    // If no compatible bases found, just return any base (fallback)
-    return getRandomBase(type)
+    // If no compatible bases found, return undefined (will trigger fallback in generator)
+    return undefined
   }
   
   return compatible[Math.floor(Math.random() * compatible.length)]
