@@ -17,10 +17,10 @@ export const HIDDEN_CACHE: DungeonEvent = {
       },
     },
     {
-      text: 'Search thoroughly (requires Luck > 7)',
+      text: 'Search thoroughly (requires Luck)',
       requirements: {
         stat: 'luck',
-        minValue: 7,
+        minValue: 35,
       },
       outcome: {
         text: 'Your keen eye spots additional treasure!',

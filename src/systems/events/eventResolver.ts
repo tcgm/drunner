@@ -59,10 +59,16 @@ export function resolveChoiceOutcome(
     if (choice.statModifier) {
       const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
       if (aliveHeroes.length > 0) {
-        // Use the average stat value of all alive heroes
-        const avgStat = aliveHeroes.reduce((sum, h) => sum + (h.stats[choice.statModifier!] || 0), 0) / aliveHeroes.length
+        // Use the highest stat value among alive heroes (not average)
+        const maxStat = Math.max(...aliveHeroes.map(h => h.stats[choice.statModifier!] || 0))
         // Each point in the stat adds to success chance (capped at max)
-        finalChance = Math.min(GAME_CONFIG.chances.maxSuccess, baseChance + (avgStat * GAME_CONFIG.chances.statBonusPerPoint))
+        finalChance = Math.min(
+          GAME_CONFIG.chances.maxSuccess, 
+          Math.max(
+            GAME_CONFIG.chances.minSuccess,
+            baseChance + (maxStat * GAME_CONFIG.chances.statBonusPerPoint)
+          )
+        )
       }
     }
     
@@ -164,7 +170,7 @@ export function resolveEventOutcome(
     switch (effect.type) {
       case 'damage': {
         const baseDamage = effect.value || 0
-        const scaledDamage = scaleValue(baseDamage, depth, 0.1) // 10% per depth
+        const scaledDamage = scaleValue(baseDamage, depth, GAME_CONFIG.scaling.damage)
         const damage = Math.floor(scaledDamage * GAME_CONFIG.multipliers.damage)
         targets.forEach(hero => {
           const actualDamage = Math.max(1, damage - Math.floor(hero.stats.defense * GAME_CONFIG.combat.defenseReduction))
@@ -184,7 +190,7 @@ export function resolveEventOutcome(
       
       case 'heal': {
         const baseHealing = effect.value || 0
-        const scaledHealing = scaleValue(baseHealing, depth, 0.08) // 8% per depth (slightly less than damage)
+        const scaledHealing = scaleValue(baseHealing, depth, GAME_CONFIG.scaling.healing)
         const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
         targets.forEach(hero => {
           hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healing)
@@ -549,8 +555,8 @@ export function checkRequirements(
   }
   
   if (requirements.stat && requirements.minValue !== undefined) {
-    // Scale stat requirements with depth (5% per depth, slower than damage scaling)
-    const scaledMinValue = scaleValue(requirements.minValue, depth, 0.05)
+    // Scale stat requirements with depth (15% per depth to match stat growth)
+    const scaledMinValue = scaleValue(requirements.minValue, depth, GAME_CONFIG.scaling.statRequirements)
     const hasStat = party.some(h => {
       if (!h || !h.isAlive) return false
       const statValue = h.stats[requirements.stat as keyof typeof h.stats]

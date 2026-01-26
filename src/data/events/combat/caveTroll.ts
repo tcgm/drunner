@@ -18,10 +18,10 @@ export const CAVE_TROLL: DungeonEvent = {
       },
     },
     {
-      text: 'Aim for weak spots (requires Attack > 10)',
+      text: 'Aim for weak spots (requires Attack)',
       requirements: {
         stat: 'attack',
-        minValue: 10,
+        minValue: 50,
       },
       outcome: {
         text: 'You exploit the troll\'s vulnerabilities!',

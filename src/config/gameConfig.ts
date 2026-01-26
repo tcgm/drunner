@@ -128,9 +128,10 @@ export const GAME_CONFIG = {
 
   // Chance System
   chances: {
-    defaultSuccess: 0.5, // 50% default success chance for skill checks
-    maxSuccess: 0.95, // 95% cap on success chance
-    statBonusPerPoint: 0.02, // 2% success chance per stat point
+    defaultSuccess: 0.0, // 0% default success chance for skill checks
+    minSuccess: 0.05, // 5% minimum success chance (always a chance)
+    maxSuccess: 0.95, // 95% cap on success chance (never guaranteed)
+    statBonusPerPoint: 0.002, // 0.2% success chance per stat point (100 stat = 20% bonus)
   },
 
   // Combat

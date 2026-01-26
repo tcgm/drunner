@@ -22,7 +22,7 @@ export const ENCHANTED_FORGE: DungeonEvent = {
       text: 'Try advanced forging (requires high Attack)',
       requirements: {
         stat: 'attack',
-        minValue: 15,
+        minValue: 75,
       },
       outcome: {
         text: 'Your skill allows you to work with rare materials!',

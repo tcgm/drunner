@@ -10,7 +10,7 @@ export const RICKETY_BRIDGE: DungeonEvent = {
       text: 'Cross carefully (Speed check)',
       // Success/Failure with stat modifier
       successChance: 0.4, // 40% base chance
-      statModifier: 'speed', // Each point of speed adds 2% success chance
+      statModifier: 'speed', // Each point of speed adds 0.2% success chance
       successOutcome: {
         text: 'Your party crosses the bridge safely with nimble footwork!',
         effects: [

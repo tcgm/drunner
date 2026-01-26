@@ -22,7 +22,7 @@ export const ARMORY_CACHE: DungeonEvent = {
       text: 'Search for better armor (requires high Defense)',
       requirements: {
         stat: 'defense',
-        minValue: 12,
+        minValue: 60,
       },
       outcome: {
         text: 'Your experience lets you identify the finest pieces!',

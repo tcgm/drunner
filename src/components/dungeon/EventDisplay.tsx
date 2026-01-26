@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import type { DungeonEvent, EventChoice } from '@/types'
 import { checkRequirements } from '@systems/events/eventResolver'
 import type { Hero } from '@/types'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionButton = motion.create(Button)
 const MotionBox = motion.create(Box)
@@ -69,6 +70,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
         </Heading>
         {event.choices.map((choice, index) => {
           const canSelect = checkRequirements(choice.requirements, party, depth, gold)
+          const successChance = calculateSuccessChance(choice, party)
           
           return (
             <MotionButton
@@ -104,9 +106,23 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
               }}
             >
               <VStack align="start" spacing={0.5}>
-                <Text fontWeight="bold" fontSize="sm">
-                  {choice.text}
-                </Text>
+                <HStack justify="space-between" w="full">
+                  <Text fontWeight="bold" fontSize="sm">
+                    {choice.text}
+                  </Text>
+                  {successChance !== null && (
+                    <Badge 
+                      colorScheme={
+                        successChance >= 0.75 ? 'green' : 
+                        successChance >= 0.5 ? 'yellow' : 
+                        successChance >= 0.25 ? 'orange' : 'red'
+                      }
+                      fontSize="xs"
+                    >
+                      {Math.round(successChance * 100)}%
+                    </Badge>
+                  )}
+                </HStack>
                 {choice.requirements && (
                   <Text fontSize="xs" color={canSelect ? 'gray.400' : 'red.400'}>
                     {getRequirementText(choice.requirements, depth)}
@@ -121,6 +137,35 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
   )
 }
 
+function calculateSuccessChance(choice: EventChoice, party: (Hero | null)[]): number | null {
+  // Only calculate for choices with success/failure outcomes
+  if (!choice.successOutcome || !choice.failureOutcome) {
+    return null
+  }
+
+  const baseChance = choice.successChance || GAME_CONFIG.chances.defaultSuccess
+  let finalChance = baseChance
+
+  // Apply stat modifier if specified
+  if (choice.statModifier) {
+    const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
+    if (aliveHeroes.length > 0) {
+      // Use the highest stat value among alive heroes
+      const maxStat = Math.max(...aliveHeroes.map(h => h.stats[choice.statModifier!] || 0))
+      // Calculate final chance with stat bonus
+      finalChance = Math.min(
+        GAME_CONFIG.chances.maxSuccess,
+        Math.max(
+          GAME_CONFIG.chances.minSuccess,
+          baseChance + (maxStat * GAME_CONFIG.chances.statBonusPerPoint)
+        )
+      )
+    }
+  }
+
+  return finalChance
+}
+
 function getRequirementText(requirements: EventChoice['requirements'], depth: number): string {
   if (!requirements) return ''
   
@@ -132,13 +177,13 @@ function getRequirementText(requirements: EventChoice['requirements'], depth: nu
   
   if (requirements.stat && requirements.minValue) {
     // Show scaled requirement value
-    const scaledValue = Math.floor(requirements.minValue * (1 + (depth - 1) * 0.05))
+    const scaledValue = Math.floor(requirements.minValue * (1 + (depth - 1) * GAME_CONFIG.scaling.statRequirements))
     parts.push(`Requires any hero with ${requirements.stat} ≥ ${scaledValue}`)
   }
   
   if (requirements.gold !== undefined) {
     // Show scaled gold requirement
-    const scaledGold = Math.floor(requirements.gold * (1 + (depth - 1) * 0.15))
+    const scaledGold = Math.floor(requirements.gold * (1 + (depth - 1) * GAME_CONFIG.scaling.rewards))
     parts.push(`Requires ${scaledGold} gold`)
   }
   

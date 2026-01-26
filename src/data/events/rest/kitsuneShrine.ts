@@ -7,10 +7,10 @@ export const KITSUNE_SHRINE: DungeonEvent = {
   description: 'A mischievous kitsune with nine flowing tails lounges at an ornate shrine, eyeing your party with playful interest.',
   choices: [
     {
-      text: 'Ask for her blessing (requires high Luck ≥ 15)',
+      text: 'Ask for her blessing (requires high Luck)',
       requirements: {
         stat: 'luck',
-        minValue: 15,
+        minValue: 75,
       },
       outcome: {
         text: 'Impressed by your fortune, the kitsune grants you her blessing! Your party feels incredibly lucky!',

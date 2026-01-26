@@ -27,7 +27,7 @@ export const ABANDONED_ARMORY: DungeonEvent = {
       text: 'Take everything (requires high Defense)',
       requirements: {
         stat: 'defense',
-        minValue: 8,
+        minValue: 40,
       },
       outcome: {
         text: 'You carry out a hefty load of equipment!',

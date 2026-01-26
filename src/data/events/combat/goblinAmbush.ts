@@ -18,10 +18,10 @@ export const GOBLIN_AMBUSH: DungeonEvent = {
       },
     },
     {
-      text: 'Ambush them first (requires Speed > 8)',
+      text: 'Ambush them first (requires Speed)',
       requirements: {
         stat: 'speed',
-        minValue: 8,
+        minValue: 40,
       },
       outcome: {
         text: 'You strike first, catching them off guard!',
