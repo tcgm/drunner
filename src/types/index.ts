@@ -163,13 +163,31 @@ export interface DungeonEvent {
   depth: number
 }
 
+export interface EventLogEntry {
+  eventId: string
+  eventTitle: string
+  eventType: EventType
+  floor: number
+  depth: number
+  choiceMade: string
+  outcomeText: string
+  goldChange: number
+  itemsGained: string[] // Item names
+  damageDealt: number
+  damageTaken: number
+  healingReceived: number
+  xpGained: number
+  heroesAffected: string[] // Hero names
+}
+
 export interface Dungeon {
   depth: number // Total events completed (legacy, for migration)
   floor: number // Current floor number (new system)
   eventsThisFloor: number // Events completed on current floor
   eventsRequiredThisFloor: number // Random target (min-max) for this floor before boss
   currentEvent: DungeonEvent | null
-  eventHistory: string[]
+  eventHistory: string[] // Simple event ID list (legacy)
+  eventLog: EventLogEntry[] // Detailed event logging
   gold: number
   inventory: Item[] // In-run inventory
   isNextEventBoss?: boolean // Indicates if next event is a floor boss
@@ -193,6 +211,7 @@ export interface Run {
   damageDealt: number // Total damage dealt to enemies/traps
   damageTaken: number // Total damage taken by party
   healingReceived: number // Total healing received
+  xpGained: number // Total XP gained by all heroes
   xpMentored: number // XP shared from max-level heroes to lower-level party members
   metaXpGained: number // Overflow XP sent to the meta XP pool
   heroesUsed: { name: string; class: string; level: number }[]
@@ -201,6 +220,19 @@ export interface Run {
     eventType: string
     heroDamage: { heroName: string; damageReceived: number }[]
   }
+  // Detailed statistics
+  combatEvents: number // Number of combat events
+  treasureEvents: number // Number of treasure events
+  restEvents: number // Number of rest events
+  bossesDefeated: number // Number of bosses defeated
+  merchantVisits: number // Number of merchant visits
+  trapsTriggered: number // Number of trap events
+  choiceEvents: number // Number of choice events
+  totalLevelsGained: number // Sum of all level-ups across party
+  itemsDiscarded: number // Items turned into alkahest
+  alkahestGained: number // Total alkahest from discarding items
+  highestDamageSingleHit: number // Biggest single damage instance
+  timesRevived: number // Number of hero revives during run
 }
 
 export interface GameState {

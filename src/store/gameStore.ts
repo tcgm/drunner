@@ -236,6 +236,7 @@ const initialState: GameState = {
     eventsRequiredThisFloor: 4,
     currentEvent: null,
     eventHistory: [],
+    eventLog: [],
     gold: 0,
     inventory: [],
     isNextEventBoss: false,
@@ -360,13 +361,27 @@ export const useGameStore = create<GameStore>()(
         damageDealt: 0,
         damageTaken: 0,
         healingReceived: 0,
+        xpGained: 0,
         xpMentored: 0,
         metaXpGained: 0,
         heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
           name: h.name,
           class: h.class.name,
           level: h.level
-        }))
+        })),
+        // New detailed statistics
+        combatEvents: 0,
+        treasureEvents: 0,
+        restEvents: 0,
+        bossesDefeated: 0,
+        merchantVisits: 0,
+        trapsTriggered: 0,
+        choiceEvents: 0,
+        totalLevelsGained: 0,
+        itemsDiscarded: 0,
+        alkahestGained: 0,
+        highestDamageSingleHit: 0,
+        timesRevived: 0,
       }
       
       // Roll random number of events for first floor
@@ -384,6 +399,7 @@ export const useGameStore = create<GameStore>()(
           eventsRequiredThisFloor: eventsRequired,
           currentEvent: event,
           eventHistory: event ? [event.id] : [],
+          eventLog: [],
           gold: 0, // Reset gold for each new run
           inventory: [], // Reset inventory for each new run
           isNextEventBoss: false,
@@ -456,6 +472,12 @@ export const useGameStore = create<GameStore>()(
   
   selectChoice: (choice) =>
     set((state) => {
+      if (!state.dungeon.currentEvent || !state.activeRun) {
+        return state
+      }
+
+      const currentEvent = state.dungeon.currentEvent
+
       // First resolve which outcome to use (handles weighted/success-fail/single)
       const selectedOutcome = resolveChoiceOutcome(choice, state.party)
       
@@ -469,28 +491,82 @@ export const useGameStore = create<GameStore>()(
       const damageDealt = 0
       let damageTaken = 0
       let healingReceived = 0
+      let xpGained = 0
+      let revivals = 0
       const itemsFound = resolvedOutcome.items.length
-      const isCombatEvent = state.dungeon.currentEvent?.type === 'combat' || state.dungeon.currentEvent?.type === 'boss'
+      const isCombatEvent = currentEvent.type === 'combat' || currentEvent.type === 'boss'
+      const heroesAffected: Set<string> = new Set()
       
+      let highestSingleDamage = 0
       resolvedOutcome.effects.forEach(effect => {
         if (effect.type === 'damage' && effect.value) {
           // Damage to party is damage taken, damage from party is damage dealt
           if (isCombatEvent) {
             // In combat events, assume all damage effects are damage taken by party
-            damageTaken += effect.value * (effect.target?.length || 1)
+            const totalDamage = effect.value * (effect.target?.length || 1)
+            damageTaken += totalDamage
+            if (effect.value > highestSingleDamage) {
+              highestSingleDamage = effect.value
+            }
           }
+          effect.target?.forEach(heroId => {
+            const hero = state.party.find(h => h?.id === heroId)
+            if (hero) heroesAffected.add(hero.name)
+          })
         } else if (effect.type === 'heal' && effect.value) {
           healingReceived += effect.value * (effect.target?.length || 1)
+          effect.target?.forEach(heroId => {
+            const hero = state.party.find(h => h?.id === heroId)
+            if (hero) heroesAffected.add(hero.name)
+          })
+        } else if (effect.type === 'xp' && effect.value) {
+          xpGained += effect.value
+        } else if (effect.type === 'revive') {
+          revivals += effect.target?.length || 1
+          effect.target?.forEach(heroId => {
+            const hero = state.party.find(h => h?.id === heroId)
+            if (hero) heroesAffected.add(hero.name)
+          })
         }
       })
+      
+      // Count level-ups
+      let totalLevelsGained = 0
+      updatedParty.forEach((hero, idx) => {
+        if (hero && state.party[idx]) {
+          const levelDiff = hero.level - state.party[idx]!.level
+          if (levelDiff > 0) {
+            totalLevelsGained += levelDiff
+            heroesAffected.add(hero.name)
+          }
+        }
+      })
+
+      // Create event log entry
+      const eventLogEntry: import('@/types').EventLogEntry = {
+        eventId: currentEvent.id,
+        eventTitle: currentEvent.title,
+        eventType: currentEvent.type,
+        floor: state.dungeon.floor,
+        depth: state.dungeon.depth,
+        choiceMade: choice.text,
+        outcomeText: resolvedOutcome.text,
+        goldChange: updatedGold - state.dungeon.gold,
+        itemsGained: resolvedOutcome.items.map(item => item.name),
+        damageDealt,
+        damageTaken,
+        healingReceived,
+        xpGained,
+        heroesAffected: Array.from(heroesAffected)
+      }
       
       // Check if wiped
       const isWiped = updatedParty.every(h => h !== null && !h.isAlive)
       
       // Capture death details if party wiped
-      const deathDetails = isWiped && state.dungeon.currentEvent ? {
-        eventTitle: state.dungeon.currentEvent.title,
-        eventType: state.dungeon.currentEvent.type,
+      const deathDetails = isWiped ? {
+        eventTitle: currentEvent.title,
+        eventType: currentEvent.type,
         heroDamage: resolvedOutcome.effects
           .filter(effect => effect.type === 'damage' && effect.target)
           .flatMap(effect => 
@@ -514,7 +590,35 @@ export const useGameStore = create<GameStore>()(
       
       // Track gold changes in active run
       const goldDiff = updatedGold - state.dungeon.gold
-      const updatedRun = state.activeRun ? {
+      
+      // Track event type statistics
+      const eventTypeStats: Partial<import('@/types').Run> = {}
+      switch (currentEvent.type) {
+        case 'combat':
+          eventTypeStats.combatEvents = (state.activeRun.combatEvents ?? 0) + 1
+          break
+        case 'treasure':
+          eventTypeStats.treasureEvents = (state.activeRun.treasureEvents ?? 0) + 1
+          break
+        case 'rest':
+          eventTypeStats.restEvents = (state.activeRun.restEvents ?? 0) + 1
+          break
+        case 'merchant':
+          eventTypeStats.merchantVisits = (state.activeRun.merchantVisits ?? 0) + 1
+          break
+        case 'trap':
+          eventTypeStats.trapsTriggered = (state.activeRun.trapsTriggered ?? 0) + 1
+          break
+        case 'choice':
+          eventTypeStats.choiceEvents = (state.activeRun.choiceEvents ?? 0) + 1
+          break
+        case 'boss':
+          eventTypeStats.bossesDefeated = (state.activeRun.bossesDefeated ?? 0) + (isWiped ? 0 : 1)
+          eventTypeStats.combatEvents = (state.activeRun.combatEvents ?? 0) + 1
+          break
+      }
+
+      const updatedRun = {
         ...state.activeRun,
         // Patch legacy runs with missing fields
         enemiesDefeated: (state.activeRun.enemiesDefeated ?? 0) + (isCombatEvent && !isWiped ? 1 : 0),
@@ -522,14 +626,19 @@ export const useGameStore = create<GameStore>()(
         damageDealt: (state.activeRun.damageDealt ?? 0) + damageDealt,
         damageTaken: (state.activeRun.damageTaken ?? 0) + damageTaken,
         healingReceived: (state.activeRun.healingReceived ?? 0) + healingReceived,
+        xpGained: (state.activeRun.xpGained ?? 0) + xpGained,
+        totalLevelsGained: (state.activeRun.totalLevelsGained ?? 0) + totalLevelsGained,
+        timesRevived: (state.activeRun.timesRevived ?? 0) + revivals,
+        highestDamageSingleHit: Math.max(state.activeRun.highestDamageSingleHit ?? 0, highestSingleDamage),
         // Update with new values
         goldEarned: state.activeRun.goldEarned + (goldDiff > 0 ? goldDiff : 0),
         goldSpent: state.activeRun.goldSpent + (goldDiff < 0 ? -goldDiff : 0),
         xpMentored: (state.activeRun.xpMentored ?? 0) + xpMentored,
         metaXpGained: (state.activeRun.metaXpGained ?? 0) + metaXpGained,
+        ...eventTypeStats,
         ...(prePenaltyLevels ? { heroesUsed: prePenaltyLevels } : {}), // Store pre-penalty levels
         ...(deathDetails ? { deathDetails } : {}) // Store death details if party wiped
-      } : null
+      }
       
       return {
         metaXp: state.metaXp + metaXpGained,
@@ -538,6 +647,7 @@ export const useGameStore = create<GameStore>()(
           ...state.dungeon,
           gold: updatedGold,
           inventory: [...state.dungeon.inventory, ...resolvedOutcome.items], // Add found items to inventory
+          eventLog: [...state.dungeon.eventLog, eventLogEntry],
           currentEvent: null // Clear current event after resolution
         },
         isGameOver: isWiped,
@@ -619,6 +729,7 @@ export const useGameStore = create<GameStore>()(
             eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
+            eventLog: [],
             gold: 0,
             inventory: [],
             isNextEventBoss: false,
@@ -667,6 +778,7 @@ export const useGameStore = create<GameStore>()(
             eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
+            eventLog: [],
             gold: 0,
             inventory: [],
             isNextEventBoss: false,
@@ -815,9 +927,16 @@ export const useGameStore = create<GameStore>()(
       const totalValue = itemsToDiscard.reduce((sum, item) => sum + item.value, 0)
       const alkahestGained = Math.floor(totalValue * GAME_CONFIG.items.alkahestConversionRate)
       
+      // Track discard stats if there's an active run
+      const runUpdate = state.activeRun ? {
+        itemsDiscarded: (state.activeRun.itemsDiscarded ?? 0) + itemsToDiscard.length,
+        alkahestGained: (state.activeRun.alkahestGained ?? 0) + alkahestGained
+      } : {}
+      
       return {
         bankInventory: state.bankInventory.filter(item => !itemIds.includes(item.id)),
-        alkahest: state.alkahest + alkahestGained
+        alkahest: state.alkahest + alkahestGained,
+        ...(state.activeRun ? { activeRun: { ...state.activeRun, ...runUpdate } } : {})
       }
     }),
   

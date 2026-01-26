@@ -78,25 +78,67 @@ export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
             </Text>
           </Box>
           <Box>
+            <Text fontSize="xs" color="gray.400">Floor</Text>
+            <Text fontSize="sm" fontWeight="bold" color="cyan.200">
+              {run.finalFloor || run.finalDepth}
+            </Text>
+          </Box>
+          <Box>
             <Text fontSize="xs" color="gray.400">Events</Text>
             <Text fontSize="sm" fontWeight="bold" color="cyan.200">
               {run.eventsCompleted}
             </Text>
           </Box>
+        </SimpleGrid>
+
+        {/* Expanded Statistics */}
+        <SimpleGrid columns={4} spacing={2} w="full" fontSize="xs">
           <Box>
-            <Text fontSize="xs" color="gray.400">
-              {run.result === 'retreat' || run.result === 'victory' ? 'Gold Gained' : 'Gold Lost'}
+            <Text color="gray.500">Combat</Text>
+            <Text fontWeight="bold" color="red.300">
+              {run.combatEvents || 0}
             </Text>
-            <Text 
-              fontSize="sm" 
-              fontWeight="bold" 
-              color={run.result === 'retreat' || run.result === 'victory' ? 'green.300' : 'red.300'}
-            >
-              {run.result === 'retreat' || run.result === 'victory' 
-                ? `+${Math.max(0, run.goldEarned - run.goldSpent)}`
-                : (run.result === 'defeat' && GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat 
-                    ? `-${Math.max(0, run.goldEarned - run.goldSpent)}` 
-                    : '0')}
+          </Box>
+          <Box>
+            <Text color="gray.500">Treasure</Text>
+            <Text fontWeight="bold" color="yellow.300">
+              {run.treasureEvents || 0}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="gray.500">Rest</Text>
+            <Text fontWeight="bold" color="green.300">
+              {run.restEvents || 0}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="gray.500">Bosses</Text>
+            <Text fontWeight="bold" color="purple.300">
+              {run.bossesDefeated || 0}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="gray.500">Dmg Taken</Text>
+            <Text fontWeight="bold" color="orange.300">
+              {run.damageTaken || 0}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="gray.500">Healing</Text>
+            <Text fontWeight="bold" color="green.400">
+              {run.healingReceived || 0}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="gray.500">XP Gained</Text>
+            <Text fontWeight="bold" color="purple.400">
+              {run.xpGained || 0}
+            </Text>
+          </Box>
+          <Box>
+            <Text color="gray.500">Level Ups</Text>
+            <Text fontWeight="bold" color="cyan.400">
+              {run.totalLevelsGained || 0}
             </Text>
           </Box>
         </SimpleGrid>

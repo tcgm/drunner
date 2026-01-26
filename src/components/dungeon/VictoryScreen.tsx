@@ -133,6 +133,72 @@ export default function VictoryScreen({ depth, onExit }: VictoryScreenProps) {
                 </Text>
               </Box>
             </SimpleGrid>
+
+            {/* Expanded Event Type Statistics */}
+            <Divider borderColor="yellow.800" my={2} />
+            <Text color="gray.400" fontSize="xs" textAlign="center" mb={2}>Event Breakdown</Text>
+            <SimpleGrid columns={4} spacing={2} fontSize="xs">
+              <Box textAlign="center">
+                <Text color="gray.500">Combat</Text>
+                <Text fontWeight="bold" color="red.300">
+                  {activeRun?.combatEvents || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Text color="gray.500">Treasure</Text>
+                <Text fontWeight="bold" color="yellow.300">
+                  {activeRun?.treasureEvents || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Text color="gray.500">Rest</Text>
+                <Text fontWeight="bold" color="green.300">
+                  {activeRun?.restEvents || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Text color="gray.500">Bosses</Text>
+                <Text fontWeight="bold" color="purple.300">
+                  {activeRun?.bossesDefeated || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Text color="gray.500">Merchant</Text>
+                <Text fontWeight="bold" color="purple.400">
+                  {activeRun?.merchantVisits || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Text color="gray.500">Traps</Text>
+                <Text fontWeight="bold" color="orange.300">
+                  {activeRun?.trapsTriggered || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Text color="gray.500">Choice</Text>
+                <Text fontWeight="bold" color="blue.300">
+                  {activeRun?.choiceEvents || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Text color="gray.500">Level Ups</Text>
+                <Text fontWeight="bold" color="cyan.300">
+                  {activeRun?.totalLevelsGained || 0}
+                </Text>
+              </Box>
+            </SimpleGrid>
+            
+            {(activeRun?.xpGained ?? 0) > 0 && (
+              <>
+                <Divider borderColor="yellow.800" my={2} />
+                <Box textAlign="center">
+                  <Text color="gray.400" fontSize="xs">Total XP Gained</Text>
+                  <Text color="purple.300" fontSize="lg" fontWeight="bold">
+                    {activeRun?.xpGained || 0}
+                  </Text>
+                </Box>
+              </>
+            )}
             
             {(activeRun?.xpMentored ?? 0) > 0 || (activeRun?.metaXpGained ?? 0) > 0 ? (
               <>
