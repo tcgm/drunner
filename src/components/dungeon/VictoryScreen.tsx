@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { GiTwoCoins, GiTrophyCup, GiLaurelsTrophy, GiSwordWound, GiHearts, GiChest, GiDeathSkull } from 'react-icons/gi'
 import { useEffect } from 'react'
 import { useGameStore } from '@store/gameStore'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionVStack = motion.create(VStack)
 const MotionBox = motion.create(Box)
@@ -19,7 +20,7 @@ export default function VictoryScreen({ depth, onExit }: VictoryScreenProps) {
   // Trigger victory when the screen is shown
   useEffect(() => {
     victoryGame()
-  }, [])
+  }, [victoryGame])
 
   return (
     <Flex h="100vh" align="center" justify="center" p={4}>
@@ -140,15 +141,15 @@ export default function VictoryScreen({ depth, onExit }: VictoryScreenProps) {
                     <Box textAlign="center">
                       <Text color="gray.400" fontSize="xs">XP Mentored</Text>
                       <Text color="cyan.300" fontSize="md" fontWeight="bold">
-                        {activeRun.xpMentored}
+                        {activeRun?.xpMentored}
                       </Text>
                     </Box>
                   )}
                   {(activeRun?.metaXpGained ?? 0) > 0 && (
                     <Box textAlign="center">
                       <Text color="gray.400" fontSize="xs">Meta XP Gained</Text>
-                      <Text color="cyan.300" fontSize="md" fontWeight="bold">
-                        {activeRun.metaXpGained}
+                      <Text color={GAME_CONFIG.colors.xp.light} fontSize="md" fontWeight="bold">
+                        {activeRun?.metaXpGained}
                       </Text>
                     </Box>
                   )}

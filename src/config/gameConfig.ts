@@ -3,6 +3,71 @@
  */
 
 export const GAME_CONFIG = {
+  // UI Colors (centralized color control)
+  colors: {
+    // Resource colors
+    hp: {
+      base: 'green.400',
+      light: 'green.300',
+      dark: 'green.500',
+      glow: 'rgba(72, 187, 120, 0.8)', // #48bb78
+      hex: '#48bb78',
+    },
+    xp: {
+      base: 'cyan.400',
+      light: 'cyan.300',
+      dark: 'cyan.500',
+      glow: 'rgba(56, 189, 248, 0.8)', // #38bdf8
+      hex: '#38bdf8',
+    },
+    gold: {
+      base: 'yellow.400',
+      light: 'yellow.300',
+      dark: 'yellow.500',
+      glow: 'rgba(246, 224, 94, 0.8)', // #f6e05e
+      hex: '#f6e05e',
+    },
+    damage: {
+      base: 'red.400',
+      light: 'red.300',
+      dark: 'red.500',
+      glow: 'rgba(245, 101, 101, 0.8)', // #f56565
+      hex: '#f56565',
+    },
+    heal: {
+      base: 'green.400',
+      light: 'green.300',
+      dark: 'green.500',
+      glow: 'rgba(72, 187, 120, 0.8)', // #48bb78
+      hex: '#48bb78',
+    },
+    // Stat colors
+    stats: {
+      attack: 'red.400',
+      defense: 'blue.400',
+      speed: 'yellow.400',
+      luck: 'purple.400',
+      magicPower: 'purple.400',
+    },
+    // Rarity colors
+    rarity: {
+      common: 'gray.500',
+      uncommon: 'green.400',
+      rare: 'blue.400',
+      epic: 'purple.400',
+      legendary: 'orange.400',
+      mythic: 'red.400',
+    },
+    // UI element colors
+    ui: {
+      level: 'orange.300',
+      positive: 'green.400',
+      negative: 'red.400',
+      neutral: 'gray.400',
+      highlight: 'orange.400',
+    },
+  },
+
   // Leveling
   levelUp: {
     healToFull: false, // Whether leveling up fully restores HP

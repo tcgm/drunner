@@ -1,4 +1,4 @@
-import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity } from '@/types'
+import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
@@ -92,17 +92,18 @@ export function resolveChoiceOutcome(
  * Generate item from specification with literal imports support
  */
 function generateItemFromSpec(spec: {
-  itemType?: 'random' | any
+  itemType?: 'random' | ItemSlot
   uniqueItem?: string | Omit<Item, 'id'>
   material?: string | Material
   baseTemplate?: string | BaseTemplate
   minRarity?: ItemRarity
   maxRarity?: ItemRarity
   rarityBoost?: number
+  itemChoices?: Array<{ weight: number; itemType?: 'random' | ItemSlot; minRarity?: ItemRarity; maxRarity?: ItemRarity; rarityBoost?: number }>
 }, depth: number): Item | null {
   // Handle weighted item choices
   if ('itemChoices' in spec && Array.isArray(spec.itemChoices)) {
-    const choice = selectWeightedChoice(spec.itemChoices as any[])
+    const choice = selectWeightedChoice(spec.itemChoices)
     return generateItemFromSpec(choice, depth)
   }
 
@@ -377,7 +378,7 @@ export function resolveEventOutcome(
       
       case 'revive': {
         // Revive dead heroes
-        const deadHeroes = updatedParty.filter(h => !h.isAlive)
+        const deadHeroes = updatedParty.filter((h): h is Hero => h !== null && !h.isAlive)
         const toRevive = effect.target === 'all' 
           ? deadHeroes 
           : deadHeroes.length > 0 
@@ -388,17 +389,22 @@ export function resolveEventOutcome(
         const scaledHeal = scaleValue(healAmount, depth, 0.08)
         
         toRevive.forEach(hero => {
-          hero.isAlive = true
-          hero.stats.hp = scaledHeal > 0 ? Math.min(hero.stats.maxHp, scaledHeal) : Math.floor(hero.stats.maxHp * GAME_CONFIG.combat.defaultHealPercent) // Default heal if no value specified
+          if (hero) {
+            hero.isAlive = true
+            hero.stats.hp = scaledHeal > 0 ? Math.min(hero.stats.maxHp, scaledHeal) : Math.floor(hero.stats.maxHp * GAME_CONFIG.combat.defaultHealPercent) // Default heal if no value specified
+          }
         })
         
         if (toRevive.length > 0) {
-          resolvedEffects.push({
-            type: 'revive',
-            target: toRevive.map(h => h.id),
-            value: scaledHeal,
-            description: `${toRevive.map(h => h.name).join(', ')} revived with ${toRevive[0].stats.hp} HP`
-          })
+          const firstHero = toRevive[0]
+          if (firstHero) {
+            resolvedEffects.push({
+              type: 'revive',
+              target: toRevive.map(h => h.id),
+              value: scaledHeal,
+              description: `${toRevive.map(h => h.name).join(', ')} revived with ${firstHero.stats.hp} HP`
+            })
+          }
         }
         break
       }
@@ -424,12 +430,14 @@ export function resolveEventOutcome(
         const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic']
         
         for (const hero of aliveHeroes) {
-          const itemData = findLowestRarityItem(hero)
-          if (itemData) {
-            const rarityIndex = rarityOrder.indexOf(itemData.item.rarity)
-            if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
-              lowestRarityIndex = rarityIndex
-              lowestItemData = { hero, ...itemData }
+          if (hero) {
+            const itemData = findLowestRarityItem(hero)
+            if (itemData) {
+              const rarityIndex = rarityOrder.indexOf(itemData.item.rarity)
+              if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
+                lowestRarityIndex = rarityIndex
+                lowestItemData = { hero, ...itemData }
+              }
             }
           }
         }

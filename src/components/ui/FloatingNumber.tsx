@@ -1,6 +1,7 @@
 import { Box, Text } from '@chakra-ui/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionBox = motion.create(Box)
 
@@ -12,28 +13,28 @@ interface FloatingNumberProps {
 
 const TYPE_CONFIG = {
   damage: {
-    color: '#f56565',
+    color: GAME_CONFIG.colors.damage.hex,
     prefix: '-',
     fontSize: 'xl',
-    glow: '0 0 8px rgba(245, 101, 101, 0.8), 0 0 16px rgba(245, 101, 101, 0.4)'
+    glow: `0 0 8px ${GAME_CONFIG.colors.damage.glow}, 0 0 16px ${GAME_CONFIG.colors.damage.glow.replace('0.8', '0.4')}`
   },
   heal: {
-    color: '#48bb78',
+    color: GAME_CONFIG.colors.heal.hex,
     prefix: '+',
     fontSize: 'lg',
-    glow: '0 0 8px rgba(72, 187, 120, 0.8), 0 0 16px rgba(72, 187, 120, 0.4)'
+    glow: `0 0 8px ${GAME_CONFIG.colors.heal.glow}, 0 0 16px ${GAME_CONFIG.colors.heal.glow.replace('0.8', '0.4')}`
   },
   xp: {
-    color: '#38bdf8',
+    color: GAME_CONFIG.colors.xp.hex,
     prefix: '+',
     fontSize: 'md',
-    glow: '0 0 6px rgba(56, 189, 248, 0.8)'
+    glow: `0 0 6px ${GAME_CONFIG.colors.xp.glow}`
   },
   gold: {
-    color: '#f6e05e',
+    color: GAME_CONFIG.colors.gold.hex,
     prefix: '+',
     fontSize: 'md',
-    glow: '0 0 6px rgba(246, 224, 94, 0.8)'
+    glow: `0 0 6px ${GAME_CONFIG.colors.gold.glow}`
   }
 }
 

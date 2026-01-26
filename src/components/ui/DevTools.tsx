@@ -25,6 +25,7 @@ import { useGameStore } from '@store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { useRef, useState } from 'react'
 import { HiWrench } from 'react-icons/hi2'
+import type { Hero } from '@/types'
 
 type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
 
@@ -40,7 +41,7 @@ export default function DevTools() {
 
   const handleResetHeroes = () => {
     const state = useGameStore.getState()
-    const resetParty = party.map(hero => ({
+    const resetParty = party.filter((hero): hero is Hero => hero !== null).map(hero => ({
       ...hero,
       level: 1,
       xp: 0,
@@ -58,15 +59,15 @@ export default function DevTools() {
     // Update roster as well
     const resetRoster = state.heroRoster.map(rosterHero => {
       const resetVersion = resetParty.find(h => h.id === rosterHero.id)
-      return resetVersion || rosterHero
+      return resetVersion ?? rosterHero
     })
-    useGameStore.setState({ party: resetParty, heroRoster: resetRoster })
+    useGameStore.setState({ party: resetParty as (Hero | null)[], heroRoster: resetRoster })
     setConfirmAction(null)
   }
 
   const handleReviveAll = () => {
     const state = useGameStore.getState()
-    const revivedParty = party.map(hero => ({
+    const revivedParty = party.filter((hero): hero is Hero => hero !== null).map(hero => ({
       ...hero,
       isAlive: true,
       stats: {
@@ -77,14 +78,14 @@ export default function DevTools() {
     // Update roster as well
     const revivedRoster = state.heroRoster.map(rosterHero => {
       const revivedVersion = revivedParty.find(h => h.id === rosterHero.id)
-      return revivedVersion || rosterHero
+      return revivedVersion ?? rosterHero
     })
-    useGameStore.setState({ party: revivedParty, heroRoster: revivedRoster })
+    useGameStore.setState({ party: revivedParty as (Hero | null)[], heroRoster: revivedRoster })
   }
 
   const handleHealAll = () => {
     const state = useGameStore.getState()
-    const healedParty = party.map(hero => ({
+    const healedParty = party.filter((hero): hero is Hero => hero !== null).map(hero => ({
       ...hero,
       stats: {
         ...hero.stats,
@@ -94,14 +95,14 @@ export default function DevTools() {
     // Update roster as well
     const healedRoster = state.heroRoster.map(rosterHero => {
       const healedVersion = healedParty.find(h => h.id === rosterHero.id)
-      return healedVersion || rosterHero
+      return healedVersion ?? rosterHero
     })
-    useGameStore.setState({ party: healedParty, heroRoster: healedRoster })
+    useGameStore.setState({ party: healedParty as (Hero | null)[], heroRoster: healedRoster })
   }
 
   const handleLevelUp = () => {
     const state = useGameStore.getState()
-    const leveledParty = party.map(hero => ({
+    const leveledParty = party.filter((hero): hero is Hero => hero !== null).map(hero => ({
       ...hero,
       level: Math.min(GAME_CONFIG.levelUp.maxLevel, hero.level + 1),
       stats: {
@@ -116,9 +117,9 @@ export default function DevTools() {
     // Update roster as well
     const leveledRoster = state.heroRoster.map(rosterHero => {
       const leveledVersion = leveledParty.find(h => h.id === rosterHero.id)
-      return leveledVersion || rosterHero
+      return leveledVersion ?? rosterHero
     })
-    useGameStore.setState({ party: leveledParty, heroRoster: leveledRoster })
+    useGameStore.setState({ party: leveledParty as (Hero | null)[], heroRoster: leveledRoster })
   }
 
   const handleAddGold = (amount: number) => {

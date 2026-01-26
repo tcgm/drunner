@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced, GiAngelWings } from 'react-icons/gi'
 import type { ResolvedOutcome } from '@systems/events/eventResolver'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionBox = motion.create(Box)
 const MotionHStack = motion.create(HStack)
@@ -23,10 +24,10 @@ const EFFECT_ICONS = {
 }
 
 const EFFECT_COLORS = {
-  damage: 'red.400',
-  heal: 'green.400',
-  xp: 'cyan.400',
-  gold: 'yellow.400',
+  damage: GAME_CONFIG.colors.damage.base,
+  heal: GAME_CONFIG.colors.heal.base,
+  xp: GAME_CONFIG.colors.xp.base,
+  gold: GAME_CONFIG.colors.gold.base,
   item: 'blue.400',
   status: 'cyan.400',
   revive: 'cyan.300',

@@ -253,7 +253,6 @@ const initialState: GameState = {
 export const useGameStore = create<GameStore>()(
   persist(
     sanitizeMiddleware(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (set, _get) => ({
         ...initialState,
   
@@ -425,10 +424,10 @@ export const useGameStore = create<GameStore>()(
       )
       
       // Calculate statistics from effects
-      let damageDealt = 0
+      const damageDealt = 0
       let damageTaken = 0
       let healingReceived = 0
-      let itemsFound = resolvedOutcome.items.length
+      const itemsFound = resolvedOutcome.items.length
       const isCombatEvent = state.dungeon.currentEvent?.type === 'combat' || state.dungeon.currentEvent?.type === 'boss'
       
       resolvedOutcome.effects.forEach(effect => {
@@ -481,8 +480,6 @@ export const useGameStore = create<GameStore>()(
         damageDealt: (state.activeRun.damageDealt ?? 0) + damageDealt,
         damageTaken: (state.activeRun.damageTaken ?? 0) + damageTaken,
         healingReceived: (state.activeRun.healingReceived ?? 0) + healingReceived,
-        xpMentored: state.activeRun.xpMentored ?? 0,
-        metaXpGained: state.activeRun.metaXpGained ?? 0,
         // Update with new values
         goldEarned: state.activeRun.goldEarned + (goldDiff > 0 ? goldDiff : 0),
         goldSpent: state.activeRun.goldSpent + (goldDiff < 0 ? -goldDiff : 0),

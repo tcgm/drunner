@@ -4,6 +4,7 @@ import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { HeroClass } from '@/types'
 import { calculateMaxHp } from '@/utils/heroUtils'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 interface ClassCardProps {
   heroClass: HeroClass
@@ -26,7 +27,7 @@ export default function ClassCard({
       <Text fontWeight="bold" fontSize="sm">{heroClass.name}</Text>
       <Text fontSize="xs" color="gray.300">{heroClass.description}</Text>
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
-        <Text>HP: <Text as="span" fontWeight="bold" color="cyan.300">{maxHp}</Text></Text>
+        <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{maxHp}</Text></Text>
         <Text>ATK: <Text as="span" fontWeight="bold" color="red.300">{heroClass.baseStats.attack}</Text></Text>
         <Text>DEF: <Text as="span" fontWeight="bold" color="blue.300">{heroClass.baseStats.defense}</Text></Text>
         <Text>SPD: <Text as="span" fontWeight="bold" color="green.300">{heroClass.baseStats.speed}</Text></Text>

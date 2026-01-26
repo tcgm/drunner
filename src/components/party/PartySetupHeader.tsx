@@ -1,3 +1,4 @@
+import { GAME_CONFIG } from '@/config/gameConfig'
 import { Box, HStack, Heading, Text, Button } from '@chakra-ui/react'
 
 interface PartySetupHeaderProps {
@@ -16,11 +17,11 @@ export function PartySetupHeader({ bankGold, metaXp, onBack, onStart, canStart }
           <Heading size="sm" color="orange.400">Assemble Your Party</Heading>
           <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
             <Text fontSize="xs" color="gray.400">Bank Gold:</Text>
-            <Text fontSize="sm" fontWeight="bold" color="yellow.300">{bankGold}</Text>
+            <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.gold.light}>{bankGold}</Text>
           </HStack>
           <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
             <Text fontSize="xs" color="gray.400">Meta XP:</Text>
-            <Text fontSize="sm" fontWeight="bold" color="cyan.300">{metaXp}</Text>
+            <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.xp.light}>{metaXp}</Text>
           </HStack>
         </HStack>
         <HStack spacing={2}>

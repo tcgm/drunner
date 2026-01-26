@@ -2,16 +2,10 @@ import { Box, VStack, HStack, Text, Badge, Icon, Tooltip, SimpleGrid, Flex } fro
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 // Rarity color mapping
-const RARITY_COLORS: Record<string, string> = {
-  common: 'gray.500',
-  uncommon: 'green.400',
-  rare: 'blue.400',
-  epic: 'purple.400',
-  legendary: 'orange.400',
-  mythic: 'red.400'
-}
+const RARITY_COLORS = GAME_CONFIG.colors.rarity as Record<string, string>
 
 interface RosterHeroCardProps {
   hero: Hero

@@ -8,16 +8,10 @@ import HeroTooltip from './HeroTooltip'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
 import { FloatingNumber } from '@components/ui/FloatingNumber'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 // Rarity color mapping
-const RARITY_COLORS: Record<string, string> = {
-  common: 'gray.500',
-  uncommon: 'green.400',
-  rare: 'blue.400',
-  epic: 'purple.400',
-  legendary: 'orange.400',
-  mythic: 'red.400'
-}
+const RARITY_COLORS = GAME_CONFIG.colors.rarity as Record<string, string>
 
 const MotionBox = motion.create(Box)
 
@@ -29,17 +23,9 @@ interface PartyMemberCardProps {
 export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMemberCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
-  const [activeEffects, setActiveEffects] = useState<Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>([])
-  
-  // Update active effects when new ones come in
-  useEffect(() => {
-    if (floatingEffects.length > 0) {
-      setActiveEffects(prev => [...prev, ...floatingEffects])
-    }
-  }, [floatingEffects])
   
   const handleEffectComplete = (id: string) => {
-    setActiveEffects(prev => prev.filter(effect => effect.id !== id))
+    // Filtering is handled by AnimatePresence and the effect completion
   }
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +58,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
         >
           {/* Floating Numbers */}
           <AnimatePresence>
-            {activeEffects.map((effect) => (
+            {floatingEffects.map((effect) => (
               <FloatingNumber
                 key={effect.id}
                 value={effect.value}

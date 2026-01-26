@@ -3,16 +3,10 @@ import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 // Rarity color mapping
-const RARITY_COLORS: Record<string, string> = {
-  common: 'gray.500',
-  uncommon: 'green.400',
-  rare: 'blue.400',
-  epic: 'purple.400',
-  legendary: 'orange.400',
-  mythic: 'red.400'
-}
+const RARITY_COLORS = GAME_CONFIG.colors.rarity as Record<string, string>
 
 interface PartySlotsProps {
   party: (Hero | null)[]
@@ -155,19 +149,19 @@ export function PartySetupSlots({
                         <SimpleGrid columns={2} spacing={1} w="full" pt={1} fontSize="xs">
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">HP</Text>
-                            <Text fontWeight="bold" color="green.400">{hero.stats.hp}/{hero.stats.maxHp}</Text>
+                            <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{hero.stats.hp}/{hero.stats.maxHp}</Text>
                           </VStack>
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">ATK</Text>
-                            <Text fontWeight="bold" color="red.400">{hero.stats.attack}</Text>
+                            <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text>
                           </VStack>
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">DEF</Text>
-                            <Text fontWeight="bold" color="blue.400">{hero.stats.defense}</Text>
+                            <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text>
                           </VStack>
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">SPD</Text>
-                            <Text fontWeight="bold" color="green.400">{hero.stats.speed}</Text>
+                            <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text>
                           </VStack>
                         </SimpleGrid>
                       </VStack>

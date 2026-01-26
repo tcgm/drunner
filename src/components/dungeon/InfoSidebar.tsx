@@ -60,14 +60,14 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
           <>
             <Divider />
             <Box>
-              <Heading size="xs" color="cyan.400" mb={2}>Overflow XP</Heading>
+              <Heading size="xs" color={GAME_CONFIG.colors.xp.base} mb={2}>Overflow XP</Heading>
               <HStack justify="space-between" fontSize="xs">
                 <Text color="gray.400">Mentored:</Text>
                 <Text color="cyan.300" fontWeight="bold">{activeRun.xpMentored || 0}</Text>
               </HStack>
               <HStack justify="space-between" fontSize="xs">
                 <Text color="gray.400">Meta XP:</Text>
-                <Text color="cyan.300" fontWeight="bold">{activeRun.metaXpGained || 0}</Text>
+                <Text color={GAME_CONFIG.colors.xp.light} fontWeight="bold">{activeRun.metaXpGained || 0}</Text>
               </HStack>
             </Box>
           </>
