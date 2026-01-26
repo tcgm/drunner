@@ -204,7 +204,7 @@ export default function DevTools() {
         />
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="md">
+      <Modal isOpen={isOpen} onClose={onClose} size="md" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent bg="gray.800">
           <ModalHeader color="yellow.400">Dev Tools</ModalHeader>

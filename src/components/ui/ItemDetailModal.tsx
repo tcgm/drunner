@@ -97,7 +97,7 @@ interface ItemDetailModalProps {
 
 export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} onClose={onClose} size="md" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent bg="gray.800" color="white">
         <ModalHeader>

@@ -221,6 +221,8 @@ interface GameStore extends GameState {
   // Backup/Recovery actions
   listBackups: () => string[]
   restoreFromBackup: (backupKey: string) => boolean
+  exportSave: () => void
+  importSave: (jsonString: string) => boolean
 }
 
 const initialState: GameState = {
@@ -731,6 +733,57 @@ export const useGameStore = create<GameStore>()(
       window.location.reload()
     }
     return success
+  },
+  
+  exportSave: () => {
+    try {
+      const state = _get()
+      const saveData = {
+        version: 1,
+        timestamp: Date.now(),
+        data: state
+      }
+      const json = JSON.stringify(saveData, null, 2)
+      const blob = new Blob([json], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `dungeon-runner-save-${Date.now()}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      console.log('[Export] Save exported successfully')
+    } catch (error) {
+      console.error('[Export] Failed to export save:', error)
+    }
+  },
+  
+  importSave: (jsonString: string) => {
+    try {
+      const saveData = JSON.parse(jsonString)
+      if (!saveData.data) {
+        console.error('[Import] Invalid save file format')
+        return false
+      }
+      
+      // Validate the save data has the required structure
+      const requiredKeys = ['party', 'heroRoster', 'dungeon', 'bankGold', 'bankInventory']
+      const hasRequiredKeys = requiredKeys.every(key => key in saveData.data)
+      
+      if (!hasRequiredKeys) {
+        console.error('[Import] Save file missing required data')
+        return false
+      }
+      
+      // Apply the imported state
+      set(saveData.data)
+      console.log('[Import] Save imported successfully')
+      return true
+    } catch (error) {
+      console.error('[Import] Failed to import save:', error)
+      return false
+    }
   },
       })
     ),

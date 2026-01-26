@@ -81,7 +81,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
     onClose()
   }
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="xl">
+    <Modal isOpen={isOpen} onClose={handleClose} size="xl" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent bg="gray.800">
         <ModalHeader color="orange.400">

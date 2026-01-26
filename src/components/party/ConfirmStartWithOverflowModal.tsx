@@ -10,7 +10,7 @@ interface ConfirmStartWithOverflowModalProps {
 
 export function ConfirmStartWithOverflowModal({ isOpen, onClose, overflowInventory, onConfirm }: ConfirmStartWithOverflowModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} onClose={onClose} size="md" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent bg="gray.800">
         <ModalHeader color="red.400">

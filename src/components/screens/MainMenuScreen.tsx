@@ -1,5 +1,5 @@
-import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge } from '@chakra-ui/react'
-import { useState } from 'react'
+import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast } from '@chakra-ui/react'
+import { useState, useRef } from 'react'
 import { useGameStore } from '@store/gameStore'
 
 interface MainMenuScreenProps {
@@ -9,9 +9,11 @@ interface MainMenuScreenProps {
 }
 
 export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: MainMenuScreenProps) {
-  const { activeRun, listBackups, restoreFromBackup } = useGameStore()
+  const { activeRun, listBackups, restoreFromBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [backups, setBackups] = useState<string[]>([])
+  const toast = useToast()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Check if there's an active dungeon run in progress
   const hasActiveRun = activeRun !== null && activeRun.result === 'active'
@@ -50,6 +52,73 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     if (minutes < 60) return `${minutes}m ago`
     if (hours < 24) return `${hours}h ago`
     return `${days}d ago`
+  }
+
+  const handleExportSave = () => {
+    try {
+      exportSave()
+      toast({
+        title: 'Save Exported',
+        description: 'Your save file has been downloaded.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+    } catch (error) {
+      toast({
+        title: 'Export Failed',
+        description: 'Failed to export save file.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+  }
+
+  const handleImportSave = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    try {
+      const text = await file.text()
+      const success = importSave(text)
+      
+      if (success) {
+        toast({
+          title: 'Save Imported',
+          description: 'Your save file has been loaded successfully.',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
+        onClose()
+      } else {
+        toast({
+          title: 'Import Failed',
+          description: 'Invalid save file format or corrupted data.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Import Failed',
+        description: 'Failed to read save file.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+    
+    // Reset the file input
+    if (event.target) {
+      event.target.value = ''
+    }
   }
   
   return (
@@ -92,7 +161,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
       </VStack>
 
       {/* Save Management Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} size="lg" scrollBehavior="inside">
         <ModalOverlay />
         <ModalContent bg="gray.800">
           <ModalHeader color="blue.400">Save Management</ModalHeader>
@@ -102,6 +171,34 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
               <Box>
                 <Text fontSize="sm" color="gray.400" mb={2}>
                   Automatic backups are created when the game loads. Restoring a backup will reload the page.
+                </Text>
+              </Box>
+
+              {/* Export/Import Section */}
+              <Box bg="gray.900" p={4} borderRadius="md" borderWidth="1px" borderColor="gray.700">
+                <Text fontSize="md" fontWeight="bold" color="gray.300" mb={3}>
+                  Save File Management
+                </Text>
+                <HStack spacing={3}>
+                  <Button
+                    size="md"
+                    colorScheme="green"
+                    onClick={handleExportSave}
+                    flex={1}
+                  >
+                    Export Save
+                  </Button>
+                  <Button
+                    size="md"
+                    colorScheme="purple"
+                    onClick={handleImportSave}
+                    flex={1}
+                  >
+                    Import Save
+                  </Button>
+                </HStack>
+                <Text fontSize="xs" color="gray.500" mt={2}>
+                  Export your save to backup or transfer to another device. Import to restore a previously exported save.
                 </Text>
               </Box>
 
@@ -168,6 +265,15 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {/* Hidden file input for import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json,.json"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
     </Box>
   )
 }

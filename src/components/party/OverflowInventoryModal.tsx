@@ -32,7 +32,7 @@ export function OverflowInventoryModal({
   const availableSlots = bankStorageSlots - bankInventoryCount
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent bg="gray.800">
         <ModalHeader color="orange.400">
