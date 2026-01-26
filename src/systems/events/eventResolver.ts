@@ -163,7 +163,8 @@ export function resolveEventOutcome(
     switch (effect.type) {
       case 'damage': {
         const baseDamage = effect.value || 0
-        const damage = scaleValue(baseDamage, depth, 0.1) // 10% per depth
+        const scaledDamage = scaleValue(baseDamage, depth, 0.1) // 10% per depth
+        const damage = Math.floor(scaledDamage * GAME_CONFIG.multipliers.damage)
         targets.forEach(hero => {
           const actualDamage = Math.max(1, damage - Math.floor(hero.stats.defense / 2))
           hero.stats.hp = Math.max(0, hero.stats.hp - actualDamage)
@@ -182,7 +183,8 @@ export function resolveEventOutcome(
       
       case 'heal': {
         const baseHealing = effect.value || 0
-        const healing = scaleValue(baseHealing, depth, 0.08) // 8% per depth (slightly less than damage)
+        const scaledHealing = scaleValue(baseHealing, depth, 0.08) // 8% per depth (slightly less than damage)
+        const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
         targets.forEach(hero => {
           hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healing)
         })
@@ -197,7 +199,8 @@ export function resolveEventOutcome(
       
       case 'xp': {
         const baseXp = effect.value || 0
-        const xp = scaleValue(baseXp, depth, 0.15) // 15% per depth (rewards scale faster)
+        const scaledXp = scaleValue(baseXp, depth, 0.15) // 15% per depth (rewards scale faster)
+        const xp = Math.floor(scaledXp * GAME_CONFIG.multipliers.xp)
         let totalOverflowXp = 0
         
         // First, capture any existing overflow XP from max-level heroes
@@ -322,7 +325,8 @@ export function resolveEventOutcome(
       
       case 'gold': {
         const baseGold = effect.value || 0
-        const gold = scaleValue(baseGold, depth, 0.15) // 15% per depth (rewards scale faster)
+        const scaledGold = scaleValue(baseGold, depth, 0.15) // 15% per depth (rewards scale faster)
+        const gold = Math.floor(scaledGold * GAME_CONFIG.multipliers.gold)
         updatedGold += gold
         resolvedEffects.push({
           type: 'gold',

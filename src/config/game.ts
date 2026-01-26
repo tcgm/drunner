@@ -30,12 +30,21 @@ export const GAME_CONFIG = {
     alkahestConversionRate: 0.25, // 25% of item value converted to alkahest when discarded
   },
 
+  // Multipliers (adjustable game balance)
+  multipliers: {
+    xp: 0.1, // Global XP multiplier
+    gold: 1.0, // Global gold multiplier
+    damage: 1.0, // Global damage multiplier (affects both player and enemy)
+    healing: 1.0, // Global healing multiplier
+    dropRate: 1.0, // Item drop rate multiplier
+  },
+
   // Scaling
   scaling: {
     damage: 0.1, // 10% per depth
     healing: 0.08, // 8% per depth
-    rewards: 0.15, // 15% per depth (XP/Gold)
-    statRequirements: 0.05, // 5% per depth
+    rewards: 0.05, // 5% per depth (XP/Gold)
+    statRequirements: 0.15, // 15% per depth
   },
 
   // Event system
