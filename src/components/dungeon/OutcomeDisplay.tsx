@@ -29,24 +29,24 @@ const EFFECT_COLORS = {
 
 export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayProps) {
   return (
-    <VStack spacing={6} align="stretch" flex={1}>
+    <VStack spacing={4} align="stretch" h="full">
       {/* Outcome Text */}
       <Box
         bg="gray.800"
         borderRadius="lg"
-        p={6}
+        p={4}
         borderLeft="4px solid"
         borderColor="orange.400"
       >
-        <Text fontSize="lg" color="gray.200" lineHeight="tall">
+        <Text fontSize="md" color="gray.200" lineHeight="short">
           {outcome.text}
         </Text>
       </Box>
 
       {/* Effects */}
       {outcome.effects.length > 0 && (
-        <VStack spacing={3} align="stretch">
-          <Text fontSize="sm" color="gray.500" textTransform="uppercase" fontWeight="bold">
+        <VStack spacing={2} align="stretch" flex={1} overflowY="auto">
+          <Text fontSize="xs" color="gray.500" textTransform="uppercase" fontWeight="bold">
             Results
           </Text>
           {outcome.effects.map((effect, index) => (
@@ -54,20 +54,20 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
               key={index}
               bg="gray.800"
               borderRadius="md"
-              p={4}
-              spacing={4}
+              p={3}
+              spacing={3}
             >
               <Icon
                 as={EFFECT_ICONS[effect.type]}
-                boxSize={6}
+                boxSize={5}
                 color={EFFECT_COLORS[effect.type]}
               />
               <VStack align="start" spacing={0} flex={1}>
-                <Text color="gray.300" fontSize="md">
+                <Text color="gray.300" fontSize="sm">
                   {effect.description}
                 </Text>
                 {effect.item && (
-                  <Text color="gray.500" fontSize="sm">
+                  <Text color="gray.500" fontSize="xs">
                     {effect.item.description}
                   </Text>
                 )}
@@ -81,12 +81,11 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
 
       {/* Continue Button */}
       <Button
-        size="lg"
+        size="md"
         colorScheme="orange"
         onClick={onContinue}
         alignSelf="center"
-        px={12}
-        fontSize="lg"
+        px={8}
       >
         Continue
       </Button>

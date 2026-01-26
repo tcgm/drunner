@@ -23,25 +23,25 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
 
 export default function EventDisplay({ event, party, depth, gold, onSelectChoice }: EventDisplayProps) {
   return (
-    <VStack spacing={2} align="stretch" flex={1}>
+    <VStack spacing={3} align="stretch" h="full">
       {/* Event Header */}
       <Box>
-        <HStack mb={2}>
-          <Badge colorScheme={EVENT_TYPE_COLORS[event.type]} fontSize="sm" px={3} py={1}>
+        <HStack mb={1.5}>
+          <Badge colorScheme={EVENT_TYPE_COLORS[event.type]} fontSize="xs" px={2} py={0.5}>
             {event.type.toUpperCase()}
           </Badge>
         </HStack>
-        <Heading size="md" color="orange.400" mb={3}>
+        <Heading size="sm" color="orange.400" mb={2}>
           {event.title}
         </Heading>
-        <Text fontSize="md" color="gray.300" lineHeight="tall">
+        <Text fontSize="sm" color="gray.300" lineHeight="short">
           {event.description}
         </Text>
       </Box>
 
       {/* Choices */}
-      <VStack spacing={3} align="stretch">
-        <Heading size="md" color="gray.400">
+      <VStack spacing={2} align="stretch" flex={1}>
+        <Heading size="sm" color="gray.400" fontSize="md">
           What will you do?
         </Heading>
         {event.choices.map((choice, index) => {
@@ -50,7 +50,7 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
           return (
             <Button
               key={index}
-              size="md"
+              size="sm"
               variant="outline"
               colorScheme={canSelect ? 'orange' : 'gray'}
               isDisabled={!canSelect}
@@ -58,8 +58,8 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
               textAlign="left"
               whiteSpace="normal"
               height="auto"
-              py={4}
-              px={6}
+              py={3}
+              px={4}
               justifyContent="flex-start"
               _hover={canSelect ? {
                 bg: 'orange.900',
@@ -68,12 +68,12 @@ export default function EventDisplay({ event, party, depth, gold, onSelectChoice
               } : undefined}
               transition="all 0.2s"
             >
-              <VStack align="start" spacing={1}>
-                <Text fontWeight="bold" fontSize="md">
+              <VStack align="start" spacing={0.5}>
+                <Text fontWeight="bold" fontSize="sm">
                   {choice.text}
                 </Text>
                 {choice.requirements && (
-                  <Text fontSize="sm" color={canSelect ? 'gray.400' : 'red.400'}>
+                  <Text fontSize="xs" color={canSelect ? 'gray.400' : 'red.400'}>
                     {getRequirementText(choice.requirements, depth)}
                   </Text>
                 )}

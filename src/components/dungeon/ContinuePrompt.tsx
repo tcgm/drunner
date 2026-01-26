@@ -8,13 +8,13 @@ interface ContinuePromptProps {
 
 export default function ContinuePrompt({ onContinue }: ContinuePromptProps) {
   return (
-    <VStack spacing={6} flex={1} justify="center">
-      <Icon as={GiFootprint} boxSize={20} color="orange.400" />
-      <Text color="gray.300" fontSize="xl" fontWeight="semibold">
+    <VStack spacing={4} flex={1} justify="center">
+      <Icon as={GiFootprint} boxSize={16} color="orange.400" />
+      <Text color="gray.300" fontSize="lg" fontWeight="semibold">
         The path ahead awaits...
       </Text>
       <Button 
-        size="lg"
+        size="md"
         colorScheme="orange"
         leftIcon={<Icon as={GiFootprint} />}
         onClick={onContinue}
