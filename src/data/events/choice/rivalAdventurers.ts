@@ -37,6 +37,7 @@ export const RIVAL_ADVENTURERS: DungeonEvent = {
         effects: [
           { type: 'heal', target: 'all', value: 20 },
           { type: 'gold', value: 80 },
+          { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' },
         ],
       },
     },

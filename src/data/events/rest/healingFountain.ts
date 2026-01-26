@@ -21,6 +21,7 @@ export const HEALING_FOUNTAIN: DungeonEvent = {
         text: 'You collect the magical water for later use.',
         effects: [
           { type: 'heal', target: 'all', value: 30 },
+          { type: 'item', itemType: 'accessory1', minRarity: 'common', maxRarity: 'uncommon' },
         ],
       },
     },
