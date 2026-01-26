@@ -6,11 +6,12 @@ interface DungeonActionBarProps {
   showContinue: boolean
   onContinue: () => void
   onInventory: () => void
+  onJournal: () => void
   onRetreat: () => void
   onExit: () => void
 }
 
-export default function DungeonActionBar({ showContinue, onContinue, onInventory, onRetreat, onExit }: DungeonActionBarProps) {
+export default function DungeonActionBar({ showContinue, onContinue, onInventory, onJournal, onRetreat, onExit }: DungeonActionBarProps) {
   return (
     <Box bg="gray.800" borderRadius="lg" p={4}>
       <HStack spacing={4}>
@@ -36,7 +37,7 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
           colorScheme="purple" 
           variant="outline"
           leftIcon={<Icon as={GiBookCover} />}
-          isDisabled
+          onClick={onJournal}
         >
           Journal
         </Button>
