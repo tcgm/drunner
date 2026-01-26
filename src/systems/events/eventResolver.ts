@@ -14,6 +14,7 @@ export interface ResolvedEffect {
   type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive' | 'upgradeItem'
   target: string[] // Hero IDs affected
   value?: number
+  originalValue?: number // For damage: the pre-defense value
   item?: Item
   description: string
 }
@@ -143,7 +144,7 @@ function generateItemFromSpec(spec: {
 export function resolveEventOutcome(
   outcome: EventOutcome,
   party: (Hero | null)[],
-  dungeon: { gold: number; depth: number }
+  dungeon: { gold: number; depth: number; floor: number }
 ): {
   updatedParty: (Hero | null)[]
   updatedGold: number
@@ -162,7 +163,7 @@ export function resolveEventOutcome(
   let xpMentored = 0
   const resolvedEffects: ResolvedEffect[] = []
   const foundItems: Item[] = []
-  const depth = dungeon.depth
+  const depth = dungeon.floor // Use floor for difficulty scaling, not total events
 
   for (const effect of outcome.effects) {
     const targets = selectTargets(effect.target || 'all', updatedParty)
@@ -172,18 +173,23 @@ export function resolveEventOutcome(
         const baseDamage = effect.value || 0
         const scaledDamage = scaleValue(baseDamage, depth, GAME_CONFIG.scaling.damage)
         const damage = Math.floor(scaledDamage * GAME_CONFIG.multipliers.damage)
+        
+        // Calculate actual damage for each hero and create individual effects
         targets.forEach(hero => {
           const actualDamage = Math.max(1, damage - Math.floor(hero.stats.defense * GAME_CONFIG.combat.defenseReduction))
           hero.stats.hp = Math.max(0, hero.stats.hp - actualDamage)
           if (hero.stats.hp === 0) {
             hero.isAlive = false
           }
-        })
-        resolvedEffects.push({
-          type: 'damage',
-          target: targets.map(h => h.id),
-          value: damage,
-          description: `${targets.map(h => h.name).join(', ')} took ${damage} damage`
+          
+          // Create individual effect for each hero showing actual vs original damage
+          resolvedEffects.push({
+            type: 'damage',
+            target: [hero.id],
+            value: actualDamage,
+            originalValue: damage,
+            description: `${hero.name} took ${actualDamage} (${damage}) damage`
+          })
         })
         break
       }

@@ -1,4 +1,4 @@
-import { VStack, Text, HStack } from '@chakra-ui/react'
+import { VStack, Text, HStack, Tooltip } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiSwordman, GiShield, GiRun, GiClover, GiMagicSwirl } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -9,10 +9,17 @@ interface QuickStatsProps {
   totalSpeed: number
   totalLuck: number
   totalMagic: number
+  maxAttack: number
+  maxDefense: number
+  maxSpeed: number
+  maxLuck: number
+  maxMagic: number
   partySize: number
 }
 
-export default function QuickStats({ totalAttack, totalDefense, totalSpeed, totalLuck, totalMagic, partySize }: QuickStatsProps) {
+export default function QuickStats({ totalAttack, totalDefense, totalSpeed, totalLuck, totalMagic, maxAttack, maxDefense, maxSpeed, maxLuck, maxMagic, partySize }: QuickStatsProps) {
+  const avgAttack = partySize > 0 ? Math.floor(totalAttack / partySize) : 0
+  const avgDefense = partySize > 0 ? Math.floor(totalDefense / partySize) : 0
   const avgSpeed = partySize > 0 ? Math.floor(totalSpeed / partySize) : 0
   const avgLuck = partySize > 0 ? Math.floor(totalLuck / partySize) : 0
   const avgMagic = partySize > 0 ? Math.floor(totalMagic / partySize) : 0
@@ -25,35 +32,85 @@ export default function QuickStats({ totalAttack, totalDefense, totalSpeed, tota
           <Icon as={GiSwordman} color={GAME_CONFIG.colors.stats.attack} />
           <Text color="gray.400">ATK:</Text>
           <Text color={GAME_CONFIG.colors.stats.attack} fontWeight="bold">
-            {totalAttack}
+            <Tooltip label="Total Attack" placement="top">
+              <Text as="span">{totalAttack}</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Average Attack" placement="top">
+              <Text as="span" color="gray.400">({avgAttack})</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Highest Attack" placement="top">
+              <Text as="span" color={GAME_CONFIG.colors.stats.attack}>[{maxAttack}]</Text>
+            </Tooltip>
           </Text>
         </HStack>
         <HStack className="quick-stats-stat quick-stats-stat--defense">
           <Icon as={GiShield} color={GAME_CONFIG.colors.stats.defense} />
           <Text color="gray.400">DEF:</Text>
           <Text color={GAME_CONFIG.colors.stats.defense} fontWeight="bold">
-            {totalDefense}
+            <Tooltip label="Total Defense" placement="top">
+              <Text as="span">{totalDefense}</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Average Defense" placement="top">
+              <Text as="span" color="gray.400">({avgDefense})</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Highest Defense" placement="top">
+              <Text as="span" color={GAME_CONFIG.colors.stats.defense}>[{maxDefense}]</Text>
+            </Tooltip>
           </Text>
         </HStack>
         <HStack className="quick-stats-stat quick-stats-stat--speed">
           <Icon as={GiRun} color={GAME_CONFIG.colors.stats.speed} />
           <Text color="gray.400">SPD:</Text>
           <Text color={GAME_CONFIG.colors.stats.speed} fontWeight="bold">
-            {totalSpeed} ({avgSpeed})
+            <Tooltip label="Total Speed" placement="top">
+              <Text as="span">{totalSpeed}</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Average Speed" placement="top">
+              <Text as="span" color="gray.400">({avgSpeed})</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Highest Speed" placement="top">
+              <Text as="span" color={GAME_CONFIG.colors.stats.speed}>[{maxSpeed}]</Text>
+            </Tooltip>
           </Text>
         </HStack>
         <HStack className="quick-stats-stat quick-stats-stat--luck">
           <Icon as={GiClover} color={GAME_CONFIG.colors.stats.luck} />
           <Text color="gray.400">LCK:</Text>
           <Text color={GAME_CONFIG.colors.stats.luck} fontWeight="bold">
-            {totalLuck} ({avgLuck})
+            <Tooltip label="Total Luck" placement="top">
+              <Text as="span">{totalLuck}</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Average Luck" placement="top">
+              <Text as="span" color="gray.400">({avgLuck})</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Highest Luck" placement="top">
+              <Text as="span" color={GAME_CONFIG.colors.stats.luck}>[{maxLuck}]</Text>
+            </Tooltip>
           </Text>
         </HStack>
         <HStack className="quick-stats-stat quick-stats-stat--magic">
           <Icon as={GiMagicSwirl} color={GAME_CONFIG.colors.stats.magicPower} />
           <Text color="gray.400">MAG:</Text>
           <Text color={GAME_CONFIG.colors.stats.magicPower} fontWeight="bold">
-            {totalMagic} ({avgMagic})
+            <Tooltip label="Total Magic Power" placement="top">
+              <Text as="span">{totalMagic}</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Average Magic Power" placement="top">
+              <Text as="span" color="gray.400">({avgMagic})</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Highest Magic Power" placement="top">
+              <Text as="span" color={GAME_CONFIG.colors.stats.magicPower}>[{maxMagic}]</Text>
+            </Tooltip>
           </Text>
         </HStack>
       </VStack>
