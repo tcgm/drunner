@@ -127,19 +127,19 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
             <HStack className="roster-hero-card-stats" spacing={3} fontSize="xs" color="gray.500" pt={1}>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.hp.base}>❤</Text>
-                <Text>{hero.stats.hp}/{hero.stats.maxHp}</Text>
+                <Text color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{hero.stats.maxHp}</Text>
               </HStack>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.stats.attack}>⚔</Text>
-                <Text>{hero.stats.attack}</Text>
+                <Text color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text>
               </HStack>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.stats.defense}>🛡</Text>
-                <Text>{hero.stats.defense}</Text>
+                <Text color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text>
               </HStack>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.stats.speed}>⚡</Text>
-                <Text>{hero.stats.speed}</Text>
+                <Text color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text>
               </HStack>
             </HStack>
           </VStack>

@@ -79,9 +79,9 @@ export default function ClassCard({
               {heroClass.name}
             </Text>
             <HStack className="class-card-quick-stats" spacing={1} fontSize="xs" color="gray.400" flexWrap="wrap">
-              <Text>HP:{maxHp}</Text>
+              <Text color={GAME_CONFIG.colors.hp.light}>HP:{maxHp}</Text>
               <Text>•</Text>
-              <Text>ATK:{heroClass.baseStats.attack}</Text>
+              <Text color={GAME_CONFIG.colors.stats.attack}>ATK:{heroClass.baseStats.attack}</Text>
             </HStack>
             {partyHasClass && (
               <Badge className="class-card-in-party-badge" colorScheme="green" fontSize="xs" mt={0.5}>In Party</Badge>

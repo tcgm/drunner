@@ -85,9 +85,9 @@ export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelecti
                     {cls.name}
                   </Text>
                   <HStack spacing={1} fontSize="xs" color="gray.400" flexWrap="wrap">
-                    <Text>HP:{maxHp}</Text>
+                    <Text color={GAME_CONFIG.colors.hp.light}>HP:{maxHp}</Text>
                     <Text>•</Text>
-                    <Text>ATK:{cls.baseStats.attack}</Text>
+                    <Text color={GAME_CONFIG.colors.stats.attack}>ATK:{cls.baseStats.attack}</Text>
                   </HStack>
                 </VStack>
               </HStack>
