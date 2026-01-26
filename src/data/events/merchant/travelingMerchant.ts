@@ -28,7 +28,7 @@ export const TRAVELING_MERCHANT: DungeonEvent = {
         text: 'You purchase better equipment!',
         effects: [
           { type: 'gold', value: -100 },
-          { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' },
+          { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' }, // Budget merchant
         ],
       },
     },

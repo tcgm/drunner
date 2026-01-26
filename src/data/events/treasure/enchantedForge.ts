@@ -14,7 +14,7 @@ export const ENCHANTED_FORGE: DungeonEvent = {
       outcome: {
         text: 'You craft a fine steel weapon!',
         effects: [
-          { type: 'item', material: STEEL, itemType: 'weapon', minRarity: 'common', maxRarity: 'uncommon' },
+          { type: 'item', material: STEEL, itemType: 'weapon', minRarity: 'common', maxRarity: 'uncommon' }, // Basic forging
         ],
       },
     },
@@ -30,8 +30,8 @@ export const ENCHANTED_FORGE: DungeonEvent = {
           { 
             type: 'item', 
             itemChoices: [ // Weighted choices array
-              { weight: 60, material: MITHRIL, itemType: 'weapon', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 10 },
-              { weight: 30, material: DRAGONSCALE, itemType: 'armor', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 15 },
+              { weight: 60, material: MITHRIL, itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 10 },
+              { weight: 30, material: DRAGONSCALE, itemType: 'armor', minRarity: 'uncommon', rarityBoost: 15 },
               { weight: 10, uniqueItem: EXCALIBUR }
             ]
           },
@@ -47,7 +47,7 @@ export const ENCHANTED_FORGE: DungeonEvent = {
           { 
             type: 'item',
             itemChoices: [
-              { weight: 70, itemType: 'random', minRarity: 'uncommon', maxRarity: 'epic', rarityBoost: 20 },
+              { weight: 70, itemType: 'random', minRarity: 'uncommon', rarityBoost: 20 },
               { weight: 30, uniqueItem: RING_OF_OMNIPOTENCE }
             ]
           },

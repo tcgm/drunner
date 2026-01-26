@@ -12,7 +12,7 @@ export const JEWELED_STATUE: DungeonEvent = {
         text: 'You extract several valuable gems!',
         effects: [
           { type: 'gold', value: 200 },
-          { type: 'item', itemType: 'accessory1', minRarity: 'uncommon', maxRarity: 'rare' },
+          { type: 'item', itemType: 'accessory1', minRarity: 'uncommon' },
         ],
       },
     },
@@ -25,8 +25,8 @@ export const JEWELED_STATUE: DungeonEvent = {
         text: 'You disarm a trap and safely take the gems!',
         effects: [
           { type: 'gold', value: 250 },
-          { type: 'item', itemType: 'accessory1', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 10 },
-          { type: 'item', itemType: 'accessory2', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 10 },
+          { type: 'item', itemType: 'accessory1', minRarity: 'uncommon', rarityBoost: 10 },
+          { type: 'item', itemType: 'accessory2', minRarity: 'uncommon', rarityBoost: 10 },
         ],
       },
     },

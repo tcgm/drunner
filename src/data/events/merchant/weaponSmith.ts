@@ -16,7 +16,7 @@ export const WEAPON_SMITH: DungeonEvent = {
         effects: [
           { type: 'gold', value: -120 },
           { type: 'xp', value: 40 },
-          { type: 'item', itemType: 'weapon', minRarity: 'uncommon', maxRarity: 'rare' },
+          { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 5 },
         ],
       },
     },
@@ -30,7 +30,7 @@ export const WEAPON_SMITH: DungeonEvent = {
         effects: [
           { type: 'gold', value: -80 },
           { type: 'heal', target: 'all', value: 30 },
-          { type: 'item', itemType: 'armor', minRarity: 'common', maxRarity: 'uncommon' },
+          { type: 'item', itemType: 'armor', minRarity: 'common', maxRarity: 'uncommon' }, // Repair, not new
         ],
       },
     },
@@ -44,7 +44,7 @@ export const WEAPON_SMITH: DungeonEvent = {
         effects: [
           { type: 'gold', value: -250 },
           { type: 'xp', value: 80 },
-          { type: 'item', itemType: 'random', minRarity: 'rare', maxRarity: 'epic', rarityBoost: 10 },
+          { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 10 },
         ],
       },
     },

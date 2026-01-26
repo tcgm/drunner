@@ -15,7 +15,7 @@ export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
         text: 'The item seems powerful... but cursed?',
         effects: [
           { type: 'gold', value: -150 },
-          { type: 'item', itemType: 'random', minRarity: 'uncommon', maxRarity: 'epic', rarityBoost: 15 },
+          { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 15 },
         ],
       },
     },
@@ -28,7 +28,7 @@ export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
         text: 'He laughs and lowers the price slightly.',
         effects: [
           { type: 'gold', value: -100 },
-          { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'rare', rarityBoost: 5 },
+          { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 5 },
         ],
       },
     },

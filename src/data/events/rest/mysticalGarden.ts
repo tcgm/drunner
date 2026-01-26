@@ -103,7 +103,7 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
         effects: [
           { type: 'heal', target: 'all', value: 70 },
           { type: 'xp', value: 70 },
-          { type: 'item', itemType: 'accessory1', minRarity: 'uncommon', maxRarity: 'rare' },
+          { type: 'item', itemType: 'accessory1', minRarity: 'uncommon', rarityBoost: 5 },
         ],
       },
     },
