@@ -33,11 +33,20 @@ export const GOBLIN_AMBUSH: DungeonEvent = {
       },
     },
     {
-      text: 'Try to negotiate',
-      outcome: {
-        text: 'The goblins laugh and attack anyway!',
+      text: 'Try to negotiate (Luck check)',
+      successChance: 0.25,
+      statModifier: 'luck',
+      successOutcome: {
+        text: 'By sheer luck, they accept your bribe and leave!',
         effects: [
-          { type: 'damage', target: 'random', value: 20 },
+          { type: 'gold', value: -10 },
+          { type: 'xp', value: 60 },
+        ],
+      },
+      failureOutcome: {
+        text: 'The goblins laugh and attack with fury!',
+        effects: [
+          { type: 'damage', target: 'random', value: 22 },
           { type: 'xp', value: 40 },
           { type: 'gold', value: 15 },
         ],

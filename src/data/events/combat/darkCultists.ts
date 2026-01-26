@@ -32,15 +32,42 @@ export const DARK_CULTISTS: DungeonEvent = {
       },
     },
     {
-      text: 'Join their chant to confuse them',
-      outcome: {
-        text: 'They hesitate, confused, before attacking!',
-        effects: [
-          { type: 'damage', target: 'all', value: 12 },
-          { type: 'xp', value: 60 },
-          { type: 'gold', value: 35 },
-        ],
-      },
+      text: 'Join their chant (very risky)',
+      possibleOutcomes: [
+        {
+          weight: 15,
+          outcome: {
+            text: 'You complete the ritual! They see you as one of them and flee!',
+            effects: [
+              { type: 'xp', value: 150 },
+              { type: 'gold', value: 80 },
+              { type: 'item', itemType: 'random' },
+            ],
+          },
+        },
+        {
+          weight: 35,
+          outcome: {
+            text: 'They pause, confused, before attacking with less conviction.',
+            effects: [
+              { type: 'damage', target: 'random', value: 12 },
+              { type: 'xp', value: 70 },
+              { type: 'gold', value: 40 },
+            ],
+          },
+        },
+        {
+          weight: 50,
+          outcome: {
+            text: 'Your poor pronunciation angers them! They unleash dark magic!',
+            effects: [
+              { type: 'damage', target: 'all', value: 30 },
+              { type: 'xp', value: 50 },
+              { type: 'gold', value: 25 },
+            ],
+          },
+        },
+      ],
     },
   ],
   depth: 4,

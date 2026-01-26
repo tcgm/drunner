@@ -20,11 +20,19 @@ export const PIT_TRAP: DungeonEvent = {
       },
     },
     {
-      text: 'Jump across the pit',
-      outcome: {
-        text: 'Most of you make it, but one falls!',
+      text: 'Jump across the pit (Speed check)',
+      successChance: 0.45,
+      statModifier: 'speed',
+      successOutcome: {
+        text: 'Everyone makes the jump successfully!',
         effects: [
-          { type: 'damage', target: 'random', value: 30 },
+          { type: 'xp', value: 40 },
+        ],
+      },
+      failureOutcome: {
+        text: 'Most of you make it, but one falls into the pit!',
+        effects: [
+          { type: 'damage', target: 'random', value: 35 },
           { type: 'xp', value: 20 },
         ],
       },

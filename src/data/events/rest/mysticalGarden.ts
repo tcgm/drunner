@@ -7,13 +7,46 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
   description: 'An underground garden thrives here with glowing plants and strange fruits.',
   choices: [
     {
-      text: 'Eat the fruit',
-      outcome: {
-        text: 'The fruit is delicious and healing!',
-        effects: [
-          { type: 'heal', target: 'all', value: 60 },
-        ],
-      },
+      text: 'Eat the fruit (unpredictable)',
+      possibleOutcomes: [
+        {
+          weight: 15,
+          outcome: {
+            text: 'The fruit contains immense vitality! You feel incredible!',
+            effects: [
+              { type: 'heal', target: 'all', value: 999 },
+              { type: 'xp', value: 50 },
+            ],
+          },
+        },
+        {
+          weight: 60,
+          outcome: {
+            text: 'The fruit is delicious and healing!',
+            effects: [
+              { type: 'heal', target: 'all', value: 60 },
+            ],
+          },
+        },
+        {
+          weight: 20,
+          outcome: {
+            text: 'The fruit tastes good but makes you drowsy...',
+            effects: [
+              { type: 'heal', target: 'all', value: 30 },
+            ],
+          },
+        },
+        {
+          weight: 5,
+          outcome: {
+            text: 'The fruit was poisonous! You feel sick!',
+            effects: [
+              { type: 'damage', target: 'all', value: 15 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Rest among the plants',

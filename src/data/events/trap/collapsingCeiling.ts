@@ -7,11 +7,19 @@ export const COLLAPSING_CEILING: DungeonEvent = {
   description: 'The ceiling rumbles ominously. Stones begin to fall!',
   choices: [
     {
-      text: 'Run for cover!',
-      outcome: {
-        text: 'You dive for safety as rocks crash down!',
+      text: 'Run for cover! (Speed check)',
+      successChance: 0.5,
+      statModifier: 'speed',
+      successOutcome: {
+        text: 'Your quick reflexes save you! Everyone escapes unharmed!',
         effects: [
-          { type: 'damage', target: 'random', value: 20 },
+          { type: 'xp', value: 50 },
+        ],
+      },
+      failureOutcome: {
+        text: 'You dive for safety but rocks crash down on some of you!',
+        effects: [
+          { type: 'damage', target: 'random', value: 25 },
           { type: 'xp', value: 30 },
         ],
       },

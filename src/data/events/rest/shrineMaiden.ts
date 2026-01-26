@@ -33,6 +33,24 @@ export const SHRINE_MAIDEN: DungeonEvent = {
       },
     },
     {
+      text: 'Pray for resurrection (without offering)',
+      successChance: 0.3,
+      statModifier: 'luck',
+      successOutcome: {
+        text: 'Your earnest prayers are answered! The shrine revives your fallen!',
+        effects: [
+          { type: 'revive', target: 'all', value: 60 },
+          { type: 'heal', target: 'all', value: 30 },
+        ],
+      },
+      failureOutcome: {
+        text: 'Your prayers echo unanswered. The shrine only heals the living.',
+        effects: [
+          { type: 'heal', target: 'all', value: 40 },
+        ],
+      },
+    },
+    {
       text: 'Pray at the shrine',
       outcome: {
         text: 'Your prayers are heard. The shrine blesses the living.',

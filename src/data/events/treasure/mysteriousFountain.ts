@@ -16,14 +16,48 @@ export const MYSTERIOUS_FOUNTAIN: DungeonEvent = {
       },
     },
     {
-      text: 'Drink the water',
-      outcome: {
-        text: 'The magical water restores your vitality!',
-        effects: [
-          { type: 'heal', target: 'all', value: 30 },
-          { type: 'gold', value: 50 },
-        ],
-      },
+      text: 'Drink the water (unpredictable)',
+      possibleOutcomes: [
+        {
+          weight: 15,
+          outcome: {
+            text: 'The water grants incredible power! You feel reborn!',
+            effects: [
+              { type: 'heal', target: 'all', value: 999 },
+              { type: 'xp', value: 100 },
+            ],
+          },
+        },
+        {
+          weight: 45,
+          outcome: {
+            text: 'The magical water restores your vitality!',
+            effects: [
+              { type: 'heal', target: 'all', value: 40 },
+              { type: 'gold', value: 50 },
+            ],
+          },
+        },
+        {
+          weight: 30,
+          outcome: {
+            text: 'The water tastes strange... nothing happens.',
+            effects: [
+              { type: 'gold', value: 50 },
+            ],
+          },
+        },
+        {
+          weight: 10,
+          outcome: {
+            text: 'The water was cursed! You feel weakened!',
+            effects: [
+              { type: 'damage', target: 'all', value: 20 },
+              { type: 'gold', value: 50 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Study the runes (requires Mage)',

@@ -32,13 +32,37 @@ export const ANCIENT_CHEST: DungeonEvent = {
     },
     {
       text: 'Kick it aggressively',
-      outcome: {
-        text: 'You kick the chest hard! The lock breaks... but so does something inside. Also, it was a mimic. Oops.',
-        effects: [
-          { type: 'damage', target: 'random', value: 25 },
-          { type: 'gold', value: 50 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 30,
+          outcome: {
+            text: 'The lock breaks cleanly! The chest opens.',
+            effects: [
+              { type: 'gold', value: 120 },
+              { type: 'item', itemType: 'random' },
+            ],
+          },
+        },
+        {
+          weight: 40,
+          outcome: {
+            text: 'You break the chest open, damaging some contents.',
+            effects: [
+              { type: 'gold', value: 60 },
+            ],
+          },
+        },
+        {
+          weight: 30,
+          outcome: {
+            text: 'It was a mimic! It bites you!',
+            effects: [
+              { type: 'damage', target: 'random', value: 30 },
+              { type: 'gold', value: 40 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Leave it alone',

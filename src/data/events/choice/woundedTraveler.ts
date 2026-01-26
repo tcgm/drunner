@@ -8,12 +8,37 @@ export const WOUNDED_TRAVELER: DungeonEvent = {
   choices: [
     {
       text: 'Heal him for free',
-      outcome: {
-        text: 'He blesses you and shares knowledge of the dungeon.',
-        effects: [
-          { type: 'xp', value: 30 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 50,
+          outcome: {
+            text: 'He blesses you warmly and shares valuable knowledge!',
+            effects: [
+              { type: 'xp', value: 80 },
+            ],
+          },
+        },
+        {
+          weight: 30,
+          outcome: {
+            text: 'He thanks you and shares some gold he had hidden.',
+            effects: [
+              { type: 'xp', value: 40 },
+              { type: 'gold', value: 60 },
+            ],
+          },
+        },
+        {
+          weight: 20,
+          outcome: {
+            text: 'It was a trap! He was a shapeshifter who attacks!',
+            effects: [
+              { type: 'damage', target: 'random', value: 30 },
+              { type: 'xp', value: 40 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Accept his gold',

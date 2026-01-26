@@ -19,10 +19,19 @@ export const POISON_DART_TRAP: DungeonEvent = {
       },
     },
     {
-      text: 'Carefully navigate around',
-      outcome: {
-        text: 'You carefully avoid the pressure plates.',
+      text: 'Carefully navigate around (Speed check)',
+      successChance: 0.6,
+      statModifier: 'speed',
+      successOutcome: {
+        text: 'Your careful footwork avoids all the pressure plates perfectly!',
         effects: [
+          { type: 'xp', value: 40 },
+        ],
+      },
+      failureOutcome: {
+        text: 'You try to avoid them but trigger one plate! A few darts fly.',
+        effects: [
+          { type: 'damage', target: 'random', value: 12 },
           { type: 'xp', value: 20 },
         ],
       },

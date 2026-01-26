@@ -41,12 +41,20 @@ export const RIVAL_ADVENTURERS: DungeonEvent = {
       },
     },
     {
-      text: 'Sneak past them',
-      outcome: {
+      text: 'Sneak past them (Luck check)',
+      successChance: 0.4,
+      statModifier: 'luck',
+      successOutcome: {
+        text: 'You slip past them unnoticed. They never knew you were here!',
+        effects: [
+          { type: 'xp', value: 60 },
+        ],
+      },
+      failureOutcome: {
         text: 'They spot you and attack from behind!',
         effects: [
           { type: 'damage', target: 'weakest', value: 30 },
-          { type: 'xp', value: 40 },
+          { type: 'xp', value: 30 },
         ],
       },
     },

@@ -18,21 +18,52 @@ export const PRISONERS_DILEMMA: DungeonEvent = {
     },
     {
       text: 'Free the first prisoner',
-      outcome: {
-        text: 'He thanks you and gives you information.',
-        effects: [
-          { type: 'xp', value: 50 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 60,
+          outcome: {
+            text: 'He thanks you sincerely and shares valuable information!',
+            effects: [
+              { type: 'xp', value: 70 },
+            ],
+          },
+        },
+        {
+          weight: 40,
+          outcome: {
+            text: 'He transforms into a monster and attacks!',
+            effects: [
+              { type: 'damage', target: 'all', value: 35 },
+              { type: 'xp', value: 30 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Free the second prisoner',
-      outcome: {
-        text: 'She rewards you with a valuable item.',
-        effects: [
-          { type: 'gold', value: 75 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 60,
+          outcome: {
+            text: 'She rewards you generously with gold and gratitude!',
+            effects: [
+              { type: 'gold', value: 100 },
+              { type: 'xp', value: 40 },
+            ],
+          },
+        },
+        {
+          weight: 40,
+          outcome: {
+            text: 'She was the monster! She attacks viciously!',
+            effects: [
+              { type: 'damage', target: 'all', value: 35 },
+              { type: 'xp', value: 30 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Leave them both',
