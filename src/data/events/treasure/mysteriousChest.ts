@@ -14,7 +14,12 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
         text: 'Your caution pays off! The chest contains valuables and no traps.',
         effects: [
           { type: 'gold', value: 150 },
-          { type: 'item', itemType: 'random' },
+          { 
+            type: 'item', 
+            itemType: 'random',
+            minRarity: 'uncommon',
+            rarityBoost: 5
+          },
         ],
       },
       failureOutcome: {
@@ -53,7 +58,12 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
             text: 'You smash it perfectly! Gold and items spill out.',
             effects: [
               { type: 'gold', value: 120 },
-              { type: 'item', itemType: 'random' },
+              { 
+                type: 'item', 
+                itemType: 'random',
+                minRarity: 'common',
+                maxRarity: 'rare'
+              },
             ],
           },
         },

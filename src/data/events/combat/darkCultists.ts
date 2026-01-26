@@ -41,7 +41,12 @@ export const DARK_CULTISTS: DungeonEvent = {
             effects: [
               { type: 'xp', value: 150 },
               { type: 'gold', value: 80 },
-              { type: 'item', itemType: 'random' },
+              { 
+                type: 'item', 
+                itemType: 'random',
+                minRarity: 'rare',
+                rarityBoost: 10
+              },
             ],
           },
         },

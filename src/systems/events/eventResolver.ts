@@ -1,4 +1,4 @@
-import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice } from '@/types'
+import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity } from '@/types'
 import { GAME_CONFIG } from '@/config/game'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { v4 as uuidv4 } from 'uuid'
@@ -95,6 +95,9 @@ function generateItemFromSpec(spec: {
   uniqueItem?: string | Omit<Item, 'id'>
   material?: string | Material
   baseTemplate?: string | BaseTemplate
+  minRarity?: ItemRarity
+  maxRarity?: ItemRarity
+  rarityBoost?: number
 }, depth: number): Item | null {
   // Handle weighted item choices
   if ('itemChoices' in spec && Array.isArray(spec.itemChoices)) {
@@ -113,11 +116,17 @@ function generateItemFromSpec(spec: {
   // For all other cases, use the centralized generateItem function
   // This ensures consistent name generation, repair logic, and alkahest fallback
   if (spec.itemType) {
-    return generateItem(depth, spec.itemType === 'random' ? undefined : spec.itemType)
+    return generateItem(
+      depth, 
+      spec.itemType === 'random' ? undefined : spec.itemType,
+      spec.minRarity,
+      spec.maxRarity,
+      spec.rarityBoost || 0
+    )
   }
 
   // Default case: generate random item
-  return generateItem(depth)
+  return generateItem(depth, undefined, spec.minRarity, spec.maxRarity, spec.rarityBoost || 0)
 }
 
 /**

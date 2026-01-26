@@ -53,7 +53,12 @@ export const ANCIENT_RUNE: DungeonEvent = {
             text: 'The rune grants you a divine blessing and powerful artifact!',
             effects: [
               { type: 'heal', target: 'all', value: 999 },
-              { type: 'item', itemType: 'random' },
+              { 
+                type: 'item', 
+                itemType: 'random',
+                minRarity: 'epic',
+                rarityBoost: 15
+              },
               { type: 'xp', value: 150 },
             ],
           },

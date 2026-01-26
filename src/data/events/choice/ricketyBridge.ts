@@ -34,7 +34,12 @@ export const RICKETY_BRIDGE: DungeonEvent = {
             text: 'The bridge falls perfectly, revealing a hidden treasure below!',
             effects: [
               { type: 'gold', value: 200 },
-              { type: 'item', itemType: 'random' },
+              { 
+                type: 'item', 
+                itemType: 'random',
+                minRarity: 'uncommon',
+                rarityBoost: 8
+              },
             ],
           },
         },

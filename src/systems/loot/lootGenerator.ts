@@ -107,19 +107,37 @@ function getDepthAdjustedWeights(depth: number): Record<ItemRarity, number> {
 /**
  * Select a random rarity based on weights
  */
-function selectRarity(depth: number): ItemRarity {
+function selectRarity(depth: number, minRarity?: ItemRarity, maxRarity?: ItemRarity): ItemRarity {
   const weights = getDepthAdjustedWeights(depth)
-  const total = Object.values(weights).reduce((sum, w) => sum + w, 0)
-  let roll = Math.random() * total
-
+  
+  // Filter weights based on min/max constraints
+  const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'artifact', 'cursed', 'set']
+  const minIndex = minRarity ? rarityOrder.indexOf(minRarity) : 0
+  const maxIndex = maxRarity ? rarityOrder.indexOf(maxRarity) : rarityOrder.length - 1
+  
+  const filteredWeights: Record<string, number> = {}
   for (const [rarity, weight] of Object.entries(weights)) {
+    const rarityIndex = rarityOrder.indexOf(rarity as ItemRarity)
+    if (rarityIndex >= minIndex && rarityIndex <= maxIndex) {
+      filteredWeights[rarity] = weight
+    }
+  }
+  
+  // If no valid weights after filtering, return minRarity or common
+  const total = Object.values(filteredWeights).reduce((sum, w) => sum + w, 0)
+  if (total === 0) {
+    return minRarity || 'common'
+  }
+  
+  let roll = Math.random() * total
+  for (const [rarity, weight] of Object.entries(filteredWeights)) {
     roll -= weight
     if (roll <= 0) {
       return rarity as ItemRarity
     }
   }
 
-  return 'common' // Fallback
+  return minRarity || 'common' // Fallback
 }
 
 /**
@@ -227,8 +245,15 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
 /**
  * Generate a random item by combining material + base template, unique item, or set item
  */
-export function generateItem(depth: number, forceType?: ItemSlot): Item {
-  const rarity = selectRarity(depth)
+export function generateItem(
+  depth: number, 
+  forceType?: ItemSlot,
+  minRarity?: ItemRarity,
+  maxRarity?: ItemRarity,
+  rarityBoost: number = 0
+): Item {
+  const adjustedDepth = depth + rarityBoost
+  const rarity = selectRarity(adjustedDepth, minRarity, maxRarity)
   const type = forceType || selectItemType()
   
   // Check if we should generate a set item (independent of rarity)

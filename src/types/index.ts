@@ -135,6 +135,10 @@ export interface EventOutcome {
     uniqueItem?: string | Omit<Item, 'id'> // Generate specific unique item by ID or literal import
     material?: string | Material // Material by ID or literal import
     baseTemplate?: string | BaseTemplate // Base template by ID or literal import
+    // Rarity control for generated items
+    minRarity?: ItemRarity // Minimum rarity (e.g., 'uncommon')
+    maxRarity?: ItemRarity // Maximum rarity (e.g., 'legendary')
+    rarityBoost?: number // Add to depth for rarity calculation (e.g., +10 depth)
     // Weighted item choices - for multiple possible outcomes
     itemChoices?: Array<{
       weight: number
@@ -142,6 +146,9 @@ export interface EventOutcome {
       uniqueItem?: string | Omit<Item, 'id'>
       material?: string | Material
       baseTemplate?: string | BaseTemplate
+      minRarity?: ItemRarity
+      maxRarity?: ItemRarity
+      rarityBoost?: number
     }>
     item?: Item // Deprecated: pre-generated item (for backward compatibility)
   }[]
