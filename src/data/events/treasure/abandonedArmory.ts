@@ -16,8 +16,8 @@ export const ABANDONED_ARMORY: DungeonEvent = {
           { 
             type: 'item', 
             itemChoices: [ // Weighted choices for variety
-              { weight: 70, itemType: 'weapon' },
-              { weight: 30, itemType: 'armor' }
+              { weight: 70, itemType: 'weapon', minRarity: 'common', maxRarity: 'uncommon' },
+              { weight: 30, itemType: 'armor', minRarity: 'common', maxRarity: 'uncommon' }
             ]
           },
         ],
@@ -33,8 +33,8 @@ export const ABANDONED_ARMORY: DungeonEvent = {
         text: 'You carry out a hefty load of equipment!',
         effects: [
           { type: 'gold', value: 150 },
-          { type: 'item', material: IRON, itemType: 'weapon' }, // Literal iron weapon
-          { type: 'item', material: STEEL, itemType: 'armor' }, // Literal steel armor
+          { type: 'item', material: IRON, itemType: 'weapon', minRarity: 'common' },
+          { type: 'item', material: STEEL, itemType: 'armor', minRarity: 'uncommon' },
         ],
       },
     },

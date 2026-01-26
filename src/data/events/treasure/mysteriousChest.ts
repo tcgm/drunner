@@ -18,6 +18,7 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
             type: 'item', 
             itemType: 'random',
             minRarity: 'uncommon',
+            maxRarity: 'rare',
             rarityBoost: 5
           },
         ],
@@ -81,7 +82,7 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
             text: 'Your nimble fingers pick the lock expertly!',
             effects: [
               { type: 'gold', value: 180 },
-              { type: 'item', itemType: 'random' },
+              { type: 'item', itemType: 'random', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 10 },
               { type: 'xp', value: 60 },
             ],
           },

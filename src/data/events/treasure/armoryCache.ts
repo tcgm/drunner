@@ -14,7 +14,7 @@ export const ARMORY_CACHE: DungeonEvent = {
       outcome: {
         text: 'You don the flexible chainmail armor.',
         effects: [
-          { type: 'item', baseTemplate: CHAINMAIL_BASE, material: IRON }, // Iron chainmail
+          { type: 'item', baseTemplate: CHAINMAIL_BASE, material: IRON, minRarity: 'common' },
         ],
       },
     },
@@ -30,9 +30,9 @@ export const ARMORY_CACHE: DungeonEvent = {
           { 
             type: 'item',
             itemChoices: [
-              { weight: 60, baseTemplate: CHAINMAIL_BASE, material: STEEL },  // Steel chainmail
-              { weight: 30, baseTemplate: PLATE_ARMOR_BASE, material: STEEL },      // Steel plate 
-              { weight: 10, baseTemplate: PLATE_ARMOR_BASE, material: MITHRIL },    // Mithril plate
+              { weight: 60, baseTemplate: CHAINMAIL_BASE, material: STEEL, minRarity: 'uncommon' },
+              { weight: 30, baseTemplate: PLATE_ARMOR_BASE, material: STEEL, minRarity: 'uncommon', rarityBoost: 10 },
+              { weight: 10, baseTemplate: PLATE_ARMOR_BASE, material: MITHRIL, minRarity: 'rare', rarityBoost: 20 },
             ]
           },
         ],

@@ -69,7 +69,7 @@ export const MYSTERIOUS_FOUNTAIN: DungeonEvent = {
         effects: [
           { type: 'heal', target: 'all', value: 50 },
           { type: 'gold', value: 150 },
-          { type: 'item', itemType: 'random' }, // Magical item reward for mage study
+          { type: 'item', itemType: 'random', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 10 },
         ],
       },
     },
