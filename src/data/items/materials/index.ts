@@ -1,4 +1,4 @@
-import type { ItemRarity } from '@/types'
+import type { ItemRarity, ItemSlot } from '@/types'
 
 /**
  * Material definition - modifies base item stats and determines rarity
@@ -11,6 +11,7 @@ export interface Material {
   statMultiplier: number // Multiplies base item stats
   valueMultiplier: number // Multiplies base item value
   description?: string
+  blacklist?: ItemSlot[] // Item types this material can't be used with
 }
 
 // Junk tier materials
@@ -62,7 +63,8 @@ export const LEATHER: Material = {
   rarity: 'common',
   statMultiplier: 1.0,
   valueMultiplier: 1.0,
-  description: 'Common leather armor'
+  description: 'Common leather armor',
+  blacklist: ['weapon'] // Leather shouldn't be used for weapons
 }
 
 export const BRONZE: Material = {
@@ -93,7 +95,8 @@ export const REINFORCED_LEATHER: Material = {
   rarity: 'uncommon',
   statMultiplier: 1.4,
   valueMultiplier: 1.8,
-  description: 'Enhanced with metal studs'
+  description: 'Enhanced with metal studs',
+  blacklist: ['weapon'] // Leather shouldn't be used for weapons
 }
 
 export const SILVER: Material = {
@@ -124,7 +127,8 @@ export const DRAGONSCALE: Material = {
   rarity: 'rare',
   statMultiplier: 2.2,
   valueMultiplier: 5.0,
-  description: 'Harvested from dragon hide'
+  description: 'Harvested from dragon hide',
+  blacklist: ['weapon'] // Scales are for armor, not weapons
 }
 
 export const ENCHANTED: Material = {
@@ -272,4 +276,20 @@ export function getRandomMaterial(rarity: ItemRarity): Material {
     return IRON
   }
   return materials[Math.floor(Math.random() * materials.length)]
+}
+
+/**
+ * Get a random material that's compatible with a specific item type
+ */
+export function getCompatibleMaterial(rarity: ItemRarity, itemType: ItemSlot): Material {
+  const materials = getMaterialsByRarity(rarity)
+  // Filter out materials that blacklist this item type
+  const compatible = materials.filter(m => !m.blacklist || !m.blacklist.includes(itemType))
+  
+  if (compatible.length === 0) {
+    // If no compatible materials found, just return any material (fallback)
+    return getRandomMaterial(rarity)
+  }
+  
+  return compatible[Math.floor(Math.random() * compatible.length)]
 }

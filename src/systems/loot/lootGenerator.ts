@@ -1,7 +1,7 @@
 import type { Item, ItemSlot, ItemRarity } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
-import { getRandomBase } from '@data/items/bases'
-import { getRandomMaterial } from '@data/items/materials'
+import { getRandomBase, getCompatibleBase } from '@data/items/bases'
+import { getRandomMaterial, getCompatibleMaterial } from '@data/items/materials'
 import { getRandomUnique } from '@data/items/uniques'
 import { getRandomSetItem } from '@data/items/sets'
 
@@ -214,14 +214,15 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
   if (depth >= 15 && Math.random() < LOOT_CONFIG.setChance) {
     const setTemplate = getRandomSetItem()
     if (setTemplate) {
-      // If we have a forced type, only use set item if it matches
-      if (!forceType || setTemplate.type === forceType || 
-          (forceType === 'accessory1' && (setTemplate.type === 'accessory1' || setTemplate.type === 'accessory2')) ||
-          (forceType === 'accessory2' && (setTemplate.type === 'accessory1' || setTemplate.type === 'accessory2'))) {
+      // If we have a forced type, only use set item if it matches appropriately
+      if (!forceType || 
+          setTemplate.type === forceType || 
+          (forceType === 'accessory1' && setTemplate.type === 'accessory') ||
+          (forceType === 'accessory2' && setTemplate.type === 'accessory')) {
         return {
           ...setTemplate,
           id: uuidv4(),
-          type, // Use the requested type for accessory distinction
+          type: forceType || setTemplate.type, // Use forced type for specific accessory slots
         }
       }
     }
@@ -233,13 +234,14 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
     const uniqueTemplate = getRandomUnique(rarity)
     if (uniqueTemplate) {
       // Generate unique item with proper type matching if possible
-      if (!forceType || uniqueTemplate.type === type || 
-          (forceType === 'accessory1' && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2')) ||
-          (forceType === 'accessory2' && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
+      if (!forceType || 
+          uniqueTemplate.type === forceType ||
+          (forceType === 'accessory1' && uniqueTemplate.type === 'accessory') ||
+          (forceType === 'accessory2' && uniqueTemplate.type === 'accessory')) {
         return {
           ...uniqueTemplate,
           id: uuidv4(),
-          type, // Use the selected type (for accessory1/accessory2 distinction)
+          type: forceType || uniqueTemplate.type, // Use forced type for specific accessory slots
         }
       }
       // If forced type doesn't match unique, generate procedural item instead
@@ -247,22 +249,29 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
   }
   
   // Generate procedural item from material + base
+  // Strategy: Get material first, then find a compatible base
   const material = getRandomMaterial(rarity)
   
-  // Get random base template for this type
-  const baseTemplate = getRandomBase(type)
+  // Get a base template that's compatible with this material
+  const baseTemplate = getCompatibleBase(type, material.id)
+  
+  // Double-check: if base blacklists the material, try to get a compatible material for this base
+  let finalMaterial = material
+  if (baseTemplate?.materialBlacklist?.includes(material.id)) {
+    finalMaterial = getCompatibleMaterial(rarity, baseTemplate.type)
+  }
   
   // Fallback if no base template found
   if (!baseTemplate) {
     // Create a minimal item
     return {
       id: uuidv4(),
-      name: `${material.prefix} Item`,
-      description: material.description || 'A mysterious item',
+      name: `${finalMaterial.prefix} Item`,
+      description: finalMaterial.description || 'A mysterious item',
       type,
       rarity,
       stats: {},
-      value: Math.floor(50 * material.valueMultiplier),
+      value: Math.floor(50 * finalMaterial.valueMultiplier),
       icon: 'GiTreasure', // Default icon for fallback items
     }
   }
@@ -271,26 +280,26 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
   const base: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = baseTemplate
   
   // Apply material multiplier to base stats
-  const modifiedStats = applyMaterialToStats(base.stats, material.statMultiplier)
+  const modifiedStats = applyMaterialToStats(base.stats, finalMaterial.statMultiplier)
   
   // Calculate value (base 50 gold * material multiplier)
   const baseValue = 50
-  const value = Math.floor(baseValue * material.valueMultiplier)
+  const value = Math.floor(baseValue * finalMaterial.valueMultiplier)
   
   // Combine material description with base description if needed
-  const description = material.description 
-    ? `${base.description} - ${material.description}`
+  const description = finalMaterial.description 
+    ? `${base.description} - ${finalMaterial.description}`
     : base.description
   
   // Generate item name using base template
-  const name = generateItemName(material.prefix, base)
+  const name = generateItemName(finalMaterial.prefix, base)
   
   // Create final item
   return {
     id: uuidv4(),
     name,
     description,
-    type,
+    type: forceType || base.type, // Use forced type for specific accessory slots, otherwise use base type
     rarity,
     stats: modifiedStats,
     value,

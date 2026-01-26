@@ -1,6 +1,13 @@
 // Master index for all base item templates
 import type { Item, ItemSlot } from '@/types'
 
+/**
+ * Base item template with optional material blacklist
+ */
+export interface BaseItemTemplate extends Omit<Item, 'id' | 'name' | 'rarity' | 'value'> {
+  materialBlacklist?: string[] // Material IDs this base can't use
+}
+
 export * from './weapon'
 export * from './armor'
 export * from './helmet'
@@ -23,7 +30,7 @@ export const ALL_BASE_TEMPLATES = [
 ]
 
 // Base templates by type
-export const BASE_TEMPLATES_BY_TYPE: Record<string, Array<Omit<Item, 'id' | 'name' | 'rarity' | 'value'>>> = {
+export const BASE_TEMPLATES_BY_TYPE: Record<string, BaseItemTemplate[]> = {
   weapon: ALL_WEAPON_BASES,
   armor: ALL_ARMOR_BASES,
   helmet: ALL_HELMET_BASES,
@@ -34,7 +41,7 @@ export const BASE_TEMPLATES_BY_TYPE: Record<string, Array<Omit<Item, 'id' | 'nam
 /**
  * Get base templates for a specific type
  */
-export function getBasesByType(type: ItemSlot): Array<Omit<Item, 'id' | 'name' | 'rarity' | 'value'>> {
+export function getBasesByType(type: ItemSlot): BaseItemTemplate[] {
   // Normalize accessory types
   const normalizedType = (type === 'accessory1' || type === 'accessory2') ? 'accessory' : type
   return BASE_TEMPLATES_BY_TYPE[normalizedType] || []
@@ -43,8 +50,24 @@ export function getBasesByType(type: ItemSlot): Array<Omit<Item, 'id' | 'name' |
 /**
  * Get a random base template for a type
  */
-export function getRandomBase(type: ItemSlot): Omit<Item, 'id' | 'name' | 'rarity' | 'value'> | undefined {
+export function getRandomBase(type: ItemSlot): BaseItemTemplate | undefined {
   const bases = getBasesByType(type)
   if (bases.length === 0) return undefined
   return bases[Math.floor(Math.random() * bases.length)]
+}
+
+/**
+ * Get a random base template that's compatible with a specific material
+ */
+export function getCompatibleBase(type: ItemSlot, materialId: string): BaseItemTemplate | undefined {
+  const bases = getBasesByType(type)
+  // Filter out bases that blacklist this material
+  const compatible = bases.filter(b => !b.materialBlacklist || !b.materialBlacklist.includes(materialId))
+  
+  if (compatible.length === 0) {
+    // If no compatible bases found, just return any base (fallback)
+    return getRandomBase(type)
+  }
+  
+  return compatible[Math.floor(Math.random() * compatible.length)]
 }

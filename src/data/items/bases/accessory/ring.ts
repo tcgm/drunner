@@ -6,6 +6,7 @@ import type { Item } from '@/types'
 export const RING_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'A magical ring',
   type: 'accessory1',
+  icon: 'GiRing',
   stats: {
     luck: 2,
   },

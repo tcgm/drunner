@@ -6,6 +6,7 @@ import type { Item } from '@/types'
 export const AMULET_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'A protective amulet',
   type: 'accessory2',
+  icon: 'GiGemNecklace',
   stats: {
     defense: 3,
     maxHp: 5,

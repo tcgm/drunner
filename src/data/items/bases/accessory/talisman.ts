@@ -6,6 +6,7 @@ import type { Item } from '@/types'
 export const TALISMAN_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
   description: 'A mystical talisman',
   type: 'accessory2',
+  icon: 'GiTalisman',
   stats: {
     attack: 3,
     magicPower: 3,

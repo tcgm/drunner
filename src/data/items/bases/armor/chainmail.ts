@@ -1,9 +1,9 @@
-import type { Item } from '@/types'
+import type { BaseItemTemplate } from '../index'
 
 /**
  * Base chainmail template - medium armor
  */
-export const CHAINMAIL_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+export const CHAINMAIL_BASE: BaseItemTemplate = {
   description: 'Interlocking metal rings',
   type: 'armor',
   icon: 'GiChestArmor',
@@ -12,4 +12,5 @@ export const CHAINMAIL_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
     maxHp: 15,
     speed: -1,
   },
+  materialBlacklist: ['leather', 'reinforced_leather', 'dragonscale'] // Metal armor, can't use leather
 }

@@ -22,7 +22,11 @@ import {
   GiWizardStaff,
   GiBowArrow,
   GiMaceHead as GiMace,
-  GiZeusSword as GiHolySword
+  GiZeusSword as GiHolySword,
+  GiGemNecklace,
+  GiCharm,
+  GiTalisman,
+  GiRobe
 } from 'react-icons/gi'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
@@ -126,7 +130,11 @@ const getItemIcon = (iconName: string) => {
     GiWizardStaff,
     GiBowArrow,
     GiMace,
-    GiHolySword
+    GiHolySword,
+    GiGemNecklace,
+    GiCharm,
+    GiTalisman,
+    GiRobe
   }
   
   return iconMap[iconName] || GiTreasure
