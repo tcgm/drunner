@@ -20,7 +20,7 @@ export function PartySetupHeader({ bankGold, metaXp, onBack, onStart, canStart }
           </HStack>
           <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
             <Text fontSize="xs" color="gray.400">Meta XP:</Text>
-            <Text fontSize="sm" fontWeight="bold" color="purple.300">{metaXp}</Text>
+            <Text fontSize="sm" fontWeight="bold" color="cyan.300">{metaXp}</Text>
           </HStack>
         </HStack>
         <HStack spacing={2}>

@@ -147,7 +147,7 @@ export default function VictoryScreen({ depth, onExit }: VictoryScreenProps) {
                   {(activeRun?.metaXpGained ?? 0) > 0 && (
                     <Box textAlign="center">
                       <Text color="gray.400" fontSize="xs">Meta XP Gained</Text>
-                      <Text color="purple.300" fontSize="md" fontWeight="bold">
+                      <Text color="cyan.300" fontSize="md" fontWeight="bold">
                         {activeRun.metaXpGained}
                       </Text>
                     </Box>

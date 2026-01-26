@@ -1,12 +1,13 @@
 import { Box, HStack, VStack, Text, Icon, useDisclosure, Tooltip } from '@chakra-ui/react'
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { Hero, Item } from '@/types'
 import * as GameIcons from 'react-icons/gi'
 import HeroModal from './HeroModal'
 import HeroTooltip from './HeroTooltip'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
+import { FloatingNumber } from '@components/ui/FloatingNumber'
 
 // Rarity color mapping
 const RARITY_COLORS: Record<string, string> = {
@@ -22,11 +23,24 @@ const MotionBox = motion.create(Box)
 
 interface PartyMemberCardProps {
   hero: Hero
+  floatingEffects?: Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>
 }
 
-export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
+export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMemberCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
+  const [activeEffects, setActiveEffects] = useState<Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>([])
+  
+  // Update active effects when new ones come in
+  useEffect(() => {
+    if (floatingEffects.length > 0) {
+      setActiveEffects(prev => [...prev, ...floatingEffects])
+    }
+  }, [floatingEffects])
+  
+  const handleEffectComplete = (id: string) => {
+    setActiveEffects(prev => prev.filter(effect => effect.id !== id))
+  }
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
@@ -35,15 +49,7 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
     <>
       <HeroTooltip hero={hero}>
         <MotionBox
-          bg="gray.900"
-          borderRadius="md"
-          borderWidth="2px"
-          borderColor={isHovered ? 'orange.500' : hero.isAlive ? 'gray.700' : 'red.600'}
-          opacity={hero.isAlive ? 1 : 0.5}
-          cursor="pointer"
-          onClick={onOpen}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          position="relative"
           whileHover={{ 
             x: 4,
             boxShadow: hero.isAlive ? '0 0 12px rgba(237, 137, 54, 0.4)' : '0 0 12px rgba(245, 101, 101, 0.4)'
@@ -55,7 +61,24 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
             damping: 20
           }}
         >
-          <HStack spacing={2} p={2}>
+          {/* Floating Numbers */}
+          <AnimatePresence>
+            {activeEffects.map((effect) => (
+              <FloatingNumber
+                key={effect.id}
+                value={effect.value}
+                type={effect.type}
+                onComplete={() => handleEffectComplete(effect.id)}
+              />
+            ))}
+          </AnimatePresence>
+
+          <HStack spacing={2} p={2}
+            onClick={onOpen}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            cursor="pointer"
+          >
             <HStack spacing={1}>
               <motion.div
                 animate={isHovered ? {
@@ -100,12 +123,14 @@ export default function PartyMemberCard({ hero }: PartyMemberCardProps) {
                 label="HP"
                 current={hero.stats.hp}
                 max={hero.stats.maxHp}
+                colorScheme="green"
               />
               
               <StatBar 
                 label="XP"
                 current={hero.xp}
                 max={calculateXpForLevel(hero.level)}
+                colorScheme="cyan"
               />
             </VStack>
           </HStack>

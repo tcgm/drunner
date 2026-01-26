@@ -1,5 +1,5 @@
 import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from '@chakra-ui/react'
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useGameStore } from '@store/gameStore'
 import PartySidebar from '@components/dungeon/PartySidebar'
 import DungeonHeader from '@components/dungeon/DungeonHeader'
@@ -22,6 +22,41 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
   const cancelRef = useRef<HTMLButtonElement>(null)
+  const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp'; value: number; id: string }>>>({})
+  
+  // When outcome changes, create floating numbers
+  useEffect(() => {
+    if (!lastOutcome) return
+    
+    const newEffects: Record<string, Array<{ type: 'damage' | 'heal' | 'xp'; value: number; id: string }>> = {}
+    
+    lastOutcome.effects.forEach((effect) => {
+      if (!effect.target || !effect.value) return
+      
+      effect.target.forEach((heroId) => {
+        if (!newEffects[heroId]) {
+          newEffects[heroId] = []
+        }
+        
+        if (effect.type === 'damage' || effect.type === 'heal' || effect.type === 'xp' || effect.type === 'gold') {
+          newEffects[heroId].push({
+            type: effect.type,
+            value: effect.value,
+            id: `${effect.type}-${heroId}-${Date.now()}-${Math.random()}`
+          })
+        }
+      })
+    })
+    
+    setHeroEffects(newEffects)
+    
+    // Clear effects after animation completes
+    const timer = setTimeout(() => {
+      setHeroEffects({})
+    }, 100) // Just enough time for PartyMemberCard to pick them up
+    
+    return () => clearTimeout(timer)
+  }, [lastOutcome])
   
   const handleSelectChoice = (choice: EventChoice) => {
     selectChoice(choice)

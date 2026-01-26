@@ -4,9 +4,10 @@ import type { Hero } from '@/types'
 
 interface PartySidebarProps {
   party: Hero[]
+  heroEffects?: Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>
 }
 
-export default function PartySidebar({ party }: PartySidebarProps) {
+export default function PartySidebar({ party, heroEffects = {} }: PartySidebarProps) {
   return (
     <Box w="240px" bg="gray.800" borderRadius="lg" p={3} overflowY="auto">
       <VStack spacing={3} align="stretch">
@@ -15,7 +16,11 @@ export default function PartySidebar({ party }: PartySidebarProps) {
         </Heading>
         
         {party.map((hero) => (
-          <PartyMemberCard key={hero.id} hero={hero} />
+          <PartyMemberCard 
+            key={hero.id} 
+            hero={hero} 
+            floatingEffects={heroEffects[hero.id] || []}
+          />
         ))}
         
         {party.length === 0 && (

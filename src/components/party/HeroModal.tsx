@@ -71,6 +71,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
                 label="Health"
                 current={hero.stats.hp}
                 max={hero.stats.maxHp}
+                colorScheme="green"
                 size="md"
                 valueSize="sm"
               />
@@ -79,7 +80,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
                 label="Experience"
                 current={hero.xp}
                 max={calculateXpForLevel(hero.level)}
-                colorScheme="blue"
+                colorScheme="cyan"
                 size="md"
                 valueSize="sm"
               />

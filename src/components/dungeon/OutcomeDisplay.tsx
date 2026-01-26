@@ -25,7 +25,7 @@ const EFFECT_ICONS = {
 const EFFECT_COLORS = {
   damage: 'red.400',
   heal: 'green.400',
-  xp: 'purple.400',
+  xp: 'cyan.400',
   gold: 'yellow.400',
   item: 'blue.400',
   status: 'cyan.400',

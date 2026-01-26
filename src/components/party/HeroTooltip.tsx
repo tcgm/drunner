@@ -47,6 +47,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
             label="HP"
             current={hero.stats.hp}
             max={hero.stats.maxHp}
+            colorScheme="green"
             size="sm"
             valueSize="xs"
           />
@@ -56,7 +57,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
             label="XP"
             current={hero.xp}
             max={calculateXpForLevel(hero.level)}
-            colorScheme="blue"
+            colorScheme="cyan"
             size="sm"
             valueSize="xs"
           />
