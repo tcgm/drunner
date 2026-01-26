@@ -1,3 +1,4 @@
+import { GiCrystalWand } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const INFINITY_EDGE: Omit<Item, 'id'> = {
   description: 'A blade forged from crystallized time itself. Its edge cuts through reality.',
   type: 'weapon',
   rarity: 'mythic',
+  icon: GiCrystalWand,
   stats: {
     attack: 180,
     speed: 35,

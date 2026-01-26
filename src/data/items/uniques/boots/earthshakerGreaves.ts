@@ -1,3 +1,4 @@
+import { GiSpikedArmor } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const EARTHSHAKER_GREAVES: Omit<Item, 'id'> = {
   description: 'Boots that make the ground tremble with each step. Grants the strength of mountains.',
   type: 'boots',
   rarity: 'legendary',
+  icon: GiSpikedArmor,
   stats: {
     defense: 45,
     maxHp: 70,

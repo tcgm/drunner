@@ -1,3 +1,4 @@
+import { GiMaskedSpider } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const VISAGE_OF_THE_VOID: Omit<Item, 'id'> = {
   description: 'A helmet that exists partially outside reality. Looking into it reveals infinite darkness.',
   type: 'helmet',
   rarity: 'mythic',
+  icon: GiMaskedSpider,
   stats: {
     defense: 90,
     magicPower: 90,

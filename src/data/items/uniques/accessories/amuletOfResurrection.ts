@@ -1,3 +1,4 @@
+import { GiAnkh } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const AMULET_OF_RESURRECTION: Omit<Item, 'id'> = {
   description: 'A golden amulet infused with phoenix essence. Grants a second chance at life.',
   type: 'accessory2',
   rarity: 'legendary',
+  icon: GiAnkh,
   stats: {
     maxHp: 150,
     defense: 40,

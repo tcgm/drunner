@@ -1,12 +1,13 @@
-import type { Item } from '@/types'
+import { GiBoots } from 'react-icons/gi'
+import type { BaseItemTemplate } from '../index'
 
 /**
  * Base boots template
  */
-export const BOOTS_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+export const BOOTS_BASE: BaseItemTemplate = {
   description: 'Sturdy footwear',
   type: 'boots',
-  icon: 'GiBoots',
+  icon: GiBoots,
   stats: {
     speed: 3,
     defense: 2,

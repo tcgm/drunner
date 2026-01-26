@@ -4,6 +4,7 @@ import { getRandomBase, getCompatibleBase } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity } from '@data/items/materials'
 import { getRandomUnique } from '@data/items/uniques'
 import { getRandomSetItem } from '@data/items/sets'
+import { GiCrystalShine } from 'react-icons/gi'
 
 /**
  * Loot generation configuration
@@ -276,7 +277,7 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
       rarity,
       stats: {}, // No stats - just crafting material
       value: alkahestValue,
-      icon: 'GiTreasure',
+      icon: GiCrystalShine,
     }
   }
   
@@ -307,9 +308,8 @@ export function generateItem(depth: number, forceType?: ItemSlot): Item {
     rarity,
     stats: modifiedStats,
     value,
-    icon: base.icon || 'GiTreasure',
+    icon: base.icon,
   }
-}
 }
 
 /**

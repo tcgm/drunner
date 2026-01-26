@@ -1,3 +1,4 @@
+import { GiLightningBow } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const THUNDERFURY: Omit<Item, 'id'> = {
   description: 'Crackling with elemental fury, this blade channels the raw power of storms.',
   type: 'weapon',
   rarity: 'epic',
+  icon: GiLightningBow,
   stats: {
     attack: 85,
     speed: 20,

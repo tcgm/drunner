@@ -1,3 +1,4 @@
+import { GiChestArmor } from 'react-icons/gi'
 import type { BaseItemTemplate } from '../index'
 
 /**
@@ -6,7 +7,7 @@ import type { BaseItemTemplate } from '../index'
 export const CHAINMAIL_BASE: BaseItemTemplate = {
   description: 'Interlocking metal rings',
   type: 'armor',
-  icon: 'GiChestArmor',
+  icon: GiChestArmor,
   stats: {
     defense: 10,
     maxHp: 15,

@@ -1,3 +1,4 @@
+import { GiMedal } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const PENDANT_OF_THE_WARRIOR: Omit<Item, 'id'> = {
   description: 'Contains the battle spirit of a legendary warrior. Grants overwhelming strength.',
   type: 'accessory2',
   rarity: 'epic',
+  icon: GiMedal,
   stats: {
     attack: 45,
     maxHp: 50,

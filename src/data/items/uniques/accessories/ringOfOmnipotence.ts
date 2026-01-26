@@ -1,3 +1,4 @@
+import { GiDiamondRing } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const RING_OF_OMNIPOTENCE: Omit<Item, 'id'> = {
   description: 'One ring to rule them all. Contains the essence of ultimate power.',
   type: 'accessory1',
   rarity: 'mythic',
+  icon: GiDiamondRing,
   stats: {
     attack: 80,
     defense: 80,

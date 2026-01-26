@@ -10,24 +10,7 @@ import {
   Icon,
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import { 
-  GiSwordsPower, 
-  GiChestArmor, 
-  GiHelmet as GiLeatherHelm, 
-  GiBoots, 
-  GiRing, 
-  GiGoldBar as GiTreasure,
-  GiBattleAxe,
-  GiStiletto,
-  GiWizardStaff,
-  GiBowArrow,
-  GiMaceHead as GiMace,
-  GiZeusSword as GiHolySword,
-  GiGemNecklace,
-  GiCharm,
-  GiTalisman,
-  GiRobe
-} from 'react-icons/gi'
+import { GiGoldBar as GiTreasure } from 'react-icons/gi'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 
@@ -117,33 +100,11 @@ const RARITY_COLORS = {
   }
 }
 
-const getItemIcon = (iconName: string) => {
-  const iconMap: Record<string, any> = {
-    GiSwordsPower,
-    GiChestArmor,
-    GiLeatherHelm,
-    GiBoots,
-    GiRing,
-    GiTreasure,
-    GiBattleAxe,
-    GiStiletto,
-    GiWizardStaff,
-    GiBowArrow,
-    GiMace,
-    GiHolySword,
-    GiGemNecklace,
-    GiCharm,
-    GiTalisman,
-    GiRobe
-  }
-  
-  return iconMap[iconName] || GiTreasure
-}
-
 export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: ItemSlotProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
-  const ItemIcon = getItemIcon(item.icon)
+  // Use the icon directly from the item, or fallback to GiTreasure
+  const ItemIcon = item.icon || GiTreasure
 
   const handleClick = () => {
     if (onClick) {

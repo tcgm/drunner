@@ -1,3 +1,4 @@
+import { GiMaceHead } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const DAWNBREAKER: Omit<Item, 'id'> = {
   description: 'A radiant mace that burns with the light of dawn, devastating to undead creatures.',
   type: 'weapon',
   rarity: 'epic',
+  icon: GiMaceHead,
   stats: {
     attack: 90,
     defense: 15,

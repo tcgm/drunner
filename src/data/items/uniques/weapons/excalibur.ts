@@ -1,3 +1,4 @@
+import { GiBroadsword } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,7 +9,7 @@ export const EXCALIBUR: Omit<Item, 'id'> = {
   description: 'The legendary blade of kings, gleaming with divine light. Said to have been forged by ancient gods.',
   type: 'weapon',
   rarity: 'legendary',
-  icon: 'GiHolySword',
+  icon: GiBroadsword,
   stats: {
     attack: 150,
     defense: 20,

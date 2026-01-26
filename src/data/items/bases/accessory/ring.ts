@@ -1,12 +1,13 @@
-import type { Item } from '@/types'
+import { GiRing } from 'react-icons/gi'
+import type { BaseItemTemplate } from '../index'
 
 /**
  * Base ring template
  */
-export const RING_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+export const RING_BASE: BaseItemTemplate = {
   description: 'A magical ring',
   type: 'accessory1',
-  icon: 'GiRing',
+  icon: GiRing,
   stats: {
     luck: 2,
   },

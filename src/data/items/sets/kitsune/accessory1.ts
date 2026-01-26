@@ -1,3 +1,4 @@
+import { GiFoxTail } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const KITSUNE_CHARM: Omit<Item, 'id'> = {
   description: 'A ring containing a fragment of fox spirit essence. Brings fortune and tricks fate.',
   type: 'accessory1',
   rarity: 'set',
+  icon: GiFoxTail,
   stats: {
     luck: 30,
     speed: 15,

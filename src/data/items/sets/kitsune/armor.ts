@@ -1,3 +1,4 @@
+import { GiNinjaMask } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const KITSUNE_GRACE: Omit<Item, 'id'> = {
   description: 'Ethereal robes woven from fox spirit tails. Shimmers with illusion magic.',
   type: 'armor',
   rarity: 'set',
+  icon: GiNinjaMask,
   stats: {
     defense: 70,
     speed: 25,

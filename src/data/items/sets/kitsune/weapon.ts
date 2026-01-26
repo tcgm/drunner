@@ -1,3 +1,4 @@
+import { GiKatana } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const KITSUNE_BITE: Omit<Item, 'id'> = {
   description: 'A blade forged by the nine-tailed fox spirits. Gleams with ethereal fox fire.',
   type: 'weapon',
   rarity: 'set',
+  icon: GiKatana,
   stats: {
     attack: 110,
     speed: 30,

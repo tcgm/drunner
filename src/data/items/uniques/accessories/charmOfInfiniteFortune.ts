@@ -1,3 +1,4 @@
+import { GiClover } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const CHARM_OF_INFINITE_FORTUNE: Omit<Item, 'id'> = {
   description: 'A four-leaf clover encased in crystal. Bends probability in your favor.',
   type: 'accessory1',
   rarity: 'epic',
+  icon: GiClover,
   stats: {
     luck: 40,
     speed: 10,

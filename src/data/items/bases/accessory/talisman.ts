@@ -1,12 +1,13 @@
-import type { Item } from '@/types'
+import { GiSpellBook } from 'react-icons/gi'
+import type { BaseItemTemplate } from '../index'
 
 /**
  * Base talisman template
  */
-export const TALISMAN_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+export const TALISMAN_BASE: BaseItemTemplate = {
   description: 'A mystical talisman',
   type: 'accessory2',
-  icon: 'GiTalisman',
+  icon: GiSpellBook,
   stats: {
     attack: 3,
     magicPower: 3,

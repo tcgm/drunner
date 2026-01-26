@@ -1,3 +1,4 @@
+import { GiRobe } from 'react-icons/gi'
 import type { BaseItemTemplate } from '../index'
 
 /**
@@ -6,7 +7,7 @@ import type { BaseItemTemplate } from '../index'
 export const ROBE_BASE: BaseItemTemplate = {
   description: 'Flowing magical vestments',
   type: 'armor',
-  icon: 'GiRobe',
+  icon: GiRobe,
   stats: {
     defense: 4,
     maxHp: 8,

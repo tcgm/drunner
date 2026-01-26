@@ -1,12 +1,13 @@
-import type { Item } from '@/types'
+import { GiBowArrow } from 'react-icons/gi'
+import type { BaseItemTemplate } from '../index'
 
 /**
  * Base bow template - ranged weapon
  */
-export const BOW_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+export const BOW_BASE: BaseItemTemplate = {
   description: 'A ranged weapon for distance attacks',
   type: 'weapon',
-  icon: 'GiBowArrow',
+  icon: GiBowArrow,
   stats: {
     attack: 9,
     speed: 2,

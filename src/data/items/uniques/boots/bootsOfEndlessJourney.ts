@@ -1,3 +1,4 @@
+import { GiHighHeel } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const BOOTS_OF_ENDLESS_JOURNEY: Omit<Item, 'id'> = {
   description: 'These boots have walked across countless worlds and dimensions. They never tire.',
   type: 'boots',
   rarity: 'mythic',
+  icon: GiHighHeel,
   stats: {
     speed: 60,
     defense: 50,

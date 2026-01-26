@@ -1,3 +1,4 @@
+import { GiWingedEmblem } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const HELM_OF_ETERNAL_GUARDIAN: Omit<Item, 'id'> = {
   description: 'Worn by the legendary guardian who never fell. Grants unwavering protection.',
   type: 'helmet',
   rarity: 'legendary',
+  icon: GiWingedEmblem,
   stats: {
     defense: 60,
     maxHp: 80,

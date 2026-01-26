@@ -1,12 +1,13 @@
-import type { Item } from '@/types'
+import { GiStiletto } from 'react-icons/gi'
+import type { BaseItemTemplate } from '../index'
 
 /**
  * Base dagger template - low attack, high speed
  */
-export const DAGGER_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+export const DAGGER_BASE: BaseItemTemplate = {
   description: 'A quick stabbing weapon',
   type: 'weapon',
-  icon: 'GiStiletto',
+  icon: GiStiletto,
   stats: {
     attack: 6,
     speed: 4,

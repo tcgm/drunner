@@ -1,3 +1,4 @@
+import { GiBrain } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const MIND_BREAKER: Omit<Item, 'id'> = {
   description: 'A helmet that amplifies mental prowess but fragments sanity. Power at a cost.',
   type: 'helmet',
   rarity: 'epic',
+  icon: GiBrain,
   stats: {
     magicPower: 60,
     attack: 30,

@@ -1,11 +1,14 @@
-import type { Item } from '@/types'
+import { GiLightHelm } from 'react-icons/gi'
+import type { BaseItemTemplate } from '../index'
 
 /**
  * Base helmet template
  */
-export const HELMET_BASE: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+export const HELMET_BASE: BaseItemTemplate = {
   description: 'Protective headgear',
-  type: 'helmet',  icon: 'GiLeatherHelm',  stats: {
+  type: 'helmet',
+  icon: GiLightHelm,
+  stats: {
     defense: 5,
     maxHp: 5,
   },

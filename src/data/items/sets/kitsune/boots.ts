@@ -1,3 +1,4 @@
+import { GiNinjaStar } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const KITSUNE_STEPS: Omit<Item, 'id'> = {
   description: 'Boots blessed by fox spirits. Leave phantom afterimages with each stride.',
   type: 'boots',
   rarity: 'set',
+  icon: GiNinjaStar,
   stats: {
     speed: 40,
     defense: 30,

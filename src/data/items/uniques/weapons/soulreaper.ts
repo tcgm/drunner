@@ -1,3 +1,4 @@
+import { GiScythe } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const SOULREAPER: Omit<Item, 'id'> = {
   description: 'A cursed scythe that harvests the essence of fallen foes. Each kill strengthens its wielder.',
   type: 'weapon',
   rarity: 'legendary',
+  icon: GiScythe,
   stats: {
     attack: 140,
     speed: 10,

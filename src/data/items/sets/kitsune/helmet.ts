@@ -1,3 +1,4 @@
+import { GiFox } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const KITSUNE_VISION: Omit<Item, 'id'> = {
   description: 'A mask resembling a fox spirit. Grants mystical perception and cunning.',
   type: 'helmet',
   rarity: 'set',
+  icon: GiFox,
   stats: {
     defense: 45,
     magicPower: 35,

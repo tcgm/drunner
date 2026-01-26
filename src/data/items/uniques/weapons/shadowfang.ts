@@ -1,3 +1,4 @@
+import { GiCurvyKnife } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const SHADOWFANG: Omit<Item, 'id'> = {
   description: 'A blade forged in eternal darkness. Whispers of the void emanate from its obsidian surface.',
   type: 'weapon',
   rarity: 'legendary',
+  icon: GiCurvyKnife,
   stats: {
     attack: 120,
     speed: 25,

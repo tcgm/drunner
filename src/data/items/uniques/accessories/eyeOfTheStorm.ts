@@ -1,3 +1,4 @@
+import { GiLightningStorm } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const EYE_OF_THE_STORM: Omit<Item, 'id'> = {
   description: 'A talisman containing a trapped lightning elemental. Crackles with raw power.',
   type: 'accessory2',
   rarity: 'legendary',
+  icon: GiLightningStorm,
   stats: {
     attack: 60,
     speed: 30,

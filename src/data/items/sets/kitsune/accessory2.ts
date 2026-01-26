@@ -1,3 +1,4 @@
+import { GiFoxHead } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const KITSUNE_SOUL: Omit<Item, 'id'> = {
   description: 'An amulet holding the blessing of the nine-tailed fox. Grants mystical resilience.',
   type: 'accessory2',
   rarity: 'set',
+  icon: GiFoxHead,
   stats: {
     maxHp: 80,
     luck: 25,
