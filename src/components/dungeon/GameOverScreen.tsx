@@ -1,7 +1,7 @@
-import { VStack, Heading, Button, Text, Flex, Box, SimpleGrid, Badge } from '@chakra-ui/react'
+import { VStack, Heading, Button, Text, Flex, Box, SimpleGrid, Badge, Divider, HStack } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { GiDeathSkull } from 'react-icons/gi'
+import { GiDeathSkull, GiTwoCoins, GiLaurelsTrophy, GiSwordWound, GiHearts, GiChest } from 'react-icons/gi'
 import { useEffect } from 'react'
 import { useGameStore } from '@store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -111,7 +111,144 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           </Text>
         </motion.div>
 
-        {/* Penalty Information */}
+        {/* Run Statistics */}
+        {activeRun && (
+          <MotionBox
+            bg="rgba(0,0,0,0.3)"
+            p={4}
+            borderRadius="md"
+            border="1px solid"
+            borderColor="gray.700"
+            w="full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <VStack spacing={3} align="stretch">
+              <Text color="gray.300" fontSize="sm" fontWeight="semibold" textAlign="center">
+                Run Statistics
+              </Text>
+              
+              <SimpleGrid columns={3} spacing={3}>
+                <Box textAlign="center">
+                  <Icon as={GiTwoCoins} boxSize={5} color="yellow.400" mb={1} />
+                  <Text color="gray.400" fontSize="xs">Gold Earned</Text>
+                  <Text color="yellow.400" fontSize="md" fontWeight="bold">
+                    {activeRun.goldEarned || 0}
+                  </Text>
+                </Box>
+                <Box textAlign="center">
+                  <Icon as={GiLaurelsTrophy} boxSize={5} color="green.400" mb={1} />
+                  <Text color="gray.400" fontSize="xs">Events</Text>
+                  <Text color="green.400" fontSize="md" fontWeight="bold">
+                    {activeRun.eventsCompleted || 0}
+                  </Text>
+                </Box>
+                <Box textAlign="center">
+                  <Icon as={GiDeathSkull} boxSize={5} color="red.400" mb={1} />
+                  <Text color="gray.400" fontSize="xs">Enemies</Text>
+                  <Text color="red.400" fontSize="md" fontWeight="bold">
+                    {activeRun.enemiesDefeated || 0}
+                  </Text>
+                </Box>
+                <Box textAlign="center">
+                  <Icon as={GiChest} boxSize={5} color="blue.400" mb={1} />
+                  <Text color="gray.400" fontSize="xs">Items</Text>
+                  <Text color="blue.400" fontSize="md" fontWeight="bold">
+                    {activeRun.itemsFound || 0}
+                  </Text>
+                </Box>
+                <Box textAlign="center">
+                  <Icon as={GiSwordWound} boxSize={5} color="orange.400" mb={1} />
+                  <Text color="gray.400" fontSize="xs">Damage</Text>
+                  <Text color="orange.400" fontSize="md" fontWeight="bold">
+                    {activeRun.damageTaken || 0}
+                  </Text>
+                </Box>
+                <Box textAlign="center">
+                  <Icon as={GiHearts} boxSize={5} color="green.300" mb={1} />
+                  <Text color="gray.400" fontSize="xs">Healing</Text>
+                  <Text color="green.300" fontSize="md" fontWeight="bold">
+                    {activeRun.healingReceived || 0}
+                  </Text>
+                </Box>
+              </SimpleGrid>
+            </VStack>
+          </MotionBox>
+        )}
+
+        {/* Death Details */}
+        {activeRun?.deathDetails && (
+          <MotionBox
+            bg="rgba(139, 0, 0, 0.2)"
+            p={4}
+            borderRadius="md"
+            border="2px solid"
+            borderColor="red.600"
+            w="full"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <VStack spacing={3} align="stretch">
+              <HStack justify="center" spacing={2}>
+                <Icon as={GiDeathSkull} boxSize={5} color="red.400" />
+                <Text color="red.300" fontSize="md" fontWeight="bold">
+                  Killing Blow
+                </Text>
+              </HStack>
+              
+              <Box textAlign="center" mb={2}>
+                <Badge colorScheme="red" fontSize="sm" px={3} py={1}>
+                  {activeRun.deathDetails.eventType.toUpperCase()}
+                </Badge>
+                <Text color="red.200" fontSize="lg" fontWeight="semibold" mt={1}>
+                  {activeRun.deathDetails.eventTitle}
+                </Text>
+              </Box>
+
+              {activeRun.deathDetails.heroDamage.length > 0 && (
+                <>
+                  <Divider borderColor="red.800" />
+                  <Text color="red.300" fontSize="xs" fontWeight="semibold" textAlign="center">
+                    Damage Dealt to Heroes
+                  </Text>
+                  <SimpleGrid columns={2} spacing={2}>
+                    {activeRun.deathDetails.heroDamage.map((damage, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.7 + idx * 0.1 }}
+                      >
+                        <Box
+                          bg="rgba(0,0,0,0.3)"
+                          p={2}
+                          borderRadius="md"
+                          border="1px solid"
+                          borderColor="red.900"
+                        >
+                          <HStack justify="space-between">
+                            <Text color="gray.300" fontSize="sm">
+                              {damage.heroName}
+                            </Text>
+                            <HStack spacing={1}>
+                              <Icon as={GiSwordWound} boxSize={4} color="red.400" />
+                              <Text color="red.400" fontSize="sm" fontWeight="bold">
+                                {damage.damageReceived}
+                              </Text>
+                            </HStack>
+                          </HStack>
+                        </Box>
+                      </motion.div>
+                    ))}
+                  </SimpleGrid>
+                </>
+              )}
+            </VStack>
+          </MotionBox>
+        )}
+        
         <MotionBox
           bg="red.900"
           borderWidth="2px"

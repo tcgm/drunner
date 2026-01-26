@@ -182,9 +182,19 @@ export interface Run {
   goldEarned: number
   goldSpent: number
   eventsCompleted: number
+  enemiesDefeated: number // Count of combat events won
+  itemsFound: number // Count of items obtained
+  damageDealt: number // Total damage dealt to enemies/traps
+  damageTaken: number // Total damage taken by party
+  healingReceived: number // Total healing received
   xpMentored: number // XP shared from max-level heroes to lower-level party members
   metaXpGained: number // Overflow XP sent to the meta XP pool
   heroesUsed: { name: string; class: string; level: number }[]
+  deathDetails?: { // Information about what killed the party
+    eventTitle: string
+    eventType: string
+    heroDamage: { heroName: string; damageReceived: number }[]
+  }
 }
 
 export interface GameState {

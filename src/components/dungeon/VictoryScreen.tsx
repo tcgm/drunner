@@ -1,7 +1,7 @@
-import { VStack, Heading, Button, Text, Flex, Box, SimpleGrid, Badge } from '@chakra-ui/react'
+import { VStack, Heading, Button, Text, Flex, Box, SimpleGrid, Badge, Divider, HStack } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { GiTwoCoins, GiTrophyCup, GiLaurelsTrophy } from 'react-icons/gi'
+import { GiTwoCoins, GiTrophyCup, GiLaurelsTrophy, GiSwordWound, GiHearts, GiChest, GiDeathSkull } from 'react-icons/gi'
 import { useEffect } from 'react'
 import { useGameStore } from '@store/gameStore'
 
@@ -85,38 +85,76 @@ export default function VictoryScreen({ depth, onExit }: VictoryScreenProps) {
               Depth Reached: {depth}
             </Text>
             
-            <SimpleGrid columns={2} spacing={4} mt={2}>
+            <Divider borderColor="yellow.800" my={2} />
+            
+            <SimpleGrid columns={3} spacing={3}>
               <Box textAlign="center">
-                <Icon as={GiTwoCoins} boxSize={6} color="yellow.400" mb={1} />
-                <Text color="gray.300" fontSize="sm">Gold Earned</Text>
-                <Text color="yellow.400" fontSize="lg" fontWeight="bold">
-                  {dungeon.gold}
+                <Icon as={GiTwoCoins} boxSize={5} color="yellow.400" mb={1} />
+                <Text color="gray.400" fontSize="xs">Gold Earned</Text>
+                <Text color="yellow.400" fontSize="md" fontWeight="bold">
+                  {activeRun?.goldEarned || 0}
                 </Text>
               </Box>
               <Box textAlign="center">
-                <Icon as={GiLaurelsTrophy} boxSize={6} color="green.400" mb={1} />
-                <Text color="gray.300" fontSize="sm">Events Completed</Text>
-                <Text color="green.400" fontSize="lg" fontWeight="bold">
+                <Icon as={GiLaurelsTrophy} boxSize={5} color="green.400" mb={1} />
+                <Text color="gray.400" fontSize="xs">Events</Text>
+                <Text color="green.400" fontSize="md" fontWeight="bold">
                   {activeRun?.eventsCompleted || 0}
                 </Text>
               </Box>
-              {activeRun && activeRun.xpMentored > 0 && (
-                <Box textAlign="center">
-                  <Text color="gray.300" fontSize="sm">XP Mentored</Text>
-                  <Text color="cyan.300" fontSize="lg" fontWeight="bold">
-                    {activeRun.xpMentored}
-                  </Text>
-                </Box>
-              )}
-              {activeRun && activeRun.metaXpGained > 0 && (
-                <Box textAlign="center">
-                  <Text color="gray.300" fontSize="sm">Meta XP Gained</Text>
-                  <Text color="purple.300" fontSize="lg" fontWeight="bold">
-                    {activeRun.metaXpGained}
-                  </Text>
-                </Box>
-              )}
+              <Box textAlign="center">
+                <Icon as={GiDeathSkull} boxSize={5} color="red.400" mb={1} />
+                <Text color="gray.400" fontSize="xs">Enemies</Text>
+                <Text color="red.400" fontSize="md" fontWeight="bold">
+                  {activeRun?.enemiesDefeated || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Icon as={GiChest} boxSize={5} color="blue.400" mb={1} />
+                <Text color="gray.400" fontSize="xs">Items Found</Text>
+                <Text color="blue.400" fontSize="md" fontWeight="bold">
+                  {activeRun?.itemsFound || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Icon as={GiSwordWound} boxSize={5} color="orange.400" mb={1} />
+                <Text color="gray.400" fontSize="xs">Damage Taken</Text>
+                <Text color="orange.400" fontSize="md" fontWeight="bold">
+                  {activeRun?.damageTaken || 0}
+                </Text>
+              </Box>
+              <Box textAlign="center">
+                <Icon as={GiHearts} boxSize={5} color="green.300" mb={1} />
+                <Text color="gray.400" fontSize="xs">Healing</Text>
+                <Text color="green.300" fontSize="md" fontWeight="bold">
+                  {activeRun?.healingReceived || 0}
+                </Text>
+              </Box>
             </SimpleGrid>
+            
+            {(activeRun?.xpMentored ?? 0) > 0 || (activeRun?.metaXpGained ?? 0) > 0 ? (
+              <>
+                <Divider borderColor="yellow.800" my={2} />
+                <HStack spacing={4} justify="center">
+                  {(activeRun?.xpMentored ?? 0) > 0 && (
+                    <Box textAlign="center">
+                      <Text color="gray.400" fontSize="xs">XP Mentored</Text>
+                      <Text color="cyan.300" fontSize="md" fontWeight="bold">
+                        {activeRun.xpMentored}
+                      </Text>
+                    </Box>
+                  )}
+                  {(activeRun?.metaXpGained ?? 0) > 0 && (
+                    <Box textAlign="center">
+                      <Text color="gray.400" fontSize="xs">Meta XP Gained</Text>
+                      <Text color="purple.300" fontSize="md" fontWeight="bold">
+                        {activeRun.metaXpGained}
+                      </Text>
+                    </Box>
+                  )}
+                </HStack>
+              </>
+            ) : null}
           </VStack>
         </MotionBox>
         

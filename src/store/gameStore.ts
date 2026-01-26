@@ -349,6 +349,11 @@ export const useGameStore = create<GameStore>()(
         goldEarned: 0,
         goldSpent: 0,
         eventsCompleted: 0,
+        enemiesDefeated: 0,
+        itemsFound: 0,
+        damageDealt: 0,
+        damageTaken: 0,
+        healingReceived: 0,
         xpMentored: 0,
         metaXpGained: 0,
         heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
@@ -419,8 +424,44 @@ export const useGameStore = create<GameStore>()(
         state.dungeon
       )
       
+      // Calculate statistics from effects
+      let damageDealt = 0
+      let damageTaken = 0
+      let healingReceived = 0
+      let itemsFound = resolvedOutcome.items.length
+      const isCombatEvent = state.dungeon.currentEvent?.type === 'combat' || state.dungeon.currentEvent?.type === 'boss'
+      
+      resolvedOutcome.effects.forEach(effect => {
+        if (effect.type === 'damage' && effect.value) {
+          // Damage to party is damage taken, damage from party is damage dealt
+          if (isCombatEvent) {
+            // In combat events, assume all damage effects are damage taken by party
+            damageTaken += effect.value * (effect.target?.length || 1)
+          }
+        } else if (effect.type === 'heal' && effect.value) {
+          healingReceived += effect.value * (effect.target?.length || 1)
+        }
+      })
+      
       // Check if wiped
       const isWiped = updatedParty.every(h => h !== null && !h.isAlive)
+      
+      // Capture death details if party wiped
+      const deathDetails = isWiped && state.dungeon.currentEvent ? {
+        eventTitle: state.dungeon.currentEvent.title,
+        eventType: state.dungeon.currentEvent.type,
+        heroDamage: resolvedOutcome.effects
+          .filter(effect => effect.type === 'damage' && effect.target)
+          .flatMap(effect => 
+            effect.target!.map(heroId => {
+              const hero = state.party.find(h => h?.id === heroId)
+              return {
+                heroName: hero?.name || 'Unknown',
+                damageReceived: effect.value || 0
+              }
+            })
+          )
+      } : undefined
       
       // Save pre-penalty levels when party wipes (for display later)
       const prePenaltyLevels = isWiped ? state.party.filter((h): h is Hero => h !== null).map(h => ({
@@ -435,6 +476,11 @@ export const useGameStore = create<GameStore>()(
       const updatedRun = state.activeRun ? {
         ...state.activeRun,
         // Patch legacy runs with missing fields
+        enemiesDefeated: (state.activeRun.enemiesDefeated ?? 0) + (isCombatEvent && !isWiped ? 1 : 0),
+        itemsFound: (state.activeRun.itemsFound ?? 0) + itemsFound,
+        damageDealt: (state.activeRun.damageDealt ?? 0) + damageDealt,
+        damageTaken: (state.activeRun.damageTaken ?? 0) + damageTaken,
+        healingReceived: (state.activeRun.healingReceived ?? 0) + healingReceived,
         xpMentored: state.activeRun.xpMentored ?? 0,
         metaXpGained: state.activeRun.metaXpGained ?? 0,
         // Update with new values
@@ -442,7 +488,8 @@ export const useGameStore = create<GameStore>()(
         goldSpent: state.activeRun.goldSpent + (goldDiff < 0 ? -goldDiff : 0),
         xpMentored: (state.activeRun.xpMentored ?? 0) + xpMentored,
         metaXpGained: (state.activeRun.metaXpGained ?? 0) + metaXpGained,
-        ...(prePenaltyLevels ? { heroesUsed: prePenaltyLevels } : {}) // Store pre-penalty levels
+        ...(prePenaltyLevels ? { heroesUsed: prePenaltyLevels } : {}), // Store pre-penalty levels
+        ...(deathDetails ? { deathDetails } : {}) // Store death details if party wiped
       } : null
       
       return {
