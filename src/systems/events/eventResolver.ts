@@ -1,5 +1,5 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity } from '@/types'
-import { GAME_CONFIG } from '@/config/game'
+import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
 import { v4 as uuidv4 } from 'uuid'
@@ -52,7 +52,7 @@ export function resolveChoiceOutcome(
 ): EventOutcome {
   // Success/Failure check (skill check)
   if (choice.successOutcome && choice.failureOutcome) {
-    const baseChance = choice.successChance || 0.5
+    const baseChance = choice.successChance || GAME_CONFIG.chances.defaultSuccess
     let finalChance = baseChance
     
     // Apply stat modifier if specified
@@ -61,8 +61,8 @@ export function resolveChoiceOutcome(
       if (aliveHeroes.length > 0) {
         // Use the average stat value of all alive heroes
         const avgStat = aliveHeroes.reduce((sum, h) => sum + (h.stats[choice.statModifier!] || 0), 0) / aliveHeroes.length
-        // Each point in the stat adds 2% to success chance (capped at 95%)
-        finalChance = Math.min(0.95, baseChance + (avgStat * 0.02))
+        // Each point in the stat adds to success chance (capped at max)
+        finalChance = Math.min(GAME_CONFIG.chances.maxSuccess, baseChance + (avgStat * GAME_CONFIG.chances.statBonusPerPoint))
       }
     }
     
@@ -166,7 +166,7 @@ export function resolveEventOutcome(
         const scaledDamage = scaleValue(baseDamage, depth, 0.1) // 10% per depth
         const damage = Math.floor(scaledDamage * GAME_CONFIG.multipliers.damage)
         targets.forEach(hero => {
-          const actualDamage = Math.max(1, damage - Math.floor(hero.stats.defense / 2))
+          const actualDamage = Math.max(1, damage - Math.floor(hero.stats.defense * GAME_CONFIG.combat.defenseReduction))
           hero.stats.hp = Math.max(0, hero.stats.hp - actualDamage)
           if (hero.stats.hp === 0) {
             hero.isAlive = false
@@ -389,7 +389,7 @@ export function resolveEventOutcome(
         
         toRevive.forEach(hero => {
           hero.isAlive = true
-          hero.stats.hp = scaledHeal > 0 ? Math.min(hero.stats.maxHp, scaledHeal) : Math.floor(hero.stats.maxHp * 0.5) // Default 50% HP if no value specified
+          hero.stats.hp = scaledHeal > 0 ? Math.min(hero.stats.maxHp, scaledHeal) : Math.floor(hero.stats.maxHp * GAME_CONFIG.combat.defaultHealPercent) // Default heal if no value specified
         })
         
         if (toRevive.length > 0) {

@@ -3,6 +3,7 @@ import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, ItemSlot, Item } from '../../types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
+import { restoreItemIcon } from '@/utils/itemUtils'
 // import { useGameStore } from '@/store/gameStore'
 // import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 
@@ -99,7 +100,7 @@ export function EquipmentPanel({
     return (
       <Box key={slot} position="relative">
         <ItemSlotComponent
-          item={item}
+          item={restoreItemIcon(item)}
           size="md"
           isClickable={true}
         />

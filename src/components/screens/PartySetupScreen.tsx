@@ -40,7 +40,11 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   const [selectedClass, setSelectedClass] = useState(CORE_CLASSES[0])
   const [selectedHeroFromRoster, setSelectedHeroFromRoster] = useState<number | null>(null)
-  const [selectedHeroIndex, setSelectedHeroIndex] = useState<number | null>(null)
+  const [selectedHeroIndex, setSelectedHeroIndex] = useState<number | null>(() => {
+    // Auto-select first hero in party if available
+    const firstHeroIndex = party.findIndex(h => h !== null)
+    return firstHeroIndex >= 0 ? firstHeroIndex : null
+  })
   const [tabIndex, setTabIndex] = useState(0)
   const [pendingSlotIndex, setPendingSlotIndex] = useState<number | null>(null)
   const [pendingSlot, setPendingSlot] = useState<ItemSlot | null>(null)

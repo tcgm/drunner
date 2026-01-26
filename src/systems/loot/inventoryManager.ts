@@ -1,6 +1,7 @@
 import type { Hero, Item, ItemSlot } from '@/types'
 import { getItemSetName, getSetBonuses } from '@data/items/sets'
 import { MATERIALS_BY_RARITY } from '@data/items/materials'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 /**
  * Check if a hero can equip an item in a specific slot
@@ -62,10 +63,10 @@ export function calculateStatsWithEquipment(hero: Hero) {
   const baseStats = { ...hero.stats }
   
   // Start with base stats (without equipment)
-  const levelBonus = (hero.level - 1) * 5
+  const levelBonus = (hero.level - 1) * GAME_CONFIG.hero.statGainPerLevel
   const stats = {
     hp: baseStats.hp, // Keep current HP
-    maxHp: 50 + (hero.level * 10) + (hero.class.baseStats.defense * 5),
+    maxHp: GAME_CONFIG.hero.baseHp + (hero.level * GAME_CONFIG.hero.hpPerLevel) + (hero.class.baseStats.defense * GAME_CONFIG.hero.hpPerDefense),
     attack: hero.class.baseStats.attack + levelBonus,
     defense: hero.class.baseStats.defense + levelBonus,
     speed: hero.class.baseStats.speed + levelBonus,

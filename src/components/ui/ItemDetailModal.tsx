@@ -99,20 +99,45 @@ export function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps)
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="md" scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent bg="gray.800" color="white">
+      <ModalContent 
+        bg="gray.800" 
+        color="white"
+        borderWidth={item.isUnique ? "3px" : "0"}
+        borderColor={item.isUnique ? "#FFD700" : "transparent"}
+        boxShadow={item.isUnique 
+          ? "0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.3)" 
+          : "none"}
+      >
         <ModalHeader>
           <HStack justify="space-between">
             <VStack align="start" spacing={1}>
-              <Text fontSize="lg" fontWeight="bold" color={RARITY_COLORS[item.rarity]?.text || '#9CA3AF'}>
-                {item.name}
-              </Text>
-              <Badge 
-                fontSize="xs"
-                bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
-                color="white"
-              >
-                {item.type} - {item.rarity.toUpperCase()}
-              </Badge>
+              <HStack>
+                <Text fontSize="lg" fontWeight="bold" color={item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.text || '#9CA3AF'}>
+                  {item.name}
+                </Text>
+                {item.isUnique && (
+                  <Text fontSize="lg">⭐</Text>
+                )}
+              </HStack>
+              <HStack spacing={2}>
+                {item.isUnique && (
+                  <Badge 
+                    fontSize="xs"
+                    bg="gold"
+                    color="black"
+                    fontWeight="bold"
+                  >
+                    ⭐ UNIQUE
+                  </Badge>
+                )}
+                <Badge 
+                  fontSize="xs"
+                  bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
+                  color="white"
+                >
+                  {item.type} - {item.rarity.toUpperCase()}
+                </Badge>
+              </HStack>
             </VStack>
             <Text color="yellow.300" fontSize="md" fontWeight="bold">
               {item.value} Gold

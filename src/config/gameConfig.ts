@@ -30,6 +30,45 @@ export const GAME_CONFIG = {
     alkahestConversionRate: 0.25, // 25% of item value converted to alkahest when discarded
   },
 
+  // Bank
+  bank: {
+    startingSlots: 20, // Initial number of bank slots
+    costPerSlot: 500, // Gold cost per slot when expanding
+  },
+
+  // Hero Stats
+  hero: {
+    baseHp: 50, // Base HP at level 1
+    hpPerLevel: 10, // HP gained per level
+    hpPerDefense: 5, // HP gained per defense point
+    statGainPerLevel: 5, // Stat points gained per level
+  },
+
+  // Chance System
+  chances: {
+    defaultSuccess: 0.5, // 50% default success chance for skill checks
+    maxSuccess: 0.95, // 95% cap on success chance
+    statBonusPerPoint: 0.02, // 2% success chance per stat point
+  },
+
+  // Combat
+  combat: {
+    defenseReduction: 0.5, // 50% of defense reduces damage
+    mentorXpShare: 0.5, // 50% of overflow XP shared with lower level heroes
+    defaultHealPercent: 0.5, // 50% max HP when no heal amount specified
+  },
+
+  // Loot Generation
+  loot: {
+    baseItemValue: 50, // Base value for crafted items
+    uniqueChances: {
+      epic: 0.15, // 15% chance for epic uniques
+      legendary: 0.30, // 30% chance for legendary uniques
+      mythic: 0.50, // 50% chance for mythic uniques
+    },
+    setChance: 0.05, // 5% chance for set item drops
+  },
+
   // Multipliers (adjustable game balance)
   multipliers: {
     xp: 0.1, // Global XP multiplier

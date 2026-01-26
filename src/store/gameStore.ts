@@ -4,7 +4,7 @@ import type { StateCreator } from 'zustand'
 import type { GameState, Hero, EventChoice, Item, ItemSlot } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
-import { GAME_CONFIG } from '@/config/game'
+import { GAME_CONFIG } from '@/config/gameConfig'
 import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
@@ -239,7 +239,7 @@ const initialState: GameState = {
   bankGold: 0,
   alkahest: 0,
   bankInventory: [],
-  bankStorageSlots: 20, // Start with 20 slots
+  bankStorageSlots: GAME_CONFIG.bank.startingSlots,
   overflowInventory: [],
   metaXp: 0,
   isGameOver: false,

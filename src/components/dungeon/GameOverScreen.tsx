@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { GiDeathSkull } from 'react-icons/gi'
 import { useEffect } from 'react'
 import { useGameStore } from '@store/gameStore'
-import { GAME_CONFIG } from '@/config/game'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionVStack = motion.create(VStack)
 const MotionBox = motion.create(Box)

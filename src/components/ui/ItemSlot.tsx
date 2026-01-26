@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { GiGoldBar as GiTreasure } from 'react-icons/gi'
+import { GiGoldBar as GiTreasure, GiSparkles } from 'react-icons/gi'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 
@@ -124,6 +124,16 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
           {item.name}
         </Text>
         <VStack align="end" spacing={0}>
+          {item.isUnique && (
+            <Badge 
+              fontSize="2xs"
+              bg="gold"
+              color="black"
+              fontWeight="bold"
+            >
+              ⭐ UNIQUE
+            </Badge>
+          )}
           <Badge 
             fontSize="2xs"
             bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
@@ -167,16 +177,18 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
         isOpen={isHovered}
       >
         <MotionBox
-          className={`item-slot item-slot-${item.rarity} item-type-${item.type}`}
+          className={`item-slot item-slot-${item.rarity} item-type-${item.type}${item.isUnique ? ' item-unique' : ''}`}
           width={SLOT_SIZES[size]}
           height={SLOT_SIZES[size]}
           bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
           borderRadius="lg"
           borderWidth="3px"
-          borderColor={RARITY_COLORS[item.rarity]?.border || '#4A5568'}
+          borderColor={item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568'}
           position="relative"
           cursor={isClickable || onClick ? "pointer" : "default"}
-          boxShadow={`0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
+          boxShadow={item.isUnique 
+            ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
+            : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
           data-item-icon={item.icon}
@@ -193,8 +205,12 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
             opacity: 1, 
             scale: isHovered && (isClickable || onClick) ? 1.08 : 1,
             boxShadow: isHovered 
-              ? `0 0 24px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}60, 0 0 40px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40`
-              : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`
+              ? item.isUnique
+                ? `0 0 32px rgba(255, 215, 0, 0.8), 0 0 48px rgba(255, 215, 0, 0.5), 0 0 64px rgba(255, 215, 0, 0.3)`
+                : `0 0 24px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}60, 0 0 40px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40`
+              : item.isUnique 
+                ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
+                : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`
           }}
           whileTap={isClickable || onClick ? { scale: 0.95 } : {}}
           transition={{
@@ -212,7 +228,9 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
                   position: 'absolute',
                   inset: '-4px',
                   borderRadius: '12px',
-                  background: `radial-gradient(circle, ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40 0%, transparent 70%)`,
+                  background: item.isUnique
+                    ? `radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%)`
+                    : `radial-gradient(circle, ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40 0%, transparent 70%)`,
                   pointerEvents: 'none',
                   zIndex: -1
                 }}
@@ -223,6 +241,34 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
               />
             )}
           </AnimatePresence>
+
+          {/* Unique Item Badge */}
+          {item.isUnique && (
+            <motion.div
+              style={{
+                position: 'absolute',
+                top: '4px',
+                left: '4px',
+                zIndex: 2
+              }}
+              animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.2, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Icon 
+                as={GiSparkles} 
+                boxSize="12px"
+                color="gold"
+                filter="drop-shadow(0 0 4px rgba(255, 215, 0, 0.8))"
+              />
+            </motion.div>
+          )}
 
           {/* Item Icon */}
           <motion.div
@@ -266,7 +312,8 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              backgroundColor: RARITY_COLORS[item.rarity]?.border || '#4A5568'
+              backgroundColor: item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568',
+              boxShadow: item.isUnique ? '0 0 6px rgba(255, 215, 0, 0.8)' : 'none'
             }}
             animate={{
               scale: isHovered ? [1, 1.3, 1] : 1,

@@ -5,7 +5,6 @@ import {
   ModalHeader, 
   ModalBody, 
   ModalCloseButton,
-  SimpleGrid, 
   Text, 
   Button, 
   HStack, 
@@ -30,7 +29,8 @@ import { GiTwoCoins, GiSwapBag, GiCrossedSwords, GiCheckedShield, GiCrossedBones
 import type { Item, ItemSlot as ItemSlotType, ItemRarity } from '../../types'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { useGameStore } from '@/store/gameStore'
-import { GAME_CONFIG } from '@/config/game'
+import { GAME_CONFIG } from '@/config/gameConfig'
+import { restoreItemIcon } from '@/utils/itemUtils'
 
 interface BankInventoryModalProps {
   isOpen: boolean
@@ -49,7 +49,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rarity')
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
-  const { alkahest, discardItems } = useGameStore()
+  const { alkahest, discardItems, bankStorageSlots, bankGold, expandBankStorage } = useGameStore()
   const toast = useToast()
 
   // Rarity order for sorting
@@ -174,8 +174,38 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
     onClose()
   }
 
+  const handleExpandBank = (slots: number) => {
+    const costPerSlot = GAME_CONFIG.bank.costPerSlot
+    const totalCost = slots * costPerSlot
+    
+    if (bankGold >= totalCost) {
+      expandBankStorage(slots)
+      toast({
+        title: "Bank Expanded",
+        description: `Added ${slots} slots for ${totalCost} gold`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      })
+    } else {
+      toast({
+        title: "Insufficient Gold",
+        description: `Need ${totalCost} gold (${bankGold} available)`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+  }
+
   const renderItemGrid = (items: Item[]) => (
-    <SimpleGrid columns={8} spacing={1} minH="400px">
+    <Box
+      display="grid"
+      gridTemplateColumns="repeat(auto-fill, 80px)"
+      gap={2.5}
+      minH="400px"
+      justifyContent="start"
+    >
       {items.map((item) => (
         <Box
           key={item.id}
@@ -185,21 +215,28 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
           borderRadius="sm"
           transition="all 0.2s"
           cursor="pointer"
+          w="80px"
+          h="80px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
           _hover={{
-            transform: 'scale(1.05)',
+            '& > *': {
+              transform: 'scale(1.05)',
+            },
             borderColor: 'blue.300',
             borderWidth: '2px',
           }}
         >
           <ItemSlot
-            item={item}
+            item={restoreItemIcon(item)}
             size="md"
             onClick={() => handleItemClick(item)}
             isClickable={true}
           />
         </Box>
       ))}
-    </SimpleGrid>
+    </Box>
   )
 
   return (
@@ -215,8 +252,11 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               </Text>
               <HStack spacing={4} fontSize="sm">
                 <Text color="gray.400">
-                  {filteredAndSortedItems.length} / {bankInventory.length} items
+                  {bankInventory.length} / {bankStorageSlots} slots
                 </Text>
+                <Badge colorScheme="green" display="flex" alignItems="center" gap={1}>
+                  {bankGold} Gold
+                </Badge>
                 <Badge colorScheme="yellow" display="flex" alignItems="center" gap={1}>
                   <Icon as={GiTwoCoins} />
                   {alkahest} Alkahest
@@ -228,6 +268,32 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                 )}
               </HStack>
             </VStack>
+            <Spacer />
+            {!pendingSlot && (
+              <VStack align="end" spacing={1} mr={8}>
+                <HStack spacing={2}>
+                  <Button
+                    size="sm"
+                    colorScheme="purple"
+                    variant="outline"
+                    onClick={() => handleExpandBank(5)}
+                    isDisabled={bankGold < 5 * GAME_CONFIG.bank.costPerSlot}
+                    leftIcon={<Icon as={GiTwoCoins} />}
+                  >
+                    +5 Slots ({(5 * GAME_CONFIG.bank.costPerSlot).toLocaleString()}g)
+                  </Button>
+                  <Button
+                    size="sm"
+                    colorScheme="purple"
+                    onClick={() => handleExpandBank(10)}
+                    isDisabled={bankGold < 10 * GAME_CONFIG.bank.costPerSlot}
+                    leftIcon={<Icon as={GiTwoCoins} />}
+                  >
+                    +10 Slots ({(10 * GAME_CONFIG.bank.costPerSlot).toLocaleString()}g)
+                  </Button>
+                </HStack>
+              </VStack>
+            )}
           </Flex>
         </ModalHeader>
         <ModalCloseButton color="gray.400" />

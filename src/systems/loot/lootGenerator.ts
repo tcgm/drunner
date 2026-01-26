@@ -3,8 +3,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
 import { getRandomUnique, ALL_UNIQUE_ITEMS } from '@data/items/uniques'
-import { getRandomSetItem } from '@data/items/sets'
+import { getRandomSetItem, ALL_SET_ITEMS } from '@data/items/sets'
 import { GiCrystalShine } from 'react-icons/gi'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 /**
  * Loot generation configuration
@@ -35,14 +36,10 @@ const LOOT_CONFIG = {
   },
 
   // Chance for a unique item instead of procedural (by rarity)
-  uniqueChance: {
-    epic: 0.15,      // 15% chance for epic uniques
-    legendary: 0.30, // 30% chance for legendary uniques
-    mythic: 0.50,    // 50% chance for mythic uniques
-  },
+  uniqueChance: GAME_CONFIG.loot.uniqueChances,
 
   // Chance for set items (independent roll, very rare)
-  setChance: 0.05,   // 5% chance for any set item drop
+  setChance: GAME_CONFIG.loot.setChance,
 }
 
 /**
@@ -269,7 +266,7 @@ export function generateItem(
           ...setTemplate,
           id: uuidv4(),
           type: forceType || setTemplate.type, // Use forced type for specific accessory slots
-          isUnique: true, // Mark as unique/set item
+          setId: 'kitsune', // Mark as set item
         }
       }
     }
@@ -315,7 +312,7 @@ export function generateItem(
   if (!baseTemplate) {
     console.warn(`Failed to generate compatible item for type ${type} with rarity ${rarity} after ${maxAttempts} attempts - giving alkahest`)
     // Create an alkahest shard item that represents raw crafting material
-    const alkahestValue = Math.floor(50 * (material?.valueMultiplier || 1))
+    const alkahestValue = Math.floor(GAME_CONFIG.loot.baseItemValue * (material?.valueMultiplier || 1))
     return {
       id: uuidv4(),
       name: 'Alkahest Shard',
@@ -365,7 +362,7 @@ export function generateItem(
       type: forceType || base.type,
       rarity,
       stats: applyMaterialToStats(base.stats, material.statMultiplier),
-      value: Math.floor(50 * material.valueMultiplier),
+      value: Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier),
       icon: base.icon,
       materialId: material.id,
       baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
@@ -384,7 +381,7 @@ export function generateItem(
     
     // Repair failed - give alkahest instead
     console.warn(`Repair failed for "${name}" - giving alkahest`)
-    const alkahestValue = Math.floor(50 * material.valueMultiplier)
+    const alkahestValue = Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier)
     return {
       id: uuidv4(),
       name: 'Alkahest Shard',
@@ -491,6 +488,23 @@ export function repairItemName(item: Item): Item {
  * Repair an item's icon if it's using the default bar icon
  */
 export function repairItemIcon(item: Item): Item {
+  // Skip if item already has an icon
+  if (item.icon && typeof item.icon === 'function') return item
+  
+  // Check for set items FIRST (by rarity or setId)
+  // This handles old saves where set items were mistakenly marked as isUnique
+  if (item.setId || item.rarity === 'set') {
+    const setItem = ALL_SET_ITEMS.find(s => s.name === item.name)
+    if (setItem?.icon) {
+      return {
+        ...item,
+        icon: setItem.icon,
+      }
+    }
+    console.warn(`Could not find set item icon for: ${item.name} (set: ${item.setId})`)
+    return item
+  }
+  
   // For unique items, look up by name in the unique items catalog
   if (item.isUnique) {
     const uniqueItem = ALL_UNIQUE_ITEMS.find(u => u.name === item.name)
@@ -500,7 +514,28 @@ export function repairItemIcon(item: Item): Item {
         icon: uniqueItem.icon,
       }
     }
+    console.warn(`Could not find unique item icon for: ${item.name}`)
     return item
+  }
+  
+  // Try to find ANY unique/set item by name as a fallback
+  // (for items that lost their isUnique flag)
+  const uniqueMatch = ALL_UNIQUE_ITEMS.find(u => u.name === item.name)
+  if (uniqueMatch?.icon) {
+    return {
+      ...item,
+      icon: uniqueMatch.icon,
+      isUnique: true, // Fix the flag while we're at it
+    }
+  }
+  
+  const setMatch = ALL_SET_ITEMS.find(s => s.name === item.name)
+  if (setMatch?.icon) {
+    return {
+      ...item,
+      icon: setMatch.icon,
+      setId: 'kitsune', // Fix the flag while we're at it
+    }
   }
   
   // Check if using default icon (GiIronBar or undefined)

@@ -1,6 +1,6 @@
 import { VStack, Heading, Button, Box, Text, HStack, Badge, SimpleGrid } from '@chakra-ui/react'
 import { useGameStore } from '@store/gameStore'
-import { GAME_CONFIG } from '@/config/game'
+import { GAME_CONFIG } from '@/config/gameConfig'
 import type { Run } from '@/types'
 
 interface RunHistoryScreenProps {

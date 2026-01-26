@@ -1,3 +1,4 @@
+import { GiShield } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,6 +9,7 @@ export const TITANS_BULWARK: Omit<Item, 'id'> = {
   description: 'Forged by ancient titans to withstand the clash of gods. Immovable defense.',
   type: 'armor',
   rarity: 'epic',
+  icon: GiShield,
   stats: {
     defense: 70,
     maxHp: 100,
