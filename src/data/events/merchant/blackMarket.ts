@@ -16,6 +16,7 @@ export const BLACK_MARKET: DungeonEvent = {
         effects: [
           { type: 'gold', value: -200 },
           { type: 'xp', value: 50 },
+          { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 10 },
         ],
       },
     },
@@ -29,6 +30,7 @@ export const BLACK_MARKET: DungeonEvent = {
         effects: [
           { type: 'gold', value: -300 },
           { type: 'xp', value: 100 },
+          { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 15 },
         ],
       },
     },
