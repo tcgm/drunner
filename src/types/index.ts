@@ -127,7 +127,7 @@ export interface EventChoice {
 export interface EventOutcome {
   text: string
   effects: {
-    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive'
+    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive' | 'upgradeItem'
     target?: 'random' | 'all' | 'weakest' | 'strongest'
     value?: number
     // Item generation specifications (only one should be used)

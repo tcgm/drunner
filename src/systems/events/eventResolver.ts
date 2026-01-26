@@ -1,6 +1,7 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity } from '@/types'
 import { GAME_CONFIG } from '@/config/game'
 import { generateItem } from '@/systems/loot/lootGenerator'
+import { upgradeItemRarity, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
@@ -10,7 +11,7 @@ export interface ResolvedOutcome {
 }
 
 export interface ResolvedEffect {
-  type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive'
+  type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive' | 'upgradeItem'
   target: string[] // Hero IDs affected
   value?: number
   item?: Item
@@ -295,6 +296,71 @@ export function resolveEventOutcome(
             description: `${toRevive.map(h => h.name).join(', ')} revived with ${toRevive[0].stats.hp} HP`
           })
         }
+        break
+      }
+      
+      case 'upgradeItem': {
+        // Upgrade an equipped item to the next rarity tier
+        // Find a hero with equipped items, prioritizing lowest rarity
+        const aliveHeroes = updatedParty.filter((h): h is Hero => h !== null && h.isAlive)
+        
+        if (aliveHeroes.length === 0) {
+          resolvedEffects.push({
+            type: 'upgradeItem',
+            target: [],
+            description: 'No heroes available to upgrade equipment'
+          })
+          break
+        }
+        
+        // Find the lowest rarity item across all heroes
+        let lowestItemData: { hero: Hero; item: Item; slot: string } | null = null
+        let lowestRarityIndex = 999
+        
+        const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic']
+        
+        for (const hero of aliveHeroes) {
+          const itemData = findLowestRarityItem(hero)
+          if (itemData) {
+            const rarityIndex = rarityOrder.indexOf(itemData.item.rarity)
+            if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
+              lowestRarityIndex = rarityIndex
+              lowestItemData = { hero, ...itemData }
+            }
+          }
+        }
+        
+        if (!lowestItemData) {
+          resolvedEffects.push({
+            type: 'upgradeItem',
+            target: [],
+            description: 'No equipment available to upgrade'
+          })
+          break
+        }
+        
+        const { hero, item, slot } = lowestItemData
+        const rarityBoost = effect.rarityBoost || 0
+        const upgradedItem = upgradeItemRarity(item, depth, rarityBoost)
+        
+        if (!upgradedItem) {
+          resolvedEffects.push({
+            type: 'upgradeItem',
+            target: [hero.id],
+            description: `${hero.name}'s ${item.name} is already at maximum rarity`
+          })
+          break
+        }
+        
+        // Replace the old item with the upgraded one
+        hero.equipment[slot as keyof typeof hero.equipment] = upgradedItem
+        
+        resolvedEffects.push({
+          type: 'upgradeItem',
+          target: [hero.id],
+          item: upgradedItem,
+          description: `${hero.name}'s ${item.name} was upgraded to ${upgradedItem.name}!`
+        })
         break
       }
     }

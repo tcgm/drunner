@@ -25,10 +25,10 @@ export const TRAVELING_MERCHANT: DungeonEvent = {
         gold: 100,
       },
       outcome: {
-        text: 'You purchase better equipment!',
+        text: 'The merchant upgrades your equipment using mystical techniques!',
         effects: [
           { type: 'gold', value: -100 },
-          { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' }, // Budget merchant
+          { type: 'upgradeItem' },
         ],
       },
     },
