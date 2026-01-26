@@ -50,19 +50,19 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
     },
     {
       text: 'Rest among the plants',
-      outcome: {
-        text: 'The garden\'s magic rejuvenates you completely.',
-        effects: [
-          { type: 'heal', target: 'all', value: 999 }, // Full heal
-          { type: 'xp', value: 30 },
-        ],
-      },
-    },
-    {
-      text: 'Lay among the plants and... explore',
       possibleOutcomes: [
         {
-          weight: 60,
+          weight: 40,
+          outcome: {
+            text: 'The garden\'s magic rejuvenates you completely.',
+            effects: [
+              { type: 'heal', target: 'all', value: 999 }, // Full heal
+              { type: 'xp', value: 30 },
+            ],
+          },
+        },
+        {
+          weight: 35,
           outcome: {
             text: 'You rest peacefully among the plants. The garden\'s energy soothes you.',
             effects: [
@@ -72,7 +72,7 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
           },
         },
         {
-          weight: 30,
+          weight: 20,
           outcome: {
             text: 'As you relax among the vegetation, some vines begin to move of their own accord. They wrap gently around you in ways that are surprisingly... pleasant. You emerge feeling oddly invigorated.',
             effects: [
@@ -82,7 +82,7 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
           },
         },
         {
-          weight: 10,
+          weight: 5,
           outcome: {
             text: 'The vines are more aggressive than expected! You struggle free, flustered but unharmed.',
             effects: [
