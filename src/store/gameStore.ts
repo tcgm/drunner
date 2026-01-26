@@ -417,12 +417,21 @@ export const useGameStore = create<GameStore>()(
       // Check if wiped
       const isWiped = updatedParty.every(h => h !== null && !h.isAlive)
       
+      // Save pre-penalty levels when party wipes (for display later)
+      const prePenaltyLevels = isWiped ? state.party.filter((h): h is Hero => h !== null).map(h => ({
+        id: h.id,
+        name: h.name,
+        class: h.class.name,
+        level: h.level
+      })) : null
+      
       // Track gold changes in active run
       const goldDiff = updatedGold - state.dungeon.gold
       const updatedRun = state.activeRun ? {
         ...state.activeRun,
         goldEarned: state.activeRun.goldEarned + (goldDiff > 0 ? goldDiff : 0),
-        goldSpent: state.activeRun.goldSpent + (goldDiff < 0 ? -goldDiff : 0)
+        goldSpent: state.activeRun.goldSpent + (goldDiff < 0 ? -goldDiff : 0),
+        ...(prePenaltyLevels ? { heroesUsed: prePenaltyLevels } : {}) // Store pre-penalty levels
       } : null
       
       return {
