@@ -91,14 +91,24 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
         <Heading size="sm" color="gray.400" fontSize="md">
           What will you do?
         </Heading>
-        {event.choices.map((choice, index) => {
+        {/* Sort choices: available first, unavailable last */}
+        {[...event.choices]
+          .map((choice, originalIndex) => ({ choice, originalIndex }))
+          .sort((a, b) => {
+            const canSelectA = checkRequirements(a.choice.requirements, party, depth, gold)
+            const canSelectB = checkRequirements(b.choice.requirements, party, depth, gold)
+            // Available choices (true) come before unavailable (false)
+            if (canSelectA === canSelectB) return 0
+            return canSelectA ? -1 : 1
+          })
+          .map(({ choice, originalIndex }, index) => {
           const canSelect = checkRequirements(choice.requirements, party, depth, gold)
           const successChance = calculateSuccessChance(choice, party)
           
           return (
             <MotionButton
               className={`event-display-choice ${canSelect ? 'event-display-choice--enabled' : 'event-display-choice--disabled'}`}
-              key={index}
+              key={originalIndex}
               size="sm"
               variant="outline"
               colorScheme={canSelect ? 'orange' : 'gray'}
