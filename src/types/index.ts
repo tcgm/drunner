@@ -125,7 +125,7 @@ export interface EventChoice {
 }
 
 export interface EventOutcome {
-  text: string
+  text: string | Array<{ weight: number; text: string }> // Single text or weighted variations
   effects: {
     type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive' | 'upgradeItem'
     target?: 'random' | 'all' | 'weakest' | 'strongest'
@@ -158,7 +158,7 @@ export interface DungeonEvent {
   id: string
   type: EventType
   title: string
-  description: string
+  description: string | Array<{ weight: number; text: string }> // Single text or weighted variations
   choices: EventChoice[]
   depth: number
 }

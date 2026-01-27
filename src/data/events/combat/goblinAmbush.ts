@@ -4,12 +4,21 @@ export const GOBLIN_AMBUSH: DungeonEvent = {
   id: 'goblin-ambush',
   type: 'combat',
   title: 'Goblin Ambush!',
-  description: 'Three goblins leap from the shadows, weapons drawn!',
+  description: [
+    { weight: 3, text: 'Three goblins leap from the shadows, weapons drawn!' },
+    { weight: 2, text: 'A pack of goblins appears from behind a pile of rubble!' },
+    { weight: 2, text: 'Cackling echoes off the walls as goblins surround you!' },
+    { weight: 1, text: 'You step on something that squeaks... goblin scouts!' },
+  ],
   choices: [
     {
       text: 'Fight head-on',
       outcome: {
-        text: 'You charge into battle!',
+        text: [
+          { weight: 3, text: 'You charge into battle!' },
+          { weight: 2, text: 'Steel clashes against crude weapons!' },
+          { weight: 1, text: 'The goblins stand no chance against your might!' },
+        ],
         effects: [
           { type: 'damage', target: 'random', value: 15 },
           { type: 'xp', value: 50 },
@@ -24,7 +33,10 @@ export const GOBLIN_AMBUSH: DungeonEvent = {
         minValue: 40,
       },
       outcome: {
-        text: 'You strike first, catching them off guard!',
+        text: [
+          { weight: 2, text: 'You strike first, catching them off guard!' },
+          { weight: 1, text: 'Your swift attack scatters the goblins!' },
+        ],
         effects: [
           { type: 'damage', target: 'random', value: 5 },
           { type: 'xp', value: 60 },
@@ -37,14 +49,20 @@ export const GOBLIN_AMBUSH: DungeonEvent = {
       successChance: 0.25,
       statModifier: 'luck',
       successOutcome: {
-        text: 'By sheer luck, they accept your bribe and leave!',
+        text: [
+          { weight: 2, text: 'By sheer luck, they accept your bribe and leave!' },
+          { weight: 1, text: 'The goblins take your offering and scatter!' },
+        ],
         effects: [
           { type: 'gold', value: -10 },
           { type: 'xp', value: 60 },
         ],
       },
       failureOutcome: {
-        text: 'The goblins laugh and attack with fury!',
+        text: [
+          { weight: 2, text: 'The goblins laugh and attack with fury!' },
+          { weight: 1, text: 'Your negotiation enrages them further!' },
+        ],
         effects: [
           { type: 'damage', target: 'random', value: 22 },
           { type: 'xp', value: 40 },

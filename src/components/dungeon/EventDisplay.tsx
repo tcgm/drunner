@@ -1,5 +1,6 @@
 import { Box, VStack, Heading, Text, Button, HStack, Badge } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
+import { useMemo } from 'react'
 import type { DungeonEvent, EventChoice } from '@/types'
 import { checkRequirements } from '@systems/events/eventResolver'
 import type { Hero } from '@/types'
@@ -27,7 +28,29 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
   boss: 'pink',
 }
 
+/**
+ * Select text from string or weighted text variations
+ */
+function selectText(text: string | Array<{ weight: number; text: string }>): string {
+  if (typeof text === 'string') {
+    return text
+  }
+  const totalWeight = text.reduce((sum, item) => sum + item.weight, 0)
+  let roll = Math.random() * totalWeight
+  
+  for (const item of text) {
+    roll -= item.weight
+    if (roll <= 0) {
+      return item.text
+    }
+  }
+  
+  return text[text.length - 1].text // Fallback to last option
+}
+
 export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice }: EventDisplayProps) {
+  // Select description text once when event loads
+  const description = useMemo(() => selectText(event.description), [event.description])
   return (
     <VStack className="event-display" spacing={3} align="stretch" h="full">
       {/* Event Header */}
@@ -59,7 +82,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
           {event.title}
         </Heading>
         <Text className="event-display-description" fontSize="sm" color="gray.300" lineHeight="short">
-          {event.description}
+          {description}
         </Text>
       </MotionBox>
 

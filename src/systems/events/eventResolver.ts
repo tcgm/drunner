@@ -44,6 +44,16 @@ function selectWeightedChoice<T extends { weight: number }>(choices: T[]): T {
 }
 
 /**
+ * Select text from string or weighted text variations
+ */
+function selectText(text: string | Array<{ weight: number; text: string }>): string {
+  if (typeof text === 'string') {
+    return text
+  }
+  return selectWeightedChoice(text).text
+}
+
+/**
  * Resolve which outcome should occur based on choice configuration
  * Handles: single outcome, weighted outcomes, and success/failure checks
  */
@@ -496,7 +506,7 @@ export function resolveEventOutcome(
     metaXpGained,
     xpMentored,
     resolvedOutcome: {
-      text: outcome.text,
+      text: selectText(outcome.text),
       effects: resolvedEffects,
       items: foundItems
     }
