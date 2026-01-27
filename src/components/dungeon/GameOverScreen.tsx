@@ -19,6 +19,9 @@ export default function GameOverScreen({ floor, depth, onExit }: GameOverScreenP
   const { party, activeRun, endGame } = useGameStore()
   const penaltyType = GAME_CONFIG.deathPenalty.type
   
+  // Use finalFloor from activeRun if available, otherwise fall back to floor prop
+  const displayFloor = activeRun?.finalFloor ?? floor
+  
   // End the run when the game over screen is shown
   useEffect(() => {
     endGame()
@@ -110,7 +113,7 @@ export default function GameOverScreen({ floor, depth, onExit }: GameOverScreenP
           transition={{ delay: 0.4 }}
         >
           <Text fontSize="md" color="gray.400">
-            Your party has fallen on Floor {floor}
+            Your party has fallen on Floor {displayFloor}
           </Text>
         </motion.div>
 
@@ -280,6 +283,13 @@ export default function GameOverScreen({ floor, depth, onExit }: GameOverScreenP
                   {party.map((hero, index) => {
                     const originalHero = activeRun.heroesUsed.find(h => h.name === hero.name)
                     const originalLevel = originalHero?.level || hero.level
+                    console.log('GameOverScreen penalty display:', { 
+                      heroName: hero.name, 
+                      currentLevel: hero.level, 
+                      originalLevel,
+                      heroesUsed: activeRun.heroesUsed,
+                      originalHero 
+                    })
                     return (
                       <motion.div
                         key={hero.id}

@@ -588,6 +588,10 @@ export const useGameStore = create<GameStore>()(
         level: h.level
       })) : null
       
+      if (isWiped && prePenaltyLevels) {
+        console.log('Party wiped! Saving pre-penalty levels:', prePenaltyLevels)
+      }
+      
       // Track gold changes in active run
       const goldDiff = updatedGold - state.dungeon.gold
       
