@@ -128,6 +128,8 @@ const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): State
  * Apply death penalty to a party of heroes
  */
 function applyPenaltyToParty(party: (Hero | null)[]): (Hero | null)[] {
+  console.log('applyPenaltyToParty called with party:', party.map(h => h ? { name: h.name, level: h.level } : null))
+  
   return party.map(hero => {
     if (!hero) return null
     
@@ -136,7 +138,9 @@ function applyPenaltyToParty(party: (Hero | null)[]): (Hero | null)[] {
     switch (GAME_CONFIG.deathPenalty.type) {
       case 'halve-levels':
         // Halve level (min 1)
-        { newHero.level = Math.max(1, Math.floor(hero.level / 2))
+        { const oldLevel = hero.level
+        newHero.level = Math.max(1, Math.floor(hero.level / 2))
+        console.log(`Halving level for ${hero.name}: ${oldLevel} → ${newHero.level}`)
         newHero.xp = 0
         // Recalculate stats based on new level
         const levelDifference = hero.level - newHero.level
@@ -147,6 +151,7 @@ function applyPenaltyToParty(party: (Hero | null)[]): (Hero | null)[] {
         newHero.stats.luck = Math.max(hero.class.baseStats.luck, hero.stats.luck - (levelDifference * GAME_CONFIG.statGains.luck))
         newHero.stats.maxHp = calculateMaxHp(newHero.level, hero.class.baseStats.defense)
         newHero.stats.hp = newHero.stats.maxHp
+        newHero.isAlive = true // Revive on penalty
         break }
         
       case 'reset-levels':
@@ -662,10 +667,16 @@ export const useGameStore = create<GameStore>()(
   
   endGame: () => 
     set((state) => {
+      console.log('endGame called, activeRun result:', state.activeRun?.result)
+      
       // Prevent applying penalty multiple times
       if (!state.activeRun || state.activeRun.result !== 'active') {
+        console.log('endGame skipped - run not active')
         return state
       }
+      
+      console.log('endGame: Applying penalty. Party before:', state.party.map(h => h ? { name: h.name, level: h.level } : null))
+      console.log('endGame: heroesUsed before:', state.activeRun.heroesUsed)
       
       // Complete the active run
       const completedRun: import('@/types').Run = {
@@ -677,11 +688,15 @@ export const useGameStore = create<GameStore>()(
         // heroesUsed already contains pre-penalty levels from resolveEventChoice
       }
       
+      console.log('endGame: completedRun.heroesUsed:', completedRun.heroesUsed)
+      
       // Lose all gold on defeat if penalty is enabled
       const loseGold = GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
       
       // Apply death penalty immediately
       const penalizedParty = applyPenaltyToParty(state.party)
+      console.log('endGame: Party after penalty:', penalizedParty.map(h => h ? { name: h.name, level: h.level } : null))
+      
       const updatedRoster = state.heroRoster.map(rosterHero => {
         const penalizedVersion = penalizedParty.find(h => h?.id === rosterHero.id)
         return penalizedVersion || rosterHero
