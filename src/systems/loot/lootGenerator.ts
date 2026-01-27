@@ -4,6 +4,7 @@ import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
 import { getRandomUnique, ALL_UNIQUE_ITEMS } from '@data/items/uniques'
 import { getRandomSetItem, ALL_SET_ITEMS } from '@data/items/sets'
+import { applyModifiers, getModifierById } from '@data/items/mods'
 import { GiCrystalShine } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
 
@@ -416,9 +417,8 @@ export function generateItem(
   
   // Apply modifiers if any
   if (modifiers.length > 0) {
-    const { applyModifiers: applyMods, getModifierById } = require('@data/items/mods')
     const modifierObjects = modifiers.map(id => getModifierById(id)).filter(Boolean)
-    const modifiedItem = applyMods(item, modifierObjects)
+    const modifiedItem = applyModifiers(item, modifierObjects)
     
     // Update description with modifier info
     const modifierNames = modifierObjects.map(m => m.name).join(', ')
