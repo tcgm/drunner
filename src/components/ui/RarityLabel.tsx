@@ -1,6 +1,7 @@
 import { Text, Box } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
 import type { Item } from '@/types';
+import { getModifierById } from '@/data/items/mods';
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -86,13 +87,6 @@ const RARITY_COLORS: Record<Item['rarity'], RarityColors> = {
     glow: 'rgba(20, 184, 166, 0.6)',
     gem: '#14B8A6',
   },
-  cursed: {
-    border: '#DC2626',
-    bg: 'rgba(220, 38, 38, 0.1)',
-    text: '#EF4444',
-    glow: 'rgba(220, 38, 38, 0.6)',
-    gem: '#DC2626',
-  },
   set: {
     border: '#8B5CF6',
     bg: 'rgba(139, 92, 246, 0.1)',
@@ -106,6 +100,7 @@ interface RarityLabelProps {
   rarity: Item['rarity'];
   text: string;
   isUnique?: boolean;
+  modifiers?: string[];
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   withGlow?: boolean;
   withShimmer?: boolean;
@@ -117,6 +112,7 @@ export function RarityLabel({
   rarity,
   text,
   isUnique = false,
+  modifiers = [],
   size = 'md',
   withGlow = true,
   withShimmer = false,
@@ -124,16 +120,23 @@ export function RarityLabel({
   className = '',
 }: RarityLabelProps) {
   const rarityTheme = RARITY_COLORS[rarity];
-  const color = isUnique ? '#FFD700' : rarityTheme.text;
-  const glowColor = isUnique ? 'rgba(255, 215, 0, 0.5)' : rarityTheme.glow;
+  
+  // Import modifiers to get color and icon
+  const primaryModifier = modifiers.length > 0 ? getModifierById(modifiers[0]) : null;
+  
+  const color = primaryModifier ? primaryModifier.color : (isUnique ? '#FFD700' : rarityTheme.text);
+  const glowColor = primaryModifier ? `${primaryModifier.color}99` : (isUnique ? 'rgba(255, 215, 0, 0.5)' : rarityTheme.glow);
+  const displayText = primaryModifier ? `${primaryModifier.icon} ${text}` : text;
 
   const animations = [];
-  if (withPulse || isUnique) animations.push(`${pulse} 2s ease-in-out infinite`);
+  if (withPulse || isUnique || modifiers.length > 0) animations.push(`${pulse} 2s ease-in-out infinite`);
   if (withGlow) animations.push(`${glow} 2s ease-in-out infinite`);
+
+  const modifierClasses = modifiers.map(m => `rarity-label--${m}`).join(' ');
 
   return (
     <Box
-      className={`rarity-label rarity-label--${rarity}${isUnique ? ' rarity-label--unique' : ''} ${className}`}
+      className={`rarity-label rarity-label--${rarity}${isUnique ? ' rarity-label--unique' : ''} ${modifierClasses} ${className}`}
       position="relative"
       display="inline-block"
     >
@@ -164,7 +167,7 @@ export function RarityLabel({
           animation: animations.length > 0 ? animations.join(', ') : undefined,
         }}
       >
-        {text}
+        {displayText}
       </Text>
     </Box>
   );

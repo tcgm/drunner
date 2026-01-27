@@ -75,7 +75,6 @@ export type ItemRarity =
   | 'legendary' 
   | 'mythic'
   | 'artifact' // Stretch
-  | 'cursed'   // Stretch
   | 'set'      // Stretch
 
 export interface Item {
@@ -88,6 +87,7 @@ export interface Item {
   value: number
   icon: IconType // react-icons icon component
   setId?: string // For set items (stretch)
+  modifiers?: string[] // Array of modifier IDs applied to this item
   // Item generation metadata - for regenerating names if needed
   materialId?: string // Material used to craft this item
   baseTemplateId?: string // Base template used for this item
@@ -140,6 +140,7 @@ export interface EventOutcome {
     minRarity?: ItemRarity // Minimum rarity (e.g., 'uncommon')
     maxRarity?: ItemRarity // Maximum rarity (e.g., 'legendary')
     rarityBoost?: number // Add to depth for rarity calculation (e.g., +10 depth)
+    modifiers?: string[] // Array of modifier IDs to apply to generated item
     // Weighted item choices - for multiple possible outcomes
     itemChoices?: Array<{
       weight: number
@@ -150,6 +151,7 @@ export interface EventOutcome {
       minRarity?: ItemRarity
       maxRarity?: ItemRarity
       rarityBoost?: number
+      modifiers?: string[]
     }>
     item?: Item // Deprecated: pre-generated item (for backward compatibility)
   }[]

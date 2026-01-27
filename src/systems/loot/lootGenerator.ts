@@ -21,8 +21,7 @@ const LOOT_CONFIG = {
     legendary: 2.5,
     mythic: 0.5,
     artifact: 0,  // Stretch goal - not yet implemented
-    cursed: 0,    // Stretch goal - not yet implemented
-    set: 0,       // Stretch goal - not yet implemented
+    set: 0,       // Handled separately
   },
 
   // Item type weights (what kind of item to generate)
@@ -108,7 +107,7 @@ function selectRarity(depth: number, minRarity?: ItemRarity, maxRarity?: ItemRar
   const weights = getDepthAdjustedWeights(depth)
   
   // Filter weights based on min/max constraints
-  const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'artifact', 'cursed', 'set']
+  const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'artifact', 'set']
   const minIndex = minRarity ? rarityOrder.indexOf(minRarity) : 0
   const maxIndex = maxRarity ? rarityOrder.indexOf(maxRarity) : rarityOrder.length - 1
   
@@ -247,7 +246,9 @@ export function generateItem(
   forceType?: ItemSlot,
   minRarity?: ItemRarity,
   maxRarity?: ItemRarity,
-  rarityBoost: number = 0
+  rarityBoost: number = 0,
+  forceMaterial?: string | Material,
+  modifiers: string[] = []
 ): Item {
   const adjustedDepth = depth + rarityBoost
   const rarity = selectRarity(adjustedDepth, minRarity, maxRarity)
@@ -295,7 +296,9 @@ export function generateItem(
   
   // Generate procedural item from material + base
   // Strategy: Keep trying until we find a compatible combination
-  let material = getCompatibleMaterial(rarity, type)
+  let material = forceMaterial 
+    ? (typeof forceMaterial === 'string' ? getMaterialById(forceMaterial) : forceMaterial)
+    : getCompatibleMaterial(rarity, type)
   let baseTemplate = getCompatibleBase(type, material.id)
   
   // Retry up to 10 times if we can't find a compatible combination
@@ -396,10 +399,10 @@ export function generateItem(
   }
   
   // Create final item with metadata for repair
-  return {
+  const item: Item = {
     id: uuidv4(),
     name,
-    description,
+    description: description,
     type: forceType || base.type,
     rarity,
     stats: modifiedStats,
@@ -408,7 +411,23 @@ export function generateItem(
     materialId: material.id,
     baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
     isUnique: false, // Procedurally generated item
+    modifiers: modifiers.length > 0 ? modifiers : undefined,
   }
+  
+  // Apply modifiers if any
+  if (modifiers.length > 0) {
+    const { applyModifiers: applyMods, getModifierById } = require('@data/items/mods')
+    const modifierObjects = modifiers.map(id => getModifierById(id)).filter(Boolean)
+    const modifiedItem = applyMods(item, modifierObjects)
+    
+    // Update description with modifier info
+    const modifierNames = modifierObjects.map(m => m.name).join(', ')
+    modifiedItem.description = `${modifierNames}! ${modifiedItem.description}`
+    
+    return modifiedItem
+  }
+  
+  return item
 }
 
 /**

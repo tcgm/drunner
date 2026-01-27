@@ -19,6 +19,7 @@ import type { IconType } from 'react-icons'
 import type { Item } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
+import { getModifierById } from '@/data/items/mods'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -30,7 +31,6 @@ const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
   legendary: GameIcons.GiCrystalShine,
   mythic: GameIcons.GiBatwingEmblem,
   artifact: GameIcons.GiCrystalEye,
-  cursed: GameIcons.GiCursedStar,
   set: GameIcons.GiCagedBall,
 }
 
@@ -254,9 +254,10 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 rarity={item.rarity}
                 text={item.name}
                 isUnique={item.isUnique}
+                modifiers={item.modifiers}
                 size="xl"
                 withGlow
-                withPulse={item.isUnique}
+                withPulse={item.isUnique || (item.modifiers && item.modifiers.length > 0)}
                 className="item-detail-modal-name"
               />
               {item.isUnique && (
@@ -264,6 +265,15 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                   ✦ Unique Item ✦
                 </Text>
               )}
+              {item.modifiers && item.modifiers.length > 0 && item.modifiers.map(modId => {
+                const mod = getModifierById(modId);
+                if (!mod) return null;
+                return (
+                  <Text key={modId} fontSize="sm" color={mod.color} fontStyle="italic">
+                    {mod.icon} {mod.name} {mod.icon}
+                  </Text>
+                );
+              })}
             </VStack>
 
             {/* Main Content Area with Stats on Sides */}
@@ -338,7 +348,13 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     <ChakraIcon 
                       as={IconComponent} 
                       boxSize="65px" 
-                      color={item.isUnique ? '#FFD700' : rarityTheme.text}
+                      color={(() => {
+                        if (item.modifiers && item.modifiers.length > 0) {
+                          const mod = getModifierById(item.modifiers[0]);
+                          return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
+                        }
+                        return item.isUnique ? '#FFD700' : rarityTheme.text;
+                      })()}
                       position="relative"
                       zIndex={1}
                     />
@@ -352,6 +368,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       rarity={item.rarity}
                       text={`${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)} Quality`}
                       isUnique={item.isUnique}
+                      modifiers={item.modifiers}
                       size="sm"
                       withGlow
                       withShimmer

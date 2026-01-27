@@ -116,6 +116,7 @@ function generateItemFromSpec(spec: {
   minRarity?: ItemRarity
   maxRarity?: ItemRarity
   rarityBoost?: number
+  modifiers?: string[]
   itemChoices?: Array<{ weight: number; itemType?: 'random' | ItemSlot; minRarity?: ItemRarity; maxRarity?: ItemRarity; rarityBoost?: number }>
 }, depth: number): Item | null {
   // Handle weighted item choices
@@ -140,7 +141,9 @@ function generateItemFromSpec(spec: {
       spec.itemType === 'random' ? undefined : spec.itemType,
       spec.minRarity,
       spec.maxRarity,
-      spec.rarityBoost || 0
+      spec.rarityBoost || 0,
+      spec.material,
+      spec.modifiers || []
     )
   }
 
