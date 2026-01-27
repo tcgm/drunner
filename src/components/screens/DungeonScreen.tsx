@@ -86,7 +86,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   
   // Game over check
   if (isGameOver) {
-    return <GameOverScreen depth={dungeon.depth} onExit={onExit} />
+    return <GameOverScreen floor={dungeon.floor} depth={dungeon.depth} onExit={onExit} />
   }
   
   // Filter out null heroes for components that expect Hero[]

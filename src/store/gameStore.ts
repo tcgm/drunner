@@ -669,11 +669,8 @@ export const useGameStore = create<GameStore>()(
         endDate: Date.now(),
         result: 'defeat',
         finalDepth: state.dungeon.depth,
-        heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
-          name: h.name,
-          class: h.class.name,
-          level: h.level // Store level BEFORE penalty
-        }))
+        finalFloor: state.dungeon.floor,
+        // heroesUsed already contains pre-penalty levels from resolveEventChoice
       }
       
       // Lose all gold on defeat if penalty is enabled

@@ -10,11 +10,12 @@ const MotionVStack = motion.create(VStack)
 const MotionBox = motion.create(Box)
 
 interface GameOverScreenProps {
+  floor: number
   depth: number
   onExit: () => void
 }
 
-export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
+export default function GameOverScreen({ floor, depth, onExit }: GameOverScreenProps) {
   const { party, activeRun, endGame } = useGameStore()
   const penaltyType = GAME_CONFIG.deathPenalty.type
   
@@ -109,7 +110,7 @@ export default function GameOverScreen({ depth, onExit }: GameOverScreenProps) {
           transition={{ delay: 0.4 }}
         >
           <Text fontSize="md" color="gray.400">
-            Your party has fallen on Floor {depth}
+            Your party has fallen on Floor {floor}
           </Text>
         </motion.div>
 
