@@ -8,12 +8,12 @@ import {
   ModalCloseButton,
   Button,
   Text,
-  SimpleGrid,
   HStack,
+  Box,
 } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
 import type { Item } from '@/types'
-import { ItemSlot } from '@/components/ui/ItemSlot'
+import { ItemGrid } from '@/components/inventory/ItemGrid'
+import { useLazyLoading } from '@/components/inventory/useLazyLoading'
 
 interface DungeonInventoryModalProps {
   isOpen: boolean
@@ -23,28 +23,13 @@ interface DungeonInventoryModalProps {
 }
 
 export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold }: DungeonInventoryModalProps) {
-  const [visibleCount, setVisibleCount] = useState(50)
-  const lastOpenState = useRef(isOpen)
-
-  // Progressive loading effect
-  useEffect(() => {
-    // Reset when modal opens
-    if (isOpen && !lastOpenState.current) {
-      setVisibleCount(50)
-      lastOpenState.current = true
-    } else if (!isOpen && lastOpenState.current) {
-      lastOpenState.current = false
-    }
-    
-    if (isOpen && visibleCount < inventory.length) {
-      const timer = setTimeout(() => {
-        setVisibleCount(prev => Math.min(prev + 50, inventory.length))
-      }, 16) // ~60fps
-      return () => clearTimeout(timer)
-    }
-  }, [isOpen, visibleCount, inventory.length])
-
-  const visibleInventory = inventory.slice(0, visibleCount)
+  const visibleCount = useLazyLoading({
+    isOpen,
+    totalItems: inventory.length,
+    initialCount: 20,
+    batchSize: 100,
+    batchDelay: 32
+  })
 
   return (
     <Modal scrollBehavior={"inside"} isOpen={isOpen} onClose={onClose} size="xl">
@@ -63,20 +48,16 @@ export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold
               No items found yet. Explore treasure events to find loot!
             </Text>
           ) : (
-            <>
+            <Box>
               <Text fontSize="sm" color="gray.400" mb={4}>
                 Items found during this run ({inventory.length} items):
               </Text>
-              <SimpleGrid className="dungeon-inventory-grid" columns={6} spacing={3} justifyItems="center">
-                {visibleInventory.map((item, index) => (
-                  <ItemSlot
-                    key={`${item.id}-${index}`}
-                    item={item}
-                    size="md"
-                  />
-                ))}
-              </SimpleGrid>
-            </>
+              <ItemGrid
+                items={inventory}
+                visibleCount={visibleCount}
+                isClickable={false}
+              />
+            </Box>
           )}
         </ModalBody>
         <ModalFooter>

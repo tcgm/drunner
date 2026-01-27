@@ -11,9 +11,7 @@ import {
   VStack,
   Box,
   Tabs,
-  TabList,
   TabPanels,
-  Tab,
   TabPanel,
   Input,
   Select,
@@ -24,13 +22,17 @@ import {
   Icon,
   Spacer,
 } from '@chakra-ui/react'
-import { useState, useMemo, useEffect, useCallback } from 'react'
-import { GiTwoCoins, GiSwapBag, GiCrossedSwords, GiCheckedShield, GiCrossedBones } from 'react-icons/gi'
-import type { Item, ItemSlot as ItemSlotType, ItemRarity } from '../../types'
-import { ItemSlot } from '@/components/ui/ItemSlot'
+import { useState, useCallback } from 'react'
+import { GiTwoCoins, GiSwapBag, GiCrossedBones } from 'react-icons/gi'
+import type { Item, ItemSlot as ItemSlotType } from '../../types'
 import { useGameStore } from '@/store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { restoreItemIcon } from '@/utils/itemUtils'
+import { ItemGrid } from '@/components/inventory/ItemGrid'
+import { InventoryControls, type SortOption, type FilterOption } from '@/components/inventory/InventoryControls'
+import { InventoryTabs } from '@/components/inventory/InventoryTabs'
+import { useInventoryFilters } from '@/components/inventory/useInventoryFilters'
+import { useItemsByType } from '@/components/inventory/useItemsByType'
+import { useLazyLoading } from '@/components/inventory/useLazyLoading'
 
 interface BankInventoryModalProps {
   isOpen: boolean
@@ -40,107 +42,33 @@ interface BankInventoryModalProps {
   onEquipItem: (itemId: string) => void
 }
 
-type SortOption = 'name' | 'rarity' | 'type' | 'value'
-type FilterOption = 'all' | 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2'
-
 export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot, onEquipItem }: BankInventoryModalProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rarity')
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
-  const [visibleCount, setVisibleCount] = useState(20)
   const { alkahest, discardItems, bankStorageSlots, bankGold, expandBankStorage } = useGameStore()
   const toast = useToast()
 
-  // Progressive loading effect - reset on close, load progressively when open
-  useEffect(() => {
-    if (!isOpen) {
-      // Use setTimeout to make this async and avoid cascading render warning
-      const resetTimer = setTimeout(() => setVisibleCount(20), 0)
-      return () => clearTimeout(resetTimer)
-    }
-    
-    if (visibleCount < bankInventory.length) {
-      const timer = setTimeout(() => {
-        setVisibleCount(prev => Math.min(prev + 100, bankInventory.length))
-      }, 32) // Load in larger batches with slightly longer delay
-      return () => clearTimeout(timer)
-    }
-  }, [isOpen, visibleCount, bankInventory.length])
+  // Use shared hooks
+  const visibleCount = useLazyLoading({
+    isOpen,
+    totalItems: bankInventory.length,
+    initialCount: 20,
+    batchSize: 100,
+    batchDelay: 32
+  })
 
-  // Filter and sort items
-  const filteredAndSortedItems = useMemo(() => {
-    // Rarity order for sorting
-    const rarityOrder: Record<ItemRarity, number> = {
-      junk: 0,
-      common: 1,
-      uncommon: 2,
-      rare: 3,
-      epic: 4,
-      legendary: 5,
-      mythic: 6,
-      artifact: 7,
-      set: 9,
-    }
-    
-    let items = [...bankInventory]
+  const filteredAndSortedItems = useInventoryFilters({
+    items: bankInventory,
+    searchQuery,
+    sortBy,
+    filterBy,
+    pendingSlot
+  })
 
-    // Apply pending slot filter first (overrides other filters)
-    if (pendingSlot) {
-      items = items.filter(item => item.type === pendingSlot)
-    } else if (filterBy !== 'all') {
-      items = items.filter(item => item.type === filterBy)
-    }
-
-    // Apply search
-    if (searchQuery) {
-      items = items.filter(item => 
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-
-    // Apply sort
-    items.sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name)
-        case 'rarity':
-          return rarityOrder[b.rarity] - rarityOrder[a.rarity] // Descending
-        case 'type':
-          return a.type.localeCompare(b.type)
-        case 'value':
-          return b.value - a.value // Descending
-        default:
-          return 0
-      }
-    })
-
-    return items
-  }, [bankInventory, pendingSlot, filterBy, searchQuery, sortBy])
-
-  // Group items by type for tab view
-  const itemsByType = useMemo(() => {
-    const grouped: Record<string, Item[]> = {
-      all: filteredAndSortedItems,
-      weapon: [],
-      armor: [],
-      helmet: [],
-      boots: [],
-      accessories: [],
-    }
-
-    filteredAndSortedItems.forEach(item => {
-      if (item.type === 'weapon') grouped.weapon.push(item)
-      else if (item.type === 'armor') grouped.armor.push(item)
-      else if (item.type === 'helmet') grouped.helmet.push(item)
-      else if (item.type === 'boots') grouped.boots.push(item)
-      else if (item.type === 'accessory1' || item.type === 'accessory2') grouped.accessories.push(item)
-    })
-
-    return grouped
-  }, [filteredAndSortedItems])
+  const itemsByType = useItemsByType(filteredAndSortedItems)
 
   const handleItemClick = useCallback((item: Item) => {
     if (isSelectionMode && !pendingSlot) {
@@ -216,45 +144,6 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
     }
   }
 
-  const renderItemGrid = (items: Item[]) => {
-    const visibleItems = items.slice(0, visibleCount)
-    return (
-      <Box
-        display="grid"
-        gridTemplateColumns="repeat(auto-fill, 80px)"
-        gap={2.5}
-        minH="400px"
-        justifyContent="start"
-      >
-        {visibleItems.map((item) => (
-        <Box
-          key={item.id}
-          position="relative"
-          borderWidth="2px"
-          borderColor={selectedItems.has(item.id) ? 'blue.400' : 'transparent'}
-          borderRadius="sm"
-          cursor="pointer"
-          w="80px"
-          h="80px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          _hover={{
-            borderColor: 'blue.300',
-          }}
-        >
-          <ItemSlot
-            item={restoreItemIcon(item)}
-            size="md"
-            onClick={() => handleItemClick(item)}
-            isClickable={true}
-          />
-        </Box>
-      ))}
-      </Box>
-    )
-  }
-
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="6xl" scrollBehavior="inside" isCentered={false}>
       <ModalOverlay bg="blackAlpha.700" />
@@ -314,56 +203,18 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
         </ModalHeader>
         <ModalCloseButton color="gray.400" />
         
-        <ModalBody p={2} bg="gray.900">
+        <ModalBody p={0} bg="gray.900">
           {/* Control Bar */}
-          <VStack spacing={1} position="sticky" top={0} zIndex={10} bg="gray.900" pt={2} pb={2} mx={-2} px={2}>
-            <HStack w="full" spacing={2}>
-              <Input
-                placeholder="Search items..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                size="sm"
-                bg="gray.800"
-                borderColor="gray.700"
-                _hover={{ borderColor: 'gray.600' }}
-                maxW="300px"
-              />
-              
-              <Select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                size="sm"
-                bg="gray.800"
-                borderColor="gray.700"
-                maxW="150px"
-              >
-                <option value="rarity">Sort: Rarity</option>
-                <option value="name">Sort: Name</option>
-                <option value="type">Sort: Type</option>
-                <option value="value">Sort: Value</option>
-              </Select>
-
-              {!pendingSlot && (
-                <Select
-                  value={filterBy}
-                  onChange={(e) => setFilterBy(e.target.value as FilterOption)}
-                  size="sm"
-                  bg="gray.800"
-                  borderColor="gray.700"
-                  maxW="150px"
-                >
-                  <option value="all">All Items</option>
-                  <option value="weapon">Weapons</option>
-                  <option value="armor">Armor</option>
-                  <option value="helmet">Helmets</option>
-                  <option value="boots">Boots</option>
-                  <option value="accessory1">Accessories</option>
-                </Select>
-              )}
-
-              <Spacer />
-
-              {!pendingSlot && (
+          <VStack className="inventory-controls-sticky" spacing={1} position="sticky" top={0} zIndex={10} bg="gray.900" pt={2} pb={2} px={2}>
+            <InventoryControls
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              filterBy={filterBy}
+              onFilterChange={setFilterBy}
+              showFilter={!pendingSlot}
+              rightContent={!pendingSlot && (
                 <HStack>
                   <Button 
                     size="sm"
@@ -394,12 +245,22 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                   )}
                 </HStack>
               )}
-            </HStack>
-            <Divider borderColor="gray.700" w="full" />
+            />
+            <Divider borderColor="gray.700" w="full" mt={1} />
+            
+            {/* Tabs - only show when not filtering and has items */}
+            {!pendingSlot && filterBy === 'all' && bankInventory.length > 0 && filteredAndSortedItems.length > 0 && (
+              <Box w="full">
+                <InventoryTabs
+                  itemsByType={itemsByType}
+                  renderContent={() => null}
+                />
+              </Box>
+            )}
           </VStack>
 
           {/* Item Display */}
-          <Box mt={2}>
+          <Box className="inventory-display-area" px={2} pb={2}>
           {bankInventory.length === 0 ? (
             <Box textAlign="center" py={20}>
               <Icon as={GiSwapBag} boxSize={16} color="gray.600" mb={4} />
@@ -417,59 +278,40 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               </Text>
             </Box>
           ) : (
-            <Box>
+            <Tabs variant="enclosed" colorScheme="orange" index={pendingSlot || filterBy !== 'all' ? undefined : 0}>
               {pendingSlot || filterBy !== 'all' ? (
                 // Single view when filtering
-                renderItemGrid(filteredAndSortedItems)
+                <ItemGrid
+                  items={filteredAndSortedItems}
+                  visibleCount={visibleCount}
+                  selectedItems={selectedItems}
+                  onItemClick={handleItemClick}
+                  isClickable={true}
+                />
               ) : (
-                // Tabbed view for all items
-                <Tabs variant="enclosed" colorScheme="orange">
-                  <TabList borderColor="gray.700" mb={1} position="sticky" top="64px" zIndex={9} bg="gray.900" pt={1} pb={1} mx={-2} px={2}>
-                    <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                      All ({itemsByType.all.length})
-                    </Tab>
-                    <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                      <Icon as={GiCrossedSwords} mr={2} />
-                      Weapons ({itemsByType.weapon.length})
-                    </Tab>
-                    <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                      <Icon as={GiCheckedShield} mr={2} />
-                      Armor ({itemsByType.armor.length})
-                    </Tab>
-                    <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                      Helmets ({itemsByType.helmet.length})
-                    </Tab>
-                    <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                      Boots ({itemsByType.boots.length})
-                    </Tab>
-                    <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                      Accessories ({itemsByType.accessories.length})
-                    </Tab>
-                  </TabList>
-
-                  <TabPanels>
-                    <TabPanel px={0} py={1}>
-                      {renderItemGrid(itemsByType.all)}
-                    </TabPanel>
-                    <TabPanel px={0} py={1}>
-                      {renderItemGrid(itemsByType.weapon)}
-                    </TabPanel>
-                    <TabPanel px={0} py={1}>
-                      {renderItemGrid(itemsByType.armor)}
-                    </TabPanel>
-                    <TabPanel px={0} py={1}>
-                      {renderItemGrid(itemsByType.helmet)}
-                    </TabPanel>
-                    <TabPanel px={0} py={1}>
-                      {renderItemGrid(itemsByType.boots)}
-                    </TabPanel>
-                    <TabPanel px={0} py={1}>
-                      {renderItemGrid(itemsByType.accessories)}
-                    </TabPanel>
-                  </TabPanels>
-                </Tabs>
+                // Tabbed view - tabs are in sticky header, just show panels here
+                <TabPanels mt={1}>
+                  <TabPanel px={0} py={1}>
+                    <ItemGrid items={itemsByType.all || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
+                  </TabPanel>
+                  <TabPanel px={0} py={1}>
+                    <ItemGrid items={itemsByType.weapon || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
+                  </TabPanel>
+                  <TabPanel px={0} py={1}>
+                    <ItemGrid items={itemsByType.armor || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
+                  </TabPanel>
+                  <TabPanel px={0} py={1}>
+                    <ItemGrid items={itemsByType.helmet || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
+                  </TabPanel>
+                  <TabPanel px={0} py={1}>
+                    <ItemGrid items={itemsByType.boots || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
+                  </TabPanel>
+                  <TabPanel px={0} py={1}>
+                    <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
+                  </TabPanel>
+                </TabPanels>
               )}
-            </Box>
+            </Tabs>
           )}
           </Box>
         </ModalBody>
