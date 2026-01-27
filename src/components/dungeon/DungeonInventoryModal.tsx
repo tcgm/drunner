@@ -11,6 +11,7 @@ import {
   SimpleGrid,
   HStack,
 } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
 import type { Item } from '@/types'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 
@@ -22,6 +23,29 @@ interface DungeonInventoryModalProps {
 }
 
 export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold }: DungeonInventoryModalProps) {
+  const [visibleCount, setVisibleCount] = useState(50)
+  const lastOpenState = useRef(isOpen)
+
+  // Progressive loading effect
+  useEffect(() => {
+    // Reset when modal opens
+    if (isOpen && !lastOpenState.current) {
+      setVisibleCount(50)
+      lastOpenState.current = true
+    } else if (!isOpen && lastOpenState.current) {
+      lastOpenState.current = false
+    }
+    
+    if (isOpen && visibleCount < inventory.length) {
+      const timer = setTimeout(() => {
+        setVisibleCount(prev => Math.min(prev + 50, inventory.length))
+      }, 16) // ~60fps
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, visibleCount, inventory.length])
+
+  const visibleInventory = inventory.slice(0, visibleCount)
+
   return (
     <Modal scrollBehavior={"inside"} isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -44,7 +68,7 @@ export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold
                 Items found during this run ({inventory.length} items):
               </Text>
               <SimpleGrid className="dungeon-inventory-grid" columns={6} spacing={3} justifyItems="center">
-                {inventory.map((item, index) => (
+                {visibleInventory.map((item, index) => (
                   <ItemSlot
                     key={`${item.id}-${index}`}
                     item={item}

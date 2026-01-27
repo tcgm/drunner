@@ -24,7 +24,7 @@ import {
   Icon,
   Spacer,
 } from '@chakra-ui/react'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { GiTwoCoins, GiSwapBag, GiCrossedSwords, GiCheckedShield, GiCrossedBones } from 'react-icons/gi'
 import type { Item, ItemSlot as ItemSlotType, ItemRarity } from '../../types'
 import { ItemSlot } from '@/components/ui/ItemSlot'
@@ -49,8 +49,25 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rarity')
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
+  const [visibleCount, setVisibleCount] = useState(20)
   const { alkahest, discardItems, bankStorageSlots, bankGold, expandBankStorage } = useGameStore()
   const toast = useToast()
+
+  // Progressive loading effect - reset on close, load progressively when open
+  useEffect(() => {
+    if (!isOpen) {
+      // Use setTimeout to make this async and avoid cascading render warning
+      const resetTimer = setTimeout(() => setVisibleCount(20), 0)
+      return () => clearTimeout(resetTimer)
+    }
+    
+    if (visibleCount < bankInventory.length) {
+      const timer = setTimeout(() => {
+        setVisibleCount(prev => Math.min(prev + 100, bankInventory.length))
+      }, 32) // Load in larger batches with slightly longer delay
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, visibleCount, bankInventory.length])
 
   // Filter and sort items
   const filteredAndSortedItems = useMemo(() => {
@@ -64,7 +81,6 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
       legendary: 5,
       mythic: 6,
       artifact: 7,
-      cursed: 8,
       set: 9,
     }
     
@@ -126,19 +142,21 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
     return grouped
   }, [filteredAndSortedItems])
 
-  const handleItemClick = (item: Item) => {
+  const handleItemClick = useCallback((item: Item) => {
     if (isSelectionMode && !pendingSlot) {
-      const newSelection = new Set(selectedItems)
-      if (newSelection.has(item.id)) {
-        newSelection.delete(item.id)
-      } else {
-        newSelection.add(item.id)
-      }
-      setSelectedItems(newSelection)
+      setSelectedItems(prev => {
+        const newSelection = new Set(prev)
+        if (newSelection.has(item.id)) {
+          newSelection.delete(item.id)
+        } else {
+          newSelection.add(item.id)
+        }
+        return newSelection
+      })
     } else if (pendingSlot) {
       onEquipItem(item.id)
     }
-  }
+  }, [isSelectionMode, pendingSlot, onEquipItem])
 
   const handleSelectAll = () => {
     if (selectedItems.size === filteredAndSortedItems.length) {
@@ -198,22 +216,23 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
     }
   }
 
-  const renderItemGrid = (items: Item[]) => (
-    <Box
-      display="grid"
-      gridTemplateColumns="repeat(auto-fill, 80px)"
-      gap={2.5}
-      minH="400px"
-      justifyContent="start"
-    >
-      {items.map((item) => (
+  const renderItemGrid = (items: Item[]) => {
+    const visibleItems = items.slice(0, visibleCount)
+    return (
+      <Box
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, 80px)"
+        gap={2.5}
+        minH="400px"
+        justifyContent="start"
+      >
+        {visibleItems.map((item) => (
         <Box
           key={item.id}
           position="relative"
-          borderWidth={selectedItems.has(item.id) ? '2px' : '0'}
+          borderWidth="2px"
           borderColor={selectedItems.has(item.id) ? 'blue.400' : 'transparent'}
           borderRadius="sm"
-          transition="all 0.2s"
           cursor="pointer"
           w="80px"
           h="80px"
@@ -221,11 +240,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
           alignItems="center"
           justifyContent="center"
           _hover={{
-            '& > *': {
-              transform: 'scale(1.05)',
-            },
             borderColor: 'blue.300',
-            borderWidth: '2px',
           }}
         >
           <ItemSlot
@@ -236,8 +251,9 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
           />
         </Box>
       ))}
-    </Box>
-  )
+      </Box>
+    )
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="6xl" scrollBehavior="inside" isCentered={false}>
@@ -300,7 +316,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
         
         <ModalBody p={2} bg="gray.900">
           {/* Control Bar */}
-          <VStack spacing={1} mb={2}>
+          <VStack spacing={1} position="sticky" top={0} zIndex={10} bg="gray.900" pt={2} pb={2} mx={-2} px={2}>
             <HStack w="full" spacing={2}>
               <Input
                 placeholder="Search items..."
@@ -379,11 +395,11 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                 </HStack>
               )}
             </HStack>
+            <Divider borderColor="gray.700" w="full" />
           </VStack>
 
-          <Divider borderColor="gray.700" mb={2} />
-
           {/* Item Display */}
+          <Box mt={2}>
           {bankInventory.length === 0 ? (
             <Box textAlign="center" py={20}>
               <Icon as={GiSwapBag} boxSize={16} color="gray.600" mb={4} />
@@ -408,7 +424,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               ) : (
                 // Tabbed view for all items
                 <Tabs variant="enclosed" colorScheme="orange">
-                  <TabList borderColor="gray.700" mb={1}>
+                  <TabList borderColor="gray.700" mb={1} position="sticky" top="64px" zIndex={9} bg="gray.900" pt={1} pb={1} mx={-2} px={2}>
                     <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
                       All ({itemsByType.all.length})
                     </Tab>
@@ -455,6 +471,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               )}
             </Box>
           )}
+          </Box>
         </ModalBody>
       </ModalContent>
     </Modal>

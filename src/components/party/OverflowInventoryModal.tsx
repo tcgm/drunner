@@ -24,7 +24,7 @@ import {
   Tab,
   TabPanel,
 } from '@chakra-ui/react'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCheckMark } from 'react-icons/gi'
 import type { Item, ItemRarity } from '../../types'
 import { ItemSlot } from '@/components/ui/ItemSlot'
@@ -61,7 +61,31 @@ export function OverflowInventoryModal({
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rarity')
+  const [visibleCount, setVisibleCount] = useState(50)
+  const lastOpenState = useRef(isOpen)
   const toast = useToast()
+
+  // Reset visible count when modal opens
+  useEffect(() => {
+    if (isOpen && !lastOpenState.current) {
+      lastOpenState.current = true
+    } else if (!isOpen && lastOpenState.current) {
+      lastOpenState.current = false
+      // Reset for next open - use setTimeout to avoid cascading render warning
+      const resetTimer = setTimeout(() => setVisibleCount(50), 0)
+      return () => clearTimeout(resetTimer)
+    }
+  }, [isOpen])
+
+  // Progressive loading effect
+  useEffect(() => {
+    if (isOpen && visibleCount < overflowInventory.length) {
+      const timer = setTimeout(() => {
+        setVisibleCount(prev => Math.min(prev + 50, overflowInventory.length))
+      }, 16) // ~60fps
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, visibleCount, overflowInventory.length])
 
   const bankInventoryCount = bankInventory.length
   const availableSlots = bankStorageSlots - bankInventoryCount
@@ -79,7 +103,6 @@ export function OverflowInventoryModal({
       legendary: 5,
       mythic: 6,
       artifact: 7,
-      cursed: 8,
       set: 9,
     }
     
@@ -242,15 +265,17 @@ export function OverflowInventoryModal({
     onClose()
   }
 
-  const renderItemGrid = (items: Item[]) => (
-    <Box
-      display="grid"
-      gridTemplateColumns="repeat(auto-fill, 80px)"
-      gap={2.5}
-      minH="300px"
-      justifyContent="start"
-    >
-      {items.map((item) => (
+  const renderItemGrid = (items: Item[]) => {
+    const visibleItems = items.slice(0, visibleCount)
+    return (
+      <Box
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, 80px)"
+        gap={2.5}
+        minH="300px"
+        justifyContent="start"
+      >
+        {visibleItems.map((item) => (
         <Box
           key={item.id}
           position="relative"
@@ -280,8 +305,9 @@ export function OverflowInventoryModal({
           />
         </Box>
       ))}
-    </Box>
-  )
+      </Box>
+    )
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="6xl" scrollBehavior="inside" isCentered={false}>
