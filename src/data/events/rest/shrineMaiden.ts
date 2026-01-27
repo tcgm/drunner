@@ -10,6 +10,7 @@ export const SHRINE_MAIDEN: DungeonEvent = {
       text: 'Pray for resurrection (Cleric bonus)',
       requirements: {
         class: 'Cleric',
+        hasDeadHero: true,
       },
       outcome: {
         text: 'The Cleric\'s prayers resonate with the shrine! All fallen heroes are revived!',
@@ -23,6 +24,7 @@ export const SHRINE_MAIDEN: DungeonEvent = {
       text: 'Offer gold for resurrection',
       requirements: {
         gold: 200,
+        hasDeadHero: true,
       },
       outcome: {
         text: 'The maiden accepts your offering and revives one fallen hero.',
@@ -34,6 +36,9 @@ export const SHRINE_MAIDEN: DungeonEvent = {
     },
     {
       text: 'Pray for resurrection (without offering)',
+      requirements: {
+        hasDeadHero: true,
+      },
       successChance: 0.3,
       statModifier: 'luck',
       successOutcome: {

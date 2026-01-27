@@ -10,6 +10,7 @@ export const NECROMANTIC_RITUAL: DungeonEvent = {
       text: 'Perform necromantic ritual (Necromancer)',
       requirements: {
         class: 'Necromancer',
+        hasDeadHero: true,
       },
       outcome: {
         text: 'Through dark magic, you pull your fallen allies back from death itself!',
@@ -21,6 +22,9 @@ export const NECROMANTIC_RITUAL: DungeonEvent = {
     },
     {
       text: 'Use the ritual (risky)',
+      requirements: {
+        hasDeadHero: true,
+      },
       outcome: {
         text: 'You attempt the ritual without proper knowledge. It partially works...',
         effects: [

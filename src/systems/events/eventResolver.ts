@@ -401,6 +401,12 @@ export function resolveEventOutcome(
       case 'revive': {
         // Revive dead heroes
         const deadHeroes = updatedParty.filter((h): h is Hero => h !== null && !h.isAlive)
+        
+        // Skip if no one is dead
+        if (deadHeroes.length === 0) {
+          break
+        }
+        
         const toRevive = effect.target === 'all' 
           ? deadHeroes 
           : deadHeroes.length > 0 
@@ -556,6 +562,7 @@ export function checkRequirements(
     minValue?: number
     item?: string
     gold?: number
+    hasDeadHero?: boolean
   } | undefined,
   party: (Hero | null)[],
   depth: number = 1,
@@ -563,6 +570,12 @@ export function checkRequirements(
 ): boolean {
   if (!requirements) {
     return true
+  }
+  
+  if (requirements.hasDeadHero !== undefined) {
+    const hasDeadHero = party.some(h => h !== null && !h.isAlive)
+    if (requirements.hasDeadHero && !hasDeadHero) return false
+    if (!requirements.hasDeadHero && hasDeadHero) return false
   }
   
   if (requirements.class) {

@@ -111,6 +111,7 @@ export interface EventChoice {
     minValue?: number
     item?: string
     gold?: number
+    hasDeadHero?: boolean // Requires at least one dead hero
   }
   outcome?: EventOutcome // Single outcome (original behavior)
   possibleOutcomes?: Array<{ // Multiple chance-based outcomes
