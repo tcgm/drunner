@@ -55,7 +55,7 @@ export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold
               <ItemGrid
                 items={inventory}
                 visibleCount={visibleCount}
-                isClickable={false}
+                isClickable={true}
               />
             </Box>
           )}

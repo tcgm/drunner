@@ -1,4 +1,5 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Icon } from '@chakra-ui/react'
+import { memo } from 'react'
 import { GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
 import type { Item } from '@/types'
 
@@ -7,7 +8,7 @@ interface InventoryTabsProps {
   renderContent: (items: Item[]) => React.ReactNode
 }
 
-export function InventoryTabs({ 
+export const InventoryTabs = memo(function InventoryTabs({ 
   itemsByType, 
   renderContent
 }: InventoryTabsProps) {
@@ -62,4 +63,4 @@ export function InventoryTabs({
       </TabPanels>
     </Tabs>
   )
-}
+})

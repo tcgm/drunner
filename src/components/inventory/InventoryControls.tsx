@@ -1,4 +1,5 @@
 import { HStack, Input, Select, Spacer } from '@chakra-ui/react'
+import { memo } from 'react'
 
 export type SortOption = 'name' | 'rarity' | 'type' | 'value'
 export type FilterOption = 'all' | 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2'
@@ -14,7 +15,7 @@ interface InventoryControlsProps {
   rightContent?: React.ReactNode
 }
 
-export function InventoryControls({
+export const InventoryControls = memo(function InventoryControls({
   searchQuery,
   onSearchChange,
   sortBy,
@@ -77,4 +78,4 @@ export function InventoryControls({
       {rightContent}
     </HStack>
   )
-}
+})

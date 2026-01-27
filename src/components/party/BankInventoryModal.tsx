@@ -11,6 +11,8 @@ import {
   VStack,
   Box,
   Tabs,
+  TabList,
+  Tab,
   TabPanels,
   TabPanel,
   Input,
@@ -23,7 +25,7 @@ import {
   Spacer,
 } from '@chakra-ui/react'
 import { useState, useCallback } from 'react'
-import { GiTwoCoins, GiSwapBag, GiCrossedBones } from 'react-icons/gi'
+import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
 import type { Item, ItemSlot as ItemSlotType } from '../../types'
 import { useGameStore } from '@/store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -55,9 +57,9 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   const visibleCount = useLazyLoading({
     isOpen,
     totalItems: bankInventory.length,
-    initialCount: 20,
-    batchSize: 100,
-    batchDelay: 32
+    initialCount: 30,
+    batchSize: 200,
+    batchDelay: 50
   })
 
   const filteredAndSortedItems = useInventoryFilters({
@@ -204,6 +206,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
         <ModalCloseButton color="gray.400" />
         
         <ModalBody p={0} bg="gray.900">
+          <Tabs variant="enclosed" colorScheme="orange">
           {/* Control Bar */}
           <VStack className="inventory-controls-sticky" spacing={1} position="sticky" top={0} zIndex={10} bg="gray.900" pt={2} pb={2} px={2}>
             <InventoryControls
@@ -250,19 +253,34 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
             
             {/* Tabs - only show when not filtering and has items */}
             {!pendingSlot && filterBy === 'all' && bankInventory.length > 0 && filteredAndSortedItems.length > 0 && (
-              <Box w="full">
-                <InventoryTabs
-                  itemsByType={itemsByType}
-                  renderContent={() => null}
-                />
-              </Box>
+              <TabList className="inventory-tab-list" borderColor="gray.700" mb={0}>
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+                  All ({itemsByType.all?.length || 0})
+                </Tab>
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+                  <Icon as={GiCrossedSwords} mr={2} />
+                  Weapons ({itemsByType.weapon?.length || 0})
+                </Tab>
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+                  <Icon as={GiCheckedShield} mr={2} />
+                  Armor ({itemsByType.armor?.length || 0})
+                </Tab>
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+                  Helmets ({itemsByType.helmet?.length || 0})
+                </Tab>
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+                  Boots ({itemsByType.boots?.length || 0})
+                </Tab>
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+                  Accessories ({itemsByType.accessories?.length || 0})
+                </Tab>
+              </TabList>
             )}
           </VStack>
 
           {/* Item Display */}
-          <Box className="inventory-display-area" px={2} pb={2}>
           {bankInventory.length === 0 ? (
-            <Box textAlign="center" py={20}>
+            <Box textAlign="center" py={20} px={2}>
               <Icon as={GiSwapBag} boxSize={16} color="gray.600" mb={4} />
               <Text color="gray.500" fontSize="lg">
                 Your bank is empty
@@ -272,48 +290,46 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               </Text>
             </Box>
           ) : filteredAndSortedItems.length === 0 ? (
-            <Box textAlign="center" py={20}>
+            <Box textAlign="center" py={20} px={2}>
               <Text color="gray.500" fontSize="lg">
                 No items match your filters
               </Text>
             </Box>
+          ) : pendingSlot || filterBy !== 'all' ? (
+            // Single view when filtering
+            <Box px={2} pb={2}>
+              <ItemGrid
+                items={filteredAndSortedItems}
+                visibleCount={visibleCount}
+                selectedItems={selectedItems}
+                onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined}
+                isClickable={true}
+              />
+            </Box>
           ) : (
-            <Tabs variant="enclosed" colorScheme="orange" index={pendingSlot || filterBy !== 'all' ? undefined : 0}>
-              {pendingSlot || filterBy !== 'all' ? (
-                // Single view when filtering
-                <ItemGrid
-                  items={filteredAndSortedItems}
-                  visibleCount={visibleCount}
-                  selectedItems={selectedItems}
-                  onItemClick={handleItemClick}
-                  isClickable={true}
-                />
-              ) : (
-                // Tabbed view - tabs are in sticky header, just show panels here
-                <TabPanels mt={1}>
-                  <TabPanel px={0} py={1}>
-                    <ItemGrid items={itemsByType.all || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
-                  </TabPanel>
-                  <TabPanel px={0} py={1}>
-                    <ItemGrid items={itemsByType.weapon || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
-                  </TabPanel>
-                  <TabPanel px={0} py={1}>
-                    <ItemGrid items={itemsByType.armor || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
-                  </TabPanel>
-                  <TabPanel px={0} py={1}>
-                    <ItemGrid items={itemsByType.helmet || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
-                  </TabPanel>
-                  <TabPanel px={0} py={1}>
-                    <ItemGrid items={itemsByType.boots || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
-                  </TabPanel>
-                  <TabPanel px={0} py={1}>
-                    <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={handleItemClick} isClickable={true} />
-                  </TabPanel>
-                </TabPanels>
-              )}
-            </Tabs>
+            // Tabbed view - tabs are in sticky header
+            <TabPanels mt={1} px={2} pb={2}>
+              <TabPanel px={0} py={1}>
+                <ItemGrid items={itemsByType.all || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+              </TabPanel>
+              <TabPanel px={0} py={1}>
+                <ItemGrid items={itemsByType.weapon || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+              </TabPanel>
+              <TabPanel px={0} py={1}>
+                <ItemGrid items={itemsByType.armor || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+              </TabPanel>
+              <TabPanel px={0} py={1}>
+                <ItemGrid items={itemsByType.helmet || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+              </TabPanel>
+              <TabPanel px={0} py={1}>
+                <ItemGrid items={itemsByType.boots || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+              </TabPanel>
+              <TabPanel px={0} py={1}>
+                <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+              </TabPanel>
+            </TabPanels>
           )}
-          </Box>
+          </Tabs>
         </ModalBody>
       </ModalContent>
     </Modal>
