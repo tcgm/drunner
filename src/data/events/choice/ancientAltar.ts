@@ -24,7 +24,7 @@ export const ANCIENT_ALTAR: DungeonEvent = {
       outcome: {
         text: 'Your sacrifice is accepted. Power flows through you!',
         effects: [
-          { type: 'damage', target: 'random', value: 20 },
+          { type: 'damage', target: 'random', value: 20, isTrueDamage: true },
           { type: 'xp', value: 100 },
         ],
       },
