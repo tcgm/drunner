@@ -1,4 +1,4 @@
-import { GiWand } from 'react-icons/gi'
+import { GiFairyWand } from 'react-icons/gi'
 import type { BaseItemTemplate } from '../index'
 
 /**
@@ -7,7 +7,7 @@ import type { BaseItemTemplate } from '../index'
 export const WAND_BASE: BaseItemTemplate = {
   description: 'A compact magical focus',
   type: 'weapon',
-  icon: GiWand,
+  icon: GiFairyWand,
   baseNames: ['Wand', 'Rod'],
   stats: {
     attack: 5,
