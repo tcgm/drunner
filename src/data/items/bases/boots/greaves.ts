@@ -8,6 +8,7 @@ export const GREAVES_BASE: BaseItemTemplate = {
   description: 'Heavy armored leg protection',
   type: 'boots',
   icon: GiLegArmor,
+  baseNames: ['Greaves'],
   stats: {
     speed: 1,
     defense: 5,

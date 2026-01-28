@@ -8,6 +8,7 @@ export const BOW_BASE: BaseItemTemplate = {
   description: 'A ranged weapon for distance attacks',
   type: 'weapon',
   icon: GiBowArrow,
+  baseNames: ['Bow'],
   stats: {
     attack: 9,
     speed: 2,

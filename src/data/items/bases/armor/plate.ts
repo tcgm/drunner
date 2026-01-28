@@ -8,6 +8,7 @@ export const PLATE_ARMOR_BASE: BaseItemTemplate = {
   description: 'Heavy protective plating',
   type: 'armor',
   icon: GiLayeredArmor,
+  baseNames: ['Plate Armor', 'Plate Mail'],
   stats: {
     defense: 15,
     maxHp: 20,

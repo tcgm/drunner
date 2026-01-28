@@ -8,6 +8,7 @@ export const HOOD_BASE: BaseItemTemplate = {
   description: 'Cloth head covering',
   type: 'helmet',
   icon: GiHood,
+  baseNames: ['Hood', 'Cowl'],
   stats: {
     defense: 3,
     speed: 1,

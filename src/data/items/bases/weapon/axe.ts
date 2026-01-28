@@ -8,6 +8,7 @@ export const AXE_BASE: BaseItemTemplate = {
   description: 'A heavy chopping weapon',
   type: 'weapon',
   icon: GiBattleAxe,
+  baseNames: ['Axe'],
   stats: {
     attack: 12,
     speed: -2,

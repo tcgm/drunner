@@ -8,6 +8,7 @@ export const SWORD_BASE: BaseItemTemplate = {
   description: 'A balanced blade for close combat',
   type: 'weapon',
   icon: GiSwordsPower,
+  baseNames: ['Sword', 'Blade'],
   stats: {
     attack: 10,
   },

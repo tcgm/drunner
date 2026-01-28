@@ -6,6 +6,7 @@ import type { Item, ItemSlot } from '@/types'
  */
 export interface BaseItemTemplate extends Omit<Item, 'id' | 'name' | 'rarity' | 'value'> {
   materialBlacklist?: string[] // Material IDs this base can't use
+  baseNames?: string[] // Possible base names for variety (e.g., ["Staff", "Stave"])
 }
 
 export * from './weapon'

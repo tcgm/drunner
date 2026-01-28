@@ -8,6 +8,7 @@ export const STAFF_BASE: BaseItemTemplate = {
   description: 'A mystical channeling weapon',
   type: 'weapon',
   icon: GiWizardStaff,
+  baseNames: ['Staff', 'Stave'],
   stats: {
     attack: 8,
     magicPower: 5,

@@ -8,6 +8,7 @@ export const CHAINMAIL_BASE: BaseItemTemplate = {
   description: 'Interlocking metal rings',
   type: 'armor',
   icon: GiChestArmor,
+  baseNames: ['Chainmail'],
   stats: {
     defense: 10,
     maxHp: 15,

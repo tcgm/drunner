@@ -8,6 +8,7 @@ export const SANDALS_BASE: BaseItemTemplate = {
   description: 'Light open footwear',
   type: 'boots',
   icon: GiSandal,
+  baseNames: ['Sandals'],
   stats: {
     speed: 5,
   },

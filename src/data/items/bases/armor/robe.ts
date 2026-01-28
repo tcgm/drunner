@@ -8,6 +8,7 @@ export const ROBE_BASE: BaseItemTemplate = {
   description: 'Flowing magical vestments',
   type: 'armor',
   icon: GiRobe,
+  baseNames: ['Robe', 'Vestments'],
   stats: {
     defense: 4,
     maxHp: 8,

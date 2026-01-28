@@ -1,4 +1,4 @@
-import { GiSpellBook } from 'react-icons/gi'
+import { GiMagicSwirl } from 'react-icons/gi'
 import type { BaseItemTemplate } from '../index'
 
 /**
@@ -7,7 +7,8 @@ import type { BaseItemTemplate } from '../index'
 export const TALISMAN_BASE: BaseItemTemplate = {
   description: 'A mystical talisman',
   type: 'accessory2',
-  icon: GiSpellBook,
+  icon: GiMagicSwirl,
+  baseNames: ['Talisman'],
   stats: {
     attack: 3,
     magicPower: 3,

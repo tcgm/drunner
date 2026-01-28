@@ -8,6 +8,7 @@ export const AMULET_BASE: BaseItemTemplate = {
   description: 'A protective amulet',
   type: 'accessory2',
   icon: GiGemNecklace,
+  baseNames: ['Amulet', 'Necklace'],
   stats: {
     defense: 3,
     maxHp: 5,

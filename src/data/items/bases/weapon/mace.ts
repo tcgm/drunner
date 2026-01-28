@@ -8,6 +8,7 @@ export const MACE_BASE: BaseItemTemplate = {
   description: 'A crushing bludgeoning weapon',
   type: 'weapon',
   icon: GiMaceHead,
+  baseNames: ['Mace', 'Club'],
   stats: {
     attack: 11,
     defense: 2,

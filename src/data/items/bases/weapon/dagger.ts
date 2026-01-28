@@ -8,6 +8,7 @@ export const DAGGER_BASE: BaseItemTemplate = {
   description: 'A quick stabbing weapon',
   type: 'weapon',
   icon: GiStiletto,
+  baseNames: ['Dagger', 'Knife'],
   stats: {
     attack: 6,
     speed: 4,

@@ -177,6 +177,12 @@ function applyMaterialToStats(
  * Generate item name from material and base template
  */
 function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): string {
+  // If base template has explicit baseNames, randomly pick one
+  if ('baseNames' in baseTemplate && baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+    const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
+    return `${materialPrefix} ${randomName}`
+  }
+  
   // Extract base name from description or use type mapping
   const description = (baseTemplate.description || '').toLowerCase()
   
@@ -206,7 +212,6 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
   if (description.includes('sword') || description.includes('blade')) return `${materialPrefix} Sword`
   if (description.includes('axe') || description.includes('chopping')) return `${materialPrefix} Axe`
   if (description.includes('dagger') || description.includes('stabbing') || description.includes('quick')) return `${materialPrefix} Dagger`
-  if (description.includes('staff') || description.includes('mystical') || description.includes('channeling')) return `${materialPrefix} Staff`
   if (description.includes('bow') || description.includes('ranged') || description.includes('distance')) return `${materialPrefix} Bow`
   if (description.includes('mace') || description.includes('bludgeon') || description.includes('crushing')) return `${materialPrefix} Mace`
   
@@ -220,11 +225,14 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
   if (description.includes('sandals') || description.includes('open footwear')) return `${materialPrefix} Sandals`
   if (description.includes('boots') || description.includes('footwear')) return `${materialPrefix} Boots`
   
-  // Accessories - check last since "ring" is a common substring
+  // Accessories - check before weapons since "mystical" appears in both talisman and staff
   if (description.includes('ring') && !description.includes('rings')) return `${materialPrefix} Ring` // Avoid matching "metal rings"
   if (description.includes('amulet') || description.includes('necklace')) return `${materialPrefix} Amulet`
   if (description.includes('charm')) return `${materialPrefix} Charm`
   if (description.includes('talisman')) return `${materialPrefix} Talisman`
+  
+  // Staff weapon - check after talisman to avoid matching "mystical talisman"
+  if (description.includes('staff') || (description.includes('channeling') && description.includes('weapon'))) return `${materialPrefix} Staff`
   
   // Fallback: use type
   const typeNames: Record<string, string> = {

@@ -8,6 +8,7 @@ export const VEST_BASE: BaseItemTemplate = {
   description: 'Lightweight protective garment',
   type: 'armor',
   icon: GiChestArmor,
+  baseNames: ['Vest', 'Tunic'],
   stats: {
     defense: 6,
     maxHp: 10,

@@ -8,6 +8,7 @@ export const BOOTS_BASE: BaseItemTemplate = {
   description: 'Sturdy footwear',
   type: 'boots',
   icon: GiBoots,
+  baseNames: ['Boots'],
   stats: {
     speed: 3,
     defense: 2,
