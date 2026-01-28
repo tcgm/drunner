@@ -79,14 +79,19 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     onExit()
   }
   
-  // Victory check - player completed depth 100
-  if (dungeon.depth > 100 && !isGameOver) {
-    return <VictoryScreen depth={100} onExit={onExit} />
+  // Victory check - player completed max floors (check floor, not depth!)
+  if (dungeon.floor > GAME_CONFIG.dungeon.maxFloors) {
+    return <VictoryScreen depth={dungeon.depth} onExit={onExit} />
   }
   
-  // Game over check
-  if (isGameOver) {
+  // Game over check - but only show defeat screen if actually defeated
+  if (isGameOver && activeRun?.result !== 'victory') {
     return <GameOverScreen floor={dungeon.floor} depth={dungeon.depth} onExit={onExit} />
+  }
+  
+  // Victory screen - show if game is over with victory result
+  if (isGameOver && activeRun?.result === 'victory') {
+    return <VictoryScreen depth={dungeon.depth} onExit={onExit} />
   }
   
   // Filter out null heroes for components that expect Hero[]

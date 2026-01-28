@@ -572,6 +572,23 @@ export const useGameStore = create<GameStore>()(
       // Check if wiped
       const isWiped = updatedParty.every(h => h !== null && !h.isAlive)
       
+      if (isWiped) {
+        console.log('========== PARTY WIPED DETECTED ==========')
+        console.log('Event:', {
+          title: currentEvent.title,
+          type: currentEvent.type,
+          choiceText: choice.text
+        })
+        console.log('Updated Party State:', updatedParty.map(h => h ? {
+          name: h.name,
+          level: h.level,
+          hp: h.stats.hp,
+          maxHp: h.stats.maxHp,
+          isAlive: h.isAlive
+        } : null))
+        console.log('Current Floor:', state.dungeon.floor, 'Depth:', state.dungeon.depth)
+      }
+      
       // Capture death details if party wiped
       const deathDetails = isWiped ? {
         eventTitle: currentEvent.title,
@@ -596,6 +613,38 @@ export const useGameStore = create<GameStore>()(
         class: h.class.name,
         level: h.level
       })) : null
+      
+      // If party wiped, create completed run and add to history immediately
+      let completedRun: import('@/types').Run | null = null
+      let penalizedParty = updatedParty
+      let updatedRoster = state.heroRoster
+      
+      if (isWiped && prePenaltyLevels) {
+        console.log('Creating completed run immediately with pre-penalty levels:', prePenaltyLevels)
+        
+        // Create the completed run with pre-penalty levels
+        completedRun = {
+          ...state.activeRun!,
+          endDate: Date.now(),
+          result: 'defeat' as const,
+          finalDepth: state.dungeon.depth,
+          finalFloor: state.dungeon.floor,
+          heroesUsed: prePenaltyLevels
+        }
+        
+        console.log('Applying penalty to party. Before:', updatedParty.map(h => h ? { name: h.name, level: h.level } : null))
+        
+        // Apply death penalty to party
+        penalizedParty = applyPenaltyToParty(updatedParty)
+        
+        console.log('After penalty:', penalizedParty.map(h => h ? { name: h.name, level: h.level } : null))
+        
+        // Update roster with penalized heroes
+        updatedRoster = state.heroRoster.map(rosterHero => {
+          const penalizedVersion = penalizedParty.find(h => h?.id === rosterHero.id)
+          return penalizedVersion || rosterHero
+        })
+      }
       
       if (isWiped && prePenaltyLevels) {
         console.log('Party wiped! Saving pre-penalty levels:', prePenaltyLevels)
@@ -653,34 +702,47 @@ export const useGameStore = create<GameStore>()(
         ...(deathDetails ? { deathDetails } : {}) // Store death details if party wiped
       }
       
+      // Determine if we should lose gold
+      const loseGold = isWiped && GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
+      
       return {
         metaXp: state.metaXp + metaXpGained,
-        party: updatedParty,
+        party: isWiped ? penalizedParty : updatedParty,
+        heroRoster: isWiped ? updatedRoster : state.heroRoster,
         dungeon: {
           ...state.dungeon,
-          gold: updatedGold,
+          gold: loseGold ? 0 : updatedGold,
           inventory: [...state.dungeon.inventory, ...resolvedOutcome.items], // Add found items to inventory
           eventLog: [...state.dungeon.eventLog, eventLogEntry],
           currentEvent: null // Clear current event after resolution
         },
         isGameOver: isWiped,
         lastOutcome: resolvedOutcome,
-        activeRun: updatedRun
+        activeRun: completedRun || updatedRun,
+        runHistory: completedRun ? [completedRun, ...state.runHistory] : state.runHistory,
+        hasPendingPenalty: false
       }
     }),
   
   endGame: () => 
     set((state) => {
-      console.log('endGame called, activeRun result:', state.activeRun?.result)
+      console.log('========== endGame called ==========')
+      console.log('activeRun:', state.activeRun ? {
+        result: state.activeRun.result,
+        floor: state.activeRun.finalFloor,
+        depth: state.activeRun.finalDepth,
+        heroesUsed: state.activeRun.heroesUsed
+      } : 'null')
       
-      // Prevent applying penalty multiple times
+      // Penalty and history addition should already be done in resolveEventChoice
+      // This function now does nothing if run is already completed
       if (!state.activeRun || state.activeRun.result !== 'active') {
-        console.log('endGame skipped - run not active')
+        console.log('endGame: Run already completed, skipping')
         return state
       }
       
-      console.log('endGame: Applying penalty. Party before:', state.party.map(h => h ? { name: h.name, level: h.level } : null))
-      console.log('endGame: heroesUsed before:', state.activeRun.heroesUsed)
+      console.warn('endGame: Run still active - this should not happen! Applying penalty as fallback.')
+      console.log('Party before fallback penalty:', state.party.map(h => h ? { name: h.name, level: h.level } : null))
       
       // Complete the active run
       const completedRun: import('@/types').Run = {
@@ -689,17 +751,20 @@ export const useGameStore = create<GameStore>()(
         result: 'defeat',
         finalDepth: state.dungeon.depth,
         finalFloor: state.dungeon.floor,
-        // heroesUsed already contains pre-penalty levels from resolveEventChoice
+        heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
+          id: h.id,
+          name: h.name,
+          class: h.class.name,
+          level: h.level
+        }))
       }
-      
-      console.log('endGame: completedRun.heroesUsed:', completedRun.heroesUsed)
       
       // Lose all gold on defeat if penalty is enabled
       const loseGold = GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
       
       // Apply death penalty immediately
       const penalizedParty = applyPenaltyToParty(state.party)
-      console.log('endGame: Party after penalty:', penalizedParty.map(h => h ? { name: h.name, level: h.level } : null))
+      console.log('Party after fallback penalty:', penalizedParty.map(h => h ? { name: h.name, level: h.level } : null))
       
       const updatedRoster = state.heroRoster.map(rosterHero => {
         const penalizedVersion = penalizedParty.find(h => h?.id === rosterHero.id)
@@ -711,7 +776,7 @@ export const useGameStore = create<GameStore>()(
         heroRoster: updatedRoster,
         isGameOver: true,
         hasPendingPenalty: false,
-        activeRun: completedRun, // Keep the run active to show pre-penalty levels
+        activeRun: completedRun,
         runHistory: [completedRun, ...state.runHistory],
         dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
       }

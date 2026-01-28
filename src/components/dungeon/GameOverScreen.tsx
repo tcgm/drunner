@@ -19,11 +19,28 @@ export default function GameOverScreen({ floor, depth, onExit }: GameOverScreenP
   const { party, activeRun, endGame } = useGameStore()
   const penaltyType = GAME_CONFIG.deathPenalty.type
   
+  console.log('========== GameOverScreen RENDERED ==========')
+  console.log('Props:', { floor, depth })
+  console.log('activeRun:', activeRun ? {
+    result: activeRun.result,
+    finalFloor: activeRun.finalFloor,
+    finalDepth: activeRun.finalDepth,
+    heroesUsed: activeRun.heroesUsed,
+    deathDetails: activeRun.deathDetails
+  } : 'null')
+  console.log('Party current state:', party.map(h => h ? {
+    name: h.name,
+    level: h.level,
+    hp: h.stats.hp,
+    isAlive: h.isAlive
+  } : null))
+  
   // Use finalFloor from activeRun if available, otherwise fall back to floor prop
   const displayFloor = activeRun?.finalFloor ?? floor
   
-  // End the run when the game over screen is shown
+  // End the run when the game over screen is shown (may be no-op if already completed)
   useEffect(() => {
+    console.log('GameOverScreen: Calling endGame()')
     endGame()
   }, [endGame])
 
