@@ -1,4 +1,4 @@
-import { GiCutDiamond } from 'react-icons/gi'
+import { GiGlobeRing } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -9,7 +9,7 @@ export const BAND_OF_THE_ARCHMAGE: Omit<Item, 'id'> = {
   description: 'A ring worn by the greatest mages in history. Channels immense magical power.',
   type: 'accessory1',
   rarity: 'epic',
-  icon: GiCutDiamond,
+  icon: GiGlobeRing,
   stats: {
     magicPower: 50,
     defense: 20,

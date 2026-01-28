@@ -25,3 +25,5 @@ dist-ssr
 HANDOFF.md
 SETUP_INSTRUCTIONS.md
 notes.md
+
+devscripts/

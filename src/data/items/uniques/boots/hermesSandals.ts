@@ -1,4 +1,4 @@
-import { GiWingedSword } from 'react-icons/gi'
+import { GiWingfoot } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -9,7 +9,7 @@ export const HERMES_SANDALS: Omit<Item, 'id'> = {
   description: 'Winged sandals of the messenger god. Grant supernatural swiftness to the wearer.',
   type: 'boots',
   rarity: 'legendary',
-  icon: GiWingedSword,
+  icon: GiWingfoot,
   stats: {
     speed: 50,
     defense: 20,
