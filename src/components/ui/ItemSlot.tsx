@@ -110,6 +110,12 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
   const ItemIcon = item.icon || GiTreasure
 
   const handleClick = () => {
+    // Check if there's a global swap handler active (from HeroModal)
+    if (typeof window !== 'undefined' && (window as any).__heroModalSwapHandler) {
+      (window as any).__heroModalSwapHandler(item)
+      return
+    }
+    
     if (onClick) {
       onClick()
     } else if (isClickable) {

@@ -1,8 +1,9 @@
-import { VStack, Box, Text, SimpleGrid, HStack, Button } from '@chakra-ui/react'
+import { VStack, Box, Text, SimpleGrid, HStack, Button, Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, ItemSlot, Item } from '../../types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
+import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 // import { useGameStore } from '@/store/gameStore'
@@ -64,47 +65,34 @@ export function EquipmentPanel({
     if (!selectedHero) return null
     
     const item = selectedHero.equipment[slot]
-    const SlotIcon = SLOT_ICONS[slot]
     const isEmpty = !item
 
     if (isEmpty) {
-      // Empty slot - clickable to equip
+      // Empty slot - clickable to equip with upgrade indicator
       return (
         <Box
-          className={`equipment-slot equipment-slot--empty equipment-slot--${slot}`}
           key={slot}
-          position="relative"
-          bg="gray.800"
-          borderRadius="lg"
-          borderWidth="2px"
-          borderColor="gray.600"
-          p={3}
-          cursor="pointer"
-          transition="all 0.2s"
-          _hover={{ borderColor: 'orange.500', transform: 'translateY(-2px)' }}
           onClick={() => selectedHeroIndex !== null && onSlotClick(selectedHeroIndex, slot)}
-          height="80px"
-          width="80px"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
+          cursor="pointer"
         >
-          <SlotIcon size={32} color="#4A5568" />
-          <Text fontSize="2xs" color="gray.600" textAlign="center" mt={1}>
-            {SLOT_NAMES[slot]}
-          </Text>
+          <EquipmentSlot
+            slot={slot}
+            item={null}
+            availableItems={bankInventory}
+            showSwapButton={false}
+          />
         </Box>
       )
     }
 
-    // Equipped item - use ItemSlot component
+    // Equipped item - use EquipmentSlot component with unequip button
     return (
-      <Box className={`equipment-slot equipment-slot--filled equipment-slot--${slot}`} key={slot} position="relative">
-        <ItemSlotComponent
+      <Box key={slot} position="relative">
+        <EquipmentSlot
+          slot={slot}
           item={restoreItemIcon(item)}
-          size="md"
-          isClickable={true}
+          availableItems={bankInventory}
+          showSwapButton={false}
         />
         <Button
           position="absolute"
@@ -125,6 +113,7 @@ export function EquipmentPanel({
           w="24px"
           h="24px"
           p={0}
+          zIndex={3}
         >
           ×
         </Button>

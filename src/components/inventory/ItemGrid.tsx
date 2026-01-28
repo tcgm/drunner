@@ -99,8 +99,7 @@ export const ItemGrid = memo(function ItemGrid({
       className="item-grid"
       display="grid"
       gridTemplateColumns="repeat(auto-fill, 80px)"
-      gap={2.5}
-      minH="400px"
+      gap="8px"
       justifyContent="start"
     >
       {visibleItems.map((item) => (

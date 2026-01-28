@@ -909,15 +909,31 @@ export const useGameStore = create<GameStore>()(
   
   equipItemToHero: (heroId, item, slot) =>
     set((state) => {
+      // Find the hero and get the currently equipped item
+      const hero = state.party.find(h => h?.id === heroId)
+      const oldItem = hero?.equipment[slot] || null
+      
+      // Equip the new item
       const updatedParty = state.party.map(h =>
         h?.id === heroId ? equipItem(h, item, slot) : h
       )
       const updatedRoster = state.heroRoster.map(h =>
         h.id === heroId ? equipItem(h, item, slot) : h
       )
+      
+      // Remove the new item from dungeon inventory and add the old item back
+      let updatedInventory = state.dungeon.inventory.filter(i => i.id !== item.id)
+      if (oldItem) {
+        updatedInventory = [...updatedInventory, oldItem]
+      }
+      
       return {
         party: updatedParty,
-        heroRoster: updatedRoster
+        heroRoster: updatedRoster,
+        dungeon: {
+          ...state.dungeon,
+          inventory: updatedInventory
+        }
       }
     }),
   
