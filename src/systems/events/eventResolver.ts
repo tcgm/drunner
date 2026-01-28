@@ -17,6 +17,17 @@ export interface ResolvedEffect {
   originalValue?: number // For damage: the pre-defense value
   item?: Item
   description: string
+  damageBreakdown?: { heroId: string, heroName: string, damage: number, originalDamage: number }[] // For grouped damage effects
+}
+
+/**
+ * Format a list of names with proper grammar (e.g., "A, B, and C")
+ */
+function formatNameList(names: string[]): string {
+  if (names.length === 0) return ''
+  if (names.length === 1) return names[0]
+  if (names.length === 2) return `${names[0]} and ${names[1]}`
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`
 }
 
 /**
@@ -186,23 +197,57 @@ export function resolveEventOutcome(
         const baseDamage = effect.value || 0
         const scaledDamage = scaleValue(baseDamage, depth, GAME_CONFIG.scaling.damage)
         const damage = Math.floor(scaledDamage * GAME_CONFIG.multipliers.damage)
+        const isTrueDamage = effect.isTrueDamage || false
         
-        // Calculate actual damage for each hero and create individual effects
+        // Calculate actual damage for each hero and track breakdown
+        const damageBreakdown: { heroId: string, heroName: string, damage: number, originalDamage: number }[] = []
+        
         targets.forEach(hero => {
-          const actualDamage = Math.max(1, damage - Math.floor(hero.stats.defense * GAME_CONFIG.combat.defenseReduction))
+          const actualDamage = isTrueDamage 
+            ? damage 
+            : Math.max(1, damage - Math.floor(hero.stats.defense * GAME_CONFIG.combat.defenseReduction))
+          
           hero.stats.hp = Math.max(0, hero.stats.hp - actualDamage)
           if (hero.stats.hp === 0) {
             hero.isAlive = false
           }
           
-          // Create individual effect for each hero showing actual vs original damage
-          resolvedEffects.push({
-            type: 'damage',
-            target: [hero.id],
-            value: actualDamage,
-            originalValue: damage,
-            description: `${hero.name} took ${actualDamage} (${damage}) damage`
+          damageBreakdown.push({
+            heroId: hero.id,
+            heroName: hero.name,
+            damage: actualDamage,
+            originalDamage: damage
           })
+        })
+        
+        // Create a single grouped damage effect
+        // Group heroes by same damage amounts
+        const damageGroups = new Map<string, string[]>()
+        damageBreakdown.forEach(d => {
+          const key = isTrueDamage 
+            ? `${d.damage}` 
+            : `${d.damage}|${d.originalDamage}`
+          if (!damageGroups.has(key)) {
+            damageGroups.set(key, [])
+          }
+          damageGroups.get(key)!.push(d.heroName)
+        })
+        
+        const damageDesc = Array.from(damageGroups.entries()).map(([key, names]) => {
+          const [actualDmg, originalDmg] = key.split('|')
+          const heroList = formatNameList(names)
+          return isTrueDamage
+            ? `${heroList} took ${actualDmg} damage`
+            : `${heroList} took ${actualDmg} (${originalDmg}) damage`
+        }).join(', ')
+        
+        resolvedEffects.push({
+          type: 'damage',
+          target: targets.map(h => h.id),
+          value: damageBreakdown.reduce((sum, d) => sum + d.damage, 0),
+          originalValue: damage,
+          description: damageDesc,
+          damageBreakdown
         })
         break
       }
