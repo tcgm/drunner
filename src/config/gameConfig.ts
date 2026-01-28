@@ -105,6 +105,9 @@ export const GAME_CONFIG = {
     maxEventsPerFloor: 15, // Maximum number of normal events before floor boss
     allowMerchantBeforeBoss: true, // Can merchant appear as last event before boss
     allowRestBeforeBoss: true, // Can rest appear before boss
+    floorUnlockFraction: 0.5, // Floors at or below (party avg level * this) are free to enter
+    floorSkipBaseCost: 100, // Base alkahest cost to skip to a floor
+    floorSkipCostMultiplier: 1.5, // Cost multiplier per floor skipped beyond free floors
   },
 
   // Item Management

@@ -7,6 +7,7 @@ import DungeonScreen from '@components/screens/DungeonScreen'
 import RunHistoryScreen from '@components/screens/RunHistoryScreen'
 import DevTools from '@components/ui/DevTools'
 import { useGameStore } from '@store/gameStore'
+import type { Hero } from '@/types'
 
 const MotionBox = motion.create(Box)
 
@@ -35,11 +36,24 @@ const screenVariants = {
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
-  const { activeRun, retreatFromDungeon, startDungeon } = useGameStore()
+  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   
-  const handleStartDungeon = () => {
-    startDungeon() // Actually start the dungeon in the game store
+  const handleStartDungeon = (startingFloor: number = 1) => {
+    // Calculate alkahest cost
+    const activeHeroes = party.filter((h): h is Hero => h !== null)
+    const partyAvgLevel = activeHeroes.length > 0
+      ? Math.floor(activeHeroes.reduce((sum, h) => sum + h.level, 0) / activeHeroes.length)
+      : 1
+    const freeFloorThreshold = Math.floor(partyAvgLevel * 0.5) // Using the config value
+    
+    let alkahestCost = 0
+    if (startingFloor > freeFloorThreshold) {
+      const floorsSkipped = startingFloor - freeFloorThreshold
+      alkahestCost = Math.floor(100 * Math.pow(1.5, floorsSkipped - 1))
+    }
+    
+    startDungeon(startingFloor, alkahestCost) // Actually start the dungeon in the game store
     setCurrentScreen('dungeon')
   }
   

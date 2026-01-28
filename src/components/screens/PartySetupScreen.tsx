@@ -10,11 +10,12 @@ import { EquipmentPanel } from '../party/EquipmentPanel'
 import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import { ConfirmStartWithOverflowModal } from '../party/ConfirmStartWithOverflowModal'
+import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 
 interface PartySetupScreenProps {
   onBack: () => void
-  onStart: () => void
+  onStart: (startingFloor?: number) => void
 }
 
 export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
@@ -57,6 +58,9 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Start confirmation modal
   const { isOpen: isConfirmStartOpen, onOpen: onConfirmStartOpen, onClose: onConfirmStartClose } = useDisclosure()
+
+  // Floor selection modal
+  const { isOpen: isFloorSelectionOpen, onOpen: onFloorSelectionOpen, onClose: onFloorSelectionClose } = useDisclosure()
 
   // Auto-open overflow modal if there are overflow items
   useState(() => {
@@ -152,14 +156,19 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     if (overflowInventory.length > 0) {
       onConfirmStartOpen()
     } else {
-      onStart()
+      onFloorSelectionOpen()
     }
   }
 
   const handleConfirmStart = () => {
     clearOverflow()
     onConfirmStartClose()
-    onStart()
+    onFloorSelectionOpen()
+  }
+
+  const handleFloorSelected = (floor: number) => {
+    onFloorSelectionClose()
+    onStart(floor)
   }
 
   return (
@@ -238,6 +247,15 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onClose={onConfirmStartClose}
         overflowInventory={overflowInventory}
         onConfirm={handleConfirmStart}
+      />
+
+      {/* Floor Selection Modal */}
+      <FloorSelectionModal
+        isOpen={isFloorSelectionOpen}
+        onClose={onFloorSelectionClose}
+        onConfirm={handleFloorSelected}
+        party={party}
+        alkahest={useGameStore.getState().alkahest}
       />
     </Box>
   )

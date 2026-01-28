@@ -203,7 +203,7 @@ interface GameStore extends GameState {
   addHeroByClass: (heroClass: any, slotIndex?: number) => void
   removeHero: (heroId: string) => void
   updateHero: (heroId: string, updates: Partial<Hero>) => void
-  startDungeon: () => void
+  startDungeon: (startingFloor?: number, alkahestCost?: number) => void
   advanceDungeon: () => void
   selectChoice: (choice: EventChoice) => void
   endGame: () => void
@@ -336,8 +336,11 @@ export const useGameStore = create<GameStore>()(
       }
     }),
   
-  startDungeon: () => 
+  startDungeon: (startingFloor = 1, alkahestCost = 0) => 
     set((state) => {
+      // Deduct alkahest cost
+      const newAlkahest = Math.max(0, state.alkahest - alkahestCost)
+      
       // Penalty should already be applied by endGame
       // Revive all party members and full heal at dungeon start
       const healedParty = state.party.map(hero => hero ? ({
@@ -353,10 +356,10 @@ export const useGameStore = create<GameStore>()(
       const newRun: import('@/types').Run = {
         id: `run-${Date.now()}`,
         startDate: Date.now(),
-        startDepth: 1,
-        finalDepth: 1,
-        startFloor: 1,
-        finalFloor: 1,
+        startDepth: startingFloor,
+        finalDepth: startingFloor,
+        startFloor: startingFloor,
+        finalFloor: startingFloor,
         result: 'active',
         goldEarned: 0,
         goldSpent: 0,
@@ -394,12 +397,13 @@ export const useGameStore = create<GameStore>()(
         Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
       ) + GAME_CONFIG.dungeon.minEventsPerFloor
       
-      const event = getNextEvent(1, 1, false, false, [])
+      const event = getNextEvent(startingFloor, startingFloor, false, false, [])
       return {
         party: healedParty,
+        alkahest: newAlkahest,
         dungeon: { 
-          depth: 1,
-          floor: 1,
+          depth: startingFloor,
+          floor: startingFloor,
           eventsThisFloor: 0,
           eventsRequiredThisFloor: eventsRequired,
           currentEvent: event,
