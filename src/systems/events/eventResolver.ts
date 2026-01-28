@@ -146,14 +146,14 @@ function generateItemFromSpec(spec: {
 
   // For all other cases, use the centralized generateItem function
   // This ensures consistent name generation, repair logic, and alkahest fallback
-  if (spec.itemType) {
+  if (spec.itemType || spec.material || spec.baseTemplate) {
     return generateItem(
       depth, 
       spec.itemType === 'random' ? undefined : spec.itemType,
       spec.minRarity,
       spec.maxRarity,
       spec.rarityBoost || 0,
-      spec.material,
+      spec.material || spec.baseTemplate,
       spec.modifiers || []
     )
   }
