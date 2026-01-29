@@ -23,15 +23,20 @@ jobs:
         run: |
           echo "Listing dist directory:"
           ls -la dist/
-          echo "Checking /sites:"
-          ls -la /sites/ || echo "/sites not accessible"
       
       - name: Deploy to Pages
         run: |
-          echo "Creating directory: /sites/${{ gitea.repository }}"
-          mkdir -p /sites/${{ gitea.repository }}
-          echo "Copying files..."
-          cp -r dist/* /sites/${{ gitea.repository }}/
-          echo "Verifying deployment:"
-          ls -la /sites/${{ gitea.repository }}/
+          echo "Deploying to /sites/${{ gitea.repository }}"
+          
+          # Create a temporary container with the sites volume mounted
+          docker run --rm \
+            -v gitea_sites:/sites \
+            -v $(pwd)/dist:/source:ro \
+            alpine sh -c "
+              mkdir -p /sites/${{ gitea.repository }} && \
+              cp -r /source/* /sites/${{ gitea.repository }}/ && \
+              echo 'Files copied to volume:' && \
+              ls -la /sites/${{ gitea.repository }}/
+            "
+          
           echo "✅ Deployed!"
