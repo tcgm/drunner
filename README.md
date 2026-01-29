@@ -79,6 +79,19 @@ Visit `http://localhost:5173` to play the game.
 
 ---
 
+## 📄 License
+
+This project is licensed under the **GNU Affero General Public License v3.0** (AGPL-3.0).
+
+See the [LICENSE](LICENSE) file for the full license text.
+
+**Key points:**
+- You can freely use, modify, and distribute this software
+- If you modify and deploy this on a network server, you must provide the source code to users
+- Any modifications must also be licensed under AGPL-3.0
+
+---
+
 ## 📦 Project Structure
 
 ```

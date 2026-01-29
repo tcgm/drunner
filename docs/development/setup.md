@@ -17,7 +17,7 @@ Development environment setup for Dungeon Runner.
 
 ### 1. Clone Repository
 ```powershell
-git clone https://github.com/yourusername/drunner.git
+git clone http://192.168.1.11:14000/TCGM/drunner.git
 cd drunner
 ```
 

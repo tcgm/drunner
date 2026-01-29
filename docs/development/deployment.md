@@ -39,8 +39,8 @@ This creates an optimized production build in the `dist/` folder.
    vercel --prod
    ```
 
-**Or use Vercel GitHub Integration:**
-- Connect repository to Vercel
+**Or use Vercel Git Integration:**
+- Connect Git repository to Vercel
 - Auto-deploy on push to `main` branch
 - Environment variables in Vercel dashboard
 
@@ -60,7 +60,7 @@ This creates an optimized production build in the `dist/` folder.
 
 **Or use Netlify UI:**
 - Drag and drop `dist/` folder to netlify.com
-- Or connect GitHub repository for auto-deploy
+- Or connect Git repository for auto-deploy
 
 **Configuration** (`netlify.toml`):
 ```toml
