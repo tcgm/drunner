@@ -16,9 +16,22 @@ jobs:
       
       - run: npm ci
       
-      - name: Build (skip type check)
+      - name: Build
         run: npx vite build
       
-      - run: |
+      - name: Check build output
+        run: |
+          echo "Listing dist directory:"
+          ls -la dist/
+          echo "Checking /sites:"
+          ls -la /sites/ || echo "/sites not accessible"
+      
+      - name: Deploy to Pages
+        run: |
+          echo "Creating directory: /sites/${{ gitea.repository }}"
           mkdir -p /sites/${{ gitea.repository }}
+          echo "Copying files..."
           cp -r dist/* /sites/${{ gitea.repository }}/
+          echo "Verifying deployment:"
+          ls -la /sites/${{ gitea.repository }}/
+          echo "✅ Deployed!"
