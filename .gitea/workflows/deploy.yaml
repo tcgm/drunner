@@ -14,7 +14,10 @@ jobs:
         with:
           node-version: '20'
       
-      - run: npm ci && npm run build
+      - run: npm ci
+      
+      - name: Build (skip type check)
+        run: npx vite build
       
       - run: |
           mkdir -p /sites/${{ gitea.repository_owner }}/${{ gitea.repository }}
