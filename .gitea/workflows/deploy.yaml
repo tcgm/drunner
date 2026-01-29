@@ -7,10 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    container:
-      image: docker.gitea.com/runner-images:ubuntu-latest
-      volumes:
-        - /run/desktop/mnt/host/e/dockers/gitea/sites:/sites
     steps:
       - uses: actions/checkout@v3
       
@@ -30,8 +26,9 @@ jobs:
       
       - name: Deploy to Pages
         run: |
-          echo "Deploying to /sites/${{ gitea.repository }}"
-          mkdir -p /sites/${{ gitea.repository }}
-          cp -r dist/* /sites/${{ gitea.repository }}/
-          echo "✅ Deployed!"
-          ls -la /sites/${{ gitea.repository }}/
+          echo "Deploying to gitea_sites volume at ${{ gitea.repository }}"
+          cd dist
+          tar -czf - . | docker run --rm -i \
+            --network gitea_gitea \
+            -v gitea_sites:/sites \
+            alpine sh -c "mkdir -p /sites/${{ gitea.repository }} && tar -xzf - -C /sites/${{ gitea.repository }} && echo '✅ Deployed!' && ls -la /sites/${{ gitea.repository }}/"
