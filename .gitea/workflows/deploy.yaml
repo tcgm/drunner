@@ -17,6 +17,8 @@ jobs:
       - run: npm ci
       
       - name: Build
+        env:
+          BASE_URL: /${{ gitea.repository }}/
         run: npx vite build
       
       - name: Check build output
