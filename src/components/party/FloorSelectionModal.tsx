@@ -20,7 +20,7 @@ import {
   Divider,
 } from '@chakra-ui/react'
 import { Gi3dStairs, GiCrystalShine } from 'react-icons/gi'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { Hero } from '@/types'
 
@@ -53,6 +53,13 @@ export default function FloorSelectionModal({
   const freeFloorThreshold = Math.floor(
     partyAvgLevel * GAME_CONFIG.dungeon.floorUnlockFraction
   )
+
+  // Set selected floor to last free floor when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedFloor(freeFloorThreshold)
+    }
+  }, [isOpen, freeFloorThreshold])
 
   // Calculate alkahest cost
   const alkahestCost = useMemo(() => {
@@ -145,6 +152,13 @@ export default function FloorSelectionModal({
                   min={1}
                   max={GAME_CONFIG.dungeon.maxFloors}
                   w="120px"
+                  onWheel={(e) => {
+                    e.preventDefault()
+                    const delta = e.deltaY > 0 ? -1 : 1
+                    setSelectedFloor((prev) =>
+                      Math.max(1, Math.min(GAME_CONFIG.dungeon.maxFloors, prev + delta))
+                    )
+                  }}
                 >
                   <NumberInputField
                     textAlign="center"
