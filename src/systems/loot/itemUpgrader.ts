@@ -78,12 +78,18 @@ export function findLowestRarityItemInCollection(items: Item[]): Item | null {
 /**
  * Upgrade an item to the next rarity tier
  * Returns a new item of the same type but higher rarity
+ * Unique items cannot be upgraded and will return null
  */
 export function upgradeItemRarity(
   item: Item,
   depth: number,
   rarityBoost: number = 0
 ): Item | null {
+  // Unique items should never be upgraded
+  if (item.isUnique) {
+    return null
+  }
+  
   const nextRarity = getNextRarity(item.rarity)
   if (!nextRarity) {
     return null // Can't upgrade mythic items
