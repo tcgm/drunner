@@ -150,7 +150,7 @@ export const GAME_CONFIG = {
     defenseReduction: 0.5, // 50% of defense reduces damage (flat formula)
 
     // Percentage formula settings
-    percentageBase: 200, // Base value for percentage formula (higher = less reduction per point)
+    percentageBase: 100, // Base value for percentage formula (higher = less reduction per point)
 
     // Logarithmic formula settings
     logFactor: 0.045, // Scaling factor for logarithmic formula
@@ -186,10 +186,10 @@ export const GAME_CONFIG = {
 
   // Scaling
   scaling: {
-    damage: 0.2, // 10% per floor
+    damage: 0.35, // 10% per floor
     healing: 0.015, // 1.5% per floor
     rewards: 0.05, // 5% per floor (XP/Gold)
-    statRequirements: 0.15, // 15% per floor
+    statRequirements: 0.25, // 15% per floor
   },
 
   // Event system
