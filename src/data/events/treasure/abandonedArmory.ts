@@ -1,5 +1,6 @@
 import type { DungeonEvent } from '@/types'
 import { IRON, STEEL } from '@/data/items/materials'
+import { GiAbdominalArmor } from 'react-icons/gi'
 
 export const ABANDONED_ARMORY: DungeonEvent = {
   id: 'abandoned-armory',
@@ -49,5 +50,5 @@ export const ABANDONED_ARMORY: DungeonEvent = {
     },
   ],
   depth: 3,
-  icon: GiChestArmor,
+  icon: GiAbdominalArmor,
 }

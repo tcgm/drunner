@@ -2,6 +2,7 @@ import type { DungeonEvent } from '@/types'
 import { STEEL, IRON, MITHRIL } from '@/data/items/materials'
 import { CHAINMAIL_BASE } from '@/data/items/bases/armor/chainmail'
 import { PLATE_ARMOR_BASE } from '@/data/items/bases/armor/plate'
+import { GiSwordInStone } from 'react-icons/gi'
 
 export const ARMORY_CACHE: DungeonEvent = {
   id: 'armory-cache',
@@ -49,5 +50,5 @@ export const ARMORY_CACHE: DungeonEvent = {
     },
   ],
   depth: 5,
-  icon: GiSwordsPower,
+  icon: GiSwordInStone,
 }

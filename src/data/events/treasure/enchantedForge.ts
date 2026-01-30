@@ -2,6 +2,7 @@ import type { DungeonEvent } from '@/types'
 import { STEEL, MITHRIL, DRAGONSCALE } from '@/data/items/materials'
 import { EXCALIBUR } from '@/data/items/uniques/weapons/excalibur'
 import { RING_OF_OMNIPOTENCE } from '@/data/items/uniques/accessories/ringOfOmnipotence'
+import { GiAnvil } from 'react-icons/gi'
 
 export const ENCHANTED_FORGE: DungeonEvent = {
   id: 'enchanted-forge',

@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiGoldBar } from 'react-icons/gi'
+import { GiDrakkarDragon, GiGoldBar } from 'react-icons/gi'
 
 export const DRAGON_HOARD: DungeonEvent = {
   id: 'dragon-hoard',
@@ -102,5 +102,5 @@ export const DRAGON_HOARD: DungeonEvent = {
     },
   ],
   depth: 15,
-  icon: GiGoldBar,
+  icon: GiDrakkarDragon,
 }
