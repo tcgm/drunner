@@ -21,7 +21,7 @@ export const DUNGEON_GUARDIAN: DungeonEvent = {
       text: 'Target the control crystal',
       requirements: {
         stat: 'attack',
-        value: 18,
+        minValue: 18,
       },
       outcome: {
         text: 'You shatter the crystal! The guardian crumbles!',
