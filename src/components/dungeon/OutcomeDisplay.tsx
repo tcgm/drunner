@@ -68,6 +68,28 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
         </Text>
       </MotionBox>
 
+      <Divider borderColor="gray.700" />
+
+      {/* Continue Button - Positioned above results but revealed in same order */}
+      <MotionBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: outcome.effects.length * 0.05 + 0.3
+        }}
+      >
+        <Button
+          size="md"
+          colorScheme="orange"
+          onClick={onContinue}
+          alignSelf="center"
+          px={8}
+          w="full"
+        >
+          Continue
+        </Button>
+      </MotionBox>
+
       {/* Effects */}
       {outcome.effects.length > 0 && (
         <VStack className="outcome-display-effects" spacing={1} align="stretch" flex={1} overflowY="auto" overflowX="hidden">
@@ -134,28 +156,6 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
           </AnimatePresence>
         </VStack>
       )}
-
-      <Divider borderColor="gray.700" />
-
-      {/* Continue Button */}
-      <MotionBox
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: outcome.effects.length * 0.05 + 0.3
-        }}
-      >
-        <Button
-          size="md"
-          colorScheme="orange"
-          onClick={onContinue}
-          alignSelf="center"
-          px={8}
-          w="full"
-        >
-          Continue
-        </Button>
-      </MotionBox>
     </VStack>
   )
 }
