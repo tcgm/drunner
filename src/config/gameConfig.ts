@@ -153,7 +153,7 @@ export const GAME_CONFIG = {
     percentageBase: 100, // Base value for percentage formula (higher = less reduction per point)
 
     // Logarithmic formula settings
-    logFactor: 0.045, // Scaling factor for logarithmic formula
+    logFactor: 0.035, // Scaling factor for logarithmic formula
     // Higher values = more reduction per point of defense, lower values = less reduction
 
     // Hybrid formula settings
