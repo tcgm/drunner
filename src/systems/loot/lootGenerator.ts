@@ -1,4 +1,4 @@
-import type { Item, ItemSlot, ItemRarity } from '@/types'
+import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
@@ -256,7 +256,7 @@ export function generateItem(
   minRarity?: ItemRarity,
   maxRarity?: ItemRarity,
   rarityBoost: number = 0,
-  forceMaterial?: string | Material,
+  forceMaterialOrBase?: string | Material | BaseTemplate,
   modifiers: string[] = []
 ): Item {
   const adjustedDepth = depth + rarityBoost
@@ -303,25 +303,41 @@ export function generateItem(
     }
   }
   
-  // Generate procedural item from material + base
-  // Strategy: Keep trying until we find a compatible combination
-  let material = forceMaterial 
-    ? (typeof forceMaterial === 'string' ? getMaterialById(forceMaterial) : forceMaterial)
-    : getCompatibleMaterial(rarity, type)
-  let baseTemplate = getCompatibleBase(type, material.id)
+  // Determine if we have a forced base template or material
+  let material: Material | undefined
+  let baseTemplate: BaseTemplate | undefined
+
+  if (forceMaterialOrBase) {
+    // Check if it's a BaseTemplate (has 'description' and 'stats')
+    if (typeof forceMaterialOrBase === 'object' && 'description' in forceMaterialOrBase && 'stats' in forceMaterialOrBase) {
+      baseTemplate = forceMaterialOrBase as BaseTemplate
+      // Get a compatible material for the base's type
+      material = getCompatibleMaterial(rarity, baseTemplate.type)
+    } else {
+      // It's a Material or material ID string
+      material = typeof forceMaterialOrBase === 'string'
+        ? getMaterialById(forceMaterialOrBase)
+        : forceMaterialOrBase
+      baseTemplate = getCompatibleBase(type, material.id)
+    }
+  } else {
+    // Generate procedural item from material + base
+    material = getCompatibleMaterial(rarity, type)
+    baseTemplate = getCompatibleBase(type, material.id)
+  }
   
   // Retry up to 10 times if we can't find a compatible combination
   let attempts = 0
   const maxAttempts = 10
   
-  while (!baseTemplate && attempts < maxAttempts) {
+  while ((!baseTemplate || !material) && attempts < maxAttempts) {
     material = getCompatibleMaterial(rarity, type)
     baseTemplate = getCompatibleBase(type, material.id)
     attempts++
   }
   
   // If we still failed after retries, give alkahest instead
-  if (!baseTemplate) {
+  if (!baseTemplate || !material) {
     console.warn(`Failed to generate compatible item for type ${type} with rarity ${rarity} after ${maxAttempts} attempts - giving alkahest`)
     // Create an alkahest shard item that represents raw crafting material
     const alkahestValue = Math.floor(GAME_CONFIG.loot.baseItemValue * (material?.valueMultiplier || 1))
