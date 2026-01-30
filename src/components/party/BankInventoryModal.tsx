@@ -218,7 +218,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
         <ModalBody p={0} bg="gray.900">
           <Tabs variant="enclosed" colorScheme="orange">
           {/* Control Bar */}
-          <VStack className="inventory-controls-sticky" spacing={1} position="sticky" top={0} zIndex={10} bg="gray.900" pt={2} pb={2} px={2}>
+            <VStack className="inventory-controls-sticky" spacing={1} position="sticky" top={0} zIndex={100} bg="gray.900" pt={2} pb={2} px={2}>
             <InventoryControls
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
