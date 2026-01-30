@@ -27,6 +27,7 @@ function getNextRarity(currentRarity: ItemRarity): ItemRarity | null {
 
 /**
  * Find the lowest rarity equipped item from a party member
+ * Excludes unique and set items from being upgraded
  */
 export function findLowestRarityItem(hero: Hero): { item: Item; slot: string } | null {
   const equipment = hero.equipment
@@ -37,7 +38,8 @@ export function findLowestRarityItem(hero: Hero): { item: Item; slot: string } |
   
   for (const slot of slots) {
     const item = equipment[slot]
-    if (item) {
+    // Skip unique and set items
+    if (item && !item.isUnique && !item.setId) {
       const rarityIndex = RARITY_ORDER.indexOf(item.rarity)
       if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
         lowestRarityIndex = rarityIndex
@@ -51,6 +53,7 @@ export function findLowestRarityItem(hero: Hero): { item: Item; slot: string } |
 
 /**
  * Find the lowest rarity item in a collection prioritizing lower rarities
+ * Excludes unique and set items from being upgraded
  */
 export function findLowestRarityItemInCollection(items: Item[]): Item | null {
   if (items.length === 0) return null
@@ -59,10 +62,13 @@ export function findLowestRarityItemInCollection(items: Item[]): Item | null {
   let lowestRarityIndex = RARITY_ORDER.length
   
   for (const item of items) {
-    const rarityIndex = RARITY_ORDER.indexOf(item.rarity)
-    if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
-      lowestRarityIndex = rarityIndex
-      lowestItem = item
+    // Skip unique and set items
+    if (!item.isUnique && !item.setId) {
+      const rarityIndex = RARITY_ORDER.indexOf(item.rarity)
+      if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
+        lowestRarityIndex = rarityIndex
+        lowestItem = item
+      }
     }
   }
   
