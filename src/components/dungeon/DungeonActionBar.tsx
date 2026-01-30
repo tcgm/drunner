@@ -1,12 +1,14 @@
 import { Button, Box, HStack, Spacer } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor, GiReturnArrow } from 'react-icons/gi'
+// import { GiSwordClash } from 'react-icons/gi' // Disabled - Combat Log merged into Journal
 
 interface DungeonActionBarProps {
   showContinue: boolean
   onContinue: () => void
   onInventory: () => void
   onJournal: () => void
+  // onCombatLog: () => void // Disabled
   onRetreat: () => void
   onExit: () => void
 }
@@ -44,6 +46,8 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
         >
           Journal
         </Button>
+        {/* Combat Log button disabled - functionality merged into Journal */}
+        {/* <Button className="dungeon-action-bar-combat-log" colorScheme="red" variant="outline" leftIcon={<Icon as={GiSwordClash} />} onClick={onCombatLog}>Combat Log</Button> */}
         
         <Spacer />
         

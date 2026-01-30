@@ -17,7 +17,14 @@ export interface ResolvedEffect {
   originalValue?: number // For damage: the pre-defense value
   item?: Item
   description: string
-  damageBreakdown?: { heroId: string, heroName: string, damage: number, originalDamage: number }[] // For grouped damage effects
+  damageBreakdown?: { 
+    heroId: string
+    heroName: string
+    damage: number
+    originalDamage: number
+    isCrit?: boolean
+    isDodge?: boolean
+  }[] // For grouped damage effects with crit/dodge info
 }
 
 /**
@@ -200,14 +207,47 @@ export function resolveEventOutcome(
         const isTrueDamage = effect.isTrueDamage || false
         
         // Calculate actual damage for each hero and track breakdown
-        const damageBreakdown: { heroId: string, heroName: string, damage: number, originalDamage: number }[] = []
+        const damageBreakdown: { 
+          heroId: string
+          heroName: string
+          damage: number
+          originalDamage: number
+          isCrit?: boolean
+          isDodge?: boolean
+        }[] = []
         
         targets.forEach(hero => {
-          const actualDamage = isTrueDamage 
+          // Dodge check: speed gives chance to dodge (0.1% per speed point, max 50%)
+          const dodgeChance = Math.min(0.50, (hero.stats.speed || 0) * 0.001)
+          const isDodge = Math.random() < dodgeChance
+          
+          if (isDodge) {
+            damageBreakdown.push({
+              heroId: hero.id,
+              heroName: hero.name,
+              damage: 0,
+              originalDamage: damage,
+              isDodge: true
+            })
+            return
+          }
+          
+          // Critical hit check: luck gives chance for enemy to crit (0.1% per floor, increased by -luck)
+          const enemyBaseCrit = depth * 0.001 // 0.1% per floor
+          const luckReduction = (hero.stats.luck || 0) * 0.001 // Luck reduces enemy crit chance
+          const enemyCritChance = Math.max(0.01, Math.min(0.30, enemyBaseCrit - luckReduction))
+          const isCrit = Math.random() < enemyCritChance
+          
+          let finalDamage = isTrueDamage 
             ? damage 
             : Math.max(1, damage - Math.floor(hero.stats.defense * GAME_CONFIG.combat.defenseReduction))
           
-          hero.stats.hp = Math.max(0, hero.stats.hp - actualDamage)
+          // Critical hits deal 2x damage
+          if (isCrit) {
+            finalDamage = Math.floor(finalDamage * 2)
+          }
+          
+          hero.stats.hp = Math.max(0, hero.stats.hp - finalDamage)
           if (hero.stats.hp === 0) {
             hero.isAlive = false
           }
@@ -215,31 +255,48 @@ export function resolveEventOutcome(
           damageBreakdown.push({
             heroId: hero.id,
             heroName: hero.name,
-            damage: actualDamage,
-            originalDamage: damage
+            damage: finalDamage,
+            originalDamage: damage,
+            isCrit,
+            isDodge: false
           })
         })
         
-        // Create a single grouped damage effect
-        // Group heroes by same damage amounts
-        const damageGroups = new Map<string, string[]>()
+        // Create detailed damage descriptions with crit/dodge
+        const damageDescriptions: string[] = []
+        const dodgedHeroes: string[] = []
+        const normalHits: { name: string, dmg: number, origDmg: number }[] = []
+        const critHits: { name: string, dmg: number, origDmg: number }[] = []
+        
         damageBreakdown.forEach(d => {
-          const key = isTrueDamage 
-            ? `${d.damage}` 
-            : `${d.damage}|${d.originalDamage}`
-          if (!damageGroups.has(key)) {
-            damageGroups.set(key, [])
+          if (d.isDodge) {
+            dodgedHeroes.push(d.heroName)
+          } else if (d.isCrit) {
+            critHits.push({ name: d.heroName, dmg: d.damage, origDmg: d.originalDamage })
+          } else {
+            normalHits.push({ name: d.heroName, dmg: d.damage, origDmg: d.originalDamage })
           }
-          damageGroups.get(key)!.push(d.heroName)
         })
         
-        const damageDesc = Array.from(damageGroups.entries()).map(([key, names]) => {
-          const [actualDmg, originalDmg] = key.split('|')
-          const heroList = formatNameList(names)
-          return isTrueDamage
-            ? `${heroList} took ${actualDmg} damage`
-            : `${heroList} took ${actualDmg} (${originalDmg}) damage`
-        }).join(', ')
+        if (dodgedHeroes.length > 0) {
+          damageDescriptions.push(`${formatNameList(dodgedHeroes)} dodged!`)
+        }
+        
+        if (critHits.length > 0) {
+          const critDesc = critHits.map(h => 
+            isTrueDamage ? `${h.name} took ${h.dmg}` : `${h.name} took ${h.dmg} (${h.origDmg})`
+          ).join(', ')
+          damageDescriptions.push(`💥 CRITICAL HIT! ${critDesc} damage`)
+        }
+        
+        if (normalHits.length > 0) {
+          const normalDesc = isTrueDamage
+            ? `${formatNameList(normalHits.map(h => h.name))} took ${normalHits[0].dmg} damage`
+            : `${formatNameList(normalHits.map(h => h.name))} took ${normalHits[0].dmg} (${normalHits[0].origDmg}) damage`
+          damageDescriptions.push(normalDesc)
+        }
+        
+        const damageDesc = damageDescriptions.join('; ')
         
         resolvedEffects.push({
           type: 'damage',

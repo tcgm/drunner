@@ -1,7 +1,7 @@
-import { Box, VStack, Text, Button, HStack, Icon, Divider } from '@chakra-ui/react'
+import { Box, VStack, Text, Button, HStack, Icon, Divider, Badge } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced, GiAngelWings } from 'react-icons/gi'
+import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced, GiAngelWings, GiGooExplosion, GiDodge } from 'react-icons/gi'
 import type { ResolvedOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
 
@@ -142,9 +142,56 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
                   />
                 </motion.div>
                 <VStack align="start" spacing={0} flex={1}>
-                  <Text color="gray.300" fontSize="sm">
-                    {effect.description}
-                  </Text>
+                  <HStack spacing={2} flexWrap="wrap">
+                    <Text color="gray.300" fontSize="sm">
+                      {effect.description}
+                    </Text>
+                    {/* Show badges for crits and dodges */}
+                    {effect.type === 'damage' && effect.damageBreakdown && (
+                      <>
+                        {effect.damageBreakdown.some(d => d.isCrit) && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: [0, 1.2, 1] }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                          >
+                            <Badge 
+                              colorScheme="red" 
+                              fontSize="xs" 
+                              display="flex" 
+                              alignItems="center" 
+                              gap={1}
+                              px={2}
+                              py={0.5}
+                              fontWeight="bold"
+                            >
+                              <Icon as={GiGooExplosion} /> CRIT!
+                            </Badge>
+                          </motion.div>
+                        )}
+                        {effect.damageBreakdown.some(d => d.isDodge) && (
+                          <motion.div
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
+                          >
+                            <Badge 
+                              colorScheme="cyan" 
+                              fontSize="xs"
+                              display="flex" 
+                              alignItems="center" 
+                              gap={1}
+                              px={2}
+                              py={0.5}
+                              fontWeight="bold"
+                            >
+                              <Icon as={GiDodge} /> DODGE
+                            </Badge>
+                          </motion.div>
+                        )}
+                      </>
+                    )}
+                  </HStack>
                   {effect.item && (
                     <Text color="gray.500" fontSize="xs">
                       {effect.item.description}

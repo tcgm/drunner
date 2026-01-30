@@ -11,6 +11,7 @@ import GameOverScreen from '@components/dungeon/GameOverScreen'
 import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
+// import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero } from '@/types'
 
 interface DungeonScreenProps {
@@ -22,6 +23,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
+  // const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure() // Disabled
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
   
@@ -175,6 +177,9 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         isOpen={isJournalOpen}
         onClose={onJournalClose}
       />
+
+      {/* Combat Log Modal - Disabled (functionality merged into Journal, but component preserved for future use) */}
+      {/* <CombatLogModal isOpen={isCombatLogOpen} onClose={onCombatLogClose} /> */}
     </Flex>
   )
 }
