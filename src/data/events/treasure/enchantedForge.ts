@@ -56,4 +56,5 @@ export const ENCHANTED_FORGE: DungeonEvent = {
     },
   ],
   depth: 8,
+  icon: GiAnvil,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiDiamondHard } from 'react-icons/gi'
 
 export const JEWELED_STATUE: DungeonEvent = {
   id: 'jeweled-statue',
@@ -39,4 +40,5 @@ export const JEWELED_STATUE: DungeonEvent = {
     },
   ],
   depth: 4,
+  icon: GiDiamondHard,
 }

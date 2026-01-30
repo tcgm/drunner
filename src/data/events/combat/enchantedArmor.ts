@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiMetalPlate } from 'react-icons/gi'
 
 export const ENCHANTED_ARMOR: DungeonEvent = {
     id: 'enchanted-armor',
@@ -63,4 +64,5 @@ export const ENCHANTED_ARMOR: DungeonEvent = {
         },
     ],
     depth: 7,
+    icon: GiMetalPlate,
 }

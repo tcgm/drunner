@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiTroll } from 'react-icons/gi'
 
 export const CAVE_TROLL: DungeonEvent = {
   id: 'cave-troll',
@@ -45,4 +46,5 @@ export const CAVE_TROLL: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiTroll,
 }

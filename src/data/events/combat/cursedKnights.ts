@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiDeathSkull } from 'react-icons/gi'
 
 export const CURSED_KNIGHTS: DungeonEvent = {
     id: 'cursed-knights',
@@ -63,4 +64,5 @@ export const CURSED_KNIGHTS: DungeonEvent = {
         },
     ],
     depth: 14,
+    icon: GiDeathSkull,
 }

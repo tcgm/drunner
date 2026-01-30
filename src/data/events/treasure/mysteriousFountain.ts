@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiFountain } from 'react-icons/gi'
 
 export const MYSTERIOUS_FOUNTAIN: DungeonEvent = {
   id: 'mysterious-fountain',
@@ -75,4 +76,5 @@ export const MYSTERIOUS_FOUNTAIN: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiFountain,
 }

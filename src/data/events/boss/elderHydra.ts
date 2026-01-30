@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiSeaDragon } from 'react-icons/gi'
 
 export const ELDER_HYDRA: DungeonEvent = {
     id: 'elder-hydra',
@@ -61,4 +62,5 @@ export const ELDER_HYDRA: DungeonEvent = {
         },
     ],
     depth: 25,
+    icon: GiSeaDragon,
 }

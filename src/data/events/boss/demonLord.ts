@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiDevilMask } from 'react-icons/gi'
 
 export const DEMON_LORD: DungeonEvent = {
   id: 'demon-lord',
@@ -60,4 +61,5 @@ export const DEMON_LORD: DungeonEvent = {
     },
   ],
   depth: 8,
+  icon: GiDevilMask,
 }

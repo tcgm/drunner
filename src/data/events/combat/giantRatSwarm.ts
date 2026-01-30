@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiRat } from 'react-icons/gi'
 
 export const GIANT_RAT_SWARM: DungeonEvent = {
   id: 'giant-rat-swarm',
@@ -60,4 +61,5 @@ export const GIANT_RAT_SWARM: DungeonEvent = {
     },
   ],
   depth: 1,
+  icon: GiRat,
 }

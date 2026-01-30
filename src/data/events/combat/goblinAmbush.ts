@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiGoblinHead } from 'react-icons/gi'
 
 export const GOBLIN_AMBUSH: DungeonEvent = {
   id: 'goblin-ambush',
@@ -79,4 +80,5 @@ export const GOBLIN_AMBUSH: DungeonEvent = {
     },
   ],
   depth: 1,
+  icon: GiGoblinHead,
 }

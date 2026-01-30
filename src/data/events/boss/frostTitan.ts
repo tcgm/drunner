@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiIceCube } from 'react-icons/gi'
 
 export const FROST_TITAN: DungeonEvent = {
     id: 'frost-titan',
@@ -61,4 +62,5 @@ export const FROST_TITAN: DungeonEvent = {
         },
     ],
     depth: 10,
+    icon: GiIceCube,
 }

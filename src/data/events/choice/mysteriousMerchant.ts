@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiShop } from 'react-icons/gi'
 
 export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
   id: 'mysterious-merchant',
@@ -51,4 +52,5 @@ export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
     },
   ],
   depth: 4,
+  icon: GiShop,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiMagicGate } from 'react-icons/gi'
 
 export const MAGICAL_WARD: DungeonEvent = {
   id: 'magical-ward',
@@ -47,4 +48,5 @@ export const MAGICAL_WARD: DungeonEvent = {
     },
   ],
   depth: 4,
+  icon: GiMagicGate,
 }

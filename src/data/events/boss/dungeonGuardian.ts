@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiCrenelCrown } from 'react-icons/gi'
 
 export const DUNGEON_GUARDIAN: DungeonEvent = {
   id: 'dungeon-guardian',
@@ -59,4 +60,5 @@ export const DUNGEON_GUARDIAN: DungeonEvent = {
     },
   ],
   depth: 10,
+  icon: GiCrenelCrown,
 }

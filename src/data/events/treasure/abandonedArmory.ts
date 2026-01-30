@@ -49,4 +49,5 @@ export const ABANDONED_ARMORY: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiChestArmor,
 }

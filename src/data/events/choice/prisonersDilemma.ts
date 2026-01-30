@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiPrisoner } from 'react-icons/gi'
 
 export const PRISONERS_DILEMMA: DungeonEvent = {
   id: 'prisoners-dilemma',
@@ -74,4 +75,5 @@ export const PRISONERS_DILEMMA: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiPrisoner,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiRuneStone } from 'react-icons/gi'
 
 export const ANCIENT_RUNE: DungeonEvent = {
   id: 'ancient-rune',
@@ -114,5 +115,5 @@ export const ANCIENT_RUNE: DungeonEvent = {
       },
     },
   ],
-  depth: 5,
+  depth: 5, icon: GiRuneStone,
 }

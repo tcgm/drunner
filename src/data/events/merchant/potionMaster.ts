@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiChemicalDrop } from 'react-icons/gi'
 
 export const POTION_MASTER: DungeonEvent = {
   id: 'potion-master',
@@ -53,4 +54,5 @@ export const POTION_MASTER: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiChemicalDrop,
 }

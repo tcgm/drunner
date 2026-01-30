@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiDaemonSkull } from 'react-icons/gi'
 
 export const ANCIENT_LICH: DungeonEvent = {
   id: 'ancient-lich',
@@ -62,4 +63,5 @@ export const ANCIENT_LICH: DungeonEvent = {
     },
   ],
   depth: 9,
+  icon: GiDaemonSkull,
 }

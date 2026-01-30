@@ -1,4 +1,4 @@
-import { Box, VStack, Heading, Text, Button, HStack, Badge } from '@chakra-ui/react'
+import { Box, VStack, Heading, Text, Button, HStack, Badge, Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import type { DungeonEvent, EventChoice } from '@/types'
@@ -51,6 +51,7 @@ function selectText(text: string | Array<{ weight: number; text: string }>): str
 export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice }: EventDisplayProps) {
   // Select description text once when event loads
   const description = useMemo(() => selectText(event.description), [event.description])
+
   return (
     <VStack className="event-display" spacing={3} align="stretch" h="full">
       {/* Event Header */}
@@ -78,9 +79,14 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
             </Badge>
           )}
         </HStack>
-        <Heading className="event-display-title" size="sm" color="orange.400" mb={2}>
-          {event.title}
-        </Heading>
+        <HStack spacing={3} align="start" mb={2}>
+          {event.icon && (
+            <Icon as={event.icon} boxSize={8} color="orange.400" flexShrink={0} />
+          )}
+          <Heading className="event-display-title" size="sm" color="orange.400">
+            {event.title}
+          </Heading>
+        </HStack>
         <Text className="event-display-description" fontSize="sm" color="gray.300" lineHeight="short">
           {description}
         </Text>

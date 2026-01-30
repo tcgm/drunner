@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiCowled } from 'react-icons/gi'
 
 export const DARK_CULTISTS: DungeonEvent = {
   id: 'dark-cultists',
@@ -76,4 +77,5 @@ export const DARK_CULTISTS: DungeonEvent = {
     },
   ],
   depth: 4,
+  icon: GiCowled,
 }

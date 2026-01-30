@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiCrystalBall } from 'react-icons/gi'
 
 export const FORTUNE_TELLER: DungeonEvent = {
   id: 'fortune-teller',
@@ -54,4 +55,5 @@ export const FORTUNE_TELLER: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiCrystalBall,
 }

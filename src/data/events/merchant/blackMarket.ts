@@ -1,4 +1,5 @@
 import type { DungeonEvent} from '@/types'
+import { GiHood } from 'react-icons/gi'
 
 export const BLACK_MARKET: DungeonEvent = {
   id: 'black-market',
@@ -53,4 +54,5 @@ export const BLACK_MARKET: DungeonEvent = {
     },
   ],
   depth: 4,
+  icon: GiHood,
 }

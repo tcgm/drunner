@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiFrozenOrb } from 'react-icons/gi'
 
 export const ICE_WRAITHS: DungeonEvent = {
     id: 'ice-wraiths',
@@ -64,4 +65,5 @@ export const ICE_WRAITHS: DungeonEvent = {
         },
     ],
     depth: 12,
+    icon: GiFrozenOrb,
 }

@@ -165,6 +165,7 @@ export interface DungeonEvent {
   description: string | Array<{ weight: number; text: string }> // Single text or weighted variations
   choices: EventChoice[]
   depth: number
+  icon?: IconType // react-icons icon component
 }
 
 export interface EventLogEntry {

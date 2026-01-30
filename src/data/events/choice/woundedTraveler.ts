@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiBandaged } from 'react-icons/gi'
 
 export const WOUNDED_TRAVELER: DungeonEvent = {
   id: 'wounded-traveler',
@@ -68,4 +69,5 @@ export const WOUNDED_TRAVELER: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiBandaged,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiAnvil } from 'react-icons/gi'
 
 export const WEAPON_SMITH: DungeonEvent = {
   id: 'weapon-smith',
@@ -57,4 +58,5 @@ export const WEAPON_SMITH: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiAnvil,
 }

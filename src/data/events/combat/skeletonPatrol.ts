@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiSkeletonKey } from 'react-icons/gi'
 
 export const SKELETON_PATROL: DungeonEvent = {
   id: 'skeleton-patrol',
@@ -42,4 +43,5 @@ export const SKELETON_PATROL: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiSkeletonKey,
 }

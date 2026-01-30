@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiBridge } from 'react-icons/gi'
 
 export const RICKETY_BRIDGE: DungeonEvent = {
   id: 'rickety-bridge',
@@ -84,4 +85,5 @@ export const RICKETY_BRIDGE: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiBridge,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiTemplarShield } from 'react-icons/gi'
 
 export const ANCIENT_ALTAR: DungeonEvent = {
   id: 'ancient-altar',
@@ -48,4 +49,5 @@ export const ANCIENT_ALTAR: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiTemplarShield,
 }

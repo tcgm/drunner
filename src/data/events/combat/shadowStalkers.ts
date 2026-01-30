@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiNinjaHead } from 'react-icons/gi'
 
 export const SHADOW_STALKERS: DungeonEvent = {
     id: 'shadow-stalkers',
@@ -64,4 +65,5 @@ export const SHADOW_STALKERS: DungeonEvent = {
         },
     ],
     depth: 11,
+    icon: GiNinjaHead,
 }

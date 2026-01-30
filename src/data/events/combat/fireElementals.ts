@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiFireSpellCast } from 'react-icons/gi'
 
 export const FIRE_ELEMENTALS: DungeonEvent = {
     id: 'fire-elementals',
@@ -62,4 +63,5 @@ export const FIRE_ELEMENTALS: DungeonEvent = {
         },
     ],
     depth: 9,
+    icon: GiFireSpellCast,
 }

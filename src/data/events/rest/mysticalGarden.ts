@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiFlowerPot } from 'react-icons/gi'
 
 export const MYSTICAL_GARDEN: DungeonEvent = {
   id: 'mystical-garden',
@@ -115,5 +116,5 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
       },
     },
   ],
-  depth: 4,
+  depth: 4, icon: GiFlowerPot,
 }

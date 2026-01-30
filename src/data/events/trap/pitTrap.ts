@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiMantrap } from 'react-icons/gi'
 
 export const PIT_TRAP: DungeonEvent = {
   id: 'pit-trap',
@@ -10,7 +11,7 @@ export const PIT_TRAP: DungeonEvent = {
       text: 'Search for the trigger (Luck check)',
       requirements: {
         stat: 'luck',
-        value: 8,
+        minValue: 8,
       },
       outcome: {
         text: 'You find and mark the pit trap safely!',
@@ -57,4 +58,5 @@ export const PIT_TRAP: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiMantrap,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiStoneBlock } from 'react-icons/gi'
 
 export const GOLEM_CONSTRUCT: DungeonEvent = {
     id: 'golem-construct',
@@ -61,4 +62,5 @@ export const GOLEM_CONSTRUCT: DungeonEvent = {
         },
     ],
     depth: 15,
+    icon: GiStoneBlock,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiSpiderFace } from 'react-icons/gi'
 
 export const VENOMOUS_SPIDERS: DungeonEvent = {
     id: 'venomous-spiders',
@@ -64,4 +65,5 @@ export const VENOMOUS_SPIDERS: DungeonEvent = {
         },
     ],
     depth: 6,
+    icon: GiSpiderFace,
 }

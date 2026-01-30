@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiTwoCoins } from 'react-icons/gi'
 
 export const TREASURE_VAULT: DungeonEvent = {
   id: 'treasure-vault',
@@ -79,4 +80,5 @@ export const TREASURE_VAULT: DungeonEvent = {
     },
   ],
   depth: 6,
+  icon: GiTwoCoins,
 }

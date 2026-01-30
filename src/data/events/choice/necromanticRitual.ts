@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiDeadHead } from 'react-icons/gi'
 
 export const NECROMANTIC_RITUAL: DungeonEvent = {
   id: 'necromantic-ritual',
@@ -57,4 +58,5 @@ export const NECROMANTIC_RITUAL: DungeonEvent = {
     },
   ],
   depth: 6,
+  icon: GiDeadHead,
 }

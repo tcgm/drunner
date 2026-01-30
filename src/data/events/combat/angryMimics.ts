@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiChestArmor } from 'react-icons/gi'
 
 export const ANGRY_MIMICS: DungeonEvent = {
     id: 'angry-mimics',
@@ -63,4 +64,5 @@ export const ANGRY_MIMICS: DungeonEvent = {
         },
     ],
     depth: 5,
+    icon: GiChestArmor,
 }

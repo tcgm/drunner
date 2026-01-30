@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiBat } from 'react-icons/gi'
 
 export const BLOOD_BATS: DungeonEvent = {
     id: 'blood-bats',
@@ -64,4 +65,5 @@ export const BLOOD_BATS: DungeonEvent = {
         },
     ],
     depth: 8,
+    icon: GiBat,
 }

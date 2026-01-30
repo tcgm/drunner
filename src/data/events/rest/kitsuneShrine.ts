@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiFoxTail } from 'react-icons/gi'
 
 export const KITSUNE_SHRINE: DungeonEvent = {
   id: 'kitsune-shrine',
@@ -18,8 +19,12 @@ export const KITSUNE_SHRINE: DungeonEvent = {
           { type: 'heal', target: 'all', value: 80 },
           { type: 'gold', value: 150 },
           { type: 'xp', value: 120 },
-          { type: 'specificItem', itemName: 'Kitsune\'s Charm', chance: 0.3 },
-          { type: 'specificItem', itemName: 'Kitsune\'s Soul', chance: 0.25 },
+          {
+            type: 'item', itemChoices: [
+              { weight: 0.3, uniqueItem: "Kitsune's Charm", rarityBoost: 10 },
+              { weight: 0.25, uniqueItem: "Kitsune's Soul", rarityBoost: 10 },
+            ]
+          },
         ],
       },
     },
@@ -33,8 +38,12 @@ export const KITSUNE_SHRINE: DungeonEvent = {
         effects: [
           { type: 'heal', target: 'all', value: 70 },
           { type: 'gold', value: 200 },
-          { type: 'specificItem', itemName: 'Kitsune\'s Steps', chance: 0.35 },
-          { type: 'specificItem', itemName: 'Kitsune\'s Bite', chance: 0.25 },
+          {
+            type: 'item', itemChoices: [
+              { weight: 0.35, uniqueItem: "Kitsune's Steps", rarityBoost: 12 },
+              { weight: 0.25, uniqueItem: "Kitsune's Bite", rarityBoost: 12 },
+            ]
+          },
         ],
       },
     },
@@ -49,8 +58,12 @@ export const KITSUNE_SHRINE: DungeonEvent = {
           { type: 'heal', target: 'all', value: 90 },
           { type: 'revive', target: 'all', value: 60 },
           { type: 'xp', value: 100 },
-          { type: 'specificItem', itemName: 'Kitsune\'s Grace', chance: 0.35 },
-          { type: 'specificItem', itemName: 'Kitsune\'s Vision', chance: 0.3 },
+          {
+            type: 'item', itemChoices: [
+              { weight: 0.35, uniqueItem: "Kitsune's Grace", rarityBoost: 12 },
+              { weight: 0.3, uniqueItem: "Kitsune's Vision", rarityBoost: 12 },
+            ]
+          },
         ],
       },
     },
@@ -65,7 +78,11 @@ export const KITSUNE_SHRINE: DungeonEvent = {
           { type: 'gold', value: -100 },
           { type: 'heal', target: 'all', value: 60 },
           { type: 'xp', value: 80 },
-          { type: 'specificItem', itemName: 'Kitsune\'s Charm', chance: 0.2 },
+          {
+            type: 'item', itemChoices: [
+              { weight: 0.2, uniqueItem: "Kitsune's Charm", rarityBoost: 8 },
+            ]
+          },
         ],
       },
     },
@@ -102,5 +119,5 @@ export const KITSUNE_SHRINE: DungeonEvent = {
       },
     },
   ],
-  depth: 4,
+  depth: 4, icon: GiFoxTail,
 }

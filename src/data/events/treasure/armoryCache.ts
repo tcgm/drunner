@@ -49,4 +49,5 @@ export const ARMORY_CACHE: DungeonEvent = {
     },
   ],
   depth: 5,
+  icon: GiSwordsPower,
 }

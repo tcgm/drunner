@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiVortex } from 'react-icons/gi'
 
 export const VOID_CULTIST: DungeonEvent = {
     id: 'void-cultist',
@@ -61,4 +62,5 @@ export const VOID_CULTIST: DungeonEvent = {
         },
     ],
     depth: 20,
+    icon: GiVortex,
 }

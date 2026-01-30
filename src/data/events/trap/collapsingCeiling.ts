@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiStoneStack } from 'react-icons/gi'
 
 export const COLLAPSING_CEILING: DungeonEvent = {
   id: 'collapsing-ceiling',
@@ -38,7 +39,7 @@ export const COLLAPSING_CEILING: DungeonEvent = {
       text: 'Support the ceiling (Defense check)',
       requirements: {
         stat: 'defense',
-        value: 12,
+        minValue: 12,
       },
       outcome: {
         text: 'Your strength holds back the collapse!',
@@ -59,4 +60,5 @@ export const COLLAPSING_CEILING: DungeonEvent = {
     },
   ],
   depth: 3,
+  icon: GiStoneStack,
 }

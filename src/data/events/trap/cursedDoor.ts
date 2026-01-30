@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiDoorHandle } from 'react-icons/gi'
 
 export const CURSED_DOOR: DungeonEvent = {
   id: 'cursed-door',
@@ -48,4 +49,5 @@ export const CURSED_DOOR: DungeonEvent = {
     },
   ],
   depth: 4,
+  icon: GiDoorHandle,
 }

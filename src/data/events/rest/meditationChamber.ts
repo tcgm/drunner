@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiMeditation } from 'react-icons/gi'
 
 export const MEDITATION_CHAMBER: DungeonEvent = {
   id: 'meditation-chamber',
@@ -47,4 +48,5 @@ export const MEDITATION_CHAMBER: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiMeditation,
 }

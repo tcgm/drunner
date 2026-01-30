@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiTreasureMap } from 'react-icons/gi'
 
 export const ANCIENT_CHEST: DungeonEvent = {
   id: 'ancient-chest',
@@ -111,5 +112,5 @@ export const ANCIENT_CHEST: DungeonEvent = {
       },
     },
   ],
-  depth: 2,
+  depth: 2, icon: GiTreasureMap,
 }

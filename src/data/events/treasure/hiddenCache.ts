@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiLockedChest } from 'react-icons/gi'
 
 export const HIDDEN_CACHE: DungeonEvent = {
   id: 'hidden-cache',
@@ -42,4 +43,5 @@ export const HIDDEN_CACHE: DungeonEvent = {
     },
   ],
   depth: 1,
+  icon: GiLockedChest,
 }

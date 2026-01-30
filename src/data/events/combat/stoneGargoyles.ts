@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiGargoyle } from 'react-icons/gi'
 
 export const STONE_GARGOYLES: DungeonEvent = {
     id: 'stone-gargoyles',
@@ -64,4 +65,5 @@ export const STONE_GARGOYLES: DungeonEvent = {
         },
     ],
     depth: 13,
+    icon: GiGargoyle,
 }

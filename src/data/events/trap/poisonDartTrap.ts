@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiPoisonBottle } from 'react-icons/gi'
 
 export const POISON_DART_TRAP: DungeonEvent = {
   id: 'poison-dart-trap',
@@ -57,4 +58,5 @@ export const POISON_DART_TRAP: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiPoisonBottle,
 }

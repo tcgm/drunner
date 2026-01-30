@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiTempleGate } from 'react-icons/gi'
 
 export const SHRINE_MAIDEN: DungeonEvent = {
   id: 'shrine-maiden',
@@ -73,4 +74,5 @@ export const SHRINE_MAIDEN: DungeonEvent = {
     },
   ],
   depth: 5,
+  icon: GiTempleGate,
 }

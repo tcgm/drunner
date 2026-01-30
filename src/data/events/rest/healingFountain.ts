@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiHeartBottle } from 'react-icons/gi'
 
 export const HEALING_FOUNTAIN: DungeonEvent = {
   id: 'healing-fountain',
@@ -47,4 +48,5 @@ export const HEALING_FOUNTAIN: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiHeartBottle,
 }

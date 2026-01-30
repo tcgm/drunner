@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiSkullCrossedBones } from 'react-icons/gi'
 
 export const UNDEAD_CHAMPION: DungeonEvent = {
   id: 'undead-champion',
@@ -61,4 +62,5 @@ export const UNDEAD_CHAMPION: DungeonEvent = {
     },
   ],
   depth: 5,
+  icon: GiSkullCrossedBones,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiWolfHead } from 'react-icons/gi'
 
 export const CORRUPTED_WOLVES: DungeonEvent = {
     id: 'corrupted-wolves',
@@ -62,4 +63,5 @@ export const CORRUPTED_WOLVES: DungeonEvent = {
         },
     ],
     depth: 3,
+    icon: GiWolfHead,
 }

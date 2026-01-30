@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiOpenChest } from 'react-icons/gi'
 
 export const MYSTERIOUS_CHEST: DungeonEvent = {
   id: 'mysterious-chest',
@@ -117,4 +118,5 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
     },
   ],
   depth: 4,
+  icon: GiOpenChest,
 }

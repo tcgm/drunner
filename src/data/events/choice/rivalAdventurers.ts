@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiCrossedSwords } from 'react-icons/gi'
 
 export const RIVAL_ADVENTURERS: DungeonEvent = {
   id: 'rival-adventurers',
@@ -61,4 +62,5 @@ export const RIVAL_ADVENTURERS: DungeonEvent = {
     },
   ],
   depth: 2,
+  icon: GiCrossedSwords,
 }

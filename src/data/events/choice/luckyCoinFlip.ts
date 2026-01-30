@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiTwoCoins } from 'react-icons/gi'
 
 export const LUCKY_COIN_FLIP: DungeonEvent = {
   id: 'lucky-coin-flip',
@@ -80,4 +81,5 @@ export const LUCKY_COIN_FLIP: DungeonEvent = {
     },
   ],
   depth: 8,
+  icon: GiTwoCoins,
 }

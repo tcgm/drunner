@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiCampfire } from 'react-icons/gi'
 
 export const SAFE_CAMPFIRE: DungeonEvent = {
   id: 'safe-campfire',
@@ -34,4 +35,5 @@ export const SAFE_CAMPFIRE: DungeonEvent = {
     },
   ],
   depth: 1,
+  icon: GiCampfire,
 }

@@ -1,4 +1,5 @@
 import type { DungeonEvent } from '@/types'
+import { GiWingedSword } from 'react-icons/gi'
 
 export const DRAGON_WYRMLING: DungeonEvent = {
   id: 'dragon-wyrmling',
@@ -69,4 +70,5 @@ export const DRAGON_WYRMLING: DungeonEvent = {
     },
   ],
   depth: 7,
+  icon: GiWingedSword,
 }
