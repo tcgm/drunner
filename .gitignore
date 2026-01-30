@@ -27,3 +27,6 @@ SETUP_INSTRUCTIONS.md
 notes.md
 
 devscripts/
+
+.history/
+*dungeon-runner-save*

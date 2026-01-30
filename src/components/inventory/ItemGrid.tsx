@@ -1,5 +1,5 @@
-import { Box, Checkbox } from '@chakra-ui/react'
-import { useMemo, memo } from 'react'
+import { Box } from '@chakra-ui/react'
+import { useMemo, memo, useCallback } from 'react'
 import type { Item } from '@/types'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
@@ -9,29 +9,41 @@ interface ItemGridProps {
   visibleCount: number
   selectedItems?: Set<string>
   onItemClick?: (item: Item) => void
-  onItemSelect?: (item: Item) => void
+  onItemSelect?: (itemId: string) => void
   isClickable?: boolean
   showCheckbox?: boolean
 }
 
 interface ItemGridSlotProps {
   item: Item
+  itemId: string
   isSelected: boolean
-  onItemClick?: (item: Item) => void
-  onItemSelect?: (item: Item) => void
   isClickable: boolean
   showCheckbox: boolean
 }
 
+// Store global handlers to avoid prop changes
+const globalHandlers = {
+  onItemClick: null as ((item: Item) => void) | null,
+  onItemSelect: null as ((itemId: string) => void) | null
+}
+
 // Memoize individual item slots to prevent re-rendering all items on selection change
 const ItemGridSlot = memo(function ItemGridSlot({ 
-  item, 
-  isSelected, 
-  onItemClick, 
-  onItemSelect,
+  item,
+  itemId,
+  isSelected,
   isClickable,
   showCheckbox 
 }: ItemGridSlotProps) {
+  const handleCheckboxChange = useCallback(() => {
+    globalHandlers.onItemSelect?.(itemId)
+  }, [itemId])
+
+  const handleItemClick = useCallback(() => {
+    globalHandlers.onItemClick?.(item)
+  }, [item])
+
   return (
     <Box
       className="item-grid-slot"
@@ -45,36 +57,21 @@ const ItemGridSlot = memo(function ItemGridSlot({
       display="flex"
       alignItems="center"
       justifyContent="center"
-      _hover={isClickable ? {
-        borderColor: 'blue.300',
-      } : undefined}
     >
-      {showCheckbox && (
-        <Checkbox
-          position="absolute"
-          top="2px"
-          left="2px"
-          zIndex={2}
-          isChecked={isSelected}
-          onChange={() => onItemSelect?.(item)}
-          colorScheme="blue"
-          size="lg"
-          bg="gray.800"
-          borderRadius="sm"
-          onClick={(e) => e.stopPropagation()}
-        />
-      )}
       <ItemSlot
         item={item}
         size="md"
-        onClick={onItemClick ? () => onItemClick(item) : undefined}
+        onClick={globalHandlers.onItemClick ? handleItemClick : undefined}
         isClickable={isClickable}
+        showCheckbox={showCheckbox}
+        isSelected={isSelected}
+        onCheckboxChange={handleCheckboxChange}
       />
     </Box>
   )
 }, (prev, next) => {
-  // Only re-render if selection state or item changes
-  return prev.item.id === next.item.id && 
+  // Only re-render if selection state or item ID changes
+  return prev.itemId === next.itemId && 
          prev.isSelected === next.isSelected &&
          prev.isClickable === next.isClickable &&
          prev.showCheckbox === next.showCheckbox
@@ -89,6 +86,10 @@ export const ItemGrid = memo(function ItemGrid({
   isClickable = false,
   showCheckbox = false 
 }: ItemGridProps) {
+  // Update global handlers
+  globalHandlers.onItemClick = onItemClick || null
+  globalHandlers.onItemSelect = onItemSelect || null
+
   // Memoize visible items with restored icons to prevent recalculating on every render
   const visibleItems = useMemo(() => {
     return items.slice(0, visibleCount).map(item => restoreItemIcon(item))
@@ -106,9 +107,8 @@ export const ItemGrid = memo(function ItemGrid({
         <ItemGridSlot
           key={item.id}
           item={item}
+          itemId={item.id}
           isSelected={selectedItems?.has(item.id) ?? false}
-          onItemClick={onItemClick}
-          onItemSelect={onItemSelect}
           isClickable={isClickable}
           showCheckbox={showCheckbox}
         />

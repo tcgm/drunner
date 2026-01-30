@@ -8,8 +8,9 @@ import {
   Tooltip,
   useDisclosure,
   Icon,
+  Checkbox,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useState, memo, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GiGoldBar as GiTreasure, GiSparkles } from 'react-icons/gi'
 import type { Item } from '@/types'
@@ -22,6 +23,9 @@ interface ItemSlotProps {
   onClick?: () => void
   isClickable?: boolean
   size?: 'sm' | 'md' | 'lg'
+  showCheckbox?: boolean
+  isSelected?: boolean
+  onCheckboxChange?: () => void
 }
 
 const SLOT_SIZES = {
@@ -103,7 +107,15 @@ const RARITY_COLORS = {
   }
 }
 
-export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: ItemSlotProps) {
+export const ItemSlot = memo(function ItemSlot({
+  item,
+  onClick,
+  isClickable = true,
+  size = 'md',
+  showCheckbox = false,
+  isSelected = false,
+  onCheckboxChange
+}: ItemSlotProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
   // Use the icon directly from the item, or fallback to GiTreasure
@@ -123,7 +135,8 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
     }
   }
 
-  const tooltipContent = (
+  // Memoize tooltip content to avoid recreation on every render
+  const tooltipContent = useMemo(() => (
     <VStack align="start" spacing={1} maxW="300px">
       <HStack justify="space-between" w="full">
         <Text fontSize="sm" fontWeight="bold" color={RARITY_COLORS[item.rarity]?.text || '#9CA3AF'}>
@@ -168,33 +181,35 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
         Value: {item.value} gold
       </Text>
     </VStack>
-  )
+  ), [item])
 
   return (
     <>
-      <Tooltip 
-        label={tooltipContent} 
-        placement="top" 
-        hasArrow 
+      <Tooltip
+        label={tooltipContent}
+        placement="top"
+        hasArrow
         bg="gray.700" 
         color="white"
         borderRadius="md"
-        p={3}
+        p={1}
         isOpen={isHovered}
       >
         <MotionBox
-          className={`item-slot item-slot-${item.rarity} item-type-${item.type}${item.isUnique ? ' item-unique' : ''}`}
+          className={`item-slot item-slot-${item.rarity} item-type-${item.type}${item.isUnique ? ' item-unique' : ''}${isSelected ? ' item-selected' : ''}`}
           width={SLOT_SIZES[size]}
           height={SLOT_SIZES[size]}
           bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
           borderRadius="lg"
           borderWidth="3px"
-          borderColor={item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568'}
+          borderColor={isSelected ? 'blue.400' : (item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568')}
           position="relative"
           cursor={isClickable || onClick ? "pointer" : "default"}
-          boxShadow={item.isUnique 
-            ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
-            : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
+          boxShadow={isSelected
+            ? '0 0 16px rgba(96, 165, 250, 0.8), 0 0 24px rgba(96, 165, 250, 0.5)'
+            : item.isUnique
+              ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
+              : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
           data-item-icon={item.icon}
@@ -205,10 +220,9 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
           alignItems="center"
           justifyContent="center"
           flexDirection="column"
-          p={2}
-          initial={{ opacity: 0, scale: 0.8 }}
+          p={1}
+          initial={false}
           animate={{ 
-            opacity: 1, 
             scale: isHovered && (isClickable || onClick) ? 1.08 : 1,
             boxShadow: isHovered 
               ? item.isUnique
@@ -223,9 +237,31 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
             type: "spring",
             stiffness: 300,
             damping: 20,
-            opacity: { duration: 0.3 }
           }}
         >
+          {/* Selection Checkbox */}
+          {showCheckbox && (
+            <Checkbox
+              position="absolute"
+              top="2px"
+              left="2px"
+              zIndex={20}
+              isChecked={isSelected}
+              onChange={onCheckboxChange}
+              colorScheme="blue"
+              size="lg"
+              bg="gray.800"
+              borderRadius="sm"
+              pointerEvents="auto"
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation()
+              }}
+            />
+          )}
+
           {/* Rarity Glow Animation */}
           <AnimatePresence>
             {isHovered && (
@@ -248,36 +284,47 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
             )}
           </AnimatePresence>
 
-          {/* Unique Item Badge */}
+          {/* Unique Item Badge - Background layer */}
           {item.isUnique && (
             <motion.div
               style={{
                 position: 'absolute',
                 top: '4px',
                 left: '4px',
-                zIndex: 2
+                bottom: '4px',
+                right: '4px',
+                zIndex: 0,
+                pointerEvents: 'none'
               }}
               animate={{
-                rotate: [0, 10, -10, 0],
-                scale: [1, 1.2, 1]
+                rotate: [0, 3, -3, 0],
+                scale: [1, 1.1, 1]
               }}
               transition={{
-                duration: 2,
+                duration: 6,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
             >
-              <Icon 
+              <Icon
                 as={GiSparkles} 
-                boxSize="12px"
+                boxSize="100%"
                 color="gold"
+                opacity={0.25}
                 filter="drop-shadow(0 0 4px rgba(255, 215, 0, 0.8))"
               />
             </motion.div>
           )}
 
-          {/* Item Icon */}
+          {/* Item Icon - Foreground layer */}
           <motion.div
+            style={{
+              position: 'relative',
+              zIndex: 10,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
             animate={{
               scale: isHovered ? 1.1 : 1,
               rotate: isHovered ? [0, -5, 5, 0] : 0
@@ -287,8 +334,8 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
               rotate: { duration: 0.5, ease: "easeInOut" }
             }}
           >
-            <Icon 
-              as={ItemIcon} 
+            <Icon
+              as={ItemIcon}
               boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : '36px'}
               color="white"
               mb={0.5}
@@ -296,13 +343,13 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
           </motion.div>
           
           {/* Item Name */}
-          <Text 
+          <Text
             fontSize={size === 'sm' ? '3xs' : '2xs'} 
             fontWeight="bold" 
             color="white"
             textAlign="center"
             lineHeight="1.1"
-            noOfLines={2}
+            noOfLines={5}
             width="100%"
             px={0.5}
           >
@@ -310,7 +357,7 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
           </Text>
           
           {/* Rarity indicator dot */}
-          <motion.div
+          {/*<motion.div
             style={{
               position: 'absolute',
               top: '2px',
@@ -330,7 +377,7 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
               repeat: isHovered ? Infinity : 0,
               ease: "easeInOut"
             }}
-          />
+          />*/}
         </MotionBox>
       </Tooltip>
 
@@ -341,4 +388,13 @@ export function ItemSlot({ item, onClick, isClickable = true, size = 'md' }: Ite
       />
     </>
   )
-}
+}, (prevProps, nextProps) => {
+  // Only re-render if item ID or critical props change
+  return prevProps.item.id === nextProps.item.id &&
+    prevProps.isClickable === nextProps.isClickable &&
+    prevProps.size === nextProps.size &&
+    prevProps.onClick === nextProps.onClick &&
+    prevProps.showCheckbox === nextProps.showCheckbox &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.onCheckboxChange === nextProps.onCheckboxChange
+})

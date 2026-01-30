@@ -24,7 +24,7 @@ import {
   Icon,
   Spacer,
 } from '@chakra-ui/react'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
 import type { Item, ItemSlot as ItemSlotType } from '../../types'
 import { useGameStore } from '@/store/gameStore'
@@ -72,21 +72,31 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
 
   const itemsByType = useItemsByType(filteredAndSortedItems)
 
+  // Memoize selected count to prevent re-renders
+  const selectedCount = useMemo(() => selectedItems.size, [selectedItems])
+  const isAllSelected = useMemo(() => selectedCount === filteredAndSortedItems.length, [selectedCount, filteredAndSortedItems.length])
+  const hasSelection = useMemo(() => selectedCount > 0, [selectedCount])
+
+  // Optimized item selection handler that doesn't cause re-renders
+  const handleItemSelect = useCallback((itemId: string) => {
+    setSelectedItems(prev => {
+      const newSelection = new Set(prev)
+      if (newSelection.has(itemId)) {
+        newSelection.delete(itemId)
+      } else {
+        newSelection.add(itemId)
+      }
+      return newSelection
+    })
+  }, [])
+
   const handleItemClick = useCallback((item: Item) => {
     if (isSelectionMode && !pendingSlot) {
-      setSelectedItems(prev => {
-        const newSelection = new Set(prev)
-        if (newSelection.has(item.id)) {
-          newSelection.delete(item.id)
-        } else {
-          newSelection.add(item.id)
-        }
-        return newSelection
-      })
+      handleItemSelect(item.id)
     } else if (pendingSlot) {
       onEquipItem(item.id)
     }
-  }, [isSelectionMode, pendingSlot, onEquipItem])
+  }, [isSelectionMode, pendingSlot, onEquipItem, handleItemSelect])
 
   const handleSelectAll = () => {
     if (selectedItems.size === filteredAndSortedItems.length) {
@@ -168,9 +178,9 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                   <Icon as={GiTwoCoins} />
                   {alkahest} Alkahest
                 </Badge>
-                {isSelectionMode && selectedItems.size > 0 && (
+                {isSelectionMode && hasSelection && (
                   <Badge colorScheme="blue">
-                    {selectedItems.size} Selected
+                    {selectedCount} Selected
                   </Badge>
                 )}
               </HStack>
@@ -232,16 +242,16 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                   {isSelectionMode && (
                     <>
                       <Button size="sm" variant="outline" onClick={handleSelectAll}>
-                        {selectedItems.size === filteredAndSortedItems.length ? "Deselect All" : "Select All"}
+                        {isAllSelected ? "Deselect All" : "Select All"}
                       </Button>
-                      {selectedItems.size > 0 && (
+                      {hasSelection && (
                         <Button 
                           size="sm" 
                           colorScheme="red"
                           leftIcon={<Icon as={GiCrossedBones} />}
                           onClick={handleDiscardSelected}
                         >
-                          Discard ({selectedItems.size})
+                          Discard ({selectedCount})
                         </Button>
                       )}
                     </>
@@ -303,29 +313,31 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                 visibleCount={visibleCount}
                 selectedItems={selectedItems}
                 onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined}
+                      onItemSelect={isSelectionMode ? handleItemSelect : undefined}
                 isClickable={true}
+                      showCheckbox={isSelectionMode}
               />
             </Box>
           ) : (
             // Tabbed view - tabs are in sticky header
             <TabPanels mt={1} px={2} pb={2}>
               <TabPanel px={0} py={1}>
-                <ItemGrid items={itemsByType.all || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+                        <ItemGrid items={itemsByType.all || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                <ItemGrid items={itemsByType.weapon || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+                        <ItemGrid items={itemsByType.weapon || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                <ItemGrid items={itemsByType.armor || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+                        <ItemGrid items={itemsByType.armor || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                <ItemGrid items={itemsByType.helmet || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+                        <ItemGrid items={itemsByType.helmet || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                <ItemGrid items={itemsByType.boots || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+                        <ItemGrid items={itemsByType.boots || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} isClickable={true} />
+                        <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
               </TabPanel>
             </TabPanels>
           )}
