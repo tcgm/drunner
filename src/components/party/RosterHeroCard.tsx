@@ -3,6 +3,7 @@ import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { formatDefenseReduction } from '@/utils/defenseUtils'
 
 // Rarity color mapping
 const RARITY_COLORS = GAME_CONFIG.colors.rarity as Record<string, string>
@@ -24,7 +25,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
         <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{hero.stats.maxHp}</Text></Text>
         <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text></Text>
-        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text></Text>
+        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(hero.stats.defense)}</Text></Text></Text>
         <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text></Text>
       </SimpleGrid>
       {equippedItems.length > 0 && (

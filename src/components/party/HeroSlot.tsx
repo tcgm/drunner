@@ -3,6 +3,7 @@ import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { HeroClass, Hero } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { formatDefenseReduction } from '@/utils/defenseUtils'
 
 interface HeroSlotProps {
   hero: Hero | null
@@ -119,7 +120,9 @@ export default function HeroSlot({
                 </VStack>
                 <VStack className="hero-slot-stat hero-slot-stat--defense" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">DEF</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text>
+                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
+                      {hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
+                    </Text>
                 </VStack>
                 <VStack className="hero-slot-stat hero-slot-stat--speed" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">SPD</Text>

@@ -6,6 +6,7 @@ import { CORE_CLASSES } from '../../data/classes'
 import type { HeroClass } from '../../types'
 import { calculateMaxHp } from '../../utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { formatDefenseReduction } from '@/utils/defenseUtils'
 
 interface ClassSelectionTabProps {
   selectedClass: HeroClass | null
@@ -36,7 +37,7 @@ export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelecti
             <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
               <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{maxHp}</Text></Text>
               <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{cls.baseStats.attack}</Text></Text>
-              <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{cls.baseStats.defense}</Text></Text>
+              <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{cls.baseStats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(cls.baseStats.defense)}</Text></Text></Text>
               <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{cls.baseStats.speed}</Text></Text>
               <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>{cls.baseStats.luck}</Text></Text>
             </SimpleGrid>

@@ -4,6 +4,7 @@ import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { formatDefenseReduction } from '@/utils/defenseUtils'
 
 // Rarity color mapping
 const RARITY_COLORS = GAME_CONFIG.colors.rarity as Record<string, string>
@@ -158,7 +159,9 @@ export function PartySetupSlots({
                           </VStack>
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">DEF</Text>
-                            <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text>
+                              <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
+                                {hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
+                              </Text>
                           </VStack>
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">SPD</Text>

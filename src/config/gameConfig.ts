@@ -102,17 +102,17 @@ export const GAME_CONFIG = {
     maxFloors: 100, // Maximum number of floors before victory
     majorBossInterval: 10, // Major boss every N floors (zone completion)
     minEventsPerFloor: 3, // Minimum number of normal events before floor boss
-    maxEventsPerFloor: 15, // Maximum number of normal events before floor boss
+    maxEventsPerFloor: 7, // Maximum number of normal events before floor boss
     allowMerchantBeforeBoss: true, // Can merchant appear as last event before boss
     allowRestBeforeBoss: true, // Can rest appear before boss
-    floorUnlockFraction: 0.5, // Floors at or below (party avg level * this) are free to enter
-    floorSkipBaseCost: 100, // Base alkahest cost to skip to a floor
+    floorUnlockFraction: 0.75, // Floors at or below (party avg level * this) are free to enter
+    floorSkipBaseCost: 33, // Base alkahest cost to skip to a floor
     floorSkipCostMultiplier: 1.5, // Cost multiplier per floor skipped beyond free floors
   },
 
   // Item Management
   items: {
-    alkahestConversionRate: 0.25, // 25% of item value converted to alkahest when discarded
+    alkahestConversionRate: 0.35, // 25% of item value converted to alkahest when discarded
   },
 
   // Bank
@@ -139,7 +139,27 @@ export const GAME_CONFIG = {
 
   // Combat
   combat: {
-    defenseReduction: 0.5, // 50% of defense reduces damage
+    // Defense formula options
+    defenseFormula: 'logarithmic' as 'flat' | 'percentage' | 'logarithmic' | 'hybrid',
+    // 'flat': Simple flat reduction (defense * defenseReduction)
+    // 'percentage': Diminishing returns (defense / (defense + percentageBase))
+    // 'logarithmic': Armor formula ((defense * logFactor) / (1 + defense * logFactor))
+    // 'hybrid': Capped percentage (min(maxReduction, defense / (defense + hybridBase)))
+
+    // Flat formula settings
+    defenseReduction: 0.5, // 50% of defense reduces damage (flat formula)
+
+    // Percentage formula settings
+    percentageBase: 200, // Base value for percentage formula (higher = less reduction per point)
+
+    // Logarithmic formula settings
+    logFactor: 0.045, // Scaling factor for logarithmic formula
+    // Higher values = more reduction per point of defense, lower values = less reduction
+
+    // Hybrid formula settings
+    hybridBase: 75, // Base value for hybrid formula
+    maxReduction: 0.8, // Maximum damage reduction (80%) for hybrid formula
+
     mentorXpShare: 0.5, // 50% of overflow XP shared with lower level heroes
     defaultHealPercent: 0.5, // 50% max HP when no heal amount specified
   },
@@ -166,10 +186,10 @@ export const GAME_CONFIG = {
 
   // Scaling
   scaling: {
-    damage: 0.1, // 10% per depth
-    healing: 0.08, // 8% per depth
-    rewards: 0.05, // 5% per depth (XP/Gold)
-    statRequirements: 0.15, // 15% per depth
+    damage: 0.2, // 10% per floor
+    healing: 0.015, // 1.5% per floor
+    rewards: 0.05, // 5% per floor (XP/Gold)
+    statRequirements: 0.15, // 15% per floor
   },
 
   // Event system

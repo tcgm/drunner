@@ -20,6 +20,7 @@ import * as GameIcons from 'react-icons/gi'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { useState, useEffect, useCallback } from 'react'
 import { useGameStore } from '@/store/gameStore'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
@@ -255,7 +256,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Defense</Text>
                           <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
-                            {hero.stats.defense}
+                            {hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
                           </Text>
                         </VStack>
                       </HStack>

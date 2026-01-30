@@ -11,6 +11,7 @@ import * as GameIcons from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
+import { formatDefenseReduction } from '@/utils/defenseUtils'
 
 interface HeroTooltipProps {
   hero: Hero
@@ -78,6 +79,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
                 {hero.stats.defense}
               </Text>
+              <Text fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--speed" spacing={0}>
               <Icon as={GameIcons.GiRun} color={GAME_CONFIG.colors.stats.speed} boxSize={4} />
