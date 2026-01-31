@@ -67,15 +67,38 @@ export interface Equipment {
 export type ItemSlot = 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2'
 
 export type ItemRarity = 
+  // Base rarities (0-10 floors)
   | 'junk' 
+  | 'abundant'
   | 'common' 
   | 'uncommon' 
+  // Mid rarities (11-30 floors)
   | 'rare' 
+  | 'veryRare'
+  | 'magical'
+  | 'elite'
+  // High rarities (31-60 floors)
   | 'epic' 
   | 'legendary' 
   | 'mythic'
-  | 'artifact' // Stretch
-  | 'set'      // Stretch
+  | 'mythicc'
+  // Ultra rarities (61-85 floors)
+  | 'artifact'
+  | 'divine'
+  | 'celestial'
+  // God rarities (86-95 floors)
+  | 'realityAnchor'
+  | 'structural'
+  | 'singularity'
+  | 'void'
+  | 'elder'
+  // Meta rarities (96-100+ floors)
+  | 'layer'
+  | 'plane'
+  | 'author'
+  // Special rarities
+  | 'cursed'
+  | 'set'
 
 export interface Item {
   id: string

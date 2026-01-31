@@ -1,7 +1,7 @@
 import type { Material } from '../index'
 
-export const VOID: Material = {
-  id: 'void',
+export const VOID_LEGENDARY: Material = {
+  id: 'void_legendary',
   name: 'Void',
   prefix: 'Void',
   rarity: 'legendary',
