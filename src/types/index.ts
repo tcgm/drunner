@@ -166,6 +166,9 @@ export interface DungeonEvent {
   choices: EventChoice[]
   depth: number
   icon?: IconType // react-icons icon component
+  isFinalBoss?: boolean // True for the Floor 100 final boss only
+  isZoneBoss?: boolean // True for major milestone bosses (floors 10, 20, 30, etc.)
+  zoneBossFloor?: number // The specific floor this zone boss appears on
 }
 
 export interface EventLogEntry {

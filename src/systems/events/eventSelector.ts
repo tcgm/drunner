@@ -18,16 +18,41 @@ export function selectRandomEvent(
 ): DungeonEvent | null {
   // If this should be a floor boss or major boss
   if (isFloorBoss || isMajorBoss) {
-    const bossEvents = getEventsByType('boss').filter(e => 
+    let bossEvents = getEventsByType('boss').filter(e => 
       e.depth <= depth && !excludeIds.includes(e.id)
     )
+    
+    // Check if this is THE final boss (Floor 100)
+    const isFinalFloor = floor >= GAME_CONFIG.dungeon.maxFloors
+    
+    if (isFinalFloor) {
+      // Only show the final boss at Floor 100
+      const finalBoss = bossEvents.find(e => (e as any).isFinalBoss)
+      if (finalBoss) return finalBoss
+    } else {
+      // Exclude final boss from appearing before Floor 100
+      bossEvents = bossEvents.filter(e => !(e as any).isFinalBoss)
+    }
+    
+    // For major bosses (every 10 floors), look for zone-specific boss
+    if (isMajorBoss && !isFinalFloor) {
+      const zoneBoss = bossEvents.find(e => (e as any).zoneBossFloor === floor)
+      if (zoneBoss) return zoneBoss
+      
+      // Fallback to highest depth boss if no zone boss found
+      const sortedBosses = [...bossEvents]
+        .filter(e => !(e as any).isZoneBoss) // Exclude other zone bosses
+        .sort((a, b) => b.depth - a.depth)
+      if (sortedBosses.length > 0) return sortedBosses[0]
+    }
+    
     if (bossEvents.length > 0) {
-      // For major bosses (every N floors), prefer higher depth bosses
-      if (isMajorBoss) {
-        const sortedBosses = [...bossEvents].sort((a, b) => b.depth - a.depth)
-        return sortedBosses[0]
+      // For regular floor bosses, random selection (exclude zone bosses)
+      const regularBosses = bossEvents.filter(e => !(e as any).isZoneBoss)
+      if (regularBosses.length > 0) {
+        return regularBosses[Math.floor(Math.random() * regularBosses.length)]
       }
-      // For regular floor bosses, random selection
+      // Fallback to any boss if no regular bosses
       return bossEvents[Math.floor(Math.random() * bossEvents.length)]
     }
   }

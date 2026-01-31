@@ -5,6 +5,7 @@ export const FINAL_BOSS: DungeonEvent = {
   id: 'final-boss',
   type: 'boss',
   title: 'The Dungeon Lord',
+  isFinalBoss: true, // Only appears at Floor 100
   description: 'An ancient entity of unfathomable power stands before you. This is the dungeon\'s final defense - the master of all you\'ve faced. The very walls tremble with its dark presence.',
   choices: [
     {
