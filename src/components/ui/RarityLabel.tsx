@@ -2,6 +2,7 @@ import { Text, Box } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
 import type { Item } from '@/types';
 import { getModifierById } from '@/data/items/mods';
+import { getRarityColors } from '@/systems/rarity/rarities';
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
@@ -30,72 +31,6 @@ interface RarityColors {
   gem: string;
 }
 
-const RARITY_COLORS: Record<Item['rarity'], RarityColors> = {
-  junk: {
-    border: '#6B7280',
-    bg: 'rgba(107, 114, 128, 0.1)',
-    text: '#9CA3AF',
-    glow: 'rgba(107, 114, 128, 0.2)',
-    gem: '#6B7280',
-  },
-  common: {
-    border: '#9CA3AF',
-    bg: 'rgba(156, 163, 175, 0.1)',
-    text: '#D1D5DB',
-    glow: 'rgba(156, 163, 175, 0.3)',
-    gem: '#9CA3AF',
-  },
-  uncommon: {
-    border: '#10B981',
-    bg: 'rgba(16, 185, 129, 0.1)',
-    text: '#34D399',
-    glow: 'rgba(16, 185, 129, 0.4)',
-    gem: '#10B981',
-  },
-  rare: {
-    border: '#3B82F6',
-    bg: 'rgba(59, 130, 246, 0.1)',
-    text: '#60A5FA',
-    glow: 'rgba(59, 130, 246, 0.5)',
-    gem: '#3B82F6',
-  },
-  epic: {
-    border: '#A855F7',
-    bg: 'rgba(168, 85, 247, 0.1)',
-    text: '#C084FC',
-    glow: 'rgba(168, 85, 247, 0.5)',
-    gem: '#A855F7',
-  },
-  legendary: {
-    border: '#F59E0B',
-    bg: 'rgba(245, 158, 11, 0.1)',
-    text: '#FBBF24',
-    glow: 'rgba(245, 158, 11, 0.6)',
-    gem: '#F59E0B',
-  },
-  mythic: {
-    border: '#EC4899',
-    bg: 'rgba(236, 72, 153, 0.1)',
-    text: '#F9A8D4',
-    glow: 'rgba(236, 72, 153, 0.6)',
-    gem: '#EC4899',
-  },
-  artifact: {
-    border: '#14B8A6',
-    bg: 'rgba(20, 184, 166, 0.1)',
-    text: '#5EEAD4',
-    glow: 'rgba(20, 184, 166, 0.6)',
-    gem: '#14B8A6',
-  },
-  set: {
-    border: '#8B5CF6',
-    bg: 'rgba(139, 92, 246, 0.1)',
-    text: '#A78BFA',
-    glow: 'rgba(139, 92, 246, 0.6)',
-    gem: '#8B5CF6',
-  },
-};
-
 interface RarityLabelProps {
   rarity: Item['rarity'];
   text: string;
@@ -119,7 +54,7 @@ export function RarityLabel({
   withPulse = false,
   className = '',
 }: RarityLabelProps) {
-  const rarityTheme = RARITY_COLORS[rarity];
+  const rarityTheme = getRarityColors(rarity);
   
   // Import modifiers to get color and icon
   const primaryModifier = modifiers.length > 0 ? getModifierById(modifiers[0]) : null;
