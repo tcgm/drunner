@@ -39,7 +39,7 @@ export default function FloorSelectionModal({
   party,
   alkahest,
 }: FloorSelectionModalProps) {
-  const [selectedFloor, setSelectedFloor] = useState(1)
+  const [selectedFloor, setSelectedFloor] = useState(0)
 
   // Calculate party average level
   const partyAvgLevel = useMemo(() => {
@@ -137,8 +137,8 @@ export default function FloorSelectionModal({
                 <IconButton
                   aria-label="Decrease floor"
                   icon={<Text fontSize="xl">−</Text>}
-                  onClick={() => setSelectedFloor(Math.max(1, selectedFloor - 1))}
-                  isDisabled={selectedFloor <= 1}
+                  onClick={() => setSelectedFloor(Math.max(0, selectedFloor - 1))}
+                  isDisabled={selectedFloor <= 0}
                   colorScheme="orange"
                   variant="outline"
                 />
@@ -146,17 +146,17 @@ export default function FloorSelectionModal({
                   value={selectedFloor}
                   onChange={(_, num) => {
                     if (!isNaN(num)) {
-                      setSelectedFloor(Math.max(1, Math.min(GAME_CONFIG.dungeon.maxFloors, num)))
+                      setSelectedFloor(Math.max(0, Math.min(GAME_CONFIG.dungeon.maxFloors, num)))
                     }
                   }}
-                  min={1}
+                  min={0}
                   max={GAME_CONFIG.dungeon.maxFloors}
                   w="120px"
                   onWheel={(e) => {
                     e.preventDefault()
                     const delta = e.deltaY > 0 ? -1 : 1
                     setSelectedFloor((prev) =>
-                      Math.max(1, Math.min(GAME_CONFIG.dungeon.maxFloors, prev + delta))
+                      Math.max(0, Math.min(GAME_CONFIG.dungeon.maxFloors, prev + delta))
                     )
                   }}
                 >

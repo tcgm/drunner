@@ -39,7 +39,7 @@ function App() {
   const { activeRun, retreatFromDungeon, startDungeon, party, alkahest } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   
-  const handleStartDungeon = (startingFloor: number = 1) => {
+  const handleStartDungeon = (startingFloor: number = 0) => {
     // Calculate alkahest cost
     const activeHeroes = party.filter((h): h is Hero => h !== null)
     const partyAvgLevel = activeHeroes.length > 0

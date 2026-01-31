@@ -336,7 +336,7 @@ export const useGameStore = create<GameStore>()(
       }
     }),
   
-  startDungeon: (startingFloor = 1, alkahestCost = 0) => 
+  startDungeon: (startingFloor = 0, alkahestCost = 0) => 
     set((state) => {
       // Deduct alkahest cost
       const newAlkahest = Math.max(0, state.alkahest - alkahestCost)
