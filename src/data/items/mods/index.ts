@@ -1,11 +1,16 @@
 import type { Item } from '@/types'
+import type { IconType } from 'react-icons'
+import * as GameIcons from 'react-icons/gi'
 
 export interface ItemModifier {
   id: string
   name: string
   description: string
-  color: string // Hex color for display
-  icon?: string // Optional icon/symbol
+  color: string // Primary color (hex)
+  colorLight?: string // Lighter shade for text
+  backgroundColor?: string // Background color with opacity
+  glow?: string // Glow effect color with opacity
+  icon?: IconType // React icon component
   statMultipliers?: {
     attack?: number
     defense?: number
@@ -23,8 +28,11 @@ export const CURSED: ItemModifier = {
   id: 'cursed',
   name: 'Cursed',
   description: 'A dark curse empowers this item at a terrible cost',
-  color: '#9333EA',
-  icon: '⚠',
+  color: '#7C3AED',
+  colorLight: '#A78BFA',
+  backgroundColor: 'rgba(124, 58, 237, 0.15)',
+  glow: 'rgba(124, 58, 237, 0.6)',
+  icon: GameIcons.GiCursedStar,
   statMultipliers: {
     attack: 1.3,
     defense: 0.7,
@@ -39,7 +47,10 @@ export const BLESSED: ItemModifier = {
   name: 'Blessed',
   description: 'Holy power imbues this item with divine grace',
   color: '#FBBF24',
-  icon: '✦',
+  colorLight: '#FCD34D',
+  backgroundColor: 'rgba(251, 191, 36, 0.15)',
+  glow: 'rgba(251, 191, 36, 0.7)',
+  icon: GameIcons.GiAngelsWing,
   statMultipliers: {
     defense: 1.2,
     luck: 1.3,
@@ -54,7 +65,10 @@ export const QUICK: ItemModifier = {
   name: 'Quick',
   description: 'Lighter and more responsive than normal',
   color: '#60A5FA',
-  icon: '⚡',
+  colorLight: '#93C5FD',
+  backgroundColor: 'rgba(96, 165, 250, 0.15)',
+  glow: 'rgba(96, 165, 250, 0.6)',
+  icon: GameIcons.GiLightningHelix,
   statMultipliers: {
     speed: 1.4,
     attack: 0.9,
@@ -68,7 +82,10 @@ export const FORTIFIED: ItemModifier = {
   name: 'Fortified',
   description: 'Reinforced with superior craftsmanship',
   color: '#10B981',
-  icon: '◆',
+  colorLight: '#34D399',
+  backgroundColor: 'rgba(16, 185, 129, 0.15)',
+  glow: 'rgba(16, 185, 129, 0.6)',
+  icon: GameIcons.GiShield,
   statMultipliers: {
     defense: 1.4,
     maxHp: 1.2,
@@ -83,7 +100,10 @@ export const LIGHTWEIGHT: ItemModifier = {
   name: 'Lightweight',
   description: 'Remarkably light without sacrificing strength',
   color: '#A78BFA',
-  icon: '◇',
+  colorLight: '#C4B5FD',
+  backgroundColor: 'rgba(167, 139, 250, 0.15)',
+  glow: 'rgba(167, 139, 250, 0.6)',
+  icon: GameIcons.GiFeather,
   statMultipliers: {
     speed: 1.3,
     defense: 0.85,
@@ -97,7 +117,10 @@ export const MASTERWORK: ItemModifier = {
   name: 'Masterwork',
   description: 'Crafted with exceptional skill and attention to detail',
   color: '#F59E0B',
-  icon: '★',
+  colorLight: '#FCD34D',
+  backgroundColor: 'rgba(245, 158, 11, 0.15)',
+  glow: 'rgba(245, 158, 11, 0.7)',
+  icon: GameIcons.GiHammerNails,
   statMultipliers: {
     attack: 1.15,
     defense: 1.15,
@@ -112,7 +135,10 @@ export const BRUTAL: ItemModifier = {
   name: 'Brutal',
   description: 'Designed for maximum carnage',
   color: '#EF4444',
-  icon: '⚔',
+  colorLight: '#F87171',
+  backgroundColor: 'rgba(239, 68, 68, 0.15)',
+  glow: 'rgba(239, 68, 68, 0.6)',
+  icon: GameIcons.GiBattleAxe,
   statMultipliers: {
     attack: 1.5,
     defense: 0.8,

@@ -170,16 +170,19 @@ export const ItemSlot = memo(function ItemSlot({
               ⭐ UNIQUE
             </Badge>
           )}
-          {setName && (
+          {/* {setName && (
             <Badge
               fontSize="2xs"
               bg={RARITY_COLORS.set.bg}
               color={RARITY_COLORS.set.text}
               fontWeight="bold"
+              borderWidth="1px"
+              borderColor={RARITY_COLORS.set.border}
+              boxShadow={`0 0 8px ${RARITY_COLORS.set.border}60`}
             >
               🦊 SET: {setName}
             </Badge>
-          )}
+          )} */}
           <Badge 
             fontSize="2xs"
             bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
@@ -223,20 +226,22 @@ export const ItemSlot = memo(function ItemSlot({
         isOpen={isHovered}
       >
         <MotionBox
-          className={`item-slot item-slot-${item.rarity} item-type-${item.type}${item.isUnique ? ' item-unique' : ''}${isSelected ? ' item-selected' : ''}`}
+          className={`item-slot item-slot-${item.rarity} item-type-${item.type}${item.isUnique ? ' item-unique' : ''}${setName ? ' item-set' : ''}${isSelected ? ' item-selected' : ''}`}
           width={SLOT_SIZES[size]}
           height={SLOT_SIZES[size]}
-          bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
+          bg={setName ? RARITY_COLORS.set.bg : (RARITY_COLORS[item.rarity]?.bg || '#4A5568')}
           borderRadius="lg"
           borderWidth="3px"
-          borderColor={isSelected ? 'blue.400' : (item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568')}
+          borderColor={isSelected ? 'blue.400' : (setName ? RARITY_COLORS.set.border : (item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568'))}
           position="relative"
           cursor={isClickable || onClick ? "pointer" : "default"}
           boxShadow={isSelected
             ? '0 0 16px rgba(96, 165, 250, 0.8), 0 0 24px rgba(96, 165, 250, 0.5)'
-            : item.isUnique
-              ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
-              : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
+            : setName
+              ? `0 0 12px rgba(20, 184, 166, 0.6), 0 0 20px rgba(20, 184, 166, 0.4)`
+              : item.isUnique
+                ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
+                : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
           data-item-icon={item.icon}
@@ -252,12 +257,16 @@ export const ItemSlot = memo(function ItemSlot({
           animate={{ 
             scale: isHovered && (isClickable || onClick) ? 1.08 : 1,
             boxShadow: isHovered 
-              ? item.isUnique
-                ? `0 0 32px rgba(255, 215, 0, 0.8), 0 0 48px rgba(255, 215, 0, 0.5), 0 0 64px rgba(255, 215, 0, 0.3)`
-                : `0 0 24px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}60, 0 0 40px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40`
-              : item.isUnique 
-                ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
-                : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`
+              ? setName
+                ? `0 0 32px rgba(20, 184, 166, 0.8), 0 0 48px rgba(20, 184, 166, 0.6), 0 0 64px rgba(20, 184, 166, 0.4)`
+                : item.isUnique
+                  ? `0 0 32px rgba(255, 215, 0, 0.8), 0 0 48px rgba(255, 215, 0, 0.5), 0 0 64px rgba(255, 215, 0, 0.3)`
+                  : `0 0 24px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}60, 0 0 40px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40`
+              : setName
+                ? `0 0 12px rgba(20, 184, 166, 0.6), 0 0 20px rgba(20, 184, 166, 0.4)`
+                : item.isUnique
+                  ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
+                  : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`
           }}
           whileTap={isClickable || onClick ? { scale: 0.95 } : {}}
           transition={{
@@ -297,9 +306,11 @@ export const ItemSlot = memo(function ItemSlot({
                   position: 'absolute',
                   inset: '-4px',
                   borderRadius: '12px',
-                  background: item.isUnique
-                    ? `radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%)`
-                    : `radial-gradient(circle, ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40 0%, transparent 70%)`,
+                  background: setName
+                    ? `radial-gradient(circle, rgba(20, 184, 166, 0.7) 0%, transparent 70%)`
+                    : item.isUnique
+                      ? `radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%)`
+                      : `radial-gradient(circle, ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40 0%, transparent 70%)`,
                   pointerEvents: 'none',
                   zIndex: -1
                 }}
@@ -345,21 +356,38 @@ export const ItemSlot = memo(function ItemSlot({
 
           {/* Set Indicator Badge */}
           {setName && (
-            <Badge
-              position="absolute"
-              top="2px"
-              left="2px"
-              fontSize="3xs"
-              bg={RARITY_COLORS.set.bg}
-              color={RARITY_COLORS.set.text}
-              px={1}
-              py={0}
-              borderRadius="sm"
-              zIndex={15}
-              fontWeight="bold"
+            <motion.div
+              style={{
+                position: 'absolute',
+                top: '2px',
+                left: '2px',
+                zIndex: 15
+              }}
+              animate={{
+                scale: [1, 1.05, 1],
+                opacity: [1, 0.8, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
             >
-              SET
-            </Badge>
+              {/* <Badge
+                fontSize="2xs"
+                bg={RARITY_COLORS.set.bg}
+                color={RARITY_COLORS.set.text}
+                px={1.5}
+                py={0.5}
+                borderRadius="md"
+                fontWeight="bold"
+                borderWidth="1px"
+                borderColor={RARITY_COLORS.set.border}
+                boxShadow={`0 0 8px ${RARITY_COLORS.set.border}80`}
+              >
+                🦊 SET
+              </Badge> */}
+            </motion.div>
           )}
 
           {/* Item Icon - Foreground layer */}
