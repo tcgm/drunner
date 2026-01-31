@@ -74,7 +74,6 @@ export const MATERIALS_BY_RARITY: Record<ItemRarity, Material[]> = {
   legendary: [DIVINE, ANCIENT, VOID],
   mythic: [PRIMORDIAL, COSMIC, ETERNAL, ADAMANTIUM],
   artifact: [],
-  cursed: [],
   set: [],
 }
 
