@@ -4,6 +4,7 @@ import { generateItem } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { getMaterialById } from '@/data/items/materials'
+import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
@@ -40,10 +41,10 @@ function formatNameList(names: string[]): string {
 }
 
 /**
- * Scale a value based on dungeon depth
+ * Scale a value based on dungeon floor
  */
-function scaleValue(baseValue: number, depth: number, scalingFactor: number = 0.1): number {
-  return Math.floor(baseValue * (1 + (depth - 1) * scalingFactor))
+function scaleValue(baseValue: number, floor: number, scalingFactor: number = 0.1): number {
+  return Math.floor(baseValue * (1 + (floor - 1) * scalingFactor))
 }
 
 /**
@@ -246,7 +247,8 @@ function generateItemFromSpec(spec: {
 export function resolveEventOutcome(
   outcome: EventOutcome,
   party: (Hero | null)[],
-  dungeon: { gold: number; depth: number; floor: number }
+  dungeon: { gold: number; depth: number; floor: number },
+  currentEvent?: { type: string; isZoneBoss?: boolean; isFinalBoss?: boolean } | null
 ): {
   updatedParty: (Hero | null)[]
   updatedGold: number
@@ -265,8 +267,17 @@ export function resolveEventOutcome(
   let xpMentored = 0
   const resolvedEffects: ResolvedEffect[] = []
   const foundItems: Item[] = []
-  const depth = dungeon.floor // Use floor for difficulty scaling, not total events
+  const floor = dungeon.floor // Use floor for difficulty scaling, not total events
   let goldCostThisOutcome = 0 // Track gold spent in this outcome for potential refunds
+
+  // Determine damage scaling based on event type
+  const isBoss = currentEvent?.type === 'boss'
+  const isZoneBoss = currentEvent?.isZoneBoss || currentEvent?.isFinalBoss
+  const damageScaling = isZoneBoss
+    ? GAME_CONFIG.scaling.zoneBossDamage
+    : isBoss
+      ? GAME_CONFIG.scaling.floorBossDamage
+      : GAME_CONFIG.scaling.damage
 
   for (const effect of outcome.effects) {
     const targets = selectTargets(effect.target || 'all', updatedParty)
@@ -274,9 +285,11 @@ export function resolveEventOutcome(
     switch (effect.type) {
       case 'damage': {
         const baseDamage = effect.value || 0
-        const scaledDamage = scaleValue(baseDamage, depth, GAME_CONFIG.scaling.damage)
-        const damage = Math.floor(scaledDamage * GAME_CONFIG.multipliers.damage)
         const isTrueDamage = effect.isTrueDamage || false
+        // True damage uses its own scaling factor since it bypasses defense
+        const effectiveScaling = isTrueDamage ? GAME_CONFIG.scaling.trueDamage : damageScaling
+        const scaledDamage = scaleValue(baseDamage, floor, effectiveScaling)
+        const damage = Math.floor(scaledDamage * GAME_CONFIG.multipliers.damage)
         
         // Calculate actual damage for each hero and track breakdown
         const damageBreakdown: { 
@@ -305,14 +318,15 @@ export function resolveEventOutcome(
           }
           
           // Critical hit check: luck gives chance for enemy to crit (0.1% per floor, increased by -luck)
-          const enemyBaseCrit = depth * 0.001 // 0.1% per floor
+          const enemyBaseCrit = floor * 0.001 // 0.1% per floor
           const luckReduction = (hero.stats.luck || 0) * 0.001 // Luck reduces enemy crit chance
           const enemyCritChance = Math.max(0.01, Math.min(0.30, enemyBaseCrit - luckReduction))
           const isCrit = Math.random() < enemyCritChance
           
+          // Apply defense reduction using configured formula
           let finalDamage = isTrueDamage 
             ? damage 
-            : Math.max(1, damage - Math.floor(hero.stats.defense * GAME_CONFIG.combat.defenseReduction))
+            : applyDefenseReduction(damage, hero.stats.defense)
           
           // Critical hits deal 2x damage
           if (isCrit) {
@@ -383,7 +397,7 @@ export function resolveEventOutcome(
       
       case 'heal': {
         const baseHealing = effect.value || 0
-        const scaledHealing = scaleValue(baseHealing, depth, GAME_CONFIG.scaling.healing)
+        const scaledHealing = scaleValue(baseHealing, floor, GAME_CONFIG.scaling.healing)
         const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
         targets.forEach(hero => {
           hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healing)
@@ -399,7 +413,7 @@ export function resolveEventOutcome(
       
       case 'xp': {
         const baseXp = effect.value || 0
-        const scaledXp = scaleValue(baseXp, depth, 0.15) // 15% per depth (rewards scale faster)
+        const scaledXp = scaleValue(baseXp, floor, 0.15) // 15% per floor (rewards scale faster)
         const xp = Math.floor(scaledXp * GAME_CONFIG.multipliers.xp)
         let totalOverflowXp = 0
         
@@ -525,7 +539,7 @@ export function resolveEventOutcome(
       
       case 'gold': {
         const baseGold = effect.value || 0
-        const scaledGold = scaleValue(baseGold, depth, 0.15) // 15% per depth (rewards scale faster)
+        const scaledGold = scaleValue(baseGold, floor, 0.15) // 15% per floor (rewards scale faster)
         const gold = Math.floor(scaledGold * GAME_CONFIG.multipliers.gold)
         updatedGold += gold
         // Track negative gold (costs) for potential refunds
@@ -595,7 +609,7 @@ export function resolveEventOutcome(
             : []
         
         const healAmount = effect.value || 0
-        const scaledHeal = scaleValue(healAmount, depth, 0.08)
+        const scaledHeal = scaleValue(healAmount, floor, 0.08)
         
         toRevive.forEach(hero => {
           if (hero) {
@@ -802,7 +816,7 @@ export function checkRequirements(
   
   if (requirements.stat && requirements.minValue !== undefined) {
     // Scale stat requirements with depth (15% per depth to match stat growth)
-    const scaledMinValue = scaleValue(requirements.minValue, depth, GAME_CONFIG.scaling.statRequirements)
+    const scaledMinValue = scaleValue(requirements.minValue, floor, GAME_CONFIG.scaling.statRequirements)
     const hasStat = party.some(h => {
       if (!h || !h.isAlive) return false
       const statValue = h.stats[requirements.stat as keyof typeof h.stats]
@@ -813,7 +827,7 @@ export function checkRequirements(
   
   if (requirements.gold !== undefined) {
     // Scale gold requirements with depth (same as rewards - 15% per depth)
-    const scaledGold = scaleValue(requirements.gold, depth, 0.15)
+    const scaledGold = scaleValue(requirements.gold, floor, 0.15)
     if (gold < scaledGold) return false
   }
   

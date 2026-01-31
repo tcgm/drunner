@@ -493,7 +493,8 @@ export const useGameStore = create<GameStore>()(
       const { updatedParty, updatedGold, metaXpGained, xpMentored, resolvedOutcome } = resolveEventOutcome(
         selectedOutcome,
         state.party,
-        state.dungeon
+        state.dungeon,
+        currentEvent
       )
       
       // Calculate statistics from effects

@@ -47,3 +47,27 @@ export function formatDefenseReduction(defense: number): string {
     const reduction = calculateDefenseReduction(defense)
     return `(${(reduction * 100).toFixed(1)}%)`
 }
+
+/**
+ * Apply defense to reduce incoming damage
+ */
+export function applyDefenseReduction(incomingDamage: number, defense: number): number {
+    const formula = GAME_CONFIG.combat.defenseFormula
+
+    switch (formula) {
+        case 'flat':
+            // Flat reduction: subtract defense * factor
+            return Math.max(1, incomingDamage - Math.floor(defense * GAME_CONFIG.combat.defenseReduction))
+
+        case 'percentage':
+        case 'logarithmic':
+        case 'hybrid': {
+            // All percentage-based formulas: reduce by percentage
+            const reductionPercent = calculateDefenseReduction(defense)
+            return Math.max(1, Math.floor(incomingDamage * (1 - reductionPercent)))
+        }
+
+        default:
+            return Math.max(1, incomingDamage)
+    }
+}
