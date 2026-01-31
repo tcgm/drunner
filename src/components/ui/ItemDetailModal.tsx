@@ -412,9 +412,10 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
               {item.modifiers && item.modifiers.length > 0 && item.modifiers.map(modId => {
                 const mod = getModifierById(modId);
                 if (!mod) return null;
+                const ModIcon = mod.icon;
                 return (
                   <Text key={modId} fontSize="sm" color={mod.color} fontStyle="italic">
-                    {mod.icon} {mod.name} {mod.icon}
+                    {ModIcon && <ModIcon />} {mod.name} {ModIcon && <ModIcon />}
                   </Text>
                 );
               })}
