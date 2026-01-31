@@ -8,7 +8,7 @@ export const KITSUNE_BITE: Omit<Item, 'id'> = {
   name: "Kitsune's Bite",
   description: 'A blade forged by the nine-tailed fox spirits. Gleams with ethereal fox fire.',
   type: 'weapon',
-  rarity: 'set',
+  rarity: 'epic',
   icon: GiKatana,
   stats: {
     attack: 110,

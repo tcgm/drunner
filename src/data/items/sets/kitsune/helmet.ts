@@ -8,7 +8,7 @@ export const KITSUNE_VISION: Omit<Item, 'id'> = {
   name: "Kitsune's Vision",
   description: 'A mask resembling a fox spirit. Grants mystical perception and cunning.',
   type: 'helmet',
-  rarity: 'set',
+  rarity: 'epic',
   icon: GiFox,
   stats: {
     defense: 45,

@@ -38,7 +38,7 @@ import { CELESTIAL } from './epic/celestial'
 import { DEMON } from './epic/demon'
 import { DIVINE } from './legendary/divine'
 import { ANCIENT } from './legendary/ancient'
-import { VOID_LEGENDARY } from './legendary/void'
+import { VOIDSTONE } from './legendary/void'
 import { PRIMORDIAL } from './mythic/primordial'
 import { COSMIC } from './mythic/cosmic'
 import { ETERNAL } from './mythic/eternal'
@@ -73,7 +73,7 @@ export {
   DEMON,
   DIVINE,
   ANCIENT,
-  VOID_LEGENDARY,
+  VOIDSTONE,
   PRIMORDIAL,
   COSMIC,
   ETERNAL,
@@ -95,7 +95,7 @@ export const MATERIALS_BY_RARITY: Record<ItemRarity, Material[]> = {
   magical: [ARCANE, SPECTRAL, ETHEREAL],
   elite: [],
   epic: [ADAMANTINE, CELESTIAL, DEMON],
-  legendary: [DIVINE, ANCIENT, VOID_LEGENDARY],
+  legendary: [DIVINE, ANCIENT, VOIDSTONE],
   mythic: [PRIMORDIAL, COSMIC, ETERNAL, ADAMANTIUM],
   mythicc: [ASCENDED],
   artifact: [],
@@ -108,9 +108,7 @@ export const MATERIALS_BY_RARITY: Record<ItemRarity, Material[]> = {
   elder: [],
   layer: [],
   plane: [],
-  author: [NARRATIVE],
-  cursed: [],
-  set: [],
+  author: [NARRATIVE]
 }
 
 // All materials
@@ -122,7 +120,7 @@ export const ALL_MATERIALS: Material[] = [
   OBSIDIAN, CRYSTAL, MOONSTONE,
   ARCANE, SPECTRAL, ETHEREAL,
   ADAMANTINE, CELESTIAL, DEMON,
-  DIVINE, ANCIENT, VOID_LEGENDARY,
+  DIVINE, ANCIENT, VOIDSTONE,
   PRIMORDIAL, COSMIC, ETERNAL, ADAMANTIUM,
   ASCENDED,
   GODFORGED,

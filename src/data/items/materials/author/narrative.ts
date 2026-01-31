@@ -2,8 +2,8 @@ import type { Material } from '../index'
 
 export const NARRATIVE: Material = {
   id: 'narrative',
-  name: 'Narrative',
-  prefix: 'Narrative',
+  name: 'Handwavium',
+  prefix: 'Handwavium',
   rarity: 'author',
   statMultiplier: 30.0,
   valueMultiplier: 1000.0,

@@ -8,7 +8,7 @@ export const KITSUNE_GRACE: Omit<Item, 'id'> = {
   name: "Kitsune's Grace",
   description: 'Ethereal robes woven from fox spirit tails. Shimmers with illusion magic.',
   type: 'armor',
-  rarity: 'set',
+  rarity: 'epic',
   icon: GiNinjaMask,
   stats: {
     defense: 70,

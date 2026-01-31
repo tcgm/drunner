@@ -96,9 +96,6 @@ export type ItemRarity =
   | 'layer'
   | 'plane'
   | 'author'
-  // Special rarities
-  | 'cursed'
-  | 'set'
 
 export interface Item {
   id: string

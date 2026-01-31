@@ -8,7 +8,7 @@ export const KITSUNE_CHARM: Omit<Item, 'id'> = {
   name: "Kitsune's Charm",
   description: 'A ring containing a fragment of fox spirit essence. Brings fortune and tricks fate.',
   type: 'accessory1',
-  rarity: 'set',
+  rarity: 'epic',
   icon: GiFoxTail,
   stats: {
     luck: 30,

@@ -486,7 +486,12 @@ export function repairItemName(item: Item): Item {
   
   // Try to get material from metadata
   if (item.materialId) {
-    material = getMaterialById(item.materialId)
+    // Handle renamed materials (migration)
+    let materialId = item.materialId
+    if (materialId === 'void_legendary' || materialId === 'void') {
+      materialId = 'voidstone' // Renamed to avoid conflict with void rarity
+    }
+    material = getMaterialById(materialId)
   }
   
   // If no metadata, try to extract material name from item name
