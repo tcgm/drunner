@@ -1,17 +1,72 @@
 import type { Item, ItemRarity, Hero } from '@/types'
 import { generateItem } from './lootGenerator'
+import { MATERIALS_BY_RARITY, getMaterialById, type Material } from '@/data/items/materials'
 
 /**
  * Rarity tier ordering for upgrades
+ * Includes all rarities from the ItemRarity type
  */
 const RARITY_ORDER: ItemRarity[] = [
+  // Base rarities (0-10 floors)
   'junk',
+  'abundant',
   'common',
   'uncommon',
+  // Mid rarities (11-30 floors)
   'rare',
+  'veryRare',
+  'magical',
+  'elite',
+  // High rarities (31-60 floors)
   'epic',
   'legendary',
-  'mythic'
+  'mythic',
+  'mythicc',
+  // Ultra rarities (61-85 floors)
+  'artifact',
+  'divine',
+  'celestial',
+  // God rarities (86-95 floors)
+  'realityAnchor',
+  'structural',
+  'singularity',
+  'void',
+  'elder',
+  // Meta rarities (96-100+ floors)
+  'layer',
+  'plane',
+  'author'
+]
+
+/**
+ * Material tier ordering for upgrades
+ * Materials are grouped by rarity and ordered within each rarity tier
+ */
+const MATERIAL_ORDER = [
+  // Common tier
+  'iron', 'leather', 'bronze',
+  // Uncommon tier  
+  'steel', 'reinforced-leather', 'silver',
+  // Rare tier
+  'mithril', 'dragonscale', 'enchanted',
+  // Very Rare tier
+  'obsidian', 'crystal', 'moonstone',
+  // Magical tier
+  'arcane', 'spectral', 'ethereal',
+  // Epic tier
+  'adamantine', 'celestial-mat', 'demon',
+  // Legendary tier
+  'divine-mat', 'ancient', 'voidstone',
+  // Mythic tier
+  'primordial', 'cosmic', 'eternal', 'adamantium',
+  // Mythicc tier
+  'ascended',
+  // Divine tier
+  'godforged',
+  // Void tier
+  'nullspace',
+  // Author tier
+  'narrative'
 ]
 
 /**
@@ -23,6 +78,40 @@ function getNextRarity(currentRarity: ItemRarity): ItemRarity | null {
     return null // Already at max rarity
   }
   return RARITY_ORDER[currentIndex + 1]
+}
+
+/**
+ * Get the next material tier
+ */
+function getNextMaterial(currentMaterialId: string): Material | null {
+  const currentIndex = MATERIAL_ORDER.indexOf(currentMaterialId)
+  if (currentIndex === -1 || currentIndex >= MATERIAL_ORDER.length - 1) {
+    return null // Already at max material or not found
+  }
+  const nextMaterialId = MATERIAL_ORDER[currentIndex + 1]
+  return getMaterialById(nextMaterialId)
+}
+
+/**
+ * Extract material ID from item name
+ * Returns null if no material prefix found
+ */
+function extractMaterialId(itemName: string): string | null {
+  const words = itemName.split(' ')
+  if (words.length < 2) return null
+
+  const potentialMaterial = words[0].toLowerCase().replace(/[^a-z-]/g, '')
+
+  // Check if this matches any known material
+  for (const materials of Object.values(MATERIALS_BY_RARITY)) {
+    for (const material of materials) {
+      if (material.prefix.toLowerCase().replace(/[^a-z-]/g, '') === potentialMaterial) {
+        return material.id
+      }
+    }
+  }
+
+  return null
 }
 
 /**
@@ -76,8 +165,45 @@ export function findLowestRarityItemInCollection(items: Item[]): Item | null {
 }
 
 /**
- * Upgrade an item to the next rarity tier
- * Returns a new item of the same type but higher rarity
+ * Upgrade an item's material to the next tier
+ * Returns a new item with better material but same rarity
+ * Returns null if material cannot be upgraded
+ */
+export function upgradeItemMaterial(
+  item: Item,
+  depth: number
+): Item | null {
+  // Unique items and set items should never be upgraded
+  if (item.isUnique || item.setId) {
+    return null
+  }
+
+  const currentMaterialId = extractMaterialId(item.name)
+  if (!currentMaterialId) {
+    return null // No material prefix found
+  }
+
+  const nextMaterial = getNextMaterial(currentMaterialId)
+  if (!nextMaterial) {
+    return null // Already at max material
+  }
+
+  // Generate a new item with the upgraded material
+  const upgradedItem = generateItem(
+    depth,
+    item.type,
+    item.rarity,
+    item.rarity, // Keep same rarity
+    0,
+    nextMaterial // Use the upgraded material
+  )
+
+  return upgradedItem
+}
+
+/**
+ * Upgrade an item to the next rarity tier, or if at max rarity, upgrade material
+ * Returns a new item of the same type but higher rarity or better material
  * Unique items cannot be upgraded and will return null
  */
 export function upgradeItemRarity(
@@ -85,26 +211,26 @@ export function upgradeItemRarity(
   depth: number,
   rarityBoost: number = 0
 ): Item | null {
-  // Unique items should never be upgraded
-  if (item.isUnique) {
+  // Unique items and set items should never be upgraded
+  if (item.isUnique || item.setId) {
     return null
   }
   
   const nextRarity = getNextRarity(item.rarity)
-  if (!nextRarity) {
-    return null // Can't upgrade mythic items
+  if (nextRarity) {
+    // Can upgrade rarity - do that first
+    const upgradedItem = generateItem(
+      depth,
+      item.type,
+      nextRarity,
+      nextRarity, // Force exactly the next rarity tier
+      rarityBoost
+    )
+    return upgradedItem
   }
-  
-  // Generate a new item of the same type but with higher rarity
-  const upgradedItem = generateItem(
-    depth,
-    item.type,
-    nextRarity,
-    nextRarity, // Force exactly the next rarity tier
-    rarityBoost
-  )
-  
-  return upgradedItem
+
+  // At max rarity - try to upgrade material instead
+  return upgradeItemMaterial(item, depth)
 }
 
 /**

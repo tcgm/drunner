@@ -266,6 +266,7 @@ export function resolveEventOutcome(
   const resolvedEffects: ResolvedEffect[] = []
   const foundItems: Item[] = []
   const depth = dungeon.floor // Use floor for difficulty scaling, not total events
+  let goldCostThisOutcome = 0 // Track gold spent in this outcome for potential refunds
 
   for (const effect of outcome.effects) {
     const targets = selectTargets(effect.target || 'all', updatedParty)
@@ -527,6 +528,10 @@ export function resolveEventOutcome(
         const scaledGold = scaleValue(baseGold, depth, 0.15) // 15% per depth (rewards scale faster)
         const gold = Math.floor(scaledGold * GAME_CONFIG.multipliers.gold)
         updatedGold += gold
+        // Track negative gold (costs) for potential refunds
+        if (gold < 0) {
+          goldCostThisOutcome += Math.abs(gold)
+        }
         resolvedEffects.push({
           type: 'gold',
           target: [],
@@ -631,7 +636,15 @@ export function resolveEventOutcome(
         let lowestItemData: { hero: Hero; item: Item; slot: string } | null = null
         let lowestRarityIndex = 999
         
-        const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic']
+        // Use the same rarity order as the upgrade system
+        const rarityOrder: ItemRarity[] = [
+          'junk', 'abundant', 'common', 'uncommon',
+          'rare', 'veryRare', 'magical', 'elite',
+          'epic', 'legendary', 'mythic', 'mythicc',
+          'artifact', 'divine', 'celestial',
+          'realityAnchor', 'structural', 'singularity', 'void', 'elder',
+          'layer', 'plane', 'author'
+        ]
         
         for (const hero of aliveHeroes) {
           if (hero) {
@@ -647,10 +660,20 @@ export function resolveEventOutcome(
         }
         
         if (!lowestItemData) {
+          // Refund any gold cost from this outcome
+          if (goldCostThisOutcome > 0) {
+            updatedGold += goldCostThisOutcome
+            resolvedEffects.push({
+              type: 'gold',
+              target: [],
+              value: goldCostThisOutcome,
+              description: `${goldCostThisOutcome} gold refunded`
+            })
+          }
           resolvedEffects.push({
             type: 'upgradeItem',
             target: [],
-            description: 'No equipment available to upgrade'
+            description: 'All equipment is already at maximum rarity or cannot be upgraded'
           })
           break
         }
@@ -660,22 +683,40 @@ export function resolveEventOutcome(
         const upgradedItem = upgradeItemRarity(item, depth, rarityBoost)
         
         if (!upgradedItem) {
+          // Refund any gold cost from this outcome
+          if (goldCostThisOutcome > 0) {
+            updatedGold += goldCostThisOutcome
+            resolvedEffects.push({
+              type: 'gold',
+              target: [],
+              value: goldCostThisOutcome,
+              description: `${goldCostThisOutcome} gold refunded`
+            })
+          }
           resolvedEffects.push({
             type: 'upgradeItem',
             target: [hero.id],
-            description: `${hero.name}'s ${item.name} is already at maximum rarity`
+            description: `${hero.name}'s ${item.name} cannot be upgraded further (maximum rarity and material)`
           })
           break
         }
         
+        // Check if this was a rarity upgrade or material upgrade
+        const isRarityUpgrade = upgradedItem.rarity !== item.rarity
+        const isMaterialUpgrade = !isRarityUpgrade
+
         // Replace the old item with the upgraded one
         hero.equipment[slot as keyof typeof hero.equipment] = upgradedItem
         
+        const upgradeDescription = isMaterialUpgrade
+          ? `${hero.name}'s ${item.name} was upgraded to superior material: ${upgradedItem.name}!`
+          : `${hero.name}'s ${item.name} was upgraded to ${upgradedItem.name}!`
+
         resolvedEffects.push({
           type: 'upgradeItem',
           target: [hero.id],
           item: upgradedItem,
-          description: `${hero.name}'s ${item.name} was upgraded to ${upgradedItem.name}!`
+          description: upgradeDescription
         })
         break
       }

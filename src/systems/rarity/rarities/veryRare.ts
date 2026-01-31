@@ -2,7 +2,7 @@ import type { RarityConfig } from '@/systems/rarity/types'
 
 export const VERY_RARE: RarityConfig = {
   id: 'veryRare',
-  name: 'Very Rare',
+  name: 'Pristine',
   percentage: 0.05,
   color: '#3e31aa',
   backgroundColor: '#6558cf',

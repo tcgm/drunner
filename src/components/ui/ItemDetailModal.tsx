@@ -20,6 +20,7 @@ import type { Item } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
 import { getModifierById } from '@/data/items/mods'
+import { getItemSetName, ALL_SETS } from '@/data/items/sets'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -144,6 +145,10 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
   const IconComponent = item.icon || GameIcons.GiSwordman
   const GemIcon = RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond
   
+  // Detect set membership
+  const setName = getItemSetName(item.name)
+  const setDefinition = setName ? ALL_SETS.find(s => s.name === setName) : null
+
   // Split stats into left and right columns
   const stats = item.stats ? Object.entries(item.stats) : []
   const leftStats = stats.slice(0, Math.ceil(stats.length / 2))
@@ -438,6 +443,42 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 "{item.description}"
               </Text>
             </Box>
+
+            {/* Set Information */}
+            {setDefinition && (
+              <Box
+                className="item-detail-modal-set-info"
+                w="full"
+                bg="rgba(20, 184, 166, 0.1)"
+                p={3}
+                borderRadius="lg"
+                borderWidth="2px"
+                borderColor={RARITY_COLORS.set.border}
+              >
+                <VStack spacing={2} align="start">
+                  <HStack spacing={2}>
+                    <Icon as={GameIcons.GiCagedBall} color={RARITY_COLORS.set.text} boxSize="20px" />
+                    <Text fontSize="sm" fontWeight="bold" color={RARITY_COLORS.set.text}>
+                      {setName} Set
+                    </Text>
+                  </HStack>
+                  <VStack align="start" spacing={1} w="full" pl={2}>
+                    <Text fontSize="xs" color="gray.400" fontWeight="bold">
+                      Set Bonuses:
+                    </Text>
+                    {Object.entries(setDefinition.bonuses)
+                      .sort(([a], [b]) => parseInt(a) - parseInt(b))
+                      .map(([pieceCount, bonus]) => (
+                        <Box key={pieceCount} w="full">
+                          <Text fontSize="xs" color={RARITY_COLORS.set.textLight} fontWeight="semibold">
+                            ({pieceCount} pieces) {bonus.description}
+                          </Text>
+                        </Box>
+                      ))}
+                  </VStack>
+                </VStack>
+              </Box>
+            )}
 
             {/* Footer Info */}
             <HStack 

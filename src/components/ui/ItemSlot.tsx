@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { GiGoldBar as GiTreasure, GiSparkles } from 'react-icons/gi'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
+import { getItemSetName } from '@/data/items/sets'
 
 const MotionBox = motion.create(Box)
 
@@ -34,7 +35,13 @@ const SLOT_SIZES = {
   lg: '100px'
 }
 
-const RARITY_COLORS = {
+const RARITY_COLORS: Record<string, {
+  border: string;
+  borderHover: string;
+  text: string;
+  textLight: string;
+  bg: string;
+}> = {
   junk: {
     border: '#4A5568',
     borderHover: '#2D3748',
@@ -98,6 +105,13 @@ const RARITY_COLORS = {
     textLight: '#F3F4F6',
     bg: '#111827'
   },
+  abundant: {
+    border: '#10B981',
+    borderHover: '#059669',
+    text: '#34D399',
+    textLight: '#D1FAE5',
+    bg: '#064E3B'
+  },
   set: {
     border: '#14B8A6',
     borderHover: '#0D9488',
@@ -135,6 +149,9 @@ export const ItemSlot = memo(function ItemSlot({
     }
   }
 
+  // Detect set membership
+  const setName = useMemo(() => getItemSetName(item.name), [item.name])
+
   // Memoize tooltip content to avoid recreation on every render
   const tooltipContent = useMemo(() => (
     <VStack align="start" spacing={1} maxW="300px">
@@ -151,6 +168,16 @@ export const ItemSlot = memo(function ItemSlot({
               fontWeight="bold"
             >
               ⭐ UNIQUE
+            </Badge>
+          )}
+          {setName && (
+            <Badge
+              fontSize="2xs"
+              bg={RARITY_COLORS.set.bg}
+              color={RARITY_COLORS.set.text}
+              fontWeight="bold"
+            >
+              🦊 SET: {setName}
             </Badge>
           )}
           <Badge 
@@ -181,7 +208,7 @@ export const ItemSlot = memo(function ItemSlot({
         Value: {item.value} gold
       </Text>
     </VStack>
-  ), [item])
+  ), [item, setName])
 
   return (
     <>
@@ -314,6 +341,25 @@ export const ItemSlot = memo(function ItemSlot({
                 filter="drop-shadow(0 0 4px rgba(255, 215, 0, 0.8))"
               />
             </motion.div>
+          )}
+
+          {/* Set Indicator Badge */}
+          {setName && (
+            <Badge
+              position="absolute"
+              top="2px"
+              left="2px"
+              fontSize="3xs"
+              bg={RARITY_COLORS.set.bg}
+              color={RARITY_COLORS.set.text}
+              px={1}
+              py={0}
+              borderRadius="sm"
+              zIndex={15}
+              fontWeight="bold"
+            >
+              SET
+            </Badge>
           )}
 
           {/* Item Icon - Foreground layer */}
