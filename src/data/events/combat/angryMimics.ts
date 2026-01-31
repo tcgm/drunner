@@ -53,6 +53,46 @@ export const ANGRY_MIMICS: DungeonEvent = {
             },
         },
         {
+            text: 'Flirt with the mimic (Bard bonus)',
+            requirements: {
+                class: 'Bard',
+            },
+            outcome: {
+                text: '"Are you a chest? Because you\'ve got me feeling all locked up inside!" The mimic blushes and offers you its treasures!',
+                effects: [
+                    { type: 'xp', value: 90 },
+                    { type: 'gold', value: 85 },
+                    { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 6 },
+                ],
+            },
+        },
+        {
+            text: 'Flirt with the mimic (risky pun)',
+            chanceBasedOutcomes: [
+                {
+                    chance: 0.65,
+                    outcome: {
+                        text: '"I must be a rogue, because I\'m falling for your trap!" The mimic giggles and lets you pass with gifts!',
+                        effects: [
+                            { type: 'xp', value: 75 },
+                            { type: 'gold', value: 60 },
+                            { type: 'item', itemType: 'accessory2', minRarity: 'uncommon', rarityBoost: 3 },
+                        ],
+                    },
+                },
+                {
+                    chance: 0.35,
+                    outcome: {
+                        text: '"You look like a real jaw-dropper!" The mimic is NOT amused and bites you extra hard for that terrible pun!',
+                        effects: [
+                            { type: 'damage', target: 'all', value: 25 },
+                            { type: 'xp', value: 35 },
+                        ],
+                    },
+                },
+            ],
+        },
+        {
             text: 'Run away',
             outcome: {
                 text: 'A mimic catches your ankle as you flee!',

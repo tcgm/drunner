@@ -1,5 +1,6 @@
 import type { DungeonEvent } from '@/types'
 import { GiFoxTail } from 'react-icons/gi'
+import { KITSUNE_CHARM, KITSUNE_SOUL, KITSUNE_STEPS, KITSUNE_BITE, KITSUNE_GRACE, KITSUNE_VISION } from '@/data/items/sets/kitsune'
 
 export const KITSUNE_SHRINE: DungeonEvent = {
   id: 'kitsune-shrine',
@@ -21,8 +22,8 @@ export const KITSUNE_SHRINE: DungeonEvent = {
           { type: 'xp', value: 120 },
           {
             type: 'item', itemChoices: [
-              { weight: 0.3, uniqueItem: "Kitsune's Charm", rarityBoost: 10 },
-              { weight: 0.25, uniqueItem: "Kitsune's Soul", rarityBoost: 10 },
+              { weight: 0.3, uniqueItem: KITSUNE_CHARM },
+              { weight: 0.25, uniqueItem: KITSUNE_SOUL },
             ]
           },
         ],
@@ -40,8 +41,8 @@ export const KITSUNE_SHRINE: DungeonEvent = {
           { type: 'gold', value: 200 },
           {
             type: 'item', itemChoices: [
-              { weight: 0.35, uniqueItem: "Kitsune's Steps", rarityBoost: 12 },
-              { weight: 0.25, uniqueItem: "Kitsune's Bite", rarityBoost: 12 },
+              { weight: 0.35, uniqueItem: KITSUNE_STEPS },
+              { weight: 0.25, uniqueItem: KITSUNE_BITE },
             ]
           },
         ],
@@ -60,8 +61,8 @@ export const KITSUNE_SHRINE: DungeonEvent = {
           { type: 'xp', value: 100 },
           {
             type: 'item', itemChoices: [
-              { weight: 0.35, uniqueItem: "Kitsune's Grace", rarityBoost: 12 },
-              { weight: 0.3, uniqueItem: "Kitsune's Vision", rarityBoost: 12 },
+              { weight: 0.35, uniqueItem: KITSUNE_GRACE },
+              { weight: 0.3, uniqueItem: KITSUNE_VISION },
             ]
           },
         ],
@@ -80,7 +81,7 @@ export const KITSUNE_SHRINE: DungeonEvent = {
           { type: 'xp', value: 80 },
           {
             type: 'item', itemChoices: [
-              { weight: 0.2, uniqueItem: "Kitsune's Charm", rarityBoost: 8 },
+              { weight: 0.2, uniqueItem: KITSUNE_CHARM },
             ]
           },
         ],

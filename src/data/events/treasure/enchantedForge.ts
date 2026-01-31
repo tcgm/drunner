@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { STEEL, MITHRIL, DRAGONSCALE } from '@/data/items/materials'
+import { STEEL } from '@/data/items/materials'
 import { EXCALIBUR } from '@/data/items/uniques/weapons/excalibur'
 import { RING_OF_OMNIPOTENCE } from '@/data/items/uniques/accessories/ringOfOmnipotence'
 import { GiAnvil } from 'react-icons/gi'
@@ -31,8 +31,8 @@ export const ENCHANTED_FORGE: DungeonEvent = {
           { 
             type: 'item', 
             itemChoices: [ // Weighted choices array
-              { weight: 60, material: MITHRIL, itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 10 },
-              { weight: 30, material: DRAGONSCALE, itemType: 'armor', minRarity: 'uncommon', rarityBoost: 15 },
+              { weight: 60, itemType: 'weapon', minRarity: 'rare', rarityBoost: 10 },
+              { weight: 30, itemType: 'armor', minRarity: 'rare', rarityBoost: 15 },
               { weight: 10, uniqueItem: EXCALIBUR }
             ]
           },

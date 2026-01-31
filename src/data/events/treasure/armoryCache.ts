@@ -1,5 +1,4 @@
 import type { DungeonEvent } from '@/types'
-import { STEEL, IRON, MITHRIL } from '@/data/items/materials'
 import { CHAINMAIL_BASE } from '@/data/items/bases/armor/chainmail'
 import { PLATE_ARMOR_BASE } from '@/data/items/bases/armor/plate'
 import { GiSwordInStone } from 'react-icons/gi'
@@ -15,7 +14,7 @@ export const ARMORY_CACHE: DungeonEvent = {
       outcome: {
         text: 'You don the flexible chainmail armor.',
         effects: [
-          { type: 'item', baseTemplate: CHAINMAIL_BASE, material: IRON, minRarity: 'common' },
+          { type: 'item', baseTemplate: CHAINMAIL_BASE, minRarity: 'common' },
         ],
       },
     },
@@ -31,9 +30,9 @@ export const ARMORY_CACHE: DungeonEvent = {
           { 
             type: 'item',
             itemChoices: [
-              { weight: 60, baseTemplate: CHAINMAIL_BASE, material: STEEL, minRarity: 'uncommon' },
-              { weight: 30, baseTemplate: PLATE_ARMOR_BASE, material: STEEL, minRarity: 'uncommon', rarityBoost: 10 },
-              { weight: 10, baseTemplate: PLATE_ARMOR_BASE, material: MITHRIL, minRarity: 'rare', rarityBoost: 20 },
+              { weight: 60, baseTemplate: CHAINMAIL_BASE, minRarity: 'uncommon' },
+              { weight: 30, baseTemplate: PLATE_ARMOR_BASE, minRarity: 'uncommon', rarityBoost: 10 },
+              { weight: 10, baseTemplate: PLATE_ARMOR_BASE, minRarity: 'rare', rarityBoost: 20 },
             ]
           },
         ],

@@ -36,6 +36,7 @@ import { VOID } from './legendary/void'
 import { PRIMORDIAL } from './mythic/primordial'
 import { COSMIC } from './mythic/cosmic'
 import { ETERNAL } from './mythic/eternal'
+import { ADAMANTIUM } from './mythic/adamantium'
 
 // Re-export all materials
 export {
@@ -60,6 +61,7 @@ export {
   PRIMORDIAL,
   COSMIC,
   ETERNAL,
+  ADAMANTIUM,
 }
 
 // Group materials by rarity
@@ -70,7 +72,7 @@ export const MATERIALS_BY_RARITY: Record<ItemRarity, Material[]> = {
   rare: [MITHRIL, DRAGONSCALE, ENCHANTED],
   epic: [ADAMANTINE, CELESTIAL, DEMON],
   legendary: [DIVINE, ANCIENT, VOID],
-  mythic: [PRIMORDIAL, COSMIC, ETERNAL],
+  mythic: [PRIMORDIAL, COSMIC, ETERNAL, ADAMANTIUM],
   artifact: [],
   cursed: [],
   set: [],
@@ -84,7 +86,7 @@ export const ALL_MATERIALS: Material[] = [
   MITHRIL, DRAGONSCALE, ENCHANTED,
   ADAMANTINE, CELESTIAL, DEMON,
   DIVINE, ANCIENT, VOID,
-  PRIMORDIAL, COSMIC, ETERNAL,
+  PRIMORDIAL, COSMIC, ETERNAL, ADAMANTIUM,
 ]
 
 // Alias for easier import

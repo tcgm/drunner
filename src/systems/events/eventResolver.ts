@@ -2,6 +2,8 @@ import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, Ite
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
+import { ALL_SET_ITEMS } from '@/data/items/sets'
+import { getMaterialById } from '@/data/items/materials'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
@@ -151,9 +153,78 @@ function generateItemFromSpec(spec: {
     }
   }
 
+  // Handle string reference - try to look up by name in set items
+  if (spec.uniqueItem && typeof spec.uniqueItem === 'string') {
+    const matchedItem = ALL_SET_ITEMS.find(item => 
+      item.name.toLowerCase() === spec.uniqueItem.toLowerCase()
+    )
+    if (matchedItem) {
+      return {
+        ...matchedItem,
+        id: uuidv4(),
+      }
+    }
+    // If no match found, log warning and fall through to normal generation
+    console.warn(`[Item Generation] uniqueItem string "${spec.uniqueItem}" not found in set items catalog. Generating random item instead.`)
+  }
+
   // For all other cases, use the centralized generateItem function
   // This ensures consistent name generation, repair logic, and alkahest fallback
   if (spec.itemType || spec.material || spec.baseTemplate) {
+    // If both material and baseTemplate are provided, we need to handle it specially
+    // by generating with the baseTemplate and then forcing the material
+    if (spec.baseTemplate && spec.material) {
+      const item = generateItem(
+        depth, 
+        spec.itemType === 'random' ? undefined : spec.itemType,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.rarityBoost || 0,
+        spec.baseTemplate,
+        spec.modifiers || []
+      )
+      
+      // If material was also specified, override it
+      if (item) {
+        const materialObj = typeof spec.material === 'string' 
+          ? getMaterialById(spec.material) 
+          : spec.material
+        
+        if (materialObj) {
+          item.materialId = materialObj.id
+          const baseTemplate = spec.baseTemplate as BaseTemplate
+          
+          // Generate proper name using material prefix
+          const materialPrefix = materialObj.prefix || materialObj.name
+          if ('baseNames' in baseTemplate && baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+            const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
+            item.name = `${materialPrefix} ${randomName}`
+          } else {
+            // Fallback to description parsing or type name
+            const description = (baseTemplate.description || '').toLowerCase()
+            if (description.includes('chainmail') || description.includes('interlocking') || description.includes('metal rings')) {
+              item.name = `${materialPrefix} Chainmail`
+            } else if (description.includes('plate')) {
+              item.name = `${materialPrefix} Plate Armor`
+            } else {
+              item.name = `${materialPrefix} ${baseTemplate.type.charAt(0).toUpperCase() + baseTemplate.type.slice(1)}`
+            }
+          }
+          
+          // Recalculate stats with the specified material
+          item.attack = Math.floor((baseTemplate.stats.attack || 0) * materialObj.statMultiplier)
+          item.defense = Math.floor((baseTemplate.stats.defense || 0) * materialObj.statMultiplier)
+          item.speed = Math.floor((baseTemplate.stats.speed || 0) * materialObj.statMultiplier)
+          item.luck = Math.floor((baseTemplate.stats.luck || 0) * materialObj.statMultiplier)
+          item.maxHp = Math.floor((baseTemplate.stats.maxHp || 0) * materialObj.statMultiplier)
+          item.value = Math.floor((baseTemplate.baseValue || 0) * materialObj.valueMultiplier)
+        }
+      }
+      
+      return item
+    }
+    
+    // Standard case: pass whichever is provided
     return generateItem(
       depth, 
       spec.itemType === 'random' ? undefined : spec.itemType,

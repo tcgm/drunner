@@ -1,5 +1,4 @@
 import type { DungeonEvent } from '@/types'
-import { IRON, STEEL } from '@/data/items/materials'
 import { GiAbdominalArmor } from 'react-icons/gi'
 
 export const ABANDONED_ARMORY: DungeonEvent = {
@@ -34,8 +33,8 @@ export const ABANDONED_ARMORY: DungeonEvent = {
         text: 'You carry out a hefty load of equipment!',
         effects: [
           { type: 'gold', value: 150 },
-          { type: 'item', material: IRON, itemType: 'weapon', minRarity: 'common' },
-          { type: 'item', material: STEEL, itemType: 'armor', minRarity: 'uncommon' },
+          { type: 'item', itemType: 'weapon', minRarity: 'common' },
+          { type: 'item', itemType: 'armor', minRarity: 'uncommon' },
         ],
       },
     },
