@@ -36,7 +36,7 @@ jobs:
       - name: Build
         env:
           BASE_URL: /${{ github.event.repository.name }}/
-        run: npm run build
+        run: npx vite build
       
       - name: Check build output
         run: |
