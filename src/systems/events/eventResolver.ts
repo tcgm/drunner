@@ -565,10 +565,10 @@ export function resolveEventOutcome(
         } else if (effect.itemChoices) {
           // Handle weighted item choices
           const choice = selectWeightedChoice(effect.itemChoices)
-          generatedItem = generateItemFromSpec(choice, depth)
+          generatedItem = generateItemFromSpec(choice, floor)
         } else {
           // Handle single item specification
-          generatedItem = generateItemFromSpec(effect, depth)
+          generatedItem = generateItemFromSpec(effect, floor)
         }
         
         if (generatedItem) {
@@ -694,7 +694,7 @@ export function resolveEventOutcome(
         
         const { hero, item, slot } = lowestItemData
         const rarityBoost = effect.rarityBoost || 0
-        const upgradedItem = upgradeItemRarity(item, depth, rarityBoost)
+        const upgradedItem = upgradeItemRarity(item, floor, rarityBoost)
         
         if (!upgradedItem) {
           // Refund any gold cost from this outcome
