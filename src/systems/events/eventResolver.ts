@@ -815,8 +815,8 @@ export function checkRequirements(
   }
   
   if (requirements.stat && requirements.minValue !== undefined) {
-    // Scale stat requirements with depth (15% per depth to match stat growth)
-    const scaledMinValue = scaleValue(requirements.minValue, floor, GAME_CONFIG.scaling.statRequirements)
+    // Scale stat requirements with floor (25% per floor to match stat growth)
+    const scaledMinValue = scaleValue(requirements.minValue, depth, GAME_CONFIG.scaling.statRequirements)
     const hasStat = party.some(h => {
       if (!h || !h.isAlive) return false
       const statValue = h.stats[requirements.stat as keyof typeof h.stats]
@@ -826,8 +826,8 @@ export function checkRequirements(
   }
   
   if (requirements.gold !== undefined) {
-    // Scale gold requirements with depth (same as rewards - 15% per depth)
-    const scaledGold = scaleValue(requirements.gold, floor, 0.15)
+    // Scale gold requirements with floor (same as rewards - 15% per floor)
+    const scaledGold = scaleValue(requirements.gold, depth, 0.15)
     if (gold < scaledGold) return false
   }
   
