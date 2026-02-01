@@ -52,39 +52,46 @@ Phased development plan for Dungeon Runner.
 
 ## Phase 2: Polish & Balance
 
-**Goal**: Refined gameplay, balanced progression, improved UX.
+**Goal**: Refined gameplay, balanced progression, improved UX.  
+**Status**: 🟢 75% Complete (as of Feb 1, 2026)
 
 ### Features
-- 🎨 **Enhanced UI**
-  - Improved animations and transitions
-  - Better visual feedback for choices
-  - Rarity-colored item displays
-  - Health/resource bars with animations
+- 🎨 **Enhanced UI** ✅ COMPLETE
+  - ✅ Improved animations and transitions
+  - ✅ Better visual feedback for choices
+  - ✅ Rarity-colored item displays
+  - ✅ Health/resource bars with animations
+  - ✅ Floating damage numbers integrated
 
-- ⚖️ **Balance Tuning**
-  - Adjust enemy stats and scaling
-  - Fine-tune loot drop rates
-  - Balance class abilities
-  - Difficulty curve adjustments
+- ⚖️ **Balance Tuning** ⚠️ PARTIAL (50%)
+  - ✅ Defense formula system (4 options)
+  - ✅ Damage scaling configured
+  - ✅ Loot drop rates by depth
+  - ⚠️ Needs playtesting and fine-tuning
+  - ⚠️ Class balance review needed
+  - ⚠️ Difficulty curve validation
 
-- 💾 **Save System**
-  - Auto-save functionality
-  - Manual save slots (3-5 slots)
-  - Save file management
-  - Load game from menu
+- 💾 **Save System** ✅ COMPLETE
+  - ✅ Auto-save functionality
+  - ✅ Automatic backups on load
+  - ✅ Export/import save files
+  - ✅ Save file management UI
+  - ⚠️ Manual save slots not implemented (single auto-save)
 
-- 📊 **Stats & Feedback**
-  - Damage numbers display
-  - Combat log for auto-battles
-  - Run statistics (floors cleared, enemies defeated, etc.)
-  - Death/victory screens with summary
+- 📊 **Stats & Feedback** ✅ COMPLETE
+  - ✅ Damage numbers display (integrated)
+  - ✅ Combat log modal (detailed event tracking)
+  - ✅ Comprehensive run statistics (20+ metrics)
+  - ✅ Enhanced death/victory screens
+  - ✅ Expanded run history display
 
-- 🔊 **Audio** (Optional)
+- 🔊 **Audio** ❌ NOT STARTED (Optional - Deprioritized to Phase 3)
   - Background music
   - Sound effects for events
   - Volume controls
 
-**Estimated Duration**: 2-3 weeks
+**Estimated Duration**: 2-3 weeks  
+**Actual Duration**: ~1 week (with tuning remaining)
 
 ---
 
