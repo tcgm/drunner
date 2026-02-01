@@ -75,3 +75,55 @@ export function getCompatibleBase(type: ItemSlot, materialId: string): BaseItemT
   
   return compatible[Math.floor(Math.random() * compatible.length)]
 }
+
+/**
+ * Get a base template by its ID (format: type_keyword)
+ */
+export function getBaseById(baseId: string): BaseItemTemplate | undefined {
+  return ALL_BASE_TEMPLATES.find(base => {
+    const baseIdNormalized = baseId.toLowerCase()
+    const description = base.description.toLowerCase()
+
+    // Try to match by type_keyword format
+    if (baseIdNormalized.includes('_')) {
+      const [_, keyword] = baseIdNormalized.split('_')
+      return description.includes(keyword) ||
+        (base.baseNames && base.baseNames.some(name => name.toLowerCase().includes(keyword)))
+    }
+
+    // Try direct description match
+    return description.includes(baseIdNormalized) ||
+      (base.baseNames && base.baseNames.some(name => name.toLowerCase().includes(baseIdNormalized)))
+  })
+}
+
+/**
+ * Try to find the base template used for an item by analyzing its name
+ */
+export function findBaseFromItemName(itemName: string, itemType: ItemSlot): BaseItemTemplate | undefined {
+  const nameLower = itemName.toLowerCase()
+  const bases = getBasesByType(itemType)
+
+  // Try to match baseNames first (most specific)
+  for (const base of bases) {
+    if (base.baseNames) {
+      for (const baseName of base.baseNames) {
+        if (nameLower.includes(baseName.toLowerCase())) {
+          return base
+        }
+      }
+    }
+  }
+
+  // Try to match description keywords
+  for (const base of bases) {
+    const descWords = base.description.toLowerCase().split(' ')
+    for (const word of descWords) {
+      if (word.length > 3 && nameLower.includes(word)) {
+        return base
+      }
+    }
+  }
+
+  return undefined
+}

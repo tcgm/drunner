@@ -1,6 +1,7 @@
 import type { Item, ItemRarity, Hero } from '@/types'
 import { generateItem } from './lootGenerator'
 import { MATERIALS_BY_RARITY, getMaterialById, type Material } from '@/data/items/materials'
+import { getBaseById, findBaseFromItemName } from '@/data/items/bases'
 
 /**
  * Rarity tier ordering for upgrades
@@ -188,14 +189,23 @@ export function upgradeItemMaterial(
     return null // Already at max material
   }
 
-  // Generate a new item with the upgraded material
+  // Try to preserve the base template from the original item
+  let baseTemplate = null
+  if (item.baseTemplateId) {
+    baseTemplate = getBaseById(item.baseTemplateId)
+  }
+  if (!baseTemplate) {
+    baseTemplate = findBaseFromItemName(item.name, item.type)
+  }
+
+  // Generate a new item with the upgraded material, preserving base template
   const upgradedItem = generateItem(
     depth,
     item.type,
     item.rarity,
     item.rarity, // Keep same rarity
     0,
-    nextMaterial // Use the upgraded material
+    baseTemplate || nextMaterial // Use base template if found, otherwise just material
   )
 
   return upgradedItem
@@ -218,13 +228,23 @@ export function upgradeItemRarity(
   
   const nextRarity = getNextRarity(item.rarity)
   if (nextRarity) {
+    // Try to preserve the base template from the original item
+    let baseTemplate = null
+    if (item.baseTemplateId) {
+      baseTemplate = getBaseById(item.baseTemplateId)
+    }
+    if (!baseTemplate) {
+      baseTemplate = findBaseFromItemName(item.name, item.type)
+    }
+
     // Can upgrade rarity - do that first
     const upgradedItem = generateItem(
       depth,
       item.type,
       nextRarity,
       nextRarity, // Force exactly the next rarity tier
-      rarityBoost
+      rarityBoost,
+      baseTemplate // Preserve the base template
     )
     return upgradedItem
   }
