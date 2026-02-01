@@ -153,7 +153,7 @@ export const GAME_CONFIG = {
     percentageBase: 200, // Base value for percentage formula (higher = less reduction per point)
 
     // Logarithmic formula settings
-    logFactor: 0.035, // Scaling factor for logarithmic formula
+    logFactor: 0.025, // Scaling factor for logarithmic formula
     // Higher values = more reduction per point of defense, lower values = less reduction
 
     // Hybrid formula settings
@@ -186,9 +186,9 @@ export const GAME_CONFIG = {
 
   // Scaling
   scaling: {
-    damage: 0.25, // 25% per floor for regular events
-    floorBossDamage: 0.35, // 35% per floor for floor bosses
-    zoneBossDamage: 0.50, // 50% per floor for zone bosses (major bosses every 10 floors)
+    damage: 0.35, // 35% per floor for regular events
+    floorBossDamage: 0.45, // 45% per floor for floor bosses
+    zoneBossDamage: 0.60, // 60% per floor for zone bosses (major bosses every 10 floors)
     trueDamage: 0.12, // 12% per floor for true damage (bypasses defense so scales slower)
     healing: 0.015, // 1.5% per floor
     rewards: 0.05, // 5% per floor (XP/Gold)
