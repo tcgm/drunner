@@ -8,7 +8,7 @@ import { ALL_SET_ITEMS } from '@/data/items/sets'
  * Current stat calculation version
  * Increment this when the stat formula changes
  */
-export const CURRENT_STAT_VERSION = 1
+export const CURRENT_STAT_VERSION = 2
 
 // Track logged migrations to avoid spam
 const loggedSetFixes = new Set<string>()
@@ -117,9 +117,10 @@ function itemStatsAreCorrect(item: Item, expected: { stats: typeof item.stats; v
 export function migrateItemStats(item: Item): Item {
   // Check if this is a set item by name match
   const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
+  let setIdWasAdded = false
   if (setTemplate && !item.setId) {
     if (!loggedSetFixes.has(item.name)) {
-      console.log(`Detected set item ${item.name} without setId, adding it`)
+      console.log(`Detected set item ${item.name} without setId, adding it and forcing stat recalculation`)
       loggedSetFixes.add(item.name)
     }
     item = {
@@ -127,6 +128,7 @@ export function migrateItemStats(item: Item): Item {
       rarity: setTemplate.rarity,
       setId: 'kitsune', // Ensure setId is set
     }
+    setIdWasAdded = true // Force stat recalculation even if statVersion matches
   }
 
   // Fix old saves where set items had rarity: 'set'
@@ -142,6 +144,7 @@ export function migrateItemStats(item: Item): Item {
         rarity: setTemplate.rarity,
         setId: 'kitsune', // Ensure setId is set
       }
+      setIdWasAdded = true
     }
   }
   
@@ -150,8 +153,8 @@ export function migrateItemStats(item: Item): Item {
     return item
   }
   
-  // If already at current version, skip
-  if (item.statVersion === CURRENT_STAT_VERSION) {
+  // If already at current version, skip (unless we just added setId)
+  if (item.statVersion === CURRENT_STAT_VERSION && !setIdWasAdded) {
     return item
   }
   
