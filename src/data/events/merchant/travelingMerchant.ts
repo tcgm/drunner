@@ -13,10 +13,12 @@ export const TRAVELING_MERCHANT: DungeonEvent = {
         gold: 50,
       },
       outcome: {
-        text: 'You purchase potions and use them immediately.',
+        text: 'You purchase some healing potions for your journey.',
         effects: [
           { type: 'gold', value: -50 },
-          { type: 'heal', target: 'all', value: 60 },
+          { type: 'consumable', consumableId: 'health-small' },
+          { type: 'consumable', consumableId: 'health-small' },
+          { type: 'consumable', consumableId: 'health-small' },
         ],
       },
     },

@@ -10,7 +10,7 @@ import { allBases } from '@/data/items/bases'
  */
 export function restoreItemIcon(item: Item): Item {
   // Skip if item already has an icon
-  if (item.icon) return item
+  if (item.icon !== undefined) return item
 
   // Check if it's a unique item
   if (item.isUnique) {
@@ -30,7 +30,12 @@ export function restoreItemIcon(item: Item): Item {
 
   // Check if it's a procedural item with base template
   if (item.baseTemplateId) {
-    const template = allBases.find(b => b.id === item.baseTemplateId)
+    // baseTemplateId format: "type_keyword" (e.g., "weapon_sword")
+    const [_, keyword] = item.baseTemplateId.split('_')
+    const template = allBases.find(b => 
+      b.description.toLowerCase().includes(keyword?.toLowerCase() || '') ||
+      b.baseNames?.some(name => name.toLowerCase().includes(keyword?.toLowerCase() || ''))
+    )
     if (template?.icon) {
       return { ...item, icon: template.icon }
     }

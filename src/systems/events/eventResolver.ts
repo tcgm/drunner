@@ -1,8 +1,9 @@
-import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot } from '@/types'
+import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
+import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { v4 as uuidv4 } from 'uuid'
@@ -579,6 +580,27 @@ export function resolveEventOutcome(
             item: generatedItem,
             description: `Found ${generatedItem.name}`
           })
+        }
+        break
+      }
+      
+      case 'consumable': {
+        // Give consumable item
+        if (effect.consumableId) {
+          const consumable = getConsumableById(effect.consumableId)
+          if (consumable) {
+            const consumableWithId: Consumable = {
+              ...consumable,
+              id: uuidv4(),
+            }
+            foundItems.push(consumableWithId as any) // Consumables can go in dungeon inventory
+            resolvedEffects.push({
+              type: 'item',
+              target: [],
+              item: consumableWithId as any,
+              description: `Found ${consumable.name}`
+            })
+          }
         }
         break
       }

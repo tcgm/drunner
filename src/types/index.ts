@@ -131,6 +131,10 @@ export interface Consumable extends Item {
   usableOutOfCombat: boolean
   stackable?: boolean // Can multiple stack in one slot
   stackCount?: number // Current stack count
+  // Generation metadata (for procedural consumables)
+  baseId?: string // Base effect type
+  sizeId?: string // Size tier
+  potencyId?: string // Concentration/quality tier
 }
 
 export interface ConsumableEffect {
@@ -190,8 +194,9 @@ export interface EventChoice {
 export interface EventOutcome {
   text: string | Array<{ weight: number; text: string }> // Single text or weighted variations
   effects: {
-    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'status' | 'revive' | 'upgradeItem'
+    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'consumable' | 'status' | 'revive' | 'upgradeItem'
     target?: 'random' | 'all' | 'weakest' | 'strongest'
+    consumableId?: string // ID of consumable to give (for type: 'consumable')
     value?: number
     isTrueDamage?: boolean // For damage effects: ignore defense (true damage)
     // Item generation specifications (only one should be used)

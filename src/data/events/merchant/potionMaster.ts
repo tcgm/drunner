@@ -13,10 +13,11 @@ export const POTION_MASTER: DungeonEvent = {
         gold: 60,
       },
       outcome: {
-        text: 'The elixir instantly heals your wounds!',
+        text: 'You purchase some quality healing potions!',
         effects: [
           { type: 'gold', value: -60 },
-          { type: 'heal', target: 'all', value: 70 },
+          { type: 'consumable', consumableId: 'health-medium' },
+          { type: 'consumable', consumableId: 'health-medium' },
         ],
       },
     },
