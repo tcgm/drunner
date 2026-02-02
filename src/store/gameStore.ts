@@ -278,12 +278,13 @@ const initialState: GameState = {
   lastOutcome: null,
   musicVolume: 0.7,
   musicEnabled: true,
+  currentMusicContext: null,
 }
 
 export const useGameStore = create<GameStore>()(
   persist(
     sanitizeMiddleware(
-      (set, _get) => ({
+      (set, get) => ({
         ...initialState,
   
   addHero: (hero, slotIndex) => 
@@ -1229,9 +1230,18 @@ export const useGameStore = create<GameStore>()(
   },
 
   changeMusicContext: (context: MusicContext) => {
+    const currentContext = get().currentMusicContext;
+    
+    // Skip if already on this context
+    if (currentContext === context) {
+      console.log('[GameStore] Already on music context:', context, '- skipping');
+      return;
+    }
+    
     console.log('[GameStore] Changing music context to:', context);
     const playlist = getPlaylistForContext(context)
     console.log('[GameStore] Got playlist:', playlist);
+    set({ currentMusicContext: context });
     audioManager.changeContext(playlist)
   },
       })
