@@ -22,7 +22,7 @@ export const CAVERN_BEHEMOTH: DungeonEvent = {
     {
       text: 'Find the core (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 69,
       },
       outcome: {

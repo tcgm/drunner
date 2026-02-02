@@ -20,7 +20,7 @@ export const ARMORED_BEETLES: DungeonEvent = {
     },
     {
       text: 'Flip them over (Strength check)',
-      requirements: { stat: 'strength', minValue: 14 },
+      requirements: { stat: 'attack', minValue: 14 },
       outcome: {
         text: 'You expose their vulnerable undersides!',
         effects: [

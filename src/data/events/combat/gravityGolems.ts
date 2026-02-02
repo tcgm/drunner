@@ -20,7 +20,7 @@ export const GRAVITY_GOLEMS: DungeonEvent = {
     },
     {
       text: 'Strength endurance (Strength check)',
-      requirements: { stat: 'strength', minValue: 145 },
+      requirements: { stat: 'attack', minValue: 145 },
       outcome: {
         text: 'You power through the pressure!',
         effects: [

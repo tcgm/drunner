@@ -22,7 +22,7 @@ export const ELEMENTAL_FUSION: DungeonEvent = {
     {
       text: 'Separate them (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 57,
       },
       outcome: {

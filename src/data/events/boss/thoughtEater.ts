@@ -22,7 +22,7 @@ export const THOUGHT_EATER: DungeonEvent = {
     {
       text: 'Empty your mind (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 77,
       },
       outcome: {

@@ -37,7 +37,7 @@ export const CRYSTAL_HORROR: DungeonEvent = {
     {
       text: 'Target the flesh (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 17,
       },
       outcome: {

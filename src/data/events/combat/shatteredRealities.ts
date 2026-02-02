@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiCracked Disc } from 'react-icons/gi'
+import { GiCrackedGlass } from 'react-icons/gi'
 
 export const SHATTERED_REALITIES: DungeonEvent = {
   id: 'shattered-realities',
@@ -32,5 +32,5 @@ export const SHATTERED_REALITIES: DungeonEvent = {
     },
   ],
   depth: 66,
-  icon: GiCrackedDisc,
+  icon: GiCrackedGlass,
 }

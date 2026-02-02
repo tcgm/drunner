@@ -22,7 +22,7 @@ export const CLOCKWORK_SENTINEL: DungeonEvent = {
     {
       text: 'Dismantle the gears (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 18,
       },
       outcome: {

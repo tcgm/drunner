@@ -37,7 +37,7 @@ export const BOUND_DEMON: DungeonEvent = {
     {
       text: 'Strengthen the chains (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 19,
       },
       outcome: {

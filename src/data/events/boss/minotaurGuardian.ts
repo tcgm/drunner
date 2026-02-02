@@ -37,7 +37,7 @@ export const MINOTAUR_GUARDIAN: DungeonEvent = {
     {
       text: 'Use the labyrinth (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 11,
       },
       outcome: {

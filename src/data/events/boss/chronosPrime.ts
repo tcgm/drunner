@@ -22,7 +22,7 @@ export const CHRONOS_PRIME: DungeonEvent = {
     {
       text: 'Exist outside time (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 93,
       },
       outcome: {

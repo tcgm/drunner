@@ -37,7 +37,7 @@ export const DEATH_INCARNATE: DungeonEvent = {
     {
       text: 'Choose when to die (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 82,
       },
       outcome: {

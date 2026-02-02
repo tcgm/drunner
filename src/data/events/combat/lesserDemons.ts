@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiDemonSkull } from 'react-icons/gi'
+import { GiDaemonSkull } from 'react-icons/gi'
 
 export const LESSER_DEMONS: DungeonEvent = {
   id: 'lesser-demons',
@@ -32,5 +32,5 @@ export const LESSER_DEMONS: DungeonEvent = {
     },
   ],
   depth: 19,
-  icon: GiDemonSkull,
+  icon: GiDaemonSkull,
 }

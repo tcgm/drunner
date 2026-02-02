@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiEyeMonster } from 'react-icons/gi'
+import { GiBleedingEye } from 'react-icons/gi'
 
 export const WATCHING_EYES: DungeonEvent = {
   id: 'watching-eyes',
@@ -32,5 +32,5 @@ export const WATCHING_EYES: DungeonEvent = {
     },
   ],
   depth: 10,
-  icon: GiEyeMonster,
+  icon: GiBleedingEye,
 }

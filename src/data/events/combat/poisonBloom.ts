@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiVenomFlask } from 'react-icons/gi'
+import { GiPoisonCloud } from 'react-icons/gi'
 
 export const POISON_BLOOM: DungeonEvent = {
   id: 'poison-bloom',
@@ -32,5 +32,5 @@ export const POISON_BLOOM: DungeonEvent = {
     },
   ],
   depth: 15,
-  icon: GiVenomFlask,
+  icon: GiPoisonCloud,
 }

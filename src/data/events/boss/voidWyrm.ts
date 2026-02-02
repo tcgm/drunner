@@ -22,7 +22,7 @@ export const VOID_WYRM: DungeonEvent = {
     {
       text: 'Assert existence (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 72,
       },
       outcome: {

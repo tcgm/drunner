@@ -37,7 +37,7 @@ export const SHADOW_PARLIAMENT: DungeonEvent = {
     {
       text: 'Sever the connection (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 84,
       },
       outcome: {

@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiPhoenixFire } from 'react-icons/gi'
+import { GiFlame } from 'react-icons/gi'
 
 export const SUPERNOVA_BEASTS: DungeonEvent = {
   id: 'supernova-beasts',
@@ -32,5 +32,5 @@ export const SUPERNOVA_BEASTS: DungeonEvent = {
     },
   ],
   depth: 70,
-  icon: GiPhoenixFire,
+  icon: GiFlame,
 }

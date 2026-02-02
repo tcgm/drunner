@@ -38,7 +38,7 @@ export const OMEGA_ENTITY: DungeonEvent = {
     {
       text: 'Achieve omega (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 95,
       },
       outcome: {

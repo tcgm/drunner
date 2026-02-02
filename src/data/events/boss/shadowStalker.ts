@@ -37,7 +37,7 @@ export const SHADOW_STALKER: DungeonEvent = {
     {
       text: 'Track by sound (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 9,
       },
       outcome: {

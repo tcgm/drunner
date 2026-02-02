@@ -37,7 +37,7 @@ export const APOCALYPSE_BEAST: DungeonEvent = {
     {
       text: 'Become the new beginning (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 93,
       },
       outcome: {

@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiBlackHole } from 'react-icons/gi'
+import { GiBlackHoleBolas } from 'react-icons/gi'
 
 export const SINGULARITY_BEASTS: DungeonEvent = {
   id: 'singularity-beasts',
@@ -20,7 +20,7 @@ export const SINGULARITY_BEASTS: DungeonEvent = {
     },
     {
       text: 'Anchor yourself (Strength check)',
-      requirements: { stat: 'strength', minValue: 165 },
+      requirements: { stat: 'attack', minValue: 165 },
       outcome: {
         text: 'You stand firm against gravity!',
         effects: [
@@ -32,5 +32,5 @@ export const SINGULARITY_BEASTS: DungeonEvent = {
     },
   ],
   depth: 66,
-  icon: GiBlackHole,
+  icon: GiBlackHoleBolas,
 }

@@ -22,7 +22,7 @@ export const DOPPELGANGER_HIVE: DungeonEvent = {
     {
       text: 'Expose the fakes (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 67,
       },
       outcome: {

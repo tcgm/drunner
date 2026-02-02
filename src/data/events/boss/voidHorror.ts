@@ -37,7 +37,7 @@ export const VOID_HORROR: DungeonEvent = {
     {
       text: 'Steel your mind (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 30,
       },
       outcome: {

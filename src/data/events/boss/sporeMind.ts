@@ -22,7 +22,7 @@ export const SPORE_MIND: DungeonEvent = {
     {
       text: 'Resist with willpower (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 67,
       },
       outcome: {

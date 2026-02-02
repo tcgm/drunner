@@ -20,7 +20,7 @@ export const CARRION_BEASTS: DungeonEvent = {
     },
     {
       text: 'Cleave through (Strength check)',
-      requirements: { stat: 'strength', minValue: 32 },
+      requirements: { stat: 'attack', minValue: 32 },
       outcome: {
         text: 'You split them with powerful strikes!',
         effects: [

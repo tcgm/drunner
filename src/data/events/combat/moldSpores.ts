@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiSpores } from 'react-icons/gi'
+import { GiMushroomCloud } from 'react-icons/gi'
 
 export const MOLD_SPORES: DungeonEvent = {
   id: 'mold-spores',
@@ -32,5 +32,5 @@ export const MOLD_SPORES: DungeonEvent = {
     },
   ],
   depth: 3,
-  icon: GiSpores,
+  icon: GiMushroomCloud,
 }

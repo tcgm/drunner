@@ -22,7 +22,7 @@ export const SHADOW_TWIN: DungeonEvent = {
     {
       text: 'Separate them (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 28,
       },
       outcome: {

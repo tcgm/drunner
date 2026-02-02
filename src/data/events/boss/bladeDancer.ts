@@ -37,7 +37,7 @@ export const BLADE_DANCER: DungeonEvent = {
     {
       text: 'Anticipate the pattern (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 28,
       },
       outcome: {

@@ -22,7 +22,7 @@ export const ELDER_BRAIN: DungeonEvent = {
     {
       text: 'Mental fortress (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 54,
       },
       outcome: {

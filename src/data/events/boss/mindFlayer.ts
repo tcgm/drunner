@@ -22,7 +22,7 @@ export const MIND_FLAYER: DungeonEvent = {
     {
       text: 'Mental fortress (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 31,
       },
       outcome: {

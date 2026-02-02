@@ -37,7 +37,7 @@ export const GIANT_SPIDER_QUEEN: DungeonEvent = {
     {
       text: 'Target the abdomen (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 8,
       },
       outcome: {

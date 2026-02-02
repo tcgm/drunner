@@ -22,7 +22,7 @@ export const PRISM_GUARDIAN: DungeonEvent = {
     {
       text: 'Find the true one (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 55,
       },
       outcome: {

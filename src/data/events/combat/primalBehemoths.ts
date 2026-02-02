@@ -20,7 +20,7 @@ export const PRIMAL_BEHEMOTHS: DungeonEvent = {
     },
     {
       text: 'Matched strength (Strength check)',
-      requirements: { stat: 'strength', minValue: 95 },
+      requirements: { stat: 'attack', minValue: 95 },
       outcome: {
         text: 'You overpower the beasts!',
         effects: [

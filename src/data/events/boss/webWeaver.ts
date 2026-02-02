@@ -37,7 +37,7 @@ export const WEB_WEAVER: DungeonEvent = {
     {
       text: 'Cut through strategically (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 27,
       },
       outcome: {

@@ -22,7 +22,7 @@ export const CONCEPT_DESTROYER: DungeonEvent = {
     {
       text: 'Assert existence (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 94,
       },
       outcome: {

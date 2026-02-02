@@ -37,7 +37,7 @@ export const BONE_EMPEROR: DungeonEvent = {
     {
       text: 'Shatter the phylactery (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 68,
       },
       outcome: {

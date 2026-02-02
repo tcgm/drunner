@@ -37,7 +37,7 @@ export const ENTROPY_LORD: DungeonEvent = {
     {
       text: 'Embrace chaos (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 81,
       },
       outcome: {

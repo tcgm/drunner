@@ -37,7 +37,7 @@ export const REALITY_RIPPER: DungeonEvent = {
     {
       text: 'Perceive true form (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 37,
       },
       outcome: {

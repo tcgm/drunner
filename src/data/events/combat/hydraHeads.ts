@@ -20,7 +20,7 @@ export const HYDRA_HEADS: DungeonEvent = {
     },
     {
       text: 'Cauterize wounds (Strength check)',
-      requirements: { stat: 'strength', minValue: 52 },
+      requirements: { stat: 'attack', minValue: 52 },
       outcome: {
         text: 'You prevent regeneration!',
         effects: [

@@ -22,7 +22,7 @@ export const COSMIC_DRAGON: DungeonEvent = {
     {
       text: 'Match cosmic scale (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 80,
       },
       outcome: {

@@ -37,7 +37,7 @@ export const ARCHMAGE_SHADE: DungeonEvent = {
     {
       text: 'Disperse the shade (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 73,
       },
       outcome: {

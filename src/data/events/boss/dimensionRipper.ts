@@ -22,7 +22,7 @@ export const DIMENSION_RIPPER: DungeonEvent = {
     {
       text: 'Perceive all dimensions (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 79,
       },
       outcome: {

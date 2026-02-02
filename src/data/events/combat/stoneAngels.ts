@@ -20,7 +20,7 @@ export const STONE_ANGELS: DungeonEvent = {
     },
     {
       text: 'Heavy blows (Strength check)',
-      requirements: { stat: 'strength', minValue: 30 },
+      requirements: { stat: 'attack', minValue: 30 },
       outcome: {
         text: 'You shatter them with powerful strikes!',
         effects: [

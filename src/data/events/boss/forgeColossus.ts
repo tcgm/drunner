@@ -22,7 +22,7 @@ export const FORGE_COLOSSUS: DungeonEvent = {
     {
       text: 'Prevent adaptation (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 75,
       },
       outcome: {

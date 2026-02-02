@@ -20,7 +20,7 @@ export const ACID_SLUGS: DungeonEvent = {
     },
     {
       text: 'Salt them (Strength check)',
-      requirements: { stat: 'strength', minValue: 31 },
+      requirements: { stat: 'attack', minValue: 31 },
       outcome: {
         text: 'They shrivel harmlessly!',
         effects: [

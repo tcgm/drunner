@@ -22,7 +22,7 @@ export const NIGHTMARE_TYRANT: DungeonEvent = {
     {
       text: 'Conquer fear (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 50,
       },
       outcome: {

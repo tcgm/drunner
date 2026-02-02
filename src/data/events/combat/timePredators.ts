@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiTimeLoop } from 'react-icons/gi'
+import { GiClockwiseRotation } from 'react-icons/gi'
 
 export const TIME_PREDATORS: DungeonEvent = {
   id: 'time-predators',
@@ -32,5 +32,5 @@ export const TIME_PREDATORS: DungeonEvent = {
     },
   ],
   depth: 76,
-  icon: GiTimeLoop,
+  icon: GiClockwiseRotation,
 }

@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiSpikedDragon } from 'react-icons/gi'
+import { GiSpikedDragonHead } from 'react-icons/gi'
 
 export const WYVERN_PACK: DungeonEvent = {
   id: 'wyvern-pack',
@@ -32,5 +32,5 @@ export const WYVERN_PACK: DungeonEvent = {
     },
   ],
   depth: 18,
-  icon: GiSpikedDragon,
+  icon: GiSpikedDragonHead,
 }

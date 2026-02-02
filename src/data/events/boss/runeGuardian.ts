@@ -22,7 +22,7 @@ export const RUNE_GUARDIAN: DungeonEvent = {
     {
       text: 'Decode the runes (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 58,
       },
       outcome: {

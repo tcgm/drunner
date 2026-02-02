@@ -79,7 +79,7 @@ function itemStatsAreCorrect(item: Item, expected: { stats: typeof item.stats; v
  */
 export function migrateItemStats(item: Item): Item {
   // Fix old saves where set items had rarity: 'set'
-  if ((item as Item & { rarity?: string }).rarity === 'set') {
+  if ((item as any).rarity === 'set') {
     const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
     if (setTemplate) {
       console.log(`Fixing set item ${item.name} rarity from 'set' to '${setTemplate.rarity}'`)

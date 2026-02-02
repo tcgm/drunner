@@ -22,7 +22,7 @@ export const VOID_EMPEROR: DungeonEvent = {
     {
       text: 'Assert reality (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 56,
       },
       outcome: {

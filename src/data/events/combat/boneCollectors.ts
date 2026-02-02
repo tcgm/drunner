@@ -20,7 +20,7 @@ export const BONE_COLLECTORS: DungeonEvent = {
     },
     {
       text: 'Power through (Strength check)',
-      requirements: { stat: 'strength', minValue: 13 },
+      requirements: { stat: 'attack', minValue: 13 },
       outcome: {
         text: 'You overpower their defenses!',
         effects: [

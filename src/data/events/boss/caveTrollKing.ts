@@ -22,7 +22,7 @@ export const CAVE_TROLL_KING: DungeonEvent = {
     {
       text: 'Use the cave against him (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 36,
       },
       outcome: {

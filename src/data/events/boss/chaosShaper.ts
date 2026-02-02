@@ -22,7 +22,7 @@ export const CHAOS_SHAPER: DungeonEvent = {
     {
       text: 'Stabilize reality (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 67,
       },
       outcome: {

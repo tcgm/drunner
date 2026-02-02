@@ -37,7 +37,7 @@ export const INFINITY_MAGE: DungeonEvent = {
     {
       text: 'Find the finite (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 90,
       },
       outcome: {

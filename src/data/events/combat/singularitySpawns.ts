@@ -20,7 +20,7 @@ export const SINGULARITY_SPAWNS: DungeonEvent = {
     },
     {
       text: 'Use momentum against them (Strength check)',
-      requirements: { stat: 'strength', minValue: 149 },
+      requirements: { stat: 'attack', minValue: 149 },
       outcome: {
         text: 'You turn their gravity against them!',
         effects: [

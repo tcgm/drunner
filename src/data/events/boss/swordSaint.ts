@@ -22,7 +22,7 @@ export const SWORD_SAINT: DungeonEvent = {
     {
       text: 'Study and learn (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 69,
       },
       outcome: {

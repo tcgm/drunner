@@ -20,7 +20,7 @@ export const PRIMORDIAL_TITANS: DungeonEvent = {
     },
     {
       text: 'Ancient strength (Strength check)',
-      requirements: { stat: 'strength', minValue: 205 },
+      requirements: { stat: 'attack', minValue: 205 },
       outcome: {
         text: 'Your power rivals theirs!',
         effects: [

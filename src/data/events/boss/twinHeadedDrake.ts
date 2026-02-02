@@ -22,7 +22,7 @@ export const TWIN_HEADED_DRAKE: DungeonEvent = {
     {
       text: 'Exploit their arguing (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 35,
       },
       outcome: {

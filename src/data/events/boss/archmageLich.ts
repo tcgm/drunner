@@ -37,7 +37,7 @@ export const ARCHMAGE_LICH: DungeonEvent = {
     {
       text: 'Destroy phylactery (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 38,
       },
       outcome: {

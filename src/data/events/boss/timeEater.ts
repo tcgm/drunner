@@ -22,7 +22,7 @@ export const TIME_EATER: DungeonEvent = {
     {
       text: 'Exist outside time (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 52,
       },
       outcome: {

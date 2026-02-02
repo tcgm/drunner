@@ -37,7 +37,7 @@ export const NECRO_TRIUMVIRATE: DungeonEvent = {
     {
       text: 'Turn them against each other (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 64,
       },
       outcome: {

@@ -22,7 +22,7 @@ export const PHASE_SPIDER: DungeonEvent = {
     {
       text: 'Predict its movements (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 20,
       },
       outcome: {

@@ -22,7 +22,7 @@ export const ABERRANT_SOVEREIGN: DungeonEvent = {
     {
       text: 'Close your mind (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 75,
       },
       outcome: {

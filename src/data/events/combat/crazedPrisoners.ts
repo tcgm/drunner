@@ -20,7 +20,7 @@ export const CRAZED_PRISONERS: DungeonEvent = {
     },
     {
       text: 'Overpower them (Strength check)',
-      requirements: { stat: 'strength', minValue: 14 },
+      requirements: { stat: 'attack', minValue: 14 },
       outcome: {
         text: 'You restrain them quickly!',
         effects: [

@@ -22,7 +22,7 @@ export const UNIVERSE_ARCHITECT: DungeonEvent = {
     {
       text: 'Redesign yourself (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 94,
       },
       outcome: {

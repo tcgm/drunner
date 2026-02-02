@@ -22,7 +22,7 @@ export const REALITY_SAGE: DungeonEvent = {
     {
       text: 'Anchor reality (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 66,
       },
       outcome: {

@@ -22,7 +22,7 @@ export const PARADOX_ENGINE: DungeonEvent = {
     {
       text: 'Embrace paradox (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 90,
       },
       outcome: {

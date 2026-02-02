@@ -22,7 +22,7 @@ export const DESTINY_BREAKER: DungeonEvent = {
     {
       text: 'Forge your own path (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 86,
       },
       outcome: {

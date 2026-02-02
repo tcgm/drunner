@@ -22,7 +22,7 @@ export const MECH_OVERLORD: DungeonEvent = {
     {
       text: 'Be unpredictable (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 73,
       },
       outcome: {

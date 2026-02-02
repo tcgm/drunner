@@ -37,7 +37,7 @@ export const VOID_PROPHET: DungeonEvent = {
     {
       text: 'Create your own fate (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 65,
       },
       outcome: {

@@ -20,7 +20,7 @@ export const WIDOW_QUEEN: DungeonEvent = {
     },
     {
       text: 'Cut the webs (Strength check)',
-      requirements: { stat: 'strength', minValue: 56 },
+      requirements: { stat: 'attack', minValue: 56 },
       outcome: {
         text: 'You trap her in her own web!',
         effects: [

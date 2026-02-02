@@ -20,7 +20,7 @@ export const DIRTY_KOBOLDS: DungeonEvent = {
     },
     {
       text: 'Intimidate them (Strength check)',
-      requirements: { stat: 'strength', minValue: 12 },
+      requirements: { stat: 'attack', minValue: 12 },
       outcome: {
         text: 'The kobolds scatter in fear!',
         effects: [

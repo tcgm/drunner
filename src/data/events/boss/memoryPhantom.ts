@@ -22,7 +22,7 @@ export const MEMORY_PHANTOM: DungeonEvent = {
     {
       text: 'Accept the past (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 85,
       },
       outcome: {

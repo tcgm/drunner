@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiBoneBite } from 'react-icons/gi'
+import { GiBoneKnife } from 'react-icons/gi'
 
 export const MARROW_LEECHES: DungeonEvent = {
   id: 'marrow-leeches',
@@ -32,5 +32,5 @@ export const MARROW_LEECHES: DungeonEvent = {
     },
   ],
   depth: 35,
-  icon: GiBoneBite,
+  icon: GiBoneKnife,
 }

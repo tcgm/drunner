@@ -20,7 +20,7 @@ export const SPINED_CRAWLERS: DungeonEvent = {
     },
     {
       text: 'Use reach weapon (Strength check)',
-      requirements: { stat: 'strength', minValue: 15 },
+      requirements: { stat: 'attack', minValue: 15 },
       outcome: {
         text: 'You keep them at distance!',
         effects: [

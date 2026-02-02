@@ -20,7 +20,7 @@ export const WEAPON_EATERS: DungeonEvent = {
     },
     {
       text: 'Use bare hands (Strength check)',
-      requirements: { stat: 'strength', minValue: 45 },
+      requirements: { stat: 'attack', minValue: 45 },
       outcome: {
         text: 'You beat them down!',
         effects: [

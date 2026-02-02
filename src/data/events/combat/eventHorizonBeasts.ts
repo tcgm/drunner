@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiBlackHoleBlast } from 'react-icons/gi'
+import { GiBlackHoleBolas } from 'react-icons/gi'
 
 export const EVENT_HORIZON_BEASTS: DungeonEvent = {
   id: 'event-horizon-beasts',
@@ -20,7 +20,7 @@ export const EVENT_HORIZON_BEASTS: DungeonEvent = {
     },
     {
       text: 'Counter gravity (Strength check)',
-      requirements: { stat: 'strength', minValue: 187 },
+      requirements: { stat: 'attack', minValue: 187 },
       outcome: {
         text: 'You tear free from their grasp!',
         effects: [
@@ -32,5 +32,5 @@ export const EVENT_HORIZON_BEASTS: DungeonEvent = {
     },
   ],
   depth: 76,
-  icon: GiBlackHoleBlast,
+  icon: GiBlackHoleBolas,
 }

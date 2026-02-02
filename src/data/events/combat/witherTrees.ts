@@ -20,7 +20,7 @@ export const WITHER_TREES: DungeonEvent = {
     },
     {
       text: 'Burn them (Strength check)',
-      requirements: { stat: 'strength', minValue: 8 },
+      requirements: { stat: 'attack', minValue: 8 },
       outcome: {
         text: 'Fire purges the corruption!',
         effects: [

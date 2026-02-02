@@ -20,7 +20,7 @@ export const VORTEX_BEASTS: DungeonEvent = {
     },
     {
       text: 'Stabilize reality (Strength check)',
-      requirements: { stat: 'strength', minValue: 142 },
+      requirements: { stat: 'attack', minValue: 142 },
       outcome: {
         text: 'You force them to solidify!',
         effects: [

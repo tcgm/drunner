@@ -37,7 +37,7 @@ export const FALLEN_SERAPH: DungeonEvent = {
     {
       text: 'Overwhelm with virtue (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 68,
       },
       outcome: {

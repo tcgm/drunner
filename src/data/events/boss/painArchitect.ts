@@ -22,7 +22,7 @@ export const PAIN_ARCHITECT: DungeonEvent = {
     {
       text: 'Transcend pain (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 74,
       },
       outcome: {

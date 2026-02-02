@@ -37,7 +37,7 @@ export const RUST_MONSTER_ALPHA: DungeonEvent = {
     {
       text: 'Improvise weapons (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 29,
       },
       outcome: {

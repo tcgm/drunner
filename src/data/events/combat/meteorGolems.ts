@@ -20,7 +20,7 @@ export const METEOR_GOLEMS: DungeonEvent = {
     },
     {
       text: 'Power strikes (Strength check)',
-      requirements: { stat: 'strength', minValue: 75 },
+      requirements: { stat: 'attack', minValue: 75 },
       outcome: {
         text: 'You shatter their core!',
         effects: [

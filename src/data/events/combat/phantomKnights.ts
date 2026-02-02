@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiSpectralTear } from 'react-icons/gi'
+import { GiGhost } from 'react-icons/gi'
 
 export const PHANTOM_KNIGHTS: DungeonEvent = {
   id: 'phantom-knights',
@@ -44,5 +44,5 @@ export const PHANTOM_KNIGHTS: DungeonEvent = {
     },
   ],
   depth: 14,
-  icon: GiSpectralTear,
+  icon: GiGhost,
 }

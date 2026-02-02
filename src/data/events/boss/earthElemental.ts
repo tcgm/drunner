@@ -22,7 +22,7 @@ export const EARTH_ELEMENTAL: DungeonEvent = {
     {
       text: 'Find the core (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 10,
       },
       outcome: {

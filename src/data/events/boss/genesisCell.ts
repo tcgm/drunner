@@ -37,7 +37,7 @@ export const GENESIS_CELL: DungeonEvent = {
     {
       text: 'Devolve it (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 89,
       },
       outcome: {

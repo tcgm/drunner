@@ -22,7 +22,7 @@ export const ELDER_HORROR: DungeonEvent = {
     {
       text: 'Close your eyes (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 83,
       },
       outcome: {

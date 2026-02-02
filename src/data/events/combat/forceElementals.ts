@@ -20,7 +20,7 @@ export const FORCE_ELEMENTALS: DungeonEvent = {
     },
     {
       text: 'Redirect the force (Strength check)',
-      requirements: { stat: 'strength', minValue: 106 },
+      requirements: { stat: 'attack', minValue: 106 },
       outcome: {
         text: 'You turn their power aside!',
         effects: [

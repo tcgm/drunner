@@ -22,7 +22,7 @@ export const BLADE_MASTER: DungeonEvent = {
     {
       text: 'Learn their patterns (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 39,
       },
       outcome: {

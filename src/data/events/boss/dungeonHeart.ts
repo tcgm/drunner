@@ -38,7 +38,7 @@ export const DUNGEON_HEART: DungeonEvent = {
     {
       text: 'Become the dungeon (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 92,
       },
       outcome: {

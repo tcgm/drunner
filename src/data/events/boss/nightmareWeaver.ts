@@ -22,7 +22,7 @@ export const NIGHTMARE_WEAVER: DungeonEvent = {
     {
       text: 'Master your mind (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 76,
       },
       outcome: {

@@ -22,7 +22,7 @@ export const SERPENT_PRIEST: DungeonEvent = {
     {
       text: 'Disrupt the ritual (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 17,
       },
       outcome: {

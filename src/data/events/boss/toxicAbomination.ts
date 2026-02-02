@@ -22,7 +22,7 @@ export const TOXIC_ABOMINATION: DungeonEvent = {
     {
       text: 'Neutralize the toxins (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 34,
       },
       outcome: {

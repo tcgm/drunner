@@ -22,7 +22,7 @@ export const REALITY_ANCHOR: DungeonEvent = {
     {
       text: 'Carefully dismantle (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 88,
       },
       outcome: {

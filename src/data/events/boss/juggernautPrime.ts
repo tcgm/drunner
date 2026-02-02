@@ -38,7 +38,7 @@ export const JUGGERNAUT_PRIME: DungeonEvent = {
     {
       text: 'Redirect the force (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 92,
       },
       outcome: {

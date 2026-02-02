@@ -22,7 +22,7 @@ export const PRIMORDIAL_WYRM: DungeonEvent = {
     {
       text: 'Prove your evolution (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 87,
       },
       outcome: {

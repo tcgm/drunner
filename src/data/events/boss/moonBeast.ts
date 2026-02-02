@@ -22,7 +22,7 @@ export const MOON_BEAST: DungeonEvent = {
     {
       text: 'Predict the phases (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 74,
       },
       outcome: {

@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiMosquito } from 'react-icons/gi'
+import { GiBatWing } from 'react-icons/gi'
 
 export const STIRGES: DungeonEvent = {
   id: 'stirges',
@@ -32,5 +32,5 @@ export const STIRGES: DungeonEvent = {
     },
   ],
   depth: 8,
-  icon: GiMosquito,
+  icon: GiBatWing,
 }

@@ -37,7 +37,7 @@ export const CURSED_PALADIN: DungeonEvent = {
     {
       text: 'Exploit the corruption (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 16,
       },
       outcome: {

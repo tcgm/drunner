@@ -37,7 +37,7 @@ export const PRIMAL_AVATAR: DungeonEvent = {
     {
       text: 'Adapt faster (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 66,
       },
       outcome: {

@@ -20,7 +20,7 @@ export const IRON_AUTOMATONS: DungeonEvent = {
     },
     {
       text: 'Exploit weaknesses (Strength check)',
-      requirements: { stat: 'strength', minValue: 49 },
+      requirements: { stat: 'attack', minValue: 49 },
       outcome: {
         text: 'You tear apart their joints!',
         effects: [

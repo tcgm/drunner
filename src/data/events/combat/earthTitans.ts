@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiStoneGolem } from 'react-icons/gi'
+import { GiStonePile } from 'react-icons/gi'
 
 export const EARTH_TITANS: DungeonEvent = {
   id: 'earth-titans',
@@ -20,7 +20,7 @@ export const EARTH_TITANS: DungeonEvent = {
     },
     {
       text: 'Topple them (Strength check)',
-      requirements: { stat: 'strength', minValue: 55 },
+      requirements: { stat: 'attack', minValue: 55 },
       outcome: {
         text: 'You bring them crashing down!',
         effects: [
@@ -32,5 +32,5 @@ export const EARTH_TITANS: DungeonEvent = {
     },
   ],
   depth: 17,
-  icon: GiStoneGolem,
+  icon: GiStonePile,
 }

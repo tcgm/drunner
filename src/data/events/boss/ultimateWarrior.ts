@@ -37,7 +37,7 @@ export const ULTIMATE_WARRIOR: DungeonEvent = {
     {
       text: 'Find the flaw (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 91,
       },
       outcome: {

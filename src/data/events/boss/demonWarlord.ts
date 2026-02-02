@@ -37,7 +37,7 @@ export const DEMON_WARLORD: DungeonEvent = {
     {
       text: 'Out-strategize them (High Wisdom)',
       requirements: {
-        stat: 'wisdom',
+        stat: 'defense',
         minValue: 59,
       },
       outcome: {

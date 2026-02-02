@@ -20,7 +20,7 @@ export const MASKED_CULTISTS: DungeonEvent = {
     },
     {
       text: 'Intimidate them (Strength check)',
-      requirements: { stat: 'strength', minValue: 28 },
+      requirements: { stat: 'attack', minValue: 28 },
       outcome: {
         text: 'They flee in terror!',
         effects: [
