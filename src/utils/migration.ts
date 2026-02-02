@@ -2,7 +2,7 @@
  * Migration utilities for converting old save data to new floor-based system
  */
 
-import type { Dungeon, Run, GameState, Hero } from '@/types'
+import type { Dungeon, Run, GameState, Hero, Item } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { migrateHeroArray } from './heroMigration'
 import { migrateItemArray, migrateHeroArrayItems } from './itemMigration'
@@ -75,6 +75,46 @@ export function migrateRun(run: Run): Run {
  * Migrates entire game state to new floor system, slot system, and item stat calculation
  */
 export function migrateGameState(state: GameState): GameState {
+  // Collect any orphaned equipment from legacy format before migration
+  const orphanedItems: Item[] = []
+
+  // Check party for legacy equipment that hasn't been migrated
+  state.party.forEach(hero => {
+    if (hero && hero.equipment) {
+      const equipment = hero.equipment as any
+      Object.values(equipment).forEach(item => {
+        if (item && typeof item === 'object' && 'stats' in item) {
+          // Check if this item is already in slots
+          const isInSlots = hero.slots && Object.values(hero.slots).some(slotItem =>
+            slotItem && typeof slotItem === 'object' && 'id' in slotItem && slotItem.id === (item as any).id
+          )
+          if (!isInSlots) {
+            orphanedItems.push(item as Item)
+            console.log(`[Migration] Rescued orphaned item from ${hero.name}: ${(item as Item).name}`)
+          }
+        }
+      })
+    }
+  })
+
+  // Check roster for legacy equipment
+  state.heroRoster.forEach(hero => {
+    if (hero && hero.equipment) {
+      const equipment = hero.equipment as any
+      Object.values(equipment).forEach(item => {
+        if (item && typeof item === 'object' && 'stats' in item) {
+          const isInSlots = hero.slots && Object.values(hero.slots).some(slotItem =>
+            slotItem && typeof slotItem === 'object' && 'id' in slotItem && slotItem.id === (item as any).id
+          )
+          if (!isInSlots) {
+            orphanedItems.push(item as Item)
+            console.log(`[Migration] Rescued orphaned item from ${hero.name}: ${(item as Item).name}`)
+          }
+        }
+      })
+    }
+  })
+
   // First migrate hero structure (old equipment/consumableSlots to new slots)
   let migratedParty = migrateHeroArray(state.party)
   let migratedRoster = migrateHeroArray(state.heroRoster)
@@ -91,11 +131,19 @@ export function migrateGameState(state: GameState): GameState {
     ? migrateItemArray(state.dungeon.inventory)
     : []
   
+  // Add orphaned items to bank inventory (migrate them first)
+  const migratedOrphanedItems = migrateItemArray(orphanedItems)
+  const finalBankInventory = [...migratedBankInventory, ...migratedOrphanedItems]
+
+  if (migratedOrphanedItems.length > 0) {
+    console.log(`[Migration] Added ${migratedOrphanedItems.length} orphaned items to bank inventory`)
+  }
+
   return {
     ...state,
     party: migratedParty,
     heroRoster: migratedRosterFiltered,
-    bankInventory: migratedBankInventory,
+    bankInventory: finalBankInventory,
     overflowInventory: migratedOverflowInventory,
     dungeon: {
       ...migrateDungeon(state.dungeon),
