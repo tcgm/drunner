@@ -42,6 +42,10 @@ const LOOT_CONFIG = {
 
   // Chance for set items (independent roll, very rare)
   setChance: GAME_CONFIG.loot.setChance,
+  
+  // Chance for set items to roll as unique (enhanced stats)
+  setUniqueChance: 0.15, // 15% chance for set items to have boosted stats
+  setUniqueBoost: 1.3, // 30% stat boost when set item rolls as unique
 }
 
 /**
@@ -276,11 +280,28 @@ export function generateItem(
           setTemplate.type === forceType || 
           (forceType === 'accessory1' && setTemplate.type === 'accessory') ||
           (forceType === 'accessory2' && setTemplate.type === 'accessory')) {
+        
+        // Check if this set item should roll as unique (boosted stats)
+        const rollAsUnique = Math.random() < LOOT_CONFIG.setUniqueChance
+        
+        // If rolling as unique, boost all stats
+        const stats = rollAsUnique 
+          ? Object.entries(setTemplate.stats).reduce((acc, [key, value]) => {
+              acc[key] = Math.floor((value as number) * LOOT_CONFIG.setUniqueBoost)
+              return acc
+            }, {} as Record<string, number>)
+          : setTemplate.stats
+        
         return {
           ...setTemplate,
           id: uuidv4(),
           type: forceType || setTemplate.type, // Use forced type for specific accessory slots
           setId: 'kitsune', // Mark as set item
+          isUnique: rollAsUnique, // Mark if this rolled as unique
+          stats,
+          value: rollAsUnique 
+            ? Math.floor(setTemplate.value * LOOT_CONFIG.setUniqueBoost) 
+            : setTemplate.value,
         }
       }
     }

@@ -120,20 +120,19 @@ function extractMaterialId(itemName: string): string | null {
  * Excludes unique and set items from being upgraded
  */
 export function findLowestRarityItem(hero: Hero): { item: Item; slot: string } | null {
-  const equipment = hero.equipment
-  const slots = ['weapon', 'armor', 'helmet', 'boots', 'accessory1', 'accessory2'] as const
+  const slots = Object.keys(hero.slots)
   
   let lowestItem: { item: Item; slot: string } | null = null
   let lowestRarityIndex = RARITY_ORDER.length
   
-  for (const slot of slots) {
-    const item = equipment[slot]
-    // Skip unique and set items
-    if (item && !item.isUnique && !item.setId) {
+  for (const slotId of slots) {
+    const item = hero.slots[slotId]
+    // Skip null slots, unique items, set items, and consumables
+    if (item && 'stats' in item && !item.isUnique && !item.setId) {
       const rarityIndex = RARITY_ORDER.indexOf(item.rarity)
       if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
         lowestRarityIndex = rarityIndex
-        lowestItem = { item, slot }
+        lowestItem = { item, slot: slotId }
       }
     }
   }

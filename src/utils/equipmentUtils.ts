@@ -1,10 +1,11 @@
-import type { Item, ItemSlot } from '@/types'
+import type { Item } from '@/types'
+import { getSlotById } from '@/config/slotConfig'
 
 /**
  * Check if there's an upgrade available for a slot
  */
 export function hasUpgradeAvailable(
-  slot: ItemSlot,
+  slotId: string,
   currentItem: Item | null,
   availableItems: Item[]
 ): boolean {
@@ -13,11 +14,14 @@ export function hasUpgradeAvailable(
   // Don't show upgrade indicator for unique items
   if (currentItem.isUnique) return false
   
+  const slotDef = getSlotById(slotId)
+  if (!slotDef) return false
+  
   return availableItems.some(invItem => {
     // Check if item is compatible with slot
     const isCompatible = 
-      invItem.type === slot || 
-      ((slot === 'accessory1' || slot === 'accessory2') && (invItem.type === 'accessory1' || invItem.type === 'accessory2'))
+      invItem.type === slotDef.type || 
+      (slotDef.type === 'accessory' && (invItem.type === 'accessory1' || invItem.type === 'accessory2' || invItem.type === 'accessory'))
     
     if (!isCompatible) return false
     
@@ -35,13 +39,16 @@ export function hasUpgradeAvailable(
  * Check if there are compatible items available for swapping
  */
 export function hasCompatibleItems(
-  slot: ItemSlot,
+  slotId: string,
   availableItems: Item[]
 ): boolean {
+  const slotDef = getSlotById(slotId)
+  if (!slotDef) return false
+  
   return availableItems.some(i => {
-    if (i.type === slot) return true
-    // accessory1 and accessory2 can swap with each other
-    if ((slot === 'accessory1' || slot === 'accessory2') && (i.type === 'accessory1' || i.type === 'accessory2')) return true
+    if (i.type === slotDef.type) return true
+    // accessory slots can accept accessory items
+    if (slotDef.type === 'accessory' && (i.type === 'accessory1' || i.type === 'accessory2' || i.type === 'accessory')) return true
     return false
   })
 }
@@ -49,9 +56,12 @@ export function hasCompatibleItems(
 /**
  * Check if an item is compatible with a slot
  */
-export function isItemCompatibleWithSlot(item: Item, slot: ItemSlot): boolean {
-  if (item.type === slot) return true
-  // accessory1 and accessory2 can swap with each other
-  if ((slot === 'accessory1' || slot === 'accessory2') && (item.type === 'accessory1' || item.type === 'accessory2')) return true
+export function isItemCompatibleWithSlot(item: Item, slotId: string): boolean {
+  const slotDef = getSlotById(slotId)
+  if (!slotDef) return false
+  
+  if (item.type === slotDef.type) return true
+  // accessory slots can accept accessory items
+  if (slotDef.type === 'accessory' && (item.type === 'accessory1' || item.type === 'accessory2' || item.type === 'accessory')) return true
   return false
 }

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { Item, ItemRarity, ItemSlot as ItemSlotType } from '@/types'
+import type { Item, ItemRarity } from '@/types'
 import type { SortOption, FilterOption } from './InventoryControls'
 
 interface UseInventoryFiltersProps {
@@ -7,7 +7,7 @@ interface UseInventoryFiltersProps {
   searchQuery: string
   sortBy: SortOption
   filterBy?: FilterOption
-  pendingSlot?: ItemSlotType | null
+  pendingSlot?: string | null
 }
 
 export function useInventoryFilters({

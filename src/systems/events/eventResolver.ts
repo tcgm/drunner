@@ -719,8 +719,8 @@ export function resolveEventOutcome(
         const isRarityUpgrade = upgradedItem.rarity !== item.rarity
         const isMaterialUpgrade = !isRarityUpgrade
 
-        // Replace the old item with the upgraded one
-        hero.equipment[slot as keyof typeof hero.equipment] = upgradedItem
+        // Replace the old item with the upgraded one in hero's slots
+        hero.slots[slot] = upgradedItem
         
         const upgradeDescription = isMaterialUpgrade
           ? `${hero.name}'s ${item.name} was upgraded to superior material: ${upgradedItem.name}!`

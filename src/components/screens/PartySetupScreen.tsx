@@ -2,7 +2,7 @@ import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../store/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
 import { useState } from 'react'
-import type { ItemSlot, Hero } from '../../types'
+import type { Hero } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
 import { PartySetupSlots } from '../party/PartySetupSlots'
@@ -48,7 +48,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   })
   const [tabIndex, setTabIndex] = useState(0)
   const [pendingSlotIndex, setPendingSlotIndex] = useState<number | null>(null)
-  const [pendingSlot, setPendingSlot] = useState<ItemSlot | null>(null)
+  const [pendingSlot, setPendingSlot] = useState<string | null>(null)
 
   // Bank modal
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -105,9 +105,9 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     }
   }
 
-  const handleOpenBankForSlot = (heroIndex: number, slot: ItemSlot) => {
+  const handleOpenBankForSlot = (heroIndex: number, slotId: string) => {
     setPendingSlotIndex(heroIndex)
-    setPendingSlot(slot)
+    setPendingSlot(slotId)
     onOpen()
   }
 
@@ -130,10 +130,10 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     setPendingSlot(null)
   }
 
-  const handleUnequipItem = (heroIndex: number, slot: ItemSlot) => {
+  const handleUnequipItem = (heroIndex: number, slotId: string) => {
     const hero = party[heroIndex]
     if (hero) {
-      const unequippedItem = unequipItemFromHero(hero.id, slot)
+      const unequippedItem = unequipItemFromHero(hero.id, slotId)
       if (unequippedItem) {
         moveItemToBank(unequippedItem)
       }

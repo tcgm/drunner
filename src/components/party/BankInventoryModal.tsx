@@ -26,7 +26,7 @@ import {
 } from '@chakra-ui/react'
 import { useState, useCallback, useMemo } from 'react'
 import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
-import type { Item, ItemSlot as ItemSlotType } from '../../types'
+import type { Item } from '../../types'
 import { useGameStore } from '@/store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { ItemGrid } from '@/components/inventory/ItemGrid'
@@ -40,7 +40,7 @@ interface BankInventoryModalProps {
   isOpen: boolean
   onClose: () => void
   bankInventory: Item[]
-  pendingSlot: ItemSlotType | null
+  pendingSlot: string | null
   onEquipItem: (itemId: string) => void
 }
 

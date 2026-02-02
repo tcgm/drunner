@@ -14,7 +14,7 @@ export function applyEffect(hero: Hero, effect: Omit<TimedEffect, 'id' | 'applie
 
   return {
     ...hero,
-    activeEffects: [...hero.activeEffects, timedEffect],
+    activeEffects: [...(hero.activeEffects || []), timedEffect],
   }
 }
 
@@ -24,7 +24,7 @@ export function applyEffect(hero: Hero, effect: Omit<TimedEffect, 'id' | 'applie
 export function removeEffect(hero: Hero, effectId: string): Hero {
   return {
     ...hero,
-    activeEffects: hero.activeEffects.filter((e) => e.id !== effectId),
+    activeEffects: (hero.activeEffects || []).filter((e) => e.id !== effectId),
   }
 }
 
@@ -34,7 +34,7 @@ export function removeEffect(hero: Hero, effectId: string): Hero {
 export function removeExpiredEffects(hero: Hero, currentDepth: number): Hero {
   return {
     ...hero,
-    activeEffects: hero.activeEffects.filter(
+    activeEffects: (hero.activeEffects || []).filter(
       (effect) => effect.isPermanent || effect.expiresAtDepth > currentDepth
     ),
   }
@@ -46,7 +46,7 @@ export function removeExpiredEffects(hero: Hero, currentDepth: number): Hero {
 export function calculateEffectModifiers(hero: Hero): Partial<Stats> {
   const modifiers: Partial<Stats> = {}
 
-  for (const effect of hero.activeEffects) {
+  for (const effect of (hero.activeEffects || [])) {
     if (effect.stat && effect.modifier) {
       modifiers[effect.stat] = (modifiers[effect.stat] || 0) + effect.modifier
     }

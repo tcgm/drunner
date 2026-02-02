@@ -1,32 +1,28 @@
 import { VStack, Box, Text, SimpleGrid, Badge, Tooltip, Flex, Button, Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Hero, ItemSlot } from '@/types'
+import type { Hero } from '@/types'
 import { useGameStore } from '@store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { getEquipmentSlotIds, getSlotById } from '@/config/slotConfig'
+import { restoreItemIcon } from '@/utils/itemUtils'
 
 interface InventoryPanelProps {
   hero: Hero
-  onSlotClick?: (heroId: string, slot: ItemSlot) => void
+  onSlotClick?: (heroId: string, slotId: string) => void
   showBankOption?: boolean
 }
 
-const SLOT_ICONS: Record<ItemSlot, IconType> = {
+const SLOT_ICONS: Record<string, IconType> = {
   weapon: GameIcons.GiSwordman,
   armor: GameIcons.GiChestArmor,
   helmet: GameIcons.GiHelmet,
   boots: GameIcons.GiBootStomp,
   accessory1: GameIcons.GiRing,
   accessory2: GameIcons.GiGemNecklace,
-}
-
-const SLOT_NAMES: Record<ItemSlot, string> = {
-  weapon: 'Weapon',
-  armor: 'Armor',
-  helmet: 'Helmet',
-  boots: 'Boots',
-  accessory1: 'Accessory',
-  accessory2: 'Accessory',
+  consumable1: GameIcons.GiPotion,
+  consumable2: GameIcons.GiPotion,
+  consumable3: GameIcons.GiPotion,
 }
 
 const RARITY_COLORS: Record<string, string> = {
@@ -42,23 +38,25 @@ const RARITY_COLORS: Record<string, string> = {
 export default function InventoryPanel({ hero, onSlotClick, showBankOption }: InventoryPanelProps) {
   const { unequipItemFromHero, sellItemForGold } = useGameStore()
 
-  const handleUnequip = (slot: ItemSlot) => {
-    const item = unequipItemFromHero(hero.id, slot)
+  const handleUnequip = (slotId: string) => {
+    const item = unequipItemFromHero(hero.id, slotId)
     if (item) {
       // For now, auto-sell unequipped items
       sellItemForGold(item)
     }
   }
   
-  const handleSlotClick = (slot: ItemSlot) => {
+  const handleSlotClick = (slotId: string) => {
     if (showBankOption && onSlotClick) {
-      onSlotClick(hero.id, slot)
+      onSlotClick(hero.id, slotId)
     }
   }
 
-  const renderEquipmentSlot = (slot: ItemSlot) => {
-    const item = hero.equipment[slot]
-    const SlotIcon = SLOT_ICONS[slot]
+  const renderEquipmentSlot = (slotId: string) => {
+    const item = hero.slots[slotId] ? restoreItemIcon(hero.slots[slotId]) : null
+    const SlotIcon = SLOT_ICONS[slotId] || GameIcons.GiSquare
+    const slotDef = getSlotById(slotId)
+    const slotName = slotDef?.name || slotId
     const isEmpty = !item
 
     return (
@@ -85,7 +83,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
               </Text>
             </VStack>
           ) : (
-            <Text fontSize="xs">{SLOT_NAMES[slot]} slot empty</Text>
+            <Text fontSize="xs">{slotName} slot empty</Text>
           )
         }
         placement="top"
@@ -102,7 +100,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
           cursor={showBankOption || !isEmpty ? 'pointer' : 'default'}
           transition="all 0.2s"
           _hover={showBankOption || !isEmpty ? { borderColor: isEmpty ? 'blue.500' : `${RARITY_COLORS[item?.rarity || 'common']}.400`, transform: 'translateY(-2px)' } : {}}
-          onClick={() => isEmpty && showBankOption ? handleSlotClick(slot) : undefined}
+          onClick={() => isEmpty && showBankOption ? handleSlotClick(slotId) : undefined}
         >
           {/* Slot Icon */}
           <Flex direction="column" align="center" gap={1}>
@@ -112,7 +110,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
               color={isEmpty ? 'gray.600' : `${RARITY_COLORS[item?.rarity || 'common']}.300`}
             />
             <Text fontSize="xs" color="gray.500" textAlign="center">
-              {SLOT_NAMES[slot]}
+              {slotName}
             </Text>
           </Flex>
 
@@ -137,7 +135,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
                 variant="ghost"
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleUnequip(slot)
+                  handleUnequip(slotId)
                 }}
                 fontSize="xs"
               >
@@ -190,8 +188,8 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
           }
           
           // Sum stats from all equipped items
-          Object.values(hero.equipment).forEach(item => {
-            if (item && item.stats) {
+          Object.values(hero.slots).forEach(item => {
+            if (item && 'stats' in item && item.stats) {
               if (item.stats.attack) equipmentBonuses.attack += item.stats.attack
               if (item.stats.defense) equipmentBonuses.defense += item.stats.defense
               if (item.stats.speed) equipmentBonuses.speed += item.stats.speed

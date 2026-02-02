@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, EventChoice, Item, ItemSlot } from '@/types'
+import type { GameState, Hero, EventChoice, Item } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -86,6 +86,11 @@ function sanitizeHeroStats(hero: Hero): Hero {
     hero.stats.magicPower = hero.class.baseStats.magicPower
   }
   
+  // Ensure activeEffects exists
+  if (!hero.activeEffects) {
+    hero.activeEffects = []
+  }
+  
   return hero
 }
 
@@ -99,10 +104,10 @@ const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): State
       const state = get() as GameState
       if (state.party?.length > 0) {
         const needsSanitization = state.party.some(hero => 
-          hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp))
+          hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp) || !hero.activeEffects)
         )
         if (needsSanitization) {
-          set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats } }) : null) } as Partial<T>)
+          set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats }, activeEffects: h.activeEffects || [] }) : null) } as Partial<T>)
         }
       }
     })
@@ -113,10 +118,10 @@ const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): State
         const state = get() as GameState
         if (state.party?.length > 0) {
           const needsSanitization = state.party.some(hero => 
-            hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp))
+            hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp) || !hero.activeEffects)
           )
           if (needsSanitization) {
-            set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats } }) : null) } as Partial<T>)
+            set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats }, activeEffects: h.activeEffects || [] }) : null) } as Partial<T>)
           }
         }
       },
@@ -214,10 +219,10 @@ interface GameStore extends GameState {
   applyPenalty: () => void
   repairParty: () => void
   // Inventory actions
-  equipItemToHero: (heroId: string, item: Item, slot: ItemSlot) => void
-  unequipItemFromHero: (heroId: string, slot: ItemSlot) => Item | null
+  equipItemToHero: (heroId: string, item: Item, slotId: string) => void
+  unequipItemFromHero: (heroId: string, slotId: string) => Item | null
   sellItemForGold: (item: Item) => void
-  equipItemFromBank: (heroId: string, item: Item, slot: ItemSlot) => void
+  equipItemFromBank: (heroId: string, item: Item, slotId: string) => void
   moveItemToBank: (item: Item) => void
   removeItemFromBank: (itemId: string) => void
   expandBankStorage: (slots: number) => void
@@ -913,18 +918,18 @@ export const useGameStore = create<GameStore>()(
       return {}
     }),
   
-  equipItemToHero: (heroId, item, slot) =>
+  equipItemToHero: (heroId, item, slotId) =>
     set((state) => {
       // Find the hero and get the currently equipped item
       const hero = state.party.find(h => h?.id === heroId)
-      const oldItem = hero?.equipment[slot] || null
+      const oldItem = hero?.slots[slotId] || null
       
       // Equip the new item
       const updatedParty = state.party.map(h =>
-        h?.id === heroId ? equipItem(h, item, slot) : h
+        h?.id === heroId ? equipItem(h, item, slotId) : h
       )
       const updatedRoster = state.heroRoster.map(h =>
-        h.id === heroId ? equipItem(h, item, slot) : h
+        h.id === heroId ? equipItem(h, item, slotId) : h
       )
       
       // Remove the new item from dungeon inventory and add the old item back
@@ -943,11 +948,11 @@ export const useGameStore = create<GameStore>()(
       }
     }),
   
-  unequipItemFromHero: (heroId, slot) => {
+  unequipItemFromHero: (heroId, slotId) => {
     const hero = useGameStore.getState().party.find(h => h?.id === heroId)
     if (!hero) return null
     
-    const { hero: updatedHero, item } = unequipItem(hero, slot)
+    const { hero: updatedHero, item } = unequipItem(hero, slotId)
     useGameStore.setState((state) => ({
       party: state.party.map(h => h?.id === heroId ? updatedHero : h)
     }))
@@ -963,13 +968,13 @@ export const useGameStore = create<GameStore>()(
       }
     })),
   
-  equipItemFromBank: (heroId, item, slot) =>
+  equipItemFromBank: (heroId, item, slotId) =>
     set((state) => {
       const updatedParty = state.party.map(h =>
-        h?.id === heroId ? equipItem(h, item, slot) : h
+        h?.id === heroId ? equipItem(h, item, slotId) : h
       )
       const updatedRoster = state.heroRoster.map(h =>
-        h.id === heroId ? equipItem(h, item, slot) : h
+        h.id === heroId ? equipItem(h, item, slotId) : h
       )
       // Remove item from bank
       const updatedBank = state.bankInventory.filter(i => i.id !== item.id)

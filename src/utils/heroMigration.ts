@@ -1,17 +1,22 @@
-import type { Hero, Equipment, Consumable } from '@/types'
+import type { Hero, Equipment, Consumable, Item } from '@/types'
 import { getEnabledSlots } from '@/config/slotConfig'
 
 /**
  * Migrate a hero from old equipment/consumableSlots format to new slots format
  */
 export function migrateHeroSlots(hero: Hero): Hero {
-  // If already migrated (has slots and no legacy fields), return as-is
+  // If already migrated (has slots property), check if it's properly populated
+  // A hero with slots but also legacy fields needs re-migration
   if (hero.slots && !hero.equipment && !hero.consumableSlots) {
-    return hero
+    // Ensure activeEffects exists
+    return {
+      ...hero,
+      activeEffects: hero.activeEffects || [],
+    }
   }
   
   // Initialize all slots as empty
-  const slots: Record<string, any> = {}
+  const slots: Record<string, Item | Consumable | null> = {}
   for (const slot of getEnabledSlots()) {
     slots[slot.id] = null
   }
@@ -39,11 +44,12 @@ export function migrateHeroSlots(hero: Hero): Hero {
     if (consumables[2]) slots.consumable3 = consumables[2]
   }
   
-  // Return migrated hero without legacy fields
-  const { equipment, consumableSlots, ...rest } = hero
+  // Return migrated hero with new slots system
+  // Keep legacy fields as backup (don't delete them)
   return {
-    ...rest,
+    ...hero,
     slots,
+    activeEffects: hero.activeEffects || [], // Ensure activeEffects exists
   }
 }
 

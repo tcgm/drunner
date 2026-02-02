@@ -16,7 +16,7 @@ interface RosterHeroCardProps {
 
 export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProps) {
   const IconComponent = ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType
-  const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
+  const equippedItems = Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)
   
   const tooltipLabel = (
     <VStack align="start" spacing={1} p={1}>

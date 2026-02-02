@@ -1,38 +1,30 @@
-import type { Hero, Item, ItemSlot } from '@/types'
+import type { Hero, Item } from '@/types'
 import { getItemSetName, getSetBonuses } from '@data/items/sets'
 import { MATERIALS_BY_RARITY } from '@data/items/materials'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { getSlotById } from '@/config/slotConfig'
+import { slotAcceptsItemType } from '@/config/slotConfig'
 
 /**
  * Check if a hero can equip an item in a specific slot
  */
-export function canEquipItem(_hero: Hero, item: Item, slot: ItemSlot): boolean {
-  // Check if item type matches the slot
-  const slotTypeMap: Record<ItemSlot, ItemSlot[]> = {
-    weapon: ['weapon'],
-    armor: ['armor'],
-    helmet: ['helmet'],
-    boots: ['boots'],
-    accessory1: ['accessory1', 'accessory2'],
-    accessory2: ['accessory1', 'accessory2'],
-  }
-
-  return slotTypeMap[slot]?.includes(item.type) ?? false
+export function canEquipItem(_hero: Hero, item: Item, slotId: string): boolean {
+  return slotAcceptsItemType(slotId, item.type)
 }
 
 /**
  * Equip an item to a hero
  */
-export function equipItem(hero: Hero, item: Item, slot: ItemSlot): Hero {
-  if (!canEquipItem(hero, item, slot)) {
+export function equipItem(hero: Hero, item: Item, slotId: string): Hero {
+  if (!canEquipItem(hero, item, slotId)) {
     return hero
   }
 
   const updatedHero = { ...hero }
-  updatedHero.equipment = { ...hero.equipment }
+  updatedHero.slots = { ...hero.slots }
   
   // Equip new item (old item is automatically replaced)
-  updatedHero.equipment[slot] = item
+  updatedHero.slots[slotId] = item
   
   // Recalculate stats
   updatedHero.stats = calculateStatsWithEquipment(updatedHero)
@@ -43,12 +35,12 @@ export function equipItem(hero: Hero, item: Item, slot: ItemSlot): Hero {
 /**
  * Unequip an item from a hero
  */
-export function unequipItem(hero: Hero, slot: ItemSlot): { hero: Hero; item: Item | null } {
-  const item = hero.equipment[slot] ?? null
+export function unequipItem(hero: Hero, slotId: string): { hero: Hero; item: Item | null } {
+  const item = hero.slots[slotId] ?? null
   
   const updatedHero = { ...hero }
-  updatedHero.equipment = { ...hero.equipment }
-  updatedHero.equipment[slot] = null
+  updatedHero.slots = { ...hero.slots }
+  updatedHero.slots[slotId] = null
   
   // Recalculate stats
   updatedHero.stats = calculateStatsWithEquipment(updatedHero)
@@ -77,7 +69,8 @@ export function calculateStatsWithEquipment(hero: Hero) {
   }
   
   // Track equipped items for set bonus detection
-  const equippedItems = Object.values(hero.equipment).filter(item => item !== null) as Item[]
+  const equippedItems = Object.values(hero.slots)
+    .filter(item => item !== null && 'stats' in item) as Item[]
   
   // Add equipment bonuses
   equippedItems.forEach(item => {

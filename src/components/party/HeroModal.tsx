@@ -15,7 +15,7 @@ import {
   Badge,
   useDisclosure,
 } from '@chakra-ui/react'
-import type { Hero, ItemSlot, Item } from '@/types'
+import type { Hero, Item } from '@/types'
 import * as GameIcons from 'react-icons/gi'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
@@ -26,15 +26,8 @@ import { useGameStore } from '@/store/gameStore'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
-
-const SLOT_NAMES: Record<ItemSlot, string> = {
-  weapon: 'Weapon',
-  armor: 'Armor',
-  helmet: 'Helmet',
-  boots: 'Boots',
-  accessory1: 'Accessory',
-  accessory2: 'Accessory',
-}
+import { getSlotById } from '@/config/slotConfig'
+import { restoreItemIcon } from '@/utils/itemUtils'
 
 interface HeroModalProps {
   hero: Hero
@@ -46,7 +39,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
   const { equipItemToHero, dungeon } = useGameStore()
-  const [swapMode, setSwapMode] = useState<ItemSlot | null>(null)
+  const [swapMode, setSwapMode] = useState<string | null>(null)
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
 
   // Listen for clicks on inventory items when in swap mode
@@ -85,25 +78,26 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
     }
   }, [swapMode, handleInventoryItemClick])
 
-  const handleSwap = (slot: ItemSlot) => {
+  const handleSwap = (slotId: string) => {
     if (swapMode === null) {
       // Enter swap mode - selecting which slot to swap
-      setSwapMode(slot)
+      setSwapMode(slotId)
     } else {
       // Exit swap mode
       setSwapMode(null)
     }
   }
 
-  const renderEquipmentSlot = (slot: ItemSlot) => {
+  const renderEquipmentSlot = (slotId: string) => {
+    const item = hero.slots[slotId]
     return (
       <EquipmentSlot
-        slot={slot}
-        item={hero.equipment[slot]}
+        slot={slotId}
+        item={item ? restoreItemIcon(item) : null}
         availableItems={dungeon.inventory}
-        isSwapActive={swapMode === slot}
+        isSwapActive={swapMode === slotId}
         showSwapButton={true}
-        onSwapClick={() => handleSwap(slot)}
+        onSwapClick={() => handleSwap(slotId)}
       />
     )
   }
@@ -202,7 +196,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
               <Box pt="2%" borderTop="1px solid" borderColor="gray.700" flex="0 0 auto" mt="2%">
                 {swapMode ? (
                   <Text fontSize="xs" color="orange.400" fontWeight="bold" textAlign="center" animation="pulse 2s infinite">
-                    Open Inventory and select a {SLOT_NAMES[swapMode]} to equip →
+                    Open Inventory and select a {getSlotById(swapMode)?.name || 'item'} to equip →
                   </Text>
                 ) : (
                   <Text fontSize="xs" color="gray.400" fontStyle="italic" textAlign="center" lineHeight="1.3" noOfLines={2}>

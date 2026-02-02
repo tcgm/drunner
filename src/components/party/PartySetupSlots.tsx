@@ -109,7 +109,7 @@ export function PartySetupSlots({
                         />
                         {/* Equipment pips around icon */}
                         {(() => {
-                          const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
+                          const equippedItems = Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)
                           if (equippedItems.length === 0) return null
                           const angleStep = 360 / equippedItems.length
                           const radius = 35

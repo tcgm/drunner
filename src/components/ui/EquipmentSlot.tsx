@@ -1,30 +1,26 @@
 import { Box, Icon, IconButton } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Item, ItemSlot as ItemSlotType } from '@/types'
+import type { Item } from '@/types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
 import { hasUpgradeAvailable, hasCompatibleItems } from '@/utils/equipmentUtils'
+import { getSlotById } from '@/config/slotConfig'
 
-const SLOT_ICONS: Record<ItemSlotType, IconType> = {
+const SLOT_ICONS: Record<string, IconType> = {
   weapon: GameIcons.GiSwordman,
   armor: GameIcons.GiChestArmor,
   helmet: GameIcons.GiHelmet,
   boots: GameIcons.GiBootStomp,
   accessory1: GameIcons.GiRing,
   accessory2: GameIcons.GiGemNecklace,
-}
-
-const SLOT_NAMES: Record<ItemSlotType, string> = {
-  weapon: 'Weapon',
-  armor: 'Armor',
-  helmet: 'Helmet',
-  boots: 'Boots',
-  accessory1: 'Accessory',
-  accessory2: 'Accessory',
+  // Add consumable icons
+  consumable1: GameIcons.GiPotion,
+  consumable2: GameIcons.GiPotion,
+  consumable3: GameIcons.GiPotion,
 }
 
 interface EquipmentSlotProps {
-  slot: ItemSlotType
+  slot: string
   item: Item | null
   availableItems: Item[]
   isSwapActive?: boolean
@@ -42,7 +38,9 @@ export function EquipmentSlot({
   onSwapClick,
   size = 'md'
 }: EquipmentSlotProps) {
-  const SlotIcon = SLOT_ICONS[slot]
+  const slotDef = getSlotById(slot)
+  const SlotIcon = SLOT_ICONS[slot] || GameIcons.GiSquare
+  const slotName = slotDef?.name || slot
   const isEmpty = !item
   const hasUpgrade = hasUpgradeAvailable(slot, item, availableItems)
   const canSwap = hasCompatibleItems(slot, availableItems)
@@ -63,7 +61,7 @@ export function EquipmentSlot({
           justifyContent="center"
           cursor="default"
           _hover={{ borderColor: isSwapActive ? "orange.300" : "gray.600" }}
-          title={SLOT_NAMES[slot]}
+          title={slotName}
         >
           <Icon as={SlotIcon} boxSize={8} color="gray.600" />
         </Box>
@@ -103,7 +101,7 @@ export function EquipmentSlot({
   }
 
   return (
-    <Box position="relative" w={slotSize} h={slotSize} title={SLOT_NAMES[slot]}>
+    <Box position="relative" w={slotSize} h={slotSize} title={slotName}>
       <Box
         borderWidth="2px"
         borderColor={isSwapActive ? "orange.400" : "transparent"}

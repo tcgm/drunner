@@ -86,7 +86,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
               
               {/* Equipment pips */}
               <VStack className="party-member-card-equipment-pips" spacing={0.5} align="start">
-                {Object.values(hero.equipment || {}).filter((item): item is Item => item !== null).map((item, idx) => (
+                {Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item).map((item, idx) => (
                   <Tooltip key={idx} label={item.name} fontSize="xs" placement="right">
                     <Box
                       w="6px"

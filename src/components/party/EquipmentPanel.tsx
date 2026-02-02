@@ -1,11 +1,12 @@
 import { VStack, Box, Text, SimpleGrid, HStack, Button, Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Hero, ItemSlot, Item } from '../../types'
+import type { Hero, Item } from '../../types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { getEquipmentSlotIds } from '@/config/slotConfig'
 // import { useGameStore } from '@/store/gameStore'
 // import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 
@@ -44,8 +45,8 @@ interface EquipmentPanelProps {
   bankStorageSlots: number
   onSelectHero: (index: number) => void
   onOpenBank: () => void
-  onSlotClick: (heroIndex: number, slot: ItemSlot) => void
-  onUnequipItem: (heroIndex: number, slot: ItemSlot) => void
+  onSlotClick: (heroIndex: number, slotId: string) => void
+  onUnequipItem: (heroIndex: number, slotId: string) => void
 }
 
 export function EquipmentPanel({
@@ -61,22 +62,22 @@ export function EquipmentPanel({
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
   const activeParty = party.filter((h): h is Hero => h !== null)
 
-  const renderEquipmentSlot = (slot: ItemSlot) => {
+  const renderEquipmentSlot = (slotId: string) => {
     if (!selectedHero) return null
     
-    const item = selectedHero.equipment[slot]
+    const item = selectedHero.slots[slotId]
     const isEmpty = !item
 
     if (isEmpty) {
       // Empty slot - clickable to equip with upgrade indicator
       return (
         <Box
-          key={slot}
-          onClick={() => selectedHeroIndex !== null && onSlotClick(selectedHeroIndex, slot)}
+          key={slotId}
+          onClick={() => selectedHeroIndex !== null && onSlotClick(selectedHeroIndex, slotId)}
           cursor="pointer"
         >
           <EquipmentSlot
-            slot={slot}
+            slot={slotId}
             item={null}
             availableItems={bankInventory}
             showSwapButton={false}
@@ -87,9 +88,9 @@ export function EquipmentPanel({
 
     // Equipped item - use EquipmentSlot component with unequip button
     return (
-      <Box key={slot} position="relative">
+      <Box key={slotId} position="relative">
         <EquipmentSlot
-          slot={slot}
+          slot={slotId}
           item={restoreItemIcon(item)}
           availableItems={bankInventory}
           showSwapButton={false}
@@ -104,7 +105,7 @@ export function EquipmentPanel({
           onClick={(e) => {
             e.stopPropagation()
             if (selectedHeroIndex !== null) {
-              onUnequipItem(selectedHeroIndex, slot)
+              onUnequipItem(selectedHeroIndex, slotId)
             }
           }}
           fontSize="2xs"
@@ -196,8 +197,8 @@ export function EquipmentPanel({
                     }
                     
                     // Sum stats from all equipped items
-                    Object.values(selectedHero.equipment).forEach(item => {
-                      if (item && item.stats) {
+                    Object.values(selectedHero.slots).forEach(item => {
+                      if (item && 'stats' in item && item.stats) {
                         if (item.stats.attack) equipmentBonuses.attack += item.stats.attack
                         if (item.stats.defense) equipmentBonuses.defense += item.stats.defense
                         if (item.stats.speed) equipmentBonuses.speed += item.stats.speed

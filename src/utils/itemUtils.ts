@@ -1,6 +1,7 @@
 import type { Item } from '@/types'
 import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
+import { allBases } from '@/data/items/bases'
 
 /**
  * Restore icon for unique/set items after deserialization
@@ -22,6 +23,14 @@ export function restoreItemIcon(item: Item): Item {
   // Check if it's a set item
   if (item.setId || item.rarity === 'set') {
     const template = ALL_SET_ITEMS.find(t => t.name === item.name)
+    if (template?.icon) {
+      return { ...item, icon: template.icon }
+    }
+  }
+
+  // Check if it's a procedural item with base template
+  if (item.baseTemplateId) {
+    const template = allBases.find(b => b.id === item.baseTemplateId)
     if (template?.icon) {
       return { ...item, icon: template.icon }
     }

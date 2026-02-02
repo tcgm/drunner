@@ -67,7 +67,7 @@ export default function GameOverScreen({ floor, depth, onExit }: GameOverScreenP
       case 'reset-levels':
         return `Level ${originalLevel} → ${hero.level}`
       case 'lose-equipment': {
-        const equippedCount = Object.values(hero.equipment).filter(item => item !== null).length
+        const equippedCount = Object.values(hero.slots).filter(item => item !== null).length
         return equippedCount > 0 ? `Lose ${equippedCount} item${equippedCount > 1 ? 's' : ''}` : 'No equipment lost'
       }
       case 'none':

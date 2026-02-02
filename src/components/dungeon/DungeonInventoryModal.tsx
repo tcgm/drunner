@@ -17,7 +17,7 @@ import {
   TabPanel,
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import type { Item, ItemSlot as ItemSlotType } from '@/types'
+import type { Item } from '@/types'
 import { ItemGrid } from '@/components/inventory/ItemGrid'
 import { InventoryControls, type SortOption, type FilterOption } from '@/components/inventory/InventoryControls'
 import { InventoryTabs } from '@/components/inventory/InventoryTabs'
@@ -30,7 +30,7 @@ interface DungeonInventoryModalProps {
   onClose: () => void
   inventory: Item[]
   gold: number
-  pendingSlot?: ItemSlotType | null
+  pendingSlot?: string | null
 }
 
 export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold, pendingSlot = null }: DungeonInventoryModalProps) {
