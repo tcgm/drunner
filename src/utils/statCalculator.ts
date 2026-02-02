@@ -33,17 +33,10 @@ export function calculateTotalStats(hero: Hero): Stats {
 export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
   const equipmentStats: Partial<Stats> = {}
   
-  const items: (Item | null)[] = [
-    hero.equipment.weapon,
-    hero.equipment.armor,
-    hero.equipment.helmet,
-    hero.equipment.boots,
-    hero.equipment.accessory1,
-    hero.equipment.accessory2,
-  ]
-  
-  for (const item of items) {
-    if (item && item.stats) {
+  // Iterate through all slots
+  for (const [slotId, item] of Object.entries(hero.slots)) {
+    // Only process items (not consumables) with stats
+    if (item && 'stats' in item && item.stats) {
       for (const [stat, value] of Object.entries(item.stats)) {
         if (value !== undefined) {
           const key = stat as keyof Stats

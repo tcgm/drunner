@@ -47,13 +47,17 @@ export interface Hero {
   level: number
   xp: number
   stats: Stats
-  equipment: Equipment
+  slots: Record<string, Item | Consumable | null> // All equipment and consumable slots
   abilities: Ability[]
   isAlive: boolean
-  consumableSlots: (Consumable | null)[] // 3 quick-access consumable slots
   activeEffects: TimedEffect[] // Active timed effects on this hero
+  
+  // Legacy fields for migration
+  equipment?: Equipment
+  consumableSlots?: (Consumable | null)[]
 }
 
+// Legacy equipment interface - kept for migration
 export interface Equipment {
   weapon: Item | null
   armor: Item | null

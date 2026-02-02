@@ -4,6 +4,7 @@
 
 import type { Dungeon, Run, GameState } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { migrateHeroArray } from './heroMigration'
 
 /**
  * Converts depth-based dungeon to floor-based system
@@ -70,11 +71,13 @@ export function migrateRun(run: Run): Run {
 }
 
 /**
- * Migrates entire game state to new floor system
+ * Migrates entire game state to new floor system and slot system
  */
 export function migrateGameState(state: GameState): GameState {
   return {
     ...state,
+    party: migrateHeroArray(state.party),
+    heroRoster: migrateHeroArray(state.heroRoster),
     dungeon: migrateDungeon(state.dungeon),
     activeRun: state.activeRun ? migrateRun(state.activeRun) : null,
     runHistory: state.runHistory.map(migrateRun),

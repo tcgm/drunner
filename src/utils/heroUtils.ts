@@ -1,5 +1,6 @@
 import type { Hero, HeroClass, Stats } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
+import { getEnabledSlots } from '@/config/slotConfig'
 
 /**
  * Calculate HP based on level and base stats
@@ -35,6 +36,12 @@ export function createHero(heroClass: HeroClass, name: string, level: number = 1
     magicPower: baseStats.magicPower ? baseStats.magicPower + levelBonus : undefined,
   }
   
+  // Initialize all slots as empty based on slot configuration
+  const slots: Record<string, null> = {}
+  for (const slot of getEnabledSlots()) {
+    slots[slot.id] = null
+  }
+  
   return {
     id: uuidv4(),
     name,
@@ -42,17 +49,9 @@ export function createHero(heroClass: HeroClass, name: string, level: number = 1
     level,
     xp: 0,
     stats,
-    equipment: {
-      weapon: null,
-      armor: null,
-      helmet: null,
-      boots: null,
-      accessory1: null,
-      accessory2: null,
-    },
+    slots,
     abilities: [...heroClass.abilities],
     isAlive: true,
-    consumableSlots: [null, null, null], // 3 consumable quick-slots
     activeEffects: [], // No active effects initially
   }
 }

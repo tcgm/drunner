@@ -1,13 +1,14 @@
 import type { Hero, Consumable, GameState } from '@/types'
 import { applyEffect } from '../effects/effectManager'
 import { GiHealthPotion, GiStrong, GiShield, GiRun, GiClover } from 'react-icons/gi'
+import { getConsumableSlotIds } from '@/config/slotConfig'
 
 /**
- * Use a consumable from a hero's consumable slot
+ * Use a consumable from a hero's slot by slot ID
  */
 export function useConsumable(
   hero: Hero,
-  slotIndex: number,
+  slotId: string,
   currentDepth: number,
   party: (Hero | null)[]
 ): {
@@ -15,9 +16,9 @@ export function useConsumable(
   party: (Hero | null)[]
   message: string
 } {
-  const consumable = hero.consumableSlots[slotIndex]
+  const consumable = hero.slots[slotId] as Consumable | null
   
-  if (!consumable) {
+  if (!consumable || !('consumableType' in consumable)) {
     return { hero, party, message: 'No consumable in that slot.' }
   }
 
@@ -76,12 +77,18 @@ export function useConsumable(
 
   // Remove or decrement stack
   if (consumable.stackable && consumable.stackCount && consumable.stackCount > 1) {
-    updatedHero.consumableSlots[slotIndex] = {
-      ...consumable,
-      stackCount: consumable.stackCount - 1,
+    updatedHero.slots = {
+      ...updatedHero.slots,
+      [slotId]: {
+        ...consumable,
+        stackCount: consumable.stackCount - 1,
+      }
     }
   } else {
-    updatedHero.consumableSlots[slotIndex] = null
+    updatedHero.slots = {
+      ...updatedHero.slots,
+      [slotId]: null
+    }
   }
 
   // Update party with modified hero
@@ -93,34 +100,42 @@ export function useConsumable(
 /**
  * Equip a consumable from inventory to a hero's consumable slot
  */
-export function equipConsumable(hero: Hero, consumable: Consumable, slotIndex: number): Hero {
-  if (slotIndex < 0 || slotIndex >= 3) {
-    throw new Error('Invalid consumable slot index')
+export function equipConsumable(hero: Hero, consumable: Consumable, slotId: string): Hero {
+  const consumableSlotIds = getConsumableSlotIds()
+  
+  if (!consumableSlotIds.includes(slotId)) {
+    throw new Error('Invalid consumable slot ID')
   }
-
-  const updatedSlots = [...hero.consumableSlots]
-  updatedSlots[slotIndex] = { ...consumable }
 
   return {
     ...hero,
-    consumableSlots: updatedSlots,
+    slots: {
+      ...hero.slots,
+      [slotId]: { ...consumable }
+    }
   }
 }
 
 /**
  * Unequip a consumable from a hero's slot (returns it to inventory)
  */
-export function unequipConsumable(hero: Hero, slotIndex: number): { hero: Hero; consumable: Consumable | null } {
-  if (slotIndex < 0 || slotIndex >= 3) {
-    throw new Error('Invalid consumable slot index')
+export function unequipConsumable(hero: Hero, slotId: string): { hero: Hero; consumable: Consumable | null } {
+  const consumableSlotIds = getConsumableSlotIds()
+  
+  if (!consumableSlotIds.includes(slotId)) {
+    throw new Error('Invalid consumable slot ID')
   }
 
-  const consumable = hero.consumableSlots[slotIndex]
-  const updatedSlots = [...hero.consumableSlots]
-  updatedSlots[slotIndex] = null
+  const consumable = hero.slots[slotId] as Consumable | null
 
   return {
-    hero: { ...hero, consumableSlots: updatedSlots },
+    hero: { 
+      ...hero, 
+      slots: {
+        ...hero.slots,
+        [slotId]: null
+      }
+    },
     consumable,
   }
 }
@@ -129,14 +144,16 @@ export function unequipConsumable(hero: Hero, slotIndex: number): { hero: Hero; 
  * Get all consumable slots with their status
  */
 export function getConsumableSlotInfo(hero: Hero): Array<{
-  index: number
+  slotId: string
   consumable: Consumable | null
   isEmpty: boolean
 }> {
-  return hero.consumableSlots.map((consumable, index) => ({
-    index,
-    consumable,
-    isEmpty: consumable === null,
+  const consumableSlotIds = getConsumableSlotIds()
+  
+  return consumableSlotIds.map((slotId) => ({
+    slotId,
+    consumable: hero.slots[slotId] as Consumable | null,
+    isEmpty: hero.slots[slotId] === null,
   }))
 }
 
@@ -144,16 +161,24 @@ export function getConsumableSlotInfo(hero: Hero): Array<{
  * Check if hero has a specific consumable equipped
  */
 export function hasConsumableEquipped(hero: Hero, consumableId: string): boolean {
-  return hero.consumableSlots.some((c) => c?.id === consumableId)
+  const consumableSlotIds = getConsumableSlotIds()
+  
+  return consumableSlotIds.some((slotId) => {
+    const item = hero.slots[slotId]
+    return item && 'consumableType' in item && item.id === consumableId
+  })
 }
 
 /**
  * Get count of specific consumable across all slots (for stackables)
  */
 export function getConsumableCount(hero: Hero, consumableId: string): number {
-  return hero.consumableSlots.reduce((count, c) => {
-    if (c?.id === consumableId) {
-      return count + (c.stackCount || 1)
+  const consumableSlotIds = getConsumableSlotIds()
+  
+  return consumableSlotIds.reduce((count, slotId) => {
+    const item = hero.slots[slotId]
+    if (item && 'consumableType' in item && item.id === consumableId) {
+      return count + (item.stackCount || 1)
     }
     return count
   }, 0)
