@@ -9,6 +9,8 @@ export const RANGER: HeroClass = {
     defense: 5,
     speed: 9,
     luck: 9,
+    wisdom: 8,
+    charisma: 6,
   },
   abilities: [
     {

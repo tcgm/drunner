@@ -9,6 +9,8 @@ export interface Stats {
   defense: number
   speed: number
   luck: number
+  wisdom: number
+  charisma: number
   magicPower?: number // Stretch goal
 }
 

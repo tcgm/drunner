@@ -21,6 +21,8 @@ export function calculateTotalStats(hero: Hero): Stats {
     defense: baseStats.defense + (equipmentStats.defense || 0) + (effectModifiers.defense || 0),
     speed: baseStats.speed + (equipmentStats.speed || 0) + (effectModifiers.speed || 0),
     luck: baseStats.luck + (equipmentStats.luck || 0) + (effectModifiers.luck || 0),
+    wisdom: baseStats.wisdom + (equipmentStats.wisdom || 0) + (effectModifiers.wisdom || 0),
+    charisma: baseStats.charisma + (equipmentStats.charisma || 0) + (effectModifiers.charisma || 0),
     magicPower: baseStats.magicPower 
       ? baseStats.magicPower + (equipmentStats.magicPower || 0) + (effectModifiers.magicPower || 0)
       : undefined,

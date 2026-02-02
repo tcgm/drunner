@@ -8,11 +8,23 @@ export function migrateHeroSlots(hero: Hero): Hero {
   // If already migrated (has slots property), check if it's properly populated
   // A hero with slots but also legacy fields needs re-migration
   if (hero.slots && !hero.equipment && !hero.consumableSlots) {
-    // Ensure activeEffects exists
-    return {
+    // Ensure activeEffects exists and migrate stats
+    const migratedHero = {
       ...hero,
       activeEffects: hero.activeEffects || [],
     }
+    
+    // Add wisdom and charisma if missing (from old saves)
+    if (!migratedHero.stats.wisdom || !migratedHero.stats.charisma) {
+      const levelBonus = (hero.level - 1) * 5
+      migratedHero.stats = {
+        ...migratedHero.stats,
+        wisdom: migratedHero.stats.wisdom || hero.class.baseStats.wisdom + levelBonus,
+        charisma: migratedHero.stats.charisma || hero.class.baseStats.charisma + levelBonus,
+      }
+    }
+    
+    return migratedHero
   }
   
   // Initialize all slots as empty
@@ -46,11 +58,21 @@ export function migrateHeroSlots(hero: Hero): Hero {
   
   // Return migrated hero with new slots system
   // Keep legacy fields as backup (don't delete them)
-  return {
+  const migratedHero = {
     ...hero,
     slots,
     activeEffects: hero.activeEffects || [], // Ensure activeEffects exists
   }
+  
+  // Add wisdom and charisma if missing (from old saves)
+  const levelBonus = (hero.level - 1) * 5
+  migratedHero.stats = {
+    ...migratedHero.stats,
+    wisdom: migratedHero.stats.wisdom || hero.class.baseStats.wisdom + levelBonus,
+    charisma: migratedHero.stats.charisma || hero.class.baseStats.charisma + levelBonus,
+  }
+  
+  return migratedHero
 }
 
 /**

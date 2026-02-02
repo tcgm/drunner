@@ -9,6 +9,8 @@ export const CLERIC: HeroClass = {
     defense: 6,
     speed: 5,
     luck: 8,
+    wisdom: 12,
+    charisma: 9,
     magicPower: 12,
   },
   abilities: [

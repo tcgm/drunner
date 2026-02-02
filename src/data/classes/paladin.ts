@@ -9,6 +9,8 @@ export const PALADIN: HeroClass = {
     defense: 9,
     speed: 4,
     luck: 6,
+    wisdom: 9,
+    charisma: 10,
     magicPower: 8,
   },
   abilities: [

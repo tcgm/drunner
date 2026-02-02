@@ -21,12 +21,27 @@ export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
       },
     },
     {
-      text: 'Haggle for a better price',
+      text: 'Haggle for a better price (Charisma check)',
+      requirements: {
+        gold: 100,
+        stat: 'charisma',
+        minValue: 15,
+      },
+      outcome: {
+        text: 'Your charm wins him over! He offers you a better deal.',
+        effects: [
+          { type: 'gold', value: -100 },
+          { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 10 },
+        ],
+      },
+    },
+    {
+      text: 'Try to haggle without charm',
       requirements: {
         gold: 100,
       },
       outcome: {
-        text: 'He laughs and lowers the price slightly.',
+        text: 'He laughs at your clumsy negotiation.',
         effects: [
           { type: 'gold', value: -100 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 5 },

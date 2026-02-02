@@ -9,6 +9,8 @@ export const BARD: HeroClass = {
     defense: 5,
     speed: 8,
     luck: 10,
+    wisdom: 8,
+    charisma: 12,
     magicPower: 9,
   },
   abilities: [

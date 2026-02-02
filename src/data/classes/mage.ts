@@ -9,6 +9,8 @@ export const MAGE: HeroClass = {
     defense: 3,
     speed: 6,
     luck: 7,
+    wisdom: 11,
+    charisma: 5,
     magicPower: 15,
   },
   abilities: [

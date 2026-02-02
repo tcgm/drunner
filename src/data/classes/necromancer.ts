@@ -9,6 +9,8 @@ export const NECROMANCER: HeroClass = {
     defense: 4,
     speed: 6,
     luck: 7,
+    wisdom: 10,
+    charisma: 3,
     magicPower: 13,
   },
   abilities: [

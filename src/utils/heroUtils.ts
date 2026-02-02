@@ -33,6 +33,8 @@ export function createHero(heroClass: HeroClass, name: string, level: number = 1
     defense: baseStats.defense + levelBonus,
     speed: baseStats.speed + levelBonus,
     luck: baseStats.luck + levelBonus,
+    wisdom: baseStats.wisdom + levelBonus,
+    charisma: baseStats.charisma + levelBonus,
     magicPower: baseStats.magicPower ? baseStats.magicPower + levelBonus : undefined,
   }
   
@@ -86,6 +88,8 @@ export function addExperience(hero: Hero, xp: number): Hero {
         defense: hero.stats.defense + statIncrease,
         speed: hero.stats.speed + statIncrease,
         luck: hero.stats.luck + statIncrease,
+        wisdom: hero.stats.wisdom + statIncrease,
+        charisma: hero.stats.charisma + statIncrease,
         magicPower: hero.stats.magicPower ? hero.stats.magicPower + statIncrease : undefined,
       },
     }

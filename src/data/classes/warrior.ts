@@ -9,6 +9,8 @@ export const WARRIOR: HeroClass = {
     defense: 8,
     speed: 5,
     luck: 4,
+    wisdom: 4,
+    charisma: 5,
   },
   abilities: [
     {

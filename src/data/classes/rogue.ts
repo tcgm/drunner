@@ -9,6 +9,8 @@ export const ROGUE: HeroClass = {
     defense: 4,
     speed: 11,
     luck: 12,
+    wisdom: 6,
+    charisma: 7,
   },
   abilities: [
     {
