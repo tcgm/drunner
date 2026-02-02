@@ -50,6 +50,21 @@ export const VALKYRIE_HUNTRESS: DungeonEvent = {
         ],
       },
     },
+    {
+      text: 'Charm the warrior maiden (Bard bonus)',
+      requirements: {
+        class: 'Bard',
+      },
+      outcome: {
+        text: 'Your silver tongue and winning smile captivate her! She sheathes her spear, enchanted by your words and music!',
+        effects: [
+          { type: 'damage', target: 'all', value: 75 },
+          { type: 'xp', value: 580 },
+          { type: 'gold', value: 760 },
+          { type: 'item', itemType: 'accessory1', minRarity: 'epic', maxRarity: 'epic', rarityBoost: 27 },
+        ],
+      },
+    },
   ],
   depth: 29,
   icon: GiWingedSword,

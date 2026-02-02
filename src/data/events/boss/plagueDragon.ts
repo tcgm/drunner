@@ -50,6 +50,21 @@ export const PLAGUE_DRAGON: DungeonEvent = {
         ],
       },
     },
+    {
+      text: 'Soothe the suffering beast (Bard bonus)',
+      requirements: {
+        class: 'Bard',
+      },
+      outcome: {
+        text: 'Your songs of comfort reach through the corruption! The dragon\'s ancient heart softens, and it peacefully surrenders its treasure before passing!',
+        effects: [
+          { type: 'damage', target: 'all', value: 200 },
+          { type: 'xp', value: 1350 },
+          { type: 'gold', value: 2050 },
+          { type: 'item', itemType: 'accessory1', minRarity: 'legendary', maxRarity: 'legendary', rarityBoost: 31 },
+        ],
+      },
+    },
   ],
   depth: 44,
   icon: GiSwampBat,
