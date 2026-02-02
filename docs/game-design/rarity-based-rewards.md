@@ -3,6 +3,28 @@
 ## Overview
 Events can now control the quality of item rewards through rarity constraints and depth boosts. This allows events to guarantee better loot for high-risk choices or difficult challenges.
 
+## Item Stat Calculation Formula
+
+**Current Formula (Version 1):**
+```
+Item Stat = Base Template Stat × Material Multiplier × Rarity Multiplier
+Item Value = Base Value × Material Multiplier × Rarity Multiplier
+```
+
+**Example:**
+- Iron Sword base template: 5 attack
+- Iron material: 1.0× multiplier
+- Legendary rarity: 4.0× multiplier
+- Result: 5 × 1.0 × 4.0 = **20 attack**
+
+**Stat Versioning:**
+All items carry a `statVersion` field that tracks which formula was used to calculate their stats. When loading a save, items are checked against the current formula:
+- If `statVersion` matches current version → no migration needed
+- If `statVersion` is missing or outdated → item stats are recalculated using current formula
+- Migration generates a "phantom copy" with correct stats and replaces the old version
+
+This ensures items remain balanced even when the stat calculation formula changes in future updates.
+
 ## New Item Generation Parameters
 
 ### `minRarity`

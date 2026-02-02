@@ -121,6 +121,7 @@ export interface Item {
   materialId?: string // Material used to craft this item
   baseTemplateId?: string // Base template used for this item
   isUnique?: boolean // True if this is a unique/set item (not crafted)
+  statVersion?: number // Version of stat calculation formula (for migrations)
 }
 
 export interface Consumable extends Item {

@@ -7,6 +7,8 @@ import { getRandomSetItem, ALL_SET_ITEMS } from '@data/items/sets'
 import { applyModifiers, getModifierById } from '@data/items/mods'
 import { GiCrystalShine } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { getRarityConfig } from '@/systems/rarity/raritySystem'
+import { CURRENT_STAT_VERSION } from '@/utils/itemMigration'
 
 /**
  * Loot generation configuration
@@ -156,17 +158,19 @@ function selectItemType(): ItemSlot {
 }
 
 /**
- * Apply material modifiers to base item stats
+ * Apply material and rarity modifiers to base item stats
  */
 function applyMaterialToStats(
   baseStats: Partial<Record<string, number>>,
-  multiplier: number
+  materialMultiplier: number,
+  rarityMultiplier: number
 ): Partial<Record<string, number>> {
   const modifiedStats: Partial<Record<string, number>> = {}
   
   for (const [key, value] of Object.entries(baseStats)) {
     if (value !== undefined) {
-      modifiedStats[key] = Math.floor(value * multiplier)
+      // Apply both material and rarity multipliers: base × material × rarity
+      modifiedStats[key] = Math.floor(value * materialMultiplier * rarityMultiplier)
     }
   }
   
@@ -356,12 +360,16 @@ export function generateItem(
   // Generate the item from the base and material
   const base: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = baseTemplate
   
-  // Apply material multiplier to base stats
-  const modifiedStats = applyMaterialToStats(base.stats, material.statMultiplier)
+  // Get rarity multiplier
+  const rarityConfig = getRarityConfig(rarity)
+  const rarityMultiplier = rarityConfig.statMultiplierBase
   
-  // Calculate value
+  // Apply material and rarity multipliers to base stats: base × material × rarity
+  const modifiedStats = applyMaterialToStats(base.stats, material.statMultiplier, rarityMultiplier)
+  
+  // Calculate value with both material and rarity multipliers
   const baseValue = 50
-  const value = Math.floor(baseValue * material.valueMultiplier)
+  const value = Math.floor(baseValue * material.valueMultiplier * rarityMultiplier)
   
   // Combine descriptions
   const description = material.description 
@@ -389,8 +397,8 @@ export function generateItem(
         : base.description,
       type: forceType || base.type,
       rarity,
-      stats: applyMaterialToStats(base.stats, material.statMultiplier),
-      value: Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier),
+      stats: applyMaterialToStats(base.stats, material.statMultiplier, rarityMultiplier),
+      value: Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier * rarityMultiplier),
       icon: base.icon,
       materialId: material.id,
       baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
@@ -437,6 +445,7 @@ export function generateItem(
     baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
     isUnique: false, // Procedurally generated item
     modifiers: modifiers.length > 0 ? modifiers : undefined,
+    statVersion: CURRENT_STAT_VERSION, // Mark with current stat calculation version
   }
   
   // Apply modifiers if any

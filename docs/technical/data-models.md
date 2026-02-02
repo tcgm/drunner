@@ -233,7 +233,30 @@ interface Item {
   value: number;
   stackable: boolean;
   quantity?: number;
+  
+  // Item generation metadata
+  materialId?: string;        // Material used (for procedural items)
+  baseTemplateId?: string;    // Base template used (for procedural items)
+  isUnique?: boolean;         // True for unique/set items
+  statVersion?: number;       // Stat calculation version (for migrations)
 }
+
+/**
+ * Stat Calculation & Versioning
+ * 
+ * Items generated procedurally use this formula:
+ *   Stat Value = Base Template × Material Multiplier × Rarity Multiplier
+ * 
+ * The statVersion field tracks which formula version was used:
+ *   - Version 1 (current): base × material × rarity
+ *   - Future versions: may include depth scaling, modifiers, etc.
+ * 
+ * On save load, items with outdated statVersion are automatically
+ * recalculated using the current formula and marked with the new version.
+ * This ensures game balance remains consistent across updates.
+ * 
+ * See: src/utils/itemMigration.ts, src/systems/loot/lootGenerator.ts
+ */
 
 type ItemType = 
   | "weapon" | "armor" | "helmet" | "boots" | "accessory"

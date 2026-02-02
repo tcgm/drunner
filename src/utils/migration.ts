@@ -5,6 +5,7 @@
 import type { Dungeon, Run, GameState } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { migrateHeroArray } from './heroMigration'
+import { migrateItemArray, migrateHeroArrayItems } from './itemMigration'
 
 /**
  * Converts depth-based dungeon to floor-based system
@@ -71,14 +72,34 @@ export function migrateRun(run: Run): Run {
 }
 
 /**
- * Migrates entire game state to new floor system and slot system
+ * Migrates entire game state to new floor system, slot system, and item stat calculation
  */
 export function migrateGameState(state: GameState): GameState {
+  // First migrate hero structure (old equipment/consumableSlots to new slots)
+  let migratedParty = migrateHeroArray(state.party)
+  let migratedRoster = migrateHeroArray(state.heroRoster)
+  
+  // Then migrate item stats on all heroes
+  migratedParty = migrateHeroArrayItems(migratedParty)
+  migratedRoster = migrateHeroArrayItems(migratedRoster)
+  
+  // Migrate items in inventories
+  const migratedBankInventory = migrateItemArray(state.bankInventory)
+  const migratedOverflowInventory = migrateItemArray(state.overflowInventory)
+  const migratedDungeonInventory = state.dungeon.inventory 
+    ? migrateItemArray(state.dungeon.inventory)
+    : []
+  
   return {
     ...state,
-    party: migrateHeroArray(state.party),
-    heroRoster: migrateHeroArray(state.heroRoster),
-    dungeon: migrateDungeon(state.dungeon),
+    party: migratedParty,
+    heroRoster: migratedRoster,
+    bankInventory: migratedBankInventory,
+    overflowInventory: migratedOverflowInventory,
+    dungeon: {
+      ...migrateDungeon(state.dungeon),
+      inventory: migratedDungeonInventory,
+    },
     activeRun: state.activeRun ? migrateRun(state.activeRun) : null,
     runHistory: state.runHistory.map(migrateRun),
   }
