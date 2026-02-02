@@ -241,9 +241,6 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                   </Button>
                   {isSelectionMode && (
                     <>
-                      <Button size="sm" variant="outline" onClick={handleSelectAll}>
-                        {isAllSelected ? "Deselect All" : "Select All"}
-                      </Button>
                       {hasSelection && (
                         <Button 
                           size="sm" 
@@ -254,6 +251,10 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                           Discard ({selectedCount})
                         </Button>
                       )}
+                      <Button size="sm" variant="outline" onClick={handleSelectAll}>
+                        {isAllSelected ? "Deselect All" : "Select All"}
+                      </Button>
+
                     </>
                   )}
                 </HStack>

@@ -48,6 +48,8 @@ export const GAME_CONFIG = {
       speed: 'yellow.400',
       luck: 'purple.400',
       magicPower: 'purple.400',
+      wisdom: 'cyan.400',
+      charisma: 'pink.400',
     },
     // Rarity colors
     rarity: {

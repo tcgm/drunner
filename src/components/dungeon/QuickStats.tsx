@@ -1,6 +1,6 @@
 import { VStack, Text, HStack, Tooltip } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
-import { GiSwordman, GiShield, GiRun, GiClover, GiMagicSwirl } from 'react-icons/gi'
+import { GiSwordman, GiShield, GiRun, GiClover, GiMagicSwirl, GiSpellBook, GiTiedScroll } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
 
 interface QuickStatsProps {
@@ -9,20 +9,26 @@ interface QuickStatsProps {
   totalSpeed: number
   totalLuck: number
   totalMagic: number
+  totalWisdom: number
+  totalCharisma: number
   maxAttack: number
   maxDefense: number
   maxSpeed: number
   maxLuck: number
   maxMagic: number
+  maxWisdom: number
+  maxCharisma: number
   partySize: number
 }
 
-export default function QuickStats({ totalAttack, totalDefense, totalSpeed, totalLuck, totalMagic, maxAttack, maxDefense, maxSpeed, maxLuck, maxMagic, partySize }: QuickStatsProps) {
+export default function QuickStats({ totalAttack, totalDefense, totalSpeed, totalLuck, totalMagic, totalWisdom, totalCharisma, maxAttack, maxDefense, maxSpeed, maxLuck, maxMagic, maxWisdom, maxCharisma, partySize }: QuickStatsProps) {
   const avgAttack = partySize > 0 ? Math.floor(totalAttack / partySize) : 0
   const avgDefense = partySize > 0 ? Math.floor(totalDefense / partySize) : 0
   const avgSpeed = partySize > 0 ? Math.floor(totalSpeed / partySize) : 0
   const avgLuck = partySize > 0 ? Math.floor(totalLuck / partySize) : 0
   const avgMagic = partySize > 0 ? Math.floor(totalMagic / partySize) : 0
+  const avgWisdom = partySize > 0 ? Math.floor(totalWisdom / partySize) : 0
+  const avgCharisma = partySize > 0 ? Math.floor(totalCharisma / partySize) : 0
 
   return (
     <>
@@ -110,6 +116,40 @@ export default function QuickStats({ totalAttack, totalDefense, totalSpeed, tota
             {' '}
             <Tooltip label="Highest Magic Power" placement="top">
               <Text as="span" color={GAME_CONFIG.colors.stats.magicPower}>[{maxMagic}]</Text>
+            </Tooltip>
+          </Text>
+        </HStack>
+        <HStack className="quick-stats-stat quick-stats-stat--wisdom">
+          <Icon as={GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom} />
+          <Text color="gray.400">WIS:</Text>
+          <Text color={GAME_CONFIG.colors.stats.wisdom} fontWeight="bold">
+            <Tooltip label="Total Wisdom" placement="top">
+              <Text as="span">{totalWisdom}</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Average Wisdom" placement="top">
+              <Text as="span" color="gray.400">({avgWisdom})</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Highest Wisdom" placement="top">
+              <Text as="span" color={GAME_CONFIG.colors.stats.wisdom}>[{maxWisdom}]</Text>
+            </Tooltip>
+          </Text>
+        </HStack>
+        <HStack className="quick-stats-stat quick-stats-stat--charisma">
+          <Icon as={GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma} />
+          <Text color="gray.400">CHA:</Text>
+          <Text color={GAME_CONFIG.colors.stats.charisma} fontWeight="bold">
+            <Tooltip label="Total Charisma" placement="top">
+              <Text as="span">{totalCharisma}</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Average Charisma" placement="top">
+              <Text as="span" color="gray.400">({avgCharisma})</Text>
+            </Tooltip>
+            {' '}
+            <Tooltip label="Highest Charisma" placement="top">
+              <Text as="span" color={GAME_CONFIG.colors.stats.charisma}>[{maxCharisma}]</Text>
             </Tooltip>
           </Text>
         </HStack>

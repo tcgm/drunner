@@ -10,6 +10,10 @@ import { ALL_SET_ITEMS } from '@/data/items/sets'
  */
 export const CURRENT_STAT_VERSION = 1
 
+// Track logged migrations to avoid spam
+const loggedSetFixes = new Set<string>()
+const loggedStatMigrations = new Set<string>()
+
 /**
  * Generate what an item's stats SHOULD be with the current formula
  * This creates a phantom copy to compare against
@@ -83,7 +87,10 @@ export function migrateItemStats(item: Item): Item {
   if (item.rarity === 'set') {
     const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
     if (setTemplate) {
-      console.log(`Fixing set item ${item.name} rarity from 'set' to '${setTemplate.rarity}'`)
+      if (!loggedSetFixes.has(item.name)) {
+        console.log(`Fixing set item ${item.name} rarity from 'set' to '${setTemplate.rarity}'`)
+        loggedSetFixes.add(item.name)
+      }
       item = {
         ...item,
         rarity: setTemplate.rarity,
@@ -123,9 +130,13 @@ export function migrateItemStats(item: Item): Item {
   }
   
   // Stats are different - replace with corrected version
-  console.log(`Migrating ${item.name} (${item.rarity}) to stat version ${CURRENT_STAT_VERSION}`)
-  console.log(`  Old stats:`, item.stats, `value: ${item.value}`)
-  console.log(`  New stats:`, expected.stats, `value: ${expected.value}`)
+  const logKey = `${item.name}-${item.rarity}`
+  if (!loggedStatMigrations.has(logKey)) {
+    console.log(`Migrating ${item.name} (${item.rarity}) to stat version ${CURRENT_STAT_VERSION}`)
+    console.log(`  Old stats:`, item.stats, `value: ${item.value}`)
+    console.log(`  New stats:`, expected.stats, `value: ${expected.value}`)
+    loggedStatMigrations.add(logKey)
+  }
   
   return {
     ...item,

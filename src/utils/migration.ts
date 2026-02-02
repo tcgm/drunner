@@ -2,7 +2,7 @@
  * Migration utilities for converting old save data to new floor-based system
  */
 
-import type { Dungeon, Run, GameState } from '@/types'
+import type { Dungeon, Run, GameState, Hero } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { migrateHeroArray } from './heroMigration'
 import { migrateItemArray, migrateHeroArrayItems } from './itemMigration'
@@ -81,7 +81,8 @@ export function migrateGameState(state: GameState): GameState {
   
   // Then migrate item stats on all heroes
   migratedParty = migrateHeroArrayItems(migratedParty)
-  migratedRoster = migrateHeroArrayItems(migratedRoster)
+  const migratedRosterWithNulls = migrateHeroArrayItems(migratedRoster)
+  const migratedRosterFiltered: Hero[] = migratedRosterWithNulls.filter((h): h is Hero => h !== null)
   
   // Migrate items in inventories
   const migratedBankInventory = migrateItemArray(state.bankInventory)
@@ -93,7 +94,7 @@ export function migrateGameState(state: GameState): GameState {
   return {
     ...state,
     party: migratedParty,
-    heroRoster: migratedRoster,
+    heroRoster: migratedRosterFiltered,
     bankInventory: migratedBankInventory,
     overflowInventory: migratedOverflowInventory,
     dungeon: {

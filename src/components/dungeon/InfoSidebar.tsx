@@ -22,6 +22,8 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
   const totalSpeed = party.reduce((sum, h) => sum + h.stats.speed, 0)
   const totalLuck = party.reduce((sum, h) => sum + h.stats.luck, 0)
   const totalMagic = party.reduce((sum, h) => sum + (h.stats.magicPower ?? 0), 0)
+  const totalWisdom = party.reduce((sum, h) => sum + (h.stats.wisdom ?? 0), 0)
+  const totalCharisma = party.reduce((sum, h) => sum + (h.stats.charisma ?? 0), 0)
   
   // Calculate max values
   const maxAttack = party.length > 0 ? Math.max(...party.map(h => h.stats.attack)) : 0
@@ -29,6 +31,8 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
   const maxSpeed = party.length > 0 ? Math.max(...party.map(h => h.stats.speed)) : 0
   const maxLuck = party.length > 0 ? Math.max(...party.map(h => h.stats.luck)) : 0
   const maxMagic = party.length > 0 ? Math.max(...party.map(h => h.stats.magicPower ?? 0)) : 0
+  const maxWisdom = party.length > 0 ? Math.max(...party.map(h => h.stats.wisdom ?? 0)) : 0
+  const maxCharisma = party.length > 0 ? Math.max(...party.map(h => h.stats.charisma ?? 0)) : 0
 
   return (
     <Box className="info-sidebar" w="250px" bg="gray.800" borderRadius="lg" p={4} overflowY="auto" maxH="100%">
@@ -60,11 +64,15 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
             totalSpeed={totalSpeed}
             totalLuck={totalLuck}
             totalMagic={totalMagic}
+            totalWisdom={totalWisdom}
+            totalCharisma={totalCharisma}
             maxAttack={maxAttack}
             maxDefense={maxDefense}
             maxSpeed={maxSpeed}
             maxLuck={maxLuck}
             maxMagic={maxMagic}
+            maxWisdom={maxWisdom}
+            maxCharisma={maxCharisma}
             partySize={party.length}
           />
         </Box>

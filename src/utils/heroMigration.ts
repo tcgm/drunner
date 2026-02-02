@@ -1,5 +1,6 @@
 import type { Hero, Equipment, Consumable, Item } from '@/types'
 import { getEnabledSlots } from '@/config/slotConfig'
+import { getClassById } from '@/data/classes'
 
 /**
  * Migrate a hero from old equipment/consumableSlots format to new slots format
@@ -15,12 +16,18 @@ export function migrateHeroSlots(hero: Hero): Hero {
     }
     
     // Add wisdom and charisma if missing (from old saves)
-    if (!migratedHero.stats.wisdom || !migratedHero.stats.charisma) {
+    const needsWisdom = migratedHero.stats.wisdom == null || isNaN(migratedHero.stats.wisdom)
+    const needsCharisma = migratedHero.stats.charisma == null || isNaN(migratedHero.stats.charisma)
+
+    if (needsWisdom || needsCharisma) {
+      // Get current class definition (in case old hero has outdated class data)
+      const currentClass = getClassById(hero.class.id) || hero.class
       const levelBonus = (hero.level - 1) * 5
+      migratedHero.class = currentClass
       migratedHero.stats = {
         ...migratedHero.stats,
-        wisdom: migratedHero.stats.wisdom || hero.class.baseStats.wisdom + levelBonus,
-        charisma: migratedHero.stats.charisma || hero.class.baseStats.charisma + levelBonus,
+        wisdom: needsWisdom ? currentClass.baseStats.wisdom + levelBonus : migratedHero.stats.wisdom,
+        charisma: needsCharisma ? currentClass.baseStats.charisma + levelBonus : migratedHero.stats.charisma,
       }
     }
     
@@ -65,11 +72,18 @@ export function migrateHeroSlots(hero: Hero): Hero {
   }
   
   // Add wisdom and charisma if missing (from old saves)
+  const needsWisdom = migratedHero.stats.wisdom == null || isNaN(migratedHero.stats.wisdom)
+  const needsCharisma = migratedHero.stats.charisma == null || isNaN(migratedHero.stats.charisma)
+
+  // Get current class definition (in case old hero has outdated class data)
+  const currentClass = getClassById(hero.class.id) || hero.class
   const levelBonus = (hero.level - 1) * 5
+
+  migratedHero.class = currentClass
   migratedHero.stats = {
     ...migratedHero.stats,
-    wisdom: migratedHero.stats.wisdom || hero.class.baseStats.wisdom + levelBonus,
-    charisma: migratedHero.stats.charisma || hero.class.baseStats.charisma + levelBonus,
+    wisdom: needsWisdom ? currentClass.baseStats.wisdom + levelBonus : migratedHero.stats.wisdom,
+    charisma: needsCharisma ? currentClass.baseStats.charisma + levelBonus : migratedHero.stats.charisma,
   }
   
   return migratedHero

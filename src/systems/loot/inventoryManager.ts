@@ -63,6 +63,8 @@ export function calculateStatsWithEquipment(hero: Hero) {
     defense: hero.class.baseStats.defense + levelBonus,
     speed: hero.class.baseStats.speed + levelBonus,
     luck: hero.class.baseStats.luck + levelBonus,
+    wisdom: hero.class.baseStats.wisdom + levelBonus,
+    charisma: hero.class.baseStats.charisma + levelBonus,
     magicPower: hero.class.baseStats.magicPower 
       ? hero.class.baseStats.magicPower + levelBonus 
       : undefined,
@@ -80,6 +82,8 @@ export function calculateStatsWithEquipment(hero: Hero) {
       if (item.stats.speed) stats.speed += item.stats.speed
       if (item.stats.luck) stats.luck += item.stats.luck
       if (item.stats.maxHp) stats.maxHp += item.stats.maxHp
+      if (item.stats.wisdom) stats.wisdom += item.stats.wisdom
+      if (item.stats.charisma) stats.charisma += item.stats.charisma
       if (item.stats.magicPower && stats.magicPower !== undefined) {
         stats.magicPower += item.stats.magicPower
       }
@@ -105,6 +109,8 @@ export function calculateStatsWithEquipment(hero: Hero) {
       if (setBonus.stats.speed) stats.speed += setBonus.stats.speed
       if (setBonus.stats.luck) stats.luck += setBonus.stats.luck
       if (setBonus.stats.maxHp) stats.maxHp += setBonus.stats.maxHp
+      if (setBonus.stats.wisdom) stats.wisdom += setBonus.stats.wisdom
+      if (setBonus.stats.charisma) stats.charisma += setBonus.stats.charisma
       if (setBonus.stats.magicPower && stats.magicPower !== undefined) {
         stats.magicPower += setBonus.stats.magicPower
       }

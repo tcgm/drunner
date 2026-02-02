@@ -27,6 +27,8 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
         <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text></Text>
         <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(hero.stats.defense)}</Text></Text></Text>
         <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text></Text>
+        <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{hero.stats.wisdom ?? 0}</Text></Text>
+        <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{hero.stats.charisma ?? 0}</Text></Text>
       </SimpleGrid>
       {equippedItems.length > 0 && (
         <VStack align="start" spacing={0.5} pt={2} w="full">

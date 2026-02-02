@@ -95,6 +95,20 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
                 {hero.stats.luck}
               </Text>
             </VStack>
+            <VStack className="hero-tooltip-stat hero-tooltip-stat--wisdom" spacing={0}>
+              <Icon as={GameIcons.GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom} boxSize={4} />
+              <Text fontSize="xs" color="gray.400">WIS</Text>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>
+                {hero.stats.wisdom ?? 0}
+              </Text>
+            </VStack>
+            <VStack className="hero-tooltip-stat hero-tooltip-stat--charisma" spacing={0}>
+              <Icon as={GameIcons.GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma} boxSize={4} />
+              <Text fontSize="xs" color="gray.400">CHA</Text>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>
+                {hero.stats.charisma ?? 0}
+              </Text>
+            </VStack>
           </HStack>
 
           {/* Abilities Count */}

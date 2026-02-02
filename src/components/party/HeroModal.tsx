@@ -280,6 +280,30 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
                       </HStack>
                     </GridItem>
 
+                    <GridItem>
+                      <HStack spacing={1.5}>
+                        <Icon as={GameIcons.GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom} boxSize={4} />
+                        <VStack spacing={0} align="start" flex={1}>
+                          <Text fontSize="2xs" color="gray.500">Wisdom</Text>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>
+                            {hero.stats.wisdom ?? 0}
+                          </Text>
+                        </VStack>
+                      </HStack>
+                    </GridItem>
+
+                    <GridItem>
+                      <HStack spacing={1.5}>
+                        <Icon as={GameIcons.GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma} boxSize={4} />
+                        <VStack spacing={0} align="start" flex={1}>
+                          <Text fontSize="2xs" color="gray.500">Charisma</Text>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>
+                            {hero.stats.charisma ?? 0}
+                          </Text>
+                        </VStack>
+                      </HStack>
+                    </GridItem>
+
                     {hero.stats.magicPower !== undefined && (
                       <GridItem colSpan={2}>
                         <HStack spacing={1.5}>

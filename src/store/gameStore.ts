@@ -6,10 +6,11 @@ import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { calculateMaxHp, createHero } from '@/utils/heroUtils'
-import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
+import { equipItem, unequipItem, sellItem, calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
 import { migrateGameState } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
+import { getClassById } from '@/data/classes'
 
 /**
  * Create a backup of the current state
@@ -218,6 +219,8 @@ interface GameStore extends GameState {
   resetGame: () => void
   applyPenalty: () => void
   repairParty: () => void
+  migrateHeroStats: () => void
+  recalculateHeroStats: () => void
   // Inventory actions
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
   unequipItemFromHero: (heroId: string, slotId: string) => Item | null
@@ -918,33 +921,80 @@ export const useGameStore = create<GameStore>()(
       return {}
     }),
   
-  equipItemToHero: (heroId, item, slotId) =>
-    set((state) => {
-      // Find the hero and get the currently equipped item
-      const hero = state.party.find(h => h?.id === heroId)
-      const oldItem = hero?.slots[slotId] || null
-      
-      // Equip the new item
-      const updatedParty = state.party.map(h =>
-        h?.id === heroId ? equipItem(h, item, slotId) : h
-      )
-      const updatedRoster = state.heroRoster.map(h =>
-        h.id === heroId ? equipItem(h, item, slotId) : h
-      )
-      
-      // Remove the new item from dungeon inventory and add the old item back
-      let updatedInventory = state.dungeon.inventory.filter(i => i.id !== item.id)
-      if (oldItem) {
-        updatedInventory = [...updatedInventory, oldItem]
-      }
-      
-      return {
-        party: updatedParty,
-        heroRoster: updatedRoster,
-        dungeon: {
-          ...state.dungeon,
-          inventory: updatedInventory
-        }
+        migrateHeroStats: () =>
+          set((state) => {
+            // Check if any hero actually needs migration
+            const allHeroes = [
+              ...state.party.filter((h): h is Hero => h !== null),
+              ...state.heroRoster
+            ]
+
+            const needsMigration = allHeroes.some(hero => {
+              const needsWisdom = hero.stats.wisdom == null || isNaN(hero.stats.wisdom)
+              const needsCharisma = hero.stats.charisma == null || isNaN(hero.stats.charisma)
+              console.log(`[Migration Check] ${hero.name}: wisdom=${hero.stats.wisdom} (${typeof hero.stats.wisdom}), charisma=${hero.stats.charisma} (${typeof hero.stats.charisma}), needsWisdom=${needsWisdom}, needsCharisma=${needsCharisma}`)
+              return needsWisdom || needsCharisma
+            })
+
+            if (!needsMigration) {
+              console.log('[Migration] All heroes already have wisdom/charisma - skipping')
+              return {}
+            }
+
+            console.log('[Migration] Running wisdom/charisma migration...')
+            console.log(`[Migration] Party has ${state.party.filter(h => h !== null).length} heroes`)
+            console.log(`[Migration] Roster has ${state.heroRoster.length} heroes`)
+
+            const migrateHero = (hero: Hero): Hero => {
+              const needsWisdom = hero.stats.wisdom == null || isNaN(hero.stats.wisdom)
+              const needsCharisma = hero.stats.charisma == null || isNaN(hero.stats.charisma)
+
+              if (needsWisdom || needsCharisma) {
+                // Get current class definition (in case old hero has outdated class data)
+                const currentClass = getClassById(hero.class.id) || hero.class
+                const levelBonus = (hero.level - 1) * 5
+                console.log(`[Migration] Adding wisdom/charisma to ${hero.name} (${hero.class.name}) Lv${hero.level}`)
+                const newWisdom = needsWisdom ? currentClass.baseStats.wisdom + levelBonus : hero.stats.wisdom
+                const newCharisma = needsCharisma ? currentClass.baseStats.charisma + levelBonus : hero.stats.charisma
+                console.log(`  New values: wisdom=${newWisdom}, charisma=${newCharisma}`)
+                return {
+                  ...hero,
+                  class: currentClass,
+                  stats: {
+                    ...hero.stats,
+                    wisdom: newWisdom,
+                    charisma: newCharisma,
+                  }
+                }
+              }
+              return hero
+            }
+
+            const newParty = state.party.map(h => h !== null ? migrateHero(h) : null)
+            const newRoster = state.heroRoster.map(h => migrateHero(h))
+
+            console.log('[Migration] Wisdom/charisma migration complete')
+            return {
+              party: newParty,
+              heroRoster: newRoster
+            }
+          }),
+
+        recalculateHeroStats: () =>
+          set((state) => {
+            const recalculateHero = (hero: Hero): Hero => {
+              const updatedHero = { ...hero }
+              updatedHero.stats = calculateStatsWithEquipment(updatedHero)
+              return updatedHero
+            }
+
+            const newParty = state.party.map(h => h !== null ? recalculateHero(h) : null)
+            const newRoster = state.heroRoster.map(h => recalculateHero(h))
+
+            console.log('[Recalculate] Hero stats recalculated with equipment bonuses')
+            return {
+              party: newParty,
+              heroRoster: newRoster
       }
     }),
   
@@ -1347,4 +1397,7 @@ export const useGameStore = create<GameStore>()(
 
 // Repair party on initial mount
 useGameStore.getState().repairParty()
-
+// Migrate hero stats to add wisdom and charisma
+useGameStore.getState().migrateHeroStats()
+// Recalculate hero stats to ensure equipment bonuses are applied
+useGameStore.getState().recalculateHeroStats()

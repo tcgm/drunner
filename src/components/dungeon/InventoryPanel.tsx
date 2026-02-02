@@ -185,6 +185,8 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
             luck: 0,
             maxHp: 0,
             magicPower: 0,
+            wisdom: 0,
+            charisma: 0,
           }
           
           // Sum stats from all equipped items
@@ -196,6 +198,8 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
               if (item.stats.luck) equipmentBonuses.luck += item.stats.luck
               if (item.stats.maxHp) equipmentBonuses.maxHp += item.stats.maxHp
               if (item.stats.magicPower) equipmentBonuses.magicPower += item.stats.magicPower
+              if (item.stats.wisdom) equipmentBonuses.wisdom += item.stats.wisdom
+              if (item.stats.charisma) equipmentBonuses.charisma += item.stats.charisma
             }
           })
 
@@ -239,6 +243,16 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
               {equipmentBonuses.magicPower > 0 && (
                 <Text color={GAME_CONFIG.colors.stats.magicPower}>
                   MP: +{equipmentBonuses.magicPower}
+                </Text>
+              )}
+              {equipmentBonuses.wisdom > 0 && (
+                <Text color={GAME_CONFIG.colors.stats.wisdom}>
+                  WIS: +{equipmentBonuses.wisdom}
+                </Text>
+              )}
+              {equipmentBonuses.charisma > 0 && (
+                <Text color={GAME_CONFIG.colors.stats.charisma}>
+                  CHA: +{equipmentBonuses.charisma}
                 </Text>
               )}
             </SimpleGrid>

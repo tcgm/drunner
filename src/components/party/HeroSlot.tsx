@@ -109,7 +109,7 @@ export default function HeroSlot({
               </Badge>
               
               {/* Stats Grid */}
-              <SimpleGrid className="hero-slot-stats" columns={2} spacing={1} w="full" pt={1} fontSize="xs">
+                <SimpleGrid className="hero-slot-stats" columns={3} spacing={1} w="full" pt={1} fontSize="xs">
                 <VStack className="hero-slot-stat hero-slot-stat--hp" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">HP</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{hero.stats.maxHp}</Text>
@@ -128,6 +128,14 @@ export default function HeroSlot({
                   <Text color="gray.500">SPD</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text>
                 </VStack>
+                  <VStack className="hero-slot-stat hero-slot-stat--wisdom" spacing={0} bg="gray.900" borderRadius="md" p={1}>
+                    <Text color="gray.500">WIS</Text>
+                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{hero.stats.wisdom ?? 0}</Text>
+                  </VStack>
+                  <VStack className="hero-slot-stat hero-slot-stat--charisma" spacing={0} bg="gray.900" borderRadius="md" p={1}>
+                    <Text color="gray.500">CHA</Text>
+                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{hero.stats.charisma ?? 0}</Text>
+                  </VStack>
               </SimpleGrid>
             </VStack>
             
