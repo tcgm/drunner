@@ -101,6 +101,17 @@ export function getRarityConfig(id: ItemRarity): RarityConfig {
 // Helper function to convert rarity config to color theme format used in components
 export function getRarityColors(rarity: ItemRarity) {
     const config = ALL_RARITIES[rarity]
+    if (!config) {
+        // Fallback for missing rarity configs
+        return {
+            border: '#9CA3AF',
+            glow: 'rgba(156, 163, 175, 0.5)',
+            text: '#9CA3AF',
+            textLight: '#D1D5DB',
+            bg: 'rgba(156, 163, 175, 0.1)',
+            gem: '#9CA3AF',
+        }
+    }
     return {
         border: config.color,
         glow: config.glow || `rgba(255, 255, 255, 0.5)`,

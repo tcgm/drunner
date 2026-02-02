@@ -170,19 +170,19 @@ export const ItemSlot = memo(function ItemSlot({
               ⭐ UNIQUE
             </Badge>
           )}
-          {/* {setName && (
+          {setName && (
             <Badge
               fontSize="2xs"
-              bg={RARITY_COLORS.set.bg}
-              color={RARITY_COLORS.set.text}
+              bg="teal.700"
+              color="teal.200"
               fontWeight="bold"
               borderWidth="1px"
-              borderColor={RARITY_COLORS.set.border}
-              boxShadow={`0 0 8px ${RARITY_COLORS.set.border}60`}
+              borderColor="teal.400"
+              boxShadow="0 0 8px rgba(20, 184, 166, 0.4)"
             >
-              🦊 SET: {setName}
+              🦊 {setName.toUpperCase()}
             </Badge>
-          )} */}
+          )}
           <Badge 
             fontSize="2xs"
             bg={RARITY_COLORS[item.rarity]?.bg || '#4A5568'}
@@ -244,7 +244,7 @@ export const ItemSlot = memo(function ItemSlot({
                 : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
-          data-item-icon={item.icon}
+          data-item-icon={item.icon?.name || 'unknown'}
           onClick={handleClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}

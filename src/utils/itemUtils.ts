@@ -21,7 +21,7 @@ export function restoreItemIcon(item: Item): Item {
   }
 
   // Check if it's a set item
-  if (item.setId || item.rarity === 'set') {
+  if (item.setId) {
     const template = ALL_SET_ITEMS.find(t => t.name === item.name)
     if (template?.icon) {
       return { ...item, icon: template.icon }

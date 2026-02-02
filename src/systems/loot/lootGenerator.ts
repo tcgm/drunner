@@ -114,7 +114,7 @@ function selectRarity(depth: number, minRarity?: ItemRarity, maxRarity?: ItemRar
   const weights = getDepthAdjustedWeights(depth)
   
   // Filter weights based on min/max constraints
-  const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'artifact', 'set']
+  const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'artifact']
   const minIndex = minRarity ? rarityOrder.indexOf(minRarity) : 0
   const maxIndex = maxRarity ? rarityOrder.indexOf(maxRarity) : rarityOrder.length - 1
   
@@ -569,9 +569,9 @@ export function repairItemIcon(item: Item): Item {
   // Skip if item already has an icon
   if (item.icon && typeof item.icon === 'function') return item
   
-  // Check for set items FIRST (by rarity or setId)
+  // Check for set items FIRST (by setId)
   // This handles old saves where set items were mistakenly marked as isUnique
-  if (item.setId || item.rarity === 'set') {
+  if (item.setId) {
     const setItem = ALL_SET_ITEMS.find(s => s.name === item.name)
     if (setItem?.icon) {
       return {

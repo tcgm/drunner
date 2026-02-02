@@ -321,7 +321,8 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
         borderRadius="xl"
         overflow="hidden"
         position="relative"
-        maxH="90vh"
+        maxH="90%"
+        maxW="90%"
         boxShadow={`0 0 20px ${glowColor}`}
         sx={{
           willChange: 'opacity',
@@ -390,7 +391,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
 
         <ModalCloseButton zIndex={2} />
         
-        <ModalBody p={5} position="relative" zIndex={1}>
+        <ModalBody p={5} position="relative" zIndex={1} overflowY="auto" maxH="100%">
           <VStack spacing={4}>
             {/* Item Name */}
             <VStack spacing={0}>

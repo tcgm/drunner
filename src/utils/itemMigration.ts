@@ -2,6 +2,7 @@ import type { Item, Hero } from '@/types'
 import { getMaterialById } from '@/data/items/materials'
 import { getCompatibleBase } from '@/data/items/bases'
 import { getRarityConfig } from '@/systems/rarity/raritySystem'
+import { ALL_SET_ITEMS } from '@/data/items/sets'
 
 /**
  * Current stat calculation version
@@ -77,6 +78,19 @@ function itemStatsAreCorrect(item: Item, expected: { stats: typeof item.stats; v
  * Uses versioning to avoid double-migration
  */
 export function migrateItemStats(item: Item): Item {
+  // Fix old saves where set items had rarity: 'set'
+  if ((item as any).rarity === 'set') {
+    const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
+    if (setTemplate) {
+      console.log(`Fixing set item ${item.name} rarity from 'set' to '${setTemplate.rarity}'`)
+      item = {
+        ...item,
+        rarity: setTemplate.rarity,
+        setId: 'kitsune', // Ensure setId is set
+      }
+    }
+  }
+  
   // Skip consumables
   if ('consumableType' in item) {
     return item
