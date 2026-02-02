@@ -19,8 +19,41 @@ const loggedStatMigrations = new Set<string>()
  * This creates a phantom copy to compare against
  */
 function generateExpectedStats(item: Item): { stats: typeof item.stats; value: number } | null {
-  // Skip items without material metadata (unique items, special items, etc.)
-  if (!item.materialId || item.isUnique) {
+  // Handle set items separately
+  if (item.setId) {
+    const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
+    if (setTemplate) {
+      const rarityConfig = getRarityConfig(setTemplate.rarity)
+      const rarityMultiplier = rarityConfig.statMultiplierBase
+
+      // Apply rarity multiplier to template stats
+      const expectedStats: typeof item.stats = {}
+      for (const [key, baseValue] of Object.entries(setTemplate.stats)) {
+        if (baseValue !== undefined && typeof baseValue === 'number') {
+          expectedStats[key as keyof typeof item.stats] = Math.floor(baseValue * rarityMultiplier)
+        }
+      }
+
+      // If the item is marked as unique, apply additional boost
+      const uniqueBoost = item.isUnique ? 1.3 : 1.0
+      if (item.isUnique) {
+        for (const [key, value] of Object.entries(expectedStats)) {
+          if (value !== undefined && typeof value === 'number') {
+            expectedStats[key as keyof typeof item.stats] = Math.floor(value * uniqueBoost)
+          }
+        }
+      }
+
+      const expectedValue = item.isUnique
+        ? Math.floor(setTemplate.value * rarityMultiplier * uniqueBoost)
+        : Math.floor(setTemplate.value * rarityMultiplier)
+
+      return { stats: expectedStats, value: expectedValue }
+    }
+  }
+
+  // Skip unique items (they have fixed stats) and items without material metadata
+  if (item.isUnique || !item.materialId) {
     return null
   }
   
@@ -82,10 +115,23 @@ function itemStatsAreCorrect(item: Item, expected: { stats: typeof item.stats; v
  * Uses versioning to avoid double-migration
  */
 export function migrateItemStats(item: Item): Item {
+  // Check if this is a set item by name match
+  const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
+  if (setTemplate && !item.setId) {
+    if (!loggedSetFixes.has(item.name)) {
+      console.log(`Detected set item ${item.name} without setId, adding it`)
+      loggedSetFixes.add(item.name)
+    }
+    item = {
+      ...item,
+      rarity: setTemplate.rarity,
+      setId: 'kitsune', // Ensure setId is set
+    }
+  }
+
   // Fix old saves where set items had rarity: 'set'
   // @ts-expect-error - Old saves may have invalid 'set' rarity
   if (item.rarity === 'set') {
-    const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
     if (setTemplate) {
       if (!loggedSetFixes.has(item.name)) {
         console.log(`Fixing set item ${item.name} rarity from 'set' to '${setTemplate.rarity}'`)

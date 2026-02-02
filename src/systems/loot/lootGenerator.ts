@@ -281,16 +281,26 @@ export function generateItem(
           (forceType === 'accessory1' && setTemplate.type === 'accessory') ||
           (forceType === 'accessory2' && setTemplate.type === 'accessory')) {
         
-        // Check if this set item should roll as unique (boosted stats)
+        // Get the rarity multiplier for the set item's rarity
+        const rarityConfig = getRarityConfig(setTemplate.rarity)
+        const rarityMultiplier = rarityConfig.statMultiplierBase
+
+        // Apply rarity multiplier to base stats first
+        const baseStats = Object.entries(setTemplate.stats).reduce((acc, [key, value]) => {
+          acc[key] = Math.floor((value as number) * rarityMultiplier)
+          return acc
+        }, {} as Record<string, number>)
+
+        // Check if this set item should roll as unique (additional boost)
         const rollAsUnique = Math.random() < LOOT_CONFIG.setUniqueChance
         
-        // If rolling as unique, boost all stats
+        // If rolling as unique, apply additional boost on top of rarity multiplier
         const stats = rollAsUnique 
-          ? Object.entries(setTemplate.stats).reduce((acc, [key, value]) => {
+          ? Object.entries(baseStats).reduce((acc, [key, value]) => {
               acc[key] = Math.floor((value as number) * LOOT_CONFIG.setUniqueBoost)
               return acc
             }, {} as Record<string, number>)
-          : setTemplate.stats
+          : baseStats
         
         return {
           ...setTemplate,
@@ -300,8 +310,8 @@ export function generateItem(
           isUnique: rollAsUnique, // Mark if this rolled as unique
           stats,
           value: rollAsUnique 
-            ? Math.floor(setTemplate.value * LOOT_CONFIG.setUniqueBoost) 
-            : setTemplate.value,
+            ? Math.floor(setTemplate.value * rarityMultiplier * LOOT_CONFIG.setUniqueBoost)
+            : Math.floor(setTemplate.value * rarityMultiplier),
         }
       }
     }
