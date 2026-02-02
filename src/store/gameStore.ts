@@ -221,6 +221,7 @@ interface GameStore extends GameState {
   repairParty: () => void
   migrateHeroStats: () => void
   recalculateHeroStats: () => void
+  healParty: () => void
   // Inventory actions
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
   unequipItemFromHero: (heroId: string, slotId: string) => Item | null
@@ -283,14 +284,22 @@ export const useGameStore = create<GameStore>()(
       if (targetIndex === -1 || targetIndex >= state.party.length) return state // Party full or invalid slot
       if (state.party[targetIndex] !== null) return state // Slot occupied
       
+      // Heal hero to full HP
+      const healedHero = { ...hero, stats: { ...hero.stats, hp: hero.stats.maxHp } }
+
       // Add to roster if not already there
       const existingInRoster = state.heroRoster.find(h => h.id === hero.id)
       const newParty = [...state.party]
-      newParty[targetIndex] = hero
+      newParty[targetIndex] = healedHero
+
+      // Also update in roster if exists
+      const updatedRoster = existingInRoster
+        ? state.heroRoster.map(h => h.id === hero.id ? healedHero : h)
+        : [...state.heroRoster, healedHero]
       
       return {
         party: newParty,
-        heroRoster: existingInRoster ? state.heroRoster : [...state.heroRoster, hero]
+        heroRoster: updatedRoster
       }
     }),
   
@@ -309,10 +318,16 @@ export const useGameStore = create<GameStore>()(
       const newParty = [...state.party]
       
       if (existingHero) {
-        // Reuse existing hero
-        newParty[targetIndex] = existingHero
+        // Reuse existing hero and heal to full HP
+        const healedHero = { ...existingHero, stats: { ...existingHero.stats, hp: existingHero.stats.maxHp } }
+        newParty[targetIndex] = healedHero
+
+        // Also update in roster
+        const updatedRoster = state.heroRoster.map(h => h.id === existingHero.id ? healedHero : h)
+
         return {
-          party: newParty
+          party: newParty,
+          heroRoster: updatedRoster
         }
       } else {
         // Create new hero
@@ -997,6 +1012,27 @@ export const useGameStore = create<GameStore>()(
               heroRoster: newRoster
       }
     }),
+
+        healParty: () =>
+          set((state) => {
+            const healHero = (hero: Hero): Hero => {
+              return {
+                ...hero,
+                stats: {
+                  ...hero.stats,
+                  hp: hero.stats.maxHp
+                }
+              }
+            }
+
+            const newParty = state.party.map(h => h !== null ? healHero(h) : null)
+            const newRoster = state.heroRoster.map(h => healHero(h))
+
+            return {
+              party: newParty,
+              heroRoster: newRoster
+            }
+          }),
   
   unequipItemFromHero: (heroId, slotId) => {
     const hero = useGameStore.getState().party.find(h => h?.id === heroId)

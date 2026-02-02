@@ -1,7 +1,7 @@
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../store/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Hero } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
@@ -37,7 +37,13 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     discardOverflowItem,
     clearOverflow,
     metaXp,
+    healParty,
   } = useGameStore()
+
+  // Heal all heroes when the party setup screen is mounted
+  useEffect(() => {
+    healParty()
+  }, [healParty])
 
   const [selectedClass, setSelectedClass] = useState(CORE_CLASSES[0])
   const [selectedHeroFromRoster, setSelectedHeroFromRoster] = useState<number | null>(null)
