@@ -231,7 +231,7 @@ export const ItemSlot = memo(function ItemSlot({
           height={SLOT_SIZES[size]}
           bg={setName ? RARITY_COLORS.set.bg : (RARITY_COLORS[item.rarity]?.bg || '#4A5568')}
           borderRadius="lg"
-          borderWidth="3px"
+          borderWidth={setName ? '4px' : '2px'}
           borderColor={isSelected ? 'blue.400' : (setName ? RARITY_COLORS.set.border : (item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568'))}
           position="relative"
           cursor={isClickable || onClick ? "pointer" : "default"}
@@ -275,6 +275,23 @@ export const ItemSlot = memo(function ItemSlot({
             damping: 20,
           }}
         >
+          {/* Inner rarity border for set items */}
+          {setName && (
+            <Box
+              position="absolute"
+              top="-4px"
+              left="-4px"
+              right="-4px"
+              bottom="-4px"
+              borderRadius="md"
+              borderWidth="2px"
+              borderColor={RARITY_COLORS[item.rarity]?.border || '#4A5568'}
+              pointerEvents="none"
+              zIndex={1}
+              opacity={0.8}
+            />
+          )}
+
           {/* Selection Checkbox */}
           {showCheckbox && (
             <Checkbox
