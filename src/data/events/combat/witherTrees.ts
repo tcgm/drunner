@@ -12,7 +12,7 @@ export const WITHER_TREES: DungeonEvent = {
       outcome: {
         text: 'Their roots spread poison!',
         effects: [
-          { type: 'damage', target: 'all', value: 9 },
+          { type: 'damage', target: 'all', value: 9, isTrueDamage: true },
           { type: 'xp', value: 36 },
           { type: 'gold', value: 19 },
         ],

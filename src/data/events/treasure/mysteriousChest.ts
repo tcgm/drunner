@@ -26,7 +26,7 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
       failureOutcome: {
         text: 'A poison dart shoots out as you open it!',
         effects: [
-          { type: 'damage', target: 'random', value: 35 },
+          { type: 'damage', target: 'random', value: 35, isTrueDamage: true },
           { type: 'gold', value: 50 },
         ],
       },
@@ -62,8 +62,7 @@ export const MYSTERIOUS_CHEST: DungeonEvent = {
               { 
                 type: 'item', 
                 itemType: 'random',
-                minRarity: 'common',
-                maxRarity: 'rare' // Smashing damages better items
+                minRarity: 'common'
               },
             ],
           },

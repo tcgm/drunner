@@ -43,7 +43,7 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
           outcome: {
             text: 'The fruit was poisonous! You feel sick!',
             effects: [
-              { type: 'damage', target: 'all', value: 15 },
+              { type: 'damage', target: 'all', value: 15, isTrueDamage: true },
             ],
           },
         },

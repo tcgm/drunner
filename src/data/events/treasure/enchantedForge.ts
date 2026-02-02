@@ -15,7 +15,7 @@ export const ENCHANTED_FORGE: DungeonEvent = {
       outcome: {
         text: 'You craft a fine steel weapon!',
         effects: [
-          { type: 'item', material: STEEL, itemType: 'weapon', minRarity: 'common', maxRarity: 'uncommon' }, // Basic forging
+          { type: 'item', material: STEEL, itemType: 'weapon', minRarity: 'common' }, // Basic forging
         ],
       },
     },

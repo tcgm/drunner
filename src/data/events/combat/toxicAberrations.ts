@@ -12,7 +12,7 @@ export const TOXIC_ABERRATIONS: DungeonEvent = {
       outcome: {
         text: 'Poison sprays everywhere!',
         effects: [
-          { type: 'damage', target: 'all', value: 44 },
+          { type: 'damage', target: 'all', value: 44, isTrueDamage: true },
           { type: 'xp', value: 232 },
           { type: 'gold', value: 157 },
         ],
@@ -24,7 +24,7 @@ export const TOXIC_ABERRATIONS: DungeonEvent = {
       outcome: {
         text: 'You shrug off the poison!',
         effects: [
-          { type: 'damage', target: 'all', value: 33 },
+          { type: 'damage', target: 'all', value: 33, isTrueDamage: true },
           { type: 'xp', value: 252 },
           { type: 'gold', value: 177 },
         ],

@@ -13,7 +13,7 @@ export const HIDDEN_CACHE: DungeonEvent = {
         text: 'You find a small stash of valuables!',
         effects: [
           { type: 'gold', value: 75 },
-          { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' }, // Small cache
+          { type: 'item', itemType: 'random', minRarity: 'common' }, // Small cache
         ],
       },
     },

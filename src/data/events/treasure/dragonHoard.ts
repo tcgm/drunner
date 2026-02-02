@@ -32,8 +32,7 @@ export const DRAGON_HOARD: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'uncommon',
-            maxRarity: 'rare'
+            minRarity: 'uncommon'
           },
           { type: 'xp', value: 80 },
         ],

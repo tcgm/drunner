@@ -14,7 +14,7 @@ export const ABANDONED_CAMP: DungeonEvent = {
         effects: [
           { type: 'heal', target: 'all', value: 40 },
           { type: 'gold', value: 60 },
-          { type: 'item', itemType: 'random', minRarity: 'junk', maxRarity: 'common' }, // Abandoned supplies
+          { type: 'item', itemType: 'random', minRarity: 'junk' }, // Abandoned supplies
         ],
       },
     },
@@ -37,7 +37,7 @@ export const ABANDONED_CAMP: DungeonEvent = {
         effects: [
           { type: 'heal', target: 'all', value: 40 },
           { type: 'gold', value: 100 },
-          { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' }, // Even hidden, camp is limited
+          { type: 'item', itemType: 'random', minRarity: 'common' }, // Even hidden, camp is limited
         ],
       },
     },

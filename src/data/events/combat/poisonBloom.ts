@@ -12,7 +12,7 @@ export const POISON_BLOOM: DungeonEvent = {
       outcome: {
         text: 'The smoke still poisons you!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 20, isTrueDamage: true },
           { type: 'xp', value: 105 },
           { type: 'gold', value: 63 },
         ],
@@ -24,7 +24,7 @@ export const POISON_BLOOM: DungeonEvent = {
       outcome: {
         text: 'You avoid inhaling the toxins!',
         effects: [
-          { type: 'damage', target: 'all', value: 14 },
+          { type: 'damage', target: 'all', value: 14, isTrueDamage: true },
           { type: 'xp', value: 125 },
           { type: 'gold', value: 78 },
         ],

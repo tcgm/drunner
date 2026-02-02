@@ -16,8 +16,8 @@ export const ABANDONED_ARMORY: DungeonEvent = {
           { 
             type: 'item', 
             itemChoices: [ // Weighted choices for variety
-              { weight: 70, itemType: 'weapon', minRarity: 'common', maxRarity: 'uncommon' }, // Abandoned/old
-              { weight: 30, itemType: 'armor', minRarity: 'common', maxRarity: 'uncommon' } // Abandoned/old
+              { weight: 70, itemType: 'weapon', minRarity: 'common' }, // Abandoned/old
+              { weight: 30, itemType: 'armor', minRarity: 'common' } // Abandoned/old
             ]
           },
         ],

@@ -31,7 +31,7 @@ export const WEAPON_SMITH: DungeonEvent = {
         effects: [
           { type: 'gold', value: -80 },
           { type: 'heal', target: 'all', value: 30 },
-          { type: 'item', itemType: 'armor', minRarity: 'common', maxRarity: 'uncommon' }, // Repair, not new
+          { type: 'item', itemType: 'armor', minRarity: 'common' }, // Repair, not new
         ],
       },
     },

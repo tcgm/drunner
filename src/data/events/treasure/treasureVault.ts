@@ -38,7 +38,6 @@ export const TREASURE_VAULT: DungeonEvent = {
             type: 'item', 
             itemType: 'random',
             minRarity: 'uncommon',
-            maxRarity: 'legendary',
             rarityBoost: 10
           },
         ],
@@ -49,8 +48,7 @@ export const TREASURE_VAULT: DungeonEvent = {
           { type: 'gold', value: 150 },
           { 
             type: 'item', 
-            itemType: 'random',
-            maxRarity: 'rare' // Limited by damage
+            itemType: 'random'
           },
         ],
       },
@@ -64,8 +62,7 @@ export const TREASURE_VAULT: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'common',
-            maxRarity: 'epic'
+            minRarity: 'common'
           },
           { type: 'xp', value: 60 },
         ],

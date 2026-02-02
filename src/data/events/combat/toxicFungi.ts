@@ -12,7 +12,7 @@ export const TOXIC_FUNGI: DungeonEvent = {
       outcome: {
         text: 'Spores choke your lungs!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 12 },
+          { type: 'damage', target: 'weakest', value: 12, isTrueDamage: true },
           { type: 'xp', value: 44 },
           { type: 'gold', value: 26 },
         ],
@@ -24,7 +24,7 @@ export const TOXIC_FUNGI: DungeonEvent = {
       outcome: {
         text: 'You avoid the spores!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 7 },
+          { type: 'damage', target: 'weakest', value: 7, isTrueDamage: true },
           { type: 'xp', value: 54 },
           { type: 'gold', value: 32 },
         ],

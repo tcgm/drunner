@@ -32,7 +32,7 @@ export const POISON_DART_TRAP: DungeonEvent = {
       failureOutcome: {
         text: 'You try to avoid them but trigger one plate! A few darts fly.',
         effects: [
-          { type: 'damage', target: 'random', value: 12 },
+          { type: 'damage', target: 'random', value: 12, isTrueDamage: true },
           { type: 'xp', value: 20 },
         ],
       },
@@ -42,7 +42,7 @@ export const POISON_DART_TRAP: DungeonEvent = {
       outcome: {
         text: 'You trigger the trap! Darts fly everywhere!',
         effects: [
-          { type: 'damage', target: 'all', value: 15 },
+          { type: 'damage', target: 'all', value: 15, isTrueDamage: true },
         ],
       },
     },
@@ -51,7 +51,7 @@ export const POISON_DART_TRAP: DungeonEvent = {
       outcome: {
         text: 'The trap is triggered but your tank absorbs most damage.',
         effects: [
-          { type: 'damage', target: 'random', value: 25 },
+          { type: 'damage', target: 'random', value: 25, isTrueDamage: true },
           { type: 'xp', value: 10 },
         ],
       },

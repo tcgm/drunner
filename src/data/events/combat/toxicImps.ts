@@ -12,7 +12,7 @@ export const TOXIC_IMPS: DungeonEvent = {
       outcome: {
         text: 'You close distance and attack!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 13 },
+          { type: 'damage', target: 'weakest', value: 13, isTrueDamage: true },
           { type: 'xp', value: 45 },
           { type: 'gold', value: 22 },
         ],
@@ -24,7 +24,7 @@ export const TOXIC_IMPS: DungeonEvent = {
       outcome: {
         text: 'You avoid their projectiles!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 7 },
+          { type: 'damage', target: 'weakest', value: 7, isTrueDamage: true },
           { type: 'xp', value: 55 },
           { type: 'gold', value: 30 },
         ],

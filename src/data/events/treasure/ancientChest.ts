@@ -17,7 +17,7 @@ export const ANCIENT_CHEST: DungeonEvent = {
             effects: [
               { type: 'gold', value: 100 },
               { type: 'damage', target: 'random', value: 10 },
-              { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' }, // Forcing damages items
+              { type: 'item', itemType: 'random', minRarity: 'common' }, // Forcing damages items
             ],
           },
         },
@@ -79,7 +79,7 @@ export const ANCIENT_CHEST: DungeonEvent = {
             text: 'The lock breaks cleanly! The chest opens.',
             effects: [
               { type: 'gold', value: 120 },
-              { type: 'item', itemType: 'random', minRarity: 'common', maxRarity: 'uncommon' }, // Kicking damages items
+              { type: 'item', itemType: 'random', minRarity: 'common' }, // Kicking damages items
             ],
           },
         },
