@@ -16,7 +16,7 @@ export const ZONE_BOSS_90: DungeonEvent = {
       outcome: {
         text: 'You confront every nightmare, every terror, every dark thought you\'ve ever had. And you emerge victorious. The King dissipates like morning fog.',
         effects: [
-          { type: 'damage', target: 'all', value: 140 },
+          { type: 'damage', target: 'all', value: 630 },
           { type: 'xp', value: 2500 },
           { type: 'gold', value: 3600 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', maxRarity: 'mythic', rarityBoost: 40 },
@@ -31,7 +31,7 @@ export const ZONE_BOSS_90: DungeonEvent = {
       outcome: {
         text: 'Your mental fortitude is unbreakable! The Nightmare King\'s attacks cannot touch those who know no fear!',
         effects: [
-          { type: 'damage', target: 'all', value: 100 },
+          { type: 'damage', target: 'all', value: 450 },
           { type: 'heal', target: 'all', value: 100 },
           { type: 'xp', value: 2800 },
           { type: 'gold', value: 4000 },
@@ -46,7 +46,7 @@ export const ZONE_BOSS_90: DungeonEvent = {
       outcome: {
         text: 'You strike from the shadows with such precision that even the King of Nightmares learns to fear the darkness!',
         effects: [
-          { type: 'damage', target: 'all', value: 110 },
+          { type: 'damage', target: 'all', value: 495 },
           { type: 'xp', value: 3000 },
           { type: 'gold', value: 4200 },
           { type: 'item', itemType: 'random', minRarity: 'mythic', maxRarity: 'mythic', rarityBoost: 55 },

@@ -12,7 +12,7 @@ export const GOLEM_CONSTRUCT: DungeonEvent = {
             outcome: {
                 text: 'You chip away at the golem\'s stone body, eventually finding its core!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 50 },
+                    { type: 'damage', target: 'all', value: 75 },
                     { type: 'xp', value: 280 },
                     { type: 'gold', value: 350 },
                     { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 8 },
@@ -28,7 +28,7 @@ export const GOLEM_CONSTRUCT: DungeonEvent = {
             outcome: {
                 text: 'You disrupt the magical runes, causing the golem to crumble!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 35 },
+                    { type: 'damage', target: 'all', value: 53 },
                     { type: 'xp', value: 340 },
                     { type: 'gold', value: 420 },
                     { type: 'item', itemType: 'accessory2', minRarity: 'rare', rarityBoost: 14 },
@@ -43,7 +43,7 @@ export const GOLEM_CONSTRUCT: DungeonEvent = {
             outcome: {
                 text: 'Holy energy shatters the arcane bindings holding the golem together!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 30 },
+                    { type: 'damage', target: 'all', value: 45 },
                     { type: 'xp', value: 350 },
                     { type: 'gold', value: 440 },
                     { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 15 },
@@ -55,7 +55,7 @@ export const GOLEM_CONSTRUCT: DungeonEvent = {
             outcome: {
                 text: 'The golem\'s massive fist catches you before you can escape.',
                 effects: [
-                    { type: 'damage', target: 'random', value: 35 },
+                    { type: 'damage', target: 'random', value: 53 },
                     { type: 'xp', value: 70 },
                 ],
             },

@@ -155,6 +155,7 @@ export const GAME_CONFIG = {
     // Logarithmic formula settings
     logFactor: 0.025, // Scaling factor for logarithmic formula
     // Higher values = more reduction per point of defense, lower values = less reduction
+    maxLogReduction: 0.90, // Maximum damage reduction cap for logarithmic formula (90%)
 
     // Hybrid formula settings
     hybridBase: 75, // Base value for hybrid formula

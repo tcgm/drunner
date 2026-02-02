@@ -12,7 +12,7 @@ export const ELDER_HYDRA: DungeonEvent = {
             outcome: {
                 text: 'You fight desperately against all seven heads, suffering grievous wounds!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 60 },
+                    { type: 'damage', target: 'all', value: 150 },
                     { type: 'xp', value: 350 },
                     { type: 'gold', value: 440 },
                     { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 12 },
@@ -28,7 +28,7 @@ export const ELDER_HYDRA: DungeonEvent = {
             outcome: {
                 text: 'Your powerful strike severs the dominant head, causing the others to falter!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 45 },
+                    { type: 'damage', target: 'all', value: 113 },
                     { type: 'xp', value: 420 },
                     { type: 'gold', value: 530 },
                     { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 18 },
@@ -43,7 +43,7 @@ export const ELDER_HYDRA: DungeonEvent = {
             outcome: {
                 text: 'With a mighty swing, you cleave through three heads in one blow!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 40 },
+                    { type: 'damage', target: 'all', value: 100 },
                     { type: 'xp', value: 450 },
                     { type: 'gold', value: 560 },
                     { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 20 },
@@ -55,7 +55,7 @@ export const ELDER_HYDRA: DungeonEvent = {
             outcome: {
                 text: 'The hydra catches you before you reach the water, its fangs tearing into you.',
                 effects: [
-                    { type: 'damage', target: 'random', value: 45 },
+                    { type: 'damage', target: 'random', value: 113 },
                     { type: 'xp', value: 90 },
                 ],
             },

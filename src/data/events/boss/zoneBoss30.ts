@@ -16,7 +16,7 @@ export const ZONE_BOSS_30: DungeonEvent = {
       outcome: {
         text: 'You steel your will against its corruption and fight through waves of hellfire! The demon prince howls in rage as it falls!',
         effects: [
-          { type: 'damage', target: 'all', value: 55 },
+          { type: 'damage', target: 'all', value: 193 },
           { type: 'xp', value: 700 },
           { type: 'gold', value: 1200 },
           { type: 'item', itemType: 'random', minRarity: 'rare', maxRarity: 'epic', rarityBoost: 15 },
@@ -30,7 +30,7 @@ export const ZONE_BOSS_30: DungeonEvent = {
       outcome: {
         text: 'You weave spells of incredible power, matching the demon\'s magic blow for blow! Your final incantation banishes it!',
         effects: [
-          { type: 'damage', target: 'all', value: 40 },
+          { type: 'damage', target: 'all', value: 140 },
           { type: 'xp', value: 850 },
           { type: 'gold', value: 1400 },
           { type: 'item', itemType: 'random', minRarity: 'epic', maxRarity: 'legendary', rarityBoost: 20 },
@@ -44,7 +44,7 @@ export const ZONE_BOSS_30: DungeonEvent = {
       successOutcome: {
         text: 'You discover an ancient binding seal and activate it! The demon is forced back to the abyss with minimal harm to your party!',
         effects: [
-          { type: 'damage', target: 'random', value: 25 },
+          { type: 'damage', target: 'random', value: 88 },
           { type: 'xp', value: 900 },
           { type: 'gold', value: 1500 },
           { type: 'item', itemType: 'random', minRarity: 'epic', maxRarity: 'legendary', rarityBoost: 25 },
@@ -54,7 +54,7 @@ export const ZONE_BOSS_30: DungeonEvent = {
       failureOutcome: {
         text: 'Your attempt fails and the demon prince unleashes its full fury upon you!',
         effects: [
-          { type: 'damage', target: 'all', value: 70, isTrueDamage: true },
+          { type: 'damage', target: 'all', value: 245, isTrueDamage: true },
           { type: 'xp', value: 600 },
           { type: 'gold', value: 1000 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 10 },

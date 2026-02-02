@@ -20,7 +20,8 @@ export function calculateDefenseReduction(defense: number): number {
 
         case 'logarithmic':
             const factor = GAME_CONFIG.combat.logFactor
-            return (defense * factor) / (1 + defense * factor)
+            const uncapped = (defense * factor) / (1 + defense * factor)
+            return Math.min(uncapped, GAME_CONFIG.combat.maxLogReduction)
 
         case 'hybrid':
             return Math.min(
@@ -64,7 +65,8 @@ export function applyDefenseReduction(incomingDamage: number, defense: number): 
         case 'hybrid': {
             // All percentage-based formulas: reduce by percentage
             const reductionPercent = calculateDefenseReduction(defense)
-            return Math.max(1, Math.floor(incomingDamage * (1 - reductionPercent)))
+            const reducedDamage = incomingDamage * (1 - reductionPercent)
+            return Math.max(1, Math.floor(reducedDamage))
         }
 
         default:

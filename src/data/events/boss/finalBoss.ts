@@ -13,7 +13,7 @@ export const FINAL_BOSS: DungeonEvent = {
       outcome: {
         text: 'You unleash your full power in a desperate assault! The battle shakes the foundations of the dungeon itself!',
         effects: [
-          { type: 'damage', target: 'all', value: 80 },
+          { type: 'damage', target: 'all', value: 2000 },
           { type: 'xp', value: 1000 },
           { type: 'gold', value: 1500 },
         ],
@@ -28,7 +28,7 @@ export const FINAL_BOSS: DungeonEvent = {
       outcome: {
         text: 'Your devastating blow pierces through its defenses and shatters its core! Victory is yours!',
         effects: [
-          { type: 'damage', target: 'all', value: 60 },
+          { type: 'damage', target: 'all', value: 1500 },
           { type: 'xp', value: 1200 },
           { type: 'gold', value: 2000 },
         ],
@@ -42,7 +42,7 @@ export const FINAL_BOSS: DungeonEvent = {
       outcome: {
         text: 'You weave counter-spells of incredible complexity, unmaking the entity\'s magical essence!',
         effects: [
-          { type: 'damage', target: 'all', value: 55 },
+          { type: 'damage', target: 'all', value: 1375 },
           { type: 'xp', value: 1250 },
           { type: 'gold', value: 1800 },
         ],
@@ -56,7 +56,7 @@ export const FINAL_BOSS: DungeonEvent = {
       outcome: {
         text: 'Holy light floods the chamber as you call upon divine power to smite this evil!',
         effects: [
-          { type: 'damage', target: 'all', value: 50 },
+          { type: 'damage', target: 'all', value: 1250 },
           { type: 'xp', value: 1300 },
           { type: 'gold', value: 1900 },
         ],
@@ -70,7 +70,7 @@ export const FINAL_BOSS: DungeonEvent = {
       outcome: {
         text: 'Your patience pays off - you spot and exploit a critical weakness!',
         effects: [
-          { type: 'damage', target: 'all', value: 58 },
+          { type: 'damage', target: 'all', value: 1450 },
           { type: 'xp', value: 1150 },
           { type: 'gold', value: 1750 },
         ],

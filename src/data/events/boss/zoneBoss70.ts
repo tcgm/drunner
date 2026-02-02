@@ -16,7 +16,7 @@ export const ZONE_BOSS_70: DungeonEvent = {
       outcome: {
         text: 'You refuse to accept your fate! Through sheer determination, you prove that death can be conquered!',
         effects: [
-          { type: 'damage', target: 'all', value: 110 },
+          { type: 'damage', target: 'all', value: 440 },
           { type: 'xp', value: 1800 },
           { type: 'gold', value: 2800 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', maxRarity: 'mythic', rarityBoost: 30 },
@@ -30,7 +30,7 @@ export const ZONE_BOSS_70: DungeonEvent = {
       outcome: {
         text: 'You seize control of death magic itself! The entity is forced to bow before a true master of necromancy!',
         effects: [
-          { type: 'damage', target: 'all', value: 70 },
+          { type: 'damage', target: 'all', value: 280 },
           { type: 'revive' },
           { type: 'heal', target: 'all', value: 100 },
           { type: 'xp', value: 2200 },
@@ -44,7 +44,7 @@ export const ZONE_BOSS_70: DungeonEvent = {
       outcome: {
         text: 'You let yourselves die, then surge back with unprecedented power! Death learns fear for the first time!',
         effects: [
-          { type: 'damage', target: 'all', value: 150, isTrueDamage: true },
+          { type: 'damage', target: 'all', value: 600, isTrueDamage: true },
           { type: 'revive' },
           { type: 'heal', target: 'all', value: 80 },
           { type: 'xp', value: 2000 },

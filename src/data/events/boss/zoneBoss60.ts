@@ -16,7 +16,7 @@ export const ZONE_BOSS_60: DungeonEvent = {
       outcome: {
         text: 'You split your forces to engage them separately! Though the battle is fierce, you manage to overwhelm them individually!',
         effects: [
-          { type: 'damage', target: 'all', value: 100 },
+          { type: 'damage', target: 'all', value: 400 },
           { type: 'xp', value: 1500 },
           { type: 'gold', value: 2400 },
           { type: 'item', itemType: 'random', minRarity: 'epic', maxRarity: 'legendary', rarityBoost: 25 },
@@ -31,7 +31,7 @@ export const ZONE_BOSS_60: DungeonEvent = {
       successOutcome: {
         text: 'You trick them into attacking each other! Their perfect harmony becomes their downfall!',
         effects: [
-          { type: 'damage', target: 'random', value: 40 },
+          { type: 'damage', target: 'random', value: 160 },
           { type: 'xp', value: 1800 },
           { type: 'gold', value: 2800 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', maxRarity: 'mythic', rarityBoost: 35 },
@@ -41,7 +41,7 @@ export const ZONE_BOSS_60: DungeonEvent = {
       failureOutcome: {
         text: 'Your plan backfires and they turn their full combined fury on you!',
         effects: [
-          { type: 'damage', target: 'all', value: 120, isTrueDamage: true },
+          { type: 'damage', target: 'all', value: 480, isTrueDamage: true },
           { type: 'xp', value: 1200 },
           { type: 'gold', value: 2000 },
           { type: 'item', itemType: 'random', minRarity: 'rare', maxRarity: 'epic', rarityBoost: 18 },
@@ -53,7 +53,7 @@ export const ZONE_BOSS_60: DungeonEvent = {
       outcome: {
         text: 'You unleash everything you have in one massive assault! The Archons fall beneath your relentless offensive!',
         effects: [
-          { type: 'damage', target: 'all', value: 95 },
+          { type: 'damage', target: 'all', value: 380 },
           { type: 'xp', value: 1600 },
           { type: 'gold', value: 2500 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', maxRarity: 'mythic', rarityBoost: 28 },

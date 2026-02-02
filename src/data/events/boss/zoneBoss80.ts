@@ -16,7 +16,7 @@ export const ZONE_BOSS_80: DungeonEvent = {
       outcome: {
         text: 'You refuse to be bound by destiny! Your will proves stronger than the threads of fate!',
         effects: [
-          { type: 'damage', target: 'all', value: 125 },
+          { type: 'damage', target: 'all', value: 563 },
           { type: 'xp', value: 2100 },
           { type: 'gold', value: 3200 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', maxRarity: 'mythic', rarityBoost: 35 },
@@ -31,7 +31,7 @@ export const ZONE_BOSS_80: DungeonEvent = {
       outcome: {
         text: 'You sing a song of pure randomness and impossibility! The Fate Weaver cannot predict what has no pattern!',
         effects: [
-          { type: 'damage', target: 'all', value: 90 },
+          { type: 'damage', target: 'all', value: 405 },
           { type: 'xp', value: 2500 },
           { type: 'gold', value: 3500 },
           { type: 'item', itemType: 'random', minRarity: 'mythic', maxRarity: 'mythic', rarityBoost: 45 },
@@ -44,7 +44,7 @@ export const ZONE_BOSS_80: DungeonEvent = {
       outcome: {
         text: 'You battle it in a thousand possible futures at once, winning in enough of them to force its defeat!',
         effects: [
-          { type: 'damage', target: 'all', value: 140 },
+          { type: 'damage', target: 'all', value: 630 },
           { type: 'xp', value: 2300 },
           { type: 'gold', value: 3300 },
           { type: 'item', itemType: 'random', minRarity: 'mythic', maxRarity: 'mythic', rarityBoost: 40 },

@@ -16,7 +16,7 @@ export const ZONE_BOSS_20: DungeonEvent = {
       outcome: {
         text: 'You charge into its flames and claws, trading blows until the corrupted beast finally collapses!',
         effects: [
-          { type: 'damage', target: 'all', value: 40 },
+          { type: 'damage', target: 'all', value: 80 },
           { type: 'xp', value: 500 },
           { type: 'gold', value: 800 },
           { type: 'item', itemType: 'random', minRarity: 'rare', maxRarity: 'epic', rarityBoost: 10 },
@@ -29,7 +29,7 @@ export const ZONE_BOSS_20: DungeonEvent = {
       outcome: {
         text: 'Your holy magic burns away the dark influence! The drake regains its sanity briefly before passing peacefully.',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 50 },
           { type: 'heal', target: 'all', value: 40 },
           { type: 'xp', value: 600 },
           { type: 'gold', value: 900 },
@@ -43,7 +43,7 @@ export const ZONE_BOSS_20: DungeonEvent = {
       outcome: {
         text: 'A single devastating blow pierces through scales and corruption, ending it swiftly!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 30 },
+          { type: 'damage', target: 'strongest', value: 60 },
           { type: 'xp', value: 550 },
           { type: 'gold', value: 1000 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', maxRarity: 'epic', rarityBoost: 15 },

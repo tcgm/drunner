@@ -16,7 +16,7 @@ export const ZONE_BOSS_50: DungeonEvent = {
       outcome: {
         text: 'Your bodies scream in protest as the cold threatens to stop your hearts, but you persevere! The avatar shatters into a million frozen shards!',
         effects: [
-          { type: 'damage', target: 'all', value: 85 },
+          { type: 'damage', target: 'all', value: 340 },
           { type: 'xp', value: 1200 },
           { type: 'gold', value: 2000 },
           { type: 'item', itemType: 'random', minRarity: 'epic', maxRarity: 'legendary', rarityBoost: 22 },
@@ -30,7 +30,7 @@ export const ZONE_BOSS_50: DungeonEvent = {
       outcome: {
         text: 'Your divine radiance blazes like the sun itself! The avatar melts before your righteous fury!',
         effects: [
-          { type: 'damage', target: 'all', value: 60 },
+          { type: 'damage', target: 'all', value: 240 },
           { type: 'heal', target: 'all', value: 50 },
           { type: 'xp', value: 1400 },
           { type: 'gold', value: 2200 },
@@ -43,7 +43,7 @@ export const ZONE_BOSS_50: DungeonEvent = {
       outcome: {
         text: 'You rush forward in a desperate gambit! Your weapons find their mark just as the cold threatens to claim you!',
         effects: [
-          { type: 'damage', target: 'all', value: 75 },
+          { type: 'damage', target: 'all', value: 300 },
           { type: 'xp', value: 1300 },
           { type: 'gold', value: 2100 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', maxRarity: 'legendary', rarityBoost: 25 },

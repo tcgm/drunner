@@ -12,7 +12,7 @@ export const VOID_CULTIST: DungeonEvent = {
             outcome: {
                 text: 'You disrupt the ritual before it completes, but the backlash of void energy strikes you!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 55 },
+                    { type: 'damage', target: 'all', value: 83 },
                     { type: 'xp', value: 320 },
                     { type: 'gold', value: 400 },
                     { type: 'item', itemType: 'helmet', minRarity: 'rare', rarityBoost: 10 },
@@ -28,7 +28,7 @@ export const VOID_CULTIST: DungeonEvent = {
             outcome: {
                 text: 'You sense a perfect moment of vulnerability and strike decisively!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 40 },
+                    { type: 'damage', target: 'all', value: 60 },
                     { type: 'xp', value: 380 },
                     { type: 'gold', value: 480 },
                     { type: 'item', itemType: 'accessory1', minRarity: 'epic', rarityBoost: 16 },
@@ -43,7 +43,7 @@ export const VOID_CULTIST: DungeonEvent = {
             outcome: {
                 text: 'You counter their magic with your own, turning the void energy against them!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 35 },
+                    { type: 'damage', target: 'all', value: 53 },
                     { type: 'xp', value: 400 },
                     { type: 'gold', value: 500 },
                     { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 18 },
@@ -55,7 +55,7 @@ export const VOID_CULTIST: DungeonEvent = {
             outcome: {
                 text: 'Void tendrils lash out as you flee, tearing at your essence.',
                 effects: [
-                    { type: 'damage', target: 'random', value: 40 },
+                    { type: 'damage', target: 'random', value: 60 },
                     { type: 'xp', value: 80 },
                 ],
             },
