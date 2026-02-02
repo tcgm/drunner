@@ -1195,6 +1195,26 @@ export const useGameStore = create<GameStore>()(
             if (actualState.party?.length > 0) {
               actualState.party = actualState.party.map((hero: Hero | null) => {
                 if (!hero) return null
+                
+                // Handle new slot format
+                if (hero.slots) {
+                  const slotItems = Object.values(hero.slots).filter((item): item is Item => item !== null && 'stats' in item)
+                  if (slotItems.length > 0) {
+                    const repairedItems = repairItemNames(slotItems)
+                    const newSlots = { ...hero.slots }
+                    let itemIndex = 0
+                    for (const slotId in newSlots) {
+                      if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                        newSlots[slotId] = repairedItems[itemIndex]
+                        itemIndex++
+                      }
+                    }
+                    return { ...hero, slots: newSlots }
+                  }
+                  return hero
+                }
+                
+                // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
                   const repairedItems = repairItemNames(equippedItems)
@@ -1224,21 +1244,40 @@ export const useGameStore = create<GameStore>()(
                 if (rosterIndex !== -1) {
                   const rosterHero = actualState.heroRoster[rosterIndex]
                   
-                  // If roster version is level 1 but party version is higher, roster is corrupted
-                  // Or if roster has no equipment but party does
-                  const rosterCorrupted = (
-                    rosterHero.level === 1 && partyHero.level > 1
+                  // Check corruption using both old equipment and new slots format
+                  const partyHasItems = partyHero.slots 
+                    ? Object.values(partyHero.slots).some(item => item !== null)
+                    : Object.values(partyHero.equipment || {}).some(item => item !== null)
+                  
+                  const rosterHasItems = rosterHero.slots
+                    ? Object.values(rosterHero.slots).some(item => item !== null)
+                    : Object.values(rosterHero.equipment || {}).some(item => item !== null)
+                  
+                  // Determine which version has the most complete data
+                  // Priority: higher level > has items > neither (use party as source of truth)
+                  const shouldUseParty = (
+                    partyHero.level > rosterHero.level
                   ) || (
-                    rosterHero.level < partyHero.level
-                  ) || (
-                    Object.values(rosterHero.equipment || {}).every(item => item === null) &&
-                    Object.values(partyHero.equipment || {}).some(item => item !== null)
+                    partyHero.level === rosterHero.level && partyHasItems && !rosterHasItems
                   )
                   
-                  if (rosterCorrupted) {
-                    // Replace roster version with party version
+                  const shouldUseRoster = (
+                    rosterHero.level > partyHero.level
+                  ) || (
+                    rosterHero.level === partyHero.level && rosterHasItems && !partyHasItems
+                  )
+                  
+                  if (shouldUseParty) {
+                    // Party has better data, sync roster from party
                     actualState.heroRoster[rosterIndex] = { ...partyHero }
-                    console.log(`[Repair] Synced roster hero ${partyHero.name} from party (level ${partyHero.level})`)
+                    console.log(`[Repair] Synced roster hero ${partyHero.name} from party (level ${partyHero.level}, items: ${partyHasItems})`)
+                  } else if (shouldUseRoster) {
+                    // Roster has better data, sync party from roster (this prevents item loss!)
+                    const partySlotIndex = actualState.party.findIndex((h: Hero | null) => h?.id === rosterHero.id)
+                    if (partySlotIndex !== -1) {
+                      actualState.party[partySlotIndex] = { ...rosterHero }
+                      console.log(`[Repair] Synced party hero ${rosterHero.name} from roster (level ${rosterHero.level}, items: ${rosterHasItems})`)
+                    }
                   }
                 } else {
                   // Hero in party but not in roster, add them
@@ -1251,6 +1290,25 @@ export const useGameStore = create<GameStore>()(
             // Repair equipped items on heroes in roster
             if (actualState.heroRoster?.length > 0) {
               actualState.heroRoster = actualState.heroRoster.map((hero: Hero) => {
+                // Handle new slot format
+                if (hero.slots) {
+                  const slotItems = Object.values(hero.slots).filter((item): item is Item => item !== null && 'stats' in item)
+                  if (slotItems.length > 0) {
+                    const repairedItems = repairItemNames(slotItems)
+                    const newSlots = { ...hero.slots }
+                    let itemIndex = 0
+                    for (const slotId in newSlots) {
+                      if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                        newSlots[slotId] = repairedItems[itemIndex]
+                        itemIndex++
+                      }
+                    }
+                    return { ...hero, slots: newSlots }
+                  }
+                  return hero
+                }
+                
+                // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
                   const repairedItems = repairItemNames(equippedItems)
