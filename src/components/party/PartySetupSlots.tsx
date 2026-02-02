@@ -151,7 +151,7 @@ export function PartySetupSlots({
                           <SimpleGrid columns={2} spacing={1} w="full" pt={1} fontSize="xs">
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">HP</Text>
-                            <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{hero.stats.hp}/{hero.stats.maxHp}</Text>
+                              <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{hero.stats.maxHp}</Text>
                           </VStack>
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">ATK</Text>
