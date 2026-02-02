@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiTowerBolt } from 'react-icons/gi'
+import { GiEvilTower } from 'react-icons/gi'
 
 export const ARCANE_ARTILLERY: DungeonEvent = {
   id: 'arcane-artillery',
@@ -52,5 +52,5 @@ export const ARCANE_ARTILLERY: DungeonEvent = {
     },
   ],
   depth: 46,
-  icon: GiTowerBolt,
+  icon: GiEvilTower,
 }

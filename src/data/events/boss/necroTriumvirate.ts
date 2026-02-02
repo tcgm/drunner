@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiTripleSkull } from 'react-icons/gi'
+import { GiSkullSlices } from 'react-icons/gi'
 
 export const NECRO_TRIUMVIRATE: DungeonEvent = {
   id: 'necro-triumvirate',
@@ -52,5 +52,5 @@ export const NECRO_TRIUMVIRATE: DungeonEvent = {
     },
   ],
   depth: 55,
-  icon: GiTripleSkull,
+  icon: GiSkullSlices,
 }

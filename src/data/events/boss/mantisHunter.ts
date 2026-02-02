@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiMantisHead } from 'react-icons/gi'
+import { GiAlienBug } from 'react-icons/gi'
 
 export const MANTIS_HUNTER: DungeonEvent = {
   id: 'mantis-hunter',
@@ -52,5 +52,5 @@ export const MANTIS_HUNTER: DungeonEvent = {
     },
   ],
   depth: 13,
-  icon: GiMantisHead,
+  icon: GiAlienBug,
 }

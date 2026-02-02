@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiLavaFlow } from 'react-icons/gi'
+import { GiFireZone } from 'react-icons/gi'
 
 export const MAGMA_TITAN: DungeonEvent = {
   id: 'magma-titan',
@@ -52,5 +52,5 @@ export const MAGMA_TITAN: DungeonEvent = {
     },
   ],
   depth: 28,
-  icon: GiLavaFlow,
+  icon: GiFireZone,
 }

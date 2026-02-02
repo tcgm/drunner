@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiStoneGolem } from 'react-icons/gi'
+import { GiRockGolem } from 'react-icons/gi'
 
 export const GRANITE_JUGGERNAUT: DungeonEvent = {
   id: 'granite-juggernaut',
@@ -52,5 +52,5 @@ export const GRANITE_JUGGERNAUT: DungeonEvent = {
     },
   ],
   depth: 29,
-  icon: GiStoneGolem,
+  icon: GiRockGolem,
 }

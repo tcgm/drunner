@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiMoltenOrb } from 'react-icons/gi'
+import { GiSmokingOrb } from 'react-icons/gi'
 
 export const FORGE_COLOSSUS: DungeonEvent = {
   id: 'forge-colossus',
@@ -52,5 +52,5 @@ export const FORGE_COLOSSUS: DungeonEvent = {
     },
   ],
   depth: 69,
-  icon: GiMoltenOrb,
+  icon: GiSmokingOrb,
 }

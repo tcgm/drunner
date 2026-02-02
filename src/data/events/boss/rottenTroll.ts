@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiTrollSkull } from 'react-icons/gi'
+import { GiTroll } from 'react-icons/gi'
 
 export const ROTTEN_TROLL: DungeonEvent = {
   id: 'rotten-troll',
@@ -52,5 +52,5 @@ export const ROTTEN_TROLL: DungeonEvent = {
     },
   ],
   depth: 5,
-  icon: GiTrollSkull,
+  icon: GiTroll,
 }

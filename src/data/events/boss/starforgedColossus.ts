@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiMetalGolem } from 'react-icons/gi'
+import { GiMetalGolemHead } from 'react-icons/gi'
 
 export const STARFORGED_COLOSSUS: DungeonEvent = {
   id: 'starforged-colossus',
@@ -53,5 +53,5 @@ export const STARFORGED_COLOSSUS: DungeonEvent = {
     },
   ],
   depth: 55,
-  icon: GiMetalGolem,
+  icon: GiMetalGolemHead,
 }

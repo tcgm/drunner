@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiDemonSkull } from 'react-icons/gi'
+import { GiSkullSabertooth } from 'react-icons/gi'
 
 export const BALOR_GENERAL: DungeonEvent = {
   id: 'balor-general',
@@ -52,5 +52,5 @@ export const BALOR_GENERAL: DungeonEvent = {
     },
   ],
   depth: 48,
-  icon: GiDemonSkull,
+  icon: GiSkullSabertooth,
 }

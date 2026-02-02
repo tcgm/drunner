@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiEyeMonster } from 'react-icons/gi'
+import { GiSquid } from 'react-icons/gi'
 
 export const MIND_FLAYER: DungeonEvent = {
   id: 'mind-flayer',
@@ -52,5 +52,5 @@ export const MIND_FLAYER: DungeonEvent = {
     },
   ],
   depth: 26,
-  icon: GiEyeMonster,
+  icon: GiSquid,
 }

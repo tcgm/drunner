@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiBigWave } from 'react-icons/gi'
+import { GiPsychicWaves } from 'react-icons/gi'
 
 export const APOCALYPSE_BEAST: DungeonEvent = {
   id: 'apocalypse-beast',
@@ -52,5 +52,5 @@ export const APOCALYPSE_BEAST: DungeonEvent = {
     },
   ],
   depth: 96,
-  icon: GiBigWave,
+  icon: GiPsychicWaves,
 }

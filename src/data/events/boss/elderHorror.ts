@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiCthulhuHead } from 'react-icons/gi'
+import { GiSquidHead } from 'react-icons/gi'
 
 export const ELDER_HORROR: DungeonEvent = {
   id: 'elder-horror',
@@ -52,5 +52,5 @@ export const ELDER_HORROR: DungeonEvent = {
     },
   ],
   depth: 78,
-  icon: GiCthulhuHead,
+  icon: GiSquidHead,
 }

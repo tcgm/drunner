@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiSpikeDragon } from 'react-icons/gi'
+import { GiSpikedDragonHead } from 'react-icons/gi'
 
 export const ADAMANT_DRAGON: DungeonEvent = {
   id: 'adamant-dragon',
@@ -52,5 +52,5 @@ export const ADAMANT_DRAGON: DungeonEvent = {
     },
   ],
   depth: 59,
-  icon: GiSpikeDragon,
+  icon: GiSpikedDragonHead,
 }

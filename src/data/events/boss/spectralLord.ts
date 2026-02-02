@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiSpectreM1 } from 'react-icons/gi'
+import { GiSpectreM4 } from 'react-icons/gi'
 
 export const SPECTRAL_LORD: DungeonEvent = {
   id: 'spectral-lord',
@@ -52,5 +52,5 @@ export const SPECTRAL_LORD: DungeonEvent = {
     },
   ],
   depth: 33,
-  icon: GiSpectreM1,
+  icon: GiSpectreM4,
 }

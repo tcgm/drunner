@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiEyeMonster } from 'react-icons/gi'
+import { GiEyestalk } from 'react-icons/gi'
 
 export const ABERRANT_SOVEREIGN: DungeonEvent = {
   id: 'aberrant-sovereign',
@@ -52,5 +52,5 @@ export const ABERRANT_SOVEREIGN: DungeonEvent = {
     },
   ],
   depth: 69,
-  icon: GiEyeMonster,
+  icon: GiEyestalk,
 }

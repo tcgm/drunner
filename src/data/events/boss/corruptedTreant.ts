@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiTreant } from 'react-icons/gi'
+import { GiTreeFace } from 'react-icons/gi'
 
 export const CORRUPTED_TREANT: DungeonEvent = {
   id: 'corrupted-treant',
@@ -52,5 +52,5 @@ export const CORRUPTED_TREANT: DungeonEvent = {
     },
   ],
   depth: 15,
-  icon: GiTreant,
+  icon: GiTreeFace,
 }
