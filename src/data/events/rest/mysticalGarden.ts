@@ -83,6 +83,17 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
           },
         },
         {
+          weight: 3,
+          outcome: {
+            text: 'You wake from your rest to see plant tentacles slithering back into the foliage, clutching your coin purse! The plants stole your gold!',
+            effects: [
+              { type: 'heal', target: 'all', value: 80 },
+              { type: 'gold', value: -150 },
+              { type: 'xp', value: 20 },
+            ],
+          },
+        },
+        {
           weight: 5,
           outcome: {
             text: 'The vines are more aggressive than expected! You struggle free, flustered but unharmed.',
