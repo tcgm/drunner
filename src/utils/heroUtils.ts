@@ -52,6 +52,8 @@ export function createHero(heroClass: HeroClass, name: string, level: number = 1
     },
     abilities: [...heroClass.abilities],
     isAlive: true,
+    consumableSlots: [null, null, null], // 3 consumable quick-slots
+    activeEffects: [], // No active effects initially
   }
 }
 

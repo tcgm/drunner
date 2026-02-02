@@ -9,6 +9,7 @@ import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
 import { migrateGameState } from '@/utils/migration'
+import { tickEffectsForDepthProgression } from '@/systems/effects'
 
 /**
  * Create a backup of the current state
@@ -431,6 +432,9 @@ export const useGameStore = create<GameStore>()(
       const newFloor = completingFloor ? state.dungeon.floor + 1 : state.dungeon.floor
       const resetEvents = completingFloor ? 0 : newEventsThisFloor
       
+      // Tick effects for all heroes on every depth increment
+      const updatedParty = tickEffectsForDepthProgression(state.party, newDepth)
+      
       // Roll new random target for next floor
       const newEventsRequired = completingFloor 
         ? Math.floor(
@@ -463,6 +467,7 @@ export const useGameStore = create<GameStore>()(
       } : null
       
       return {
+        party: updatedParty,
         dungeon: { 
           ...state.dungeon, 
           depth: newDepth,

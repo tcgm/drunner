@@ -16,8 +16,11 @@ export interface Ability {
   id: string
   name: string
   description: string
-  cooldown: number
-  currentCooldown: number
+  cooldown: number // Floors until usable again
+  currentCooldown: number // Deprecated - use lastUsedFloor
+  lastUsedFloor?: number // Floor on which ability was last used
+  charges?: number // Limited uses per run (optional)
+  chargesUsed?: number // Charges consumed this run
   effect: AbilityEffect
 }
 
@@ -47,6 +50,8 @@ export interface Hero {
   equipment: Equipment
   abilities: Ability[]
   isAlive: boolean
+  consumableSlots: (Consumable | null)[] // 3 quick-access consumable slots
+  activeEffects: TimedEffect[] // Active timed effects on this hero
 }
 
 export interface Equipment {
@@ -112,6 +117,38 @@ export interface Item {
   materialId?: string // Material used to craft this item
   baseTemplateId?: string // Base template used for this item
   isUnique?: boolean // True if this is a unique/set item (not crafted)
+}
+
+export interface Consumable extends Item {
+  consumableType: 'potion' | 'scroll' | 'food'
+  effect: ConsumableEffect
+  usableInCombat: boolean
+  usableOutOfCombat: boolean
+  stackable?: boolean // Can multiple stack in one slot
+  stackCount?: number // Current stack count
+}
+
+export interface ConsumableEffect {
+  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special'
+  value?: number // Heal amount, damage, or stat modifier
+  stat?: keyof Stats // For buff effects
+  duration?: number // In events (depths)
+  isPermanent?: boolean
+  target?: 'self' | 'ally' | 'all-allies' | 'enemy' | 'all-enemies'
+}
+
+export interface TimedEffect {
+  id: string
+  name: string
+  description: string
+  icon: IconType
+  type: 'buff' | 'debuff' | 'status'
+  appliedAtDepth: number
+  duration: number // Number of events (depths)
+  expiresAtDepth: number
+  stat?: keyof Stats
+  modifier: number // Numeric modifier (+10 attack, -5 defense, etc)
+  isPermanent: boolean
 }
 
 export type EventType = 
@@ -289,6 +326,20 @@ export interface GameState {
     }[]
     items: Item[] // Items that should be added to inventory
   } | null
+}
+
+export interface ShopItem {
+  id: string
+  name: string
+  description: string
+  price: number
+  category: 'consumable' | 'buff' | 'gear' | 'unlock'
+  consumable?: Consumable // For consumable purchases
+  item?: Item // For gear purchases
+  effect?: TimedEffect // For buff/effect purchases
+  stock?: number // Limited quantity (-1 for infinite)
+  requiresUnlock?: string // Achievement/unlock requirement ID
+  icon: IconType
 }
 
 // Additional types for literal imports
