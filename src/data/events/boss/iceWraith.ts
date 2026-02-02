@@ -1,11 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFrozenOrb } from 'react-icons/gi'
 
-export const ICE_WRAITH: DungeonEvent = {
-  id: 'ice-wraith',
+export const FROST_WRAITH_KING: DungeonEvent = {
+  id: 'frost-wraith-king',
   type: 'boss',
-  title: 'Ice Wraith',
-  description: 'A ghostly figure of frost and mist drifts through the frozen chamber. Its touch brings death by freezing, and the temperature drops with each breath.',
+  title: 'Frost Wraith King',
+  description: 'The sovereign of all frost spirits, this ancient wraith commands legions of lesser spirits. Its presence creates blizzards, and its touch can freeze souls themselves. Centuries of haunting have made it immensely powerful.',
   choices: [
     {
       text: 'Fight in the cold',
