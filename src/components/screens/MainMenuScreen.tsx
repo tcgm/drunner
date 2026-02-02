@@ -1,6 +1,8 @@
 import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
 import { useGameStore } from '@store/gameStore'
+import { useMusicContext } from '@/utils/useMusicContext'
+import { MusicContext } from '@/types/audio'
 
 interface MainMenuScreenProps {
   onNewRun: () => void
@@ -9,11 +11,17 @@ interface MainMenuScreenProps {
 }
 
 export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: MainMenuScreenProps) {
+  console.log('[MainMenuScreen] Component rendering');
   const { activeRun, listBackups, restoreFromBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [backups, setBackups] = useState<string[]>([])
   const toast = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Enable main menu music
+  console.log('[MainMenuScreen] About to call useMusicContext');
+  useMusicContext(MusicContext.MAIN_MENU)
+  console.log('[MainMenuScreen] useMusicContext called');
   
   // Check if there's an active dungeon run in progress
   const hasActiveRun = activeRun !== null && activeRun.result === 'active'

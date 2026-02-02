@@ -338,6 +338,9 @@ export interface GameState {
     }[]
     items: Item[] // Items that should be added to inventory
   } | null
+  // Music settings
+  musicVolume: number // 0-1
+  musicEnabled: boolean
 }
 
 export interface ShopItem {

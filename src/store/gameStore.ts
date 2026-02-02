@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
 import type { GameState, Hero, EventChoice, Item } from '@/types'
+import { MusicContext } from '@/types/audio'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -11,6 +12,8 @@ import { repairItemNames } from '@/systems/loot/lootGenerator'
 import { migrateGameState } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { getClassById } from '@/data/classes'
+import { audioManager } from '@/systems/audio/audioManager'
+import { getPlaylistForContext } from '@/config/musicConfig'
 
 /**
  * Create a backup of the current state
@@ -239,6 +242,10 @@ interface GameStore extends GameState {
   restoreFromBackup: (backupKey: string) => boolean
   exportSave: () => void
   importSave: (jsonString: string) => boolean
+  // Music actions
+  setMusicVolume: (volume: number) => void
+  setMusicEnabled: (enabled: boolean) => void
+  changeMusicContext: (context: MusicContext) => void
 }
 
 const initialState: GameState = {
@@ -269,6 +276,8 @@ const initialState: GameState = {
   activeRun: null,
   runHistory: [],
   lastOutcome: null,
+  musicVolume: 0.7,
+  musicEnabled: true,
 }
 
 export const useGameStore = create<GameStore>()(
@@ -1204,6 +1213,26 @@ export const useGameStore = create<GameStore>()(
       console.error('[Import] Failed to import save:', error)
       return false
     }
+  },
+
+  // Music actions
+  setMusicVolume: (volume: number) => {
+    console.log('[GameStore] Setting music volume:', volume);
+    set({ musicVolume: volume })
+    audioManager.setVolume(volume)
+  },
+
+  setMusicEnabled: (enabled: boolean) => {
+    console.log('[GameStore] Setting music enabled:', enabled);
+    set({ musicEnabled: enabled })
+    audioManager.setMusicEnabled(enabled)
+  },
+
+  changeMusicContext: (context: MusicContext) => {
+    console.log('[GameStore] Changing music context to:', context);
+    const playlist = getPlaylistForContext(context)
+    console.log('[GameStore] Got playlist:', playlist);
+    audioManager.changeContext(playlist)
   },
       })
     ),
