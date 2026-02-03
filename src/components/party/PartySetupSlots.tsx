@@ -159,7 +159,7 @@ export function PartySetupSlots({
                           </VStack>
                           <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                             <Text color="gray.500">DEF</Text>
-                              <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
+                              <Text fontWeight="bold" textAlign="center" color={GAME_CONFIG.colors.stats.defense}>
                                 {hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
                               </Text>
                           </VStack>
