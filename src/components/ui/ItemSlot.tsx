@@ -149,6 +149,20 @@ export const ItemSlot = memo(function ItemSlot({
     }
   }
 
+  // Sanitize item name in case it got corrupted with icon function
+  const displayName = useMemo(() => {
+    if (typeof item.name === 'string' && item.name.includes('function ')) {
+      // Extract the actual name after the function code
+      const match = item.name.match(/}\)\(t\)\s+(.+)/)
+      if (match && match[1]) {
+        return match[1].trim()
+      }
+      // Fallback: just say "Unknown Item"
+      return "Unknown Item"
+    }
+    return item.name
+  }, [item.name])
+
   // Detect set membership
   const setName = useMemo(() => getItemSetName(item.name), [item.name])
 
@@ -444,7 +458,7 @@ export const ItemSlot = memo(function ItemSlot({
             width="100%"
             px={0.5}
           >
-            {item.name}
+            {displayName}
           </Text>
           
           {/* Rarity indicator dot */}

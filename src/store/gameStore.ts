@@ -1157,13 +1157,20 @@ export const useGameStore = create<GameStore>()(
   
   exportSave: () => {
     try {
-      const state = _get()
+      const state = useGameStore.getState()
       const saveData = {
         version: 1,
         timestamp: Date.now(),
         data: state
       }
-      const json = JSON.stringify(saveData, null, 2)
+      // Use custom replacer to strip out icon functions
+      const replacer = (key: string, val: any) => {
+        if (key === 'icon' && typeof val === 'function') {
+          return undefined
+        }
+        return val
+      }
+      const json = JSON.stringify(saveData, replacer, 2)
       const blob = new Blob([json], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
@@ -1423,7 +1430,15 @@ export const useGameStore = create<GameStore>()(
           }
         },
         setItem: (name, value) => {
-          localStorage.setItem(name, JSON.stringify(value))
+          // Custom replacer to strip out icon functions that shouldn't be serialized
+          const replacer = (key: string, val: any) => {
+            // Skip icon functions
+            if (key === 'icon' && typeof val === 'function') {
+              return undefined
+            }
+            return val
+          }
+          localStorage.setItem(name, JSON.stringify(value, replacer))
         },
         removeItem: (name) => localStorage.removeItem(name),
       },

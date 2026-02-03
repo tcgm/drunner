@@ -507,6 +507,39 @@ export function generateItems(count: number, depth: number): Item[] {
  * Attempts to extract material from name and base from description
  */
 export function repairItemName(item: Item): Item {
+  // First check if the name is corrupted with icon function code
+  if (typeof item.name === 'string' && item.name.includes('function ')) {
+    console.log(`[Repair] Detected corrupted item name with function code: ${item.name.substring(0, 50)}...`)
+
+    // Try to extract the actual name after the function code
+    const match = item.name.match(/}\)\(t\)\s+(.+)/)
+    if (match && match[1]) {
+      const extractedName = match[1].trim()
+      console.log(`[Repair] Extracted name: ${extractedName}`)
+      return {
+        ...item,
+        name: extractedName,
+        icon: undefined, // Clear corrupted icon, let repairItemIcon handle it
+      }
+    } else {
+      // Couldn't extract name, try to reconstruct from description
+      console.log(`[Repair] Could not extract name, attempting reconstruction from description`)
+      const typeNames: Record<string, string> = {
+        weapon: 'Weapon',
+        armor: 'Armor',
+        helmet: 'Helmet',
+        boots: 'Boots',
+        accessory1: 'Accessory',
+        accessory2: 'Accessory',
+      }
+      return {
+        ...item,
+        name: `Unknown ${typeNames[item.type] || 'Item'}`,
+        icon: undefined, // Clear corrupted icon
+      }
+    }
+  }
+
   // Skip if item is unique/set or already has a proper name
   if (item.isUnique) {
     return item
