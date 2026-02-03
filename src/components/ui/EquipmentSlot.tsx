@@ -27,7 +27,7 @@ interface EquipmentSlotProps {
   isSwapActive?: boolean
   showSwapButton?: boolean
   onSwapClick?: () => void
-  size?: 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export function EquipmentSlot({
@@ -46,7 +46,7 @@ export function EquipmentSlot({
   const isEmpty = !item
   const hasUpgrade = hasUpgradeAvailable(slot, item, availableItems, currentEquipment)
   const canSwap = hasCompatibleItems(slot, availableItems, currentEquipment)
-  const slotSize = size === 'lg' ? '80px' : '80px' // Can adjust if needed
+  const slotSize = size === 'lg' ? '80px' : size === 'sm' ? '60px' : '80px'
 
   if (isEmpty) {
     return (

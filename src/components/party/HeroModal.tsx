@@ -88,7 +88,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
     }
   }
 
-  const renderEquipmentSlot = (slotId: string) => {
+  const renderEquipmentSlot = (slotId: string, size: 'sm' | 'md' | 'lg' = 'md') => {
     const item = hero.slots[slotId]
     return (
       <EquipmentSlot
@@ -99,6 +99,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
         isSwapActive={swapMode === slotId}
         showSwapButton={true}
         onSwapClick={() => handleSwap(slotId)}
+        size={size}
       />
     )
   }
@@ -183,6 +184,13 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
                       />
                     </Box>
                   </Box>
+
+                  {/* Consumable Slots */}
+                  <HStack spacing={2} justify="center" flex="0 0 auto" mt={2}>
+                    {renderEquipmentSlot('consumable1', 'sm')}
+                    {renderEquipmentSlot('consumable2', 'sm')}
+                    {renderEquipmentSlot('consumable3', 'sm')}
+                  </HStack>
                 </VStack>
 
                 {/* Right equipment column */}
