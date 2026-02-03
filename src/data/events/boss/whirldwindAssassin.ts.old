@@ -1,0 +1,55 @@
+import type { DungeonEvent } from '@/types'
+import { GiDervishSwords } from 'react-icons/gi'
+
+export const WHIRLWIND_ASSASSIN: DungeonEvent = {
+  id: 'whirlwind-assassin',
+  type: 'boss',
+  title: 'Whirlwind Assassin',
+  description: 'An elemental assassin that becomes a living cyclone of blades, channeling the primordial winds themselves. They move with currents older than civilization, striking from impossible angles with the precision of a gale that has carved canyons. The air screams with ancient purpose. The Party must survive.',
+  choices: [
+    {
+      text: 'The Party must survive',
+      outcome: {
+        text: 'Blades strike from every direction, carried on winds that remember the first breath of creation! The whirlwind cuts with the inevitability of erosion itself, each strike a fragment of an endless, primal fury!',
+        effects: [
+          { type: 'damage', target: 'all', value: 170 },
+          { type: 'xp', value: 685 },
+          { type: 'gold', value: 995 },
+          { type: 'item', itemType: 'random', minRarity: 'rare', maxRarity: 'legendary', rarityBoost: 20 },
+        ],
+      },
+    },
+    {
+      text: 'Still the air (Mage bonus)',
+      requirements: {
+        class: 'Mage',
+      },
+      outcome: {
+        text: 'Your magic creates a zone of calm! Without wind, the assassin is helpless!',
+        effects: [
+          { type: 'damage', target: 'all', value: 135 },
+          { type: 'xp', value: 752 },
+          { type: 'gold', value: 1072 },
+          { type: 'item', itemType: 'weapon', minRarity: 'epic', maxRarity: 'legendary', rarityBoost: 23 },
+        ],
+      },
+    },
+    {
+      text: 'Strike at the eye (Rogue bonus)',
+      requirements: {
+        class: 'Rogue',
+      },
+      outcome: {
+        text: 'You time your strike perfectly and hit the center of the vortex!',
+        effects: [
+          { type: 'damage', target: 'weakest', value: 142 },
+          { type: 'xp', value: 778 },
+          { type: 'gold', value: 1108 },
+          { type: 'item', itemType: 'armor', minRarity: 'epic', maxRarity: 'legendary', rarityBoost: 25 },
+        ],
+      },
+    },
+  ],
+  depth: 33,
+  icon: GiDervishSwords,
+}
