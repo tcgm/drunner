@@ -1165,14 +1165,34 @@ export const useGameStore = create<GameStore>()(
 
         equipItemToHero: (heroId, item, slotId) =>
           set((state) => {
-            const updatedParty = state.party.map(h =>
-              h?.id === heroId ? equipItem(h, item, slotId) : h
-            )
-            const updatedRoster = state.heroRoster.map(h =>
-              h.id === heroId ? equipItem(h, item, slotId) : h
-            )
-            // Remove item from dungeon inventory
-            const updatedInventory = state.dungeon.inventory.filter(i => i.id !== item.id)
+            let replacedItem: Item | null = null
+            
+            const updatedParty = state.party.map(h => {
+              if (h?.id === heroId) {
+                const result = equipItem(h, item, slotId)
+                if (result.replacedItem) {
+                  replacedItem = result.replacedItem
+                }
+                return result.hero
+              }
+              return h
+            })
+            
+            const updatedRoster = state.heroRoster.map(h => {
+              if (h.id === heroId) {
+                const result = equipItem(h, item, slotId)
+                return result.hero
+              }
+              return h
+            })
+            
+            // Remove newly equipped item from dungeon inventory
+            let updatedInventory = state.dungeon.inventory.filter(i => i.id !== item.id)
+            
+            // Add replaced item back to dungeon inventory
+            if (replacedItem) {
+              updatedInventory = [...updatedInventory, replacedItem]
+            }
 
             return {
               party: updatedParty,
@@ -1186,14 +1206,34 @@ export const useGameStore = create<GameStore>()(
 
         equipItemFromBank: (heroId, item, slotId) =>
           set((state) => {
-            const updatedParty = state.party.map(h =>
-              h?.id === heroId ? equipItem(h, item, slotId) : h
-            )
-            const updatedRoster = state.heroRoster.map(h =>
-              h.id === heroId ? equipItem(h, item, slotId) : h
-            )
-            // Remove item from bank
-            const updatedBank = state.bankInventory.filter(i => i.id !== item.id)
+            let replacedItem: Item | null = null
+            
+            const updatedParty = state.party.map(h => {
+              if (h?.id === heroId) {
+                const result = equipItem(h, item, slotId)
+                if (result.replacedItem) {
+                  replacedItem = result.replacedItem
+                }
+                return result.hero
+              }
+              return h
+            })
+            
+            const updatedRoster = state.heroRoster.map(h => {
+              if (h.id === heroId) {
+                const result = equipItem(h, item, slotId)
+                return result.hero
+              }
+              return h
+            })
+            
+            // Remove newly equipped item from bank
+            let updatedBank = state.bankInventory.filter(i => i.id !== item.id)
+            
+            // Add replaced item back to bank
+            if (replacedItem) {
+              updatedBank = [...updatedBank, replacedItem]
+            }
 
             return {
               party: updatedParty,

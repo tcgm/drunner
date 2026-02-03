@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import type { Item, ItemRarity } from '@/types'
 import type { SortOption, FilterOption } from './InventoryControls'
+import { slotAcceptsItemType } from '@/config/slotConfig'
 
 interface UseInventoryFiltersProps {
   items: Item[]
@@ -34,7 +35,8 @@ export function useInventoryFilters({
 
     // Apply pending slot filter first (overrides other filters)
     if (pendingSlot) {
-      filteredItems = filteredItems.filter(item => item.type === pendingSlot)
+      // Use proper slot compatibility check for accessories and other special slots
+      filteredItems = filteredItems.filter(item => slotAcceptsItemType(pendingSlot, item.type))
     } else if (filterBy && filterBy !== 'all') {
       filteredItems = filteredItems.filter(item => item.type === filterBy)
     }

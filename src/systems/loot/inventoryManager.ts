@@ -13,23 +13,26 @@ export function canEquipItem(_hero: Hero, item: Item, slotId: string): boolean {
 }
 
 /**
- * Equip an item to a hero
+ * Equip an item to a hero, returning the replaced item if any
  */
-export function equipItem(hero: Hero, item: Item, slotId: string): Hero {
+export function equipItem(hero: Hero, item: Item, slotId: string): { hero: Hero; replacedItem: Item | null } {
   if (!canEquipItem(hero, item, slotId)) {
-    return hero
+    return { hero, replacedItem: null }
   }
 
   const updatedHero = { ...hero }
   updatedHero.slots = { ...hero.slots }
   
-  // Equip new item (old item is automatically replaced)
+  // Get the item being replaced (if any)
+  const replacedItem = updatedHero.slots[slotId] as Item | null
+  
+  // Equip new item
   updatedHero.slots[slotId] = item
   
   // Recalculate stats
   updatedHero.stats = calculateStatsWithEquipment(updatedHero)
   
-  return updatedHero
+  return { hero: updatedHero, replacedItem }
 }
 
 /**
