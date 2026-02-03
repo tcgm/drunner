@@ -29,6 +29,7 @@ interface ItemSlotProps {
   isSelected?: boolean
   onCheckboxChange?: () => void
   comparisonItem?: Item | null // Item to compare against (equipped item)
+  iconOnly?: boolean // Only show icon, no text
 }
 
 const SLOT_SIZES = {
@@ -132,7 +133,8 @@ export const ItemSlot = memo(function ItemSlot({
   showCheckbox = false,
   isSelected = false,
   onCheckboxChange,
-  comparisonItem
+  comparisonItem,
+  iconOnly = false
 }: ItemSlotProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
@@ -143,7 +145,9 @@ export const ItemSlot = memo(function ItemSlot({
 
   const handleClick = () => {
     // Check if there's a global swap handler active (from HeroModal)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).__heroModalSwapHandler) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).__heroModalSwapHandler(item)
       return
     }
@@ -280,8 +284,8 @@ export const ItemSlot = memo(function ItemSlot({
       >
         <MotionBox
           className={`item-slot item-slot-${item.rarity} item-type-${item.type}${item.isUnique ? ' item-unique' : ''}${setName ? ' item-set' : ''}${isSelected ? ' item-selected' : ''}`}
-          width={SLOT_SIZES[size]}
-          height={SLOT_SIZES[size]}
+          width={iconOnly ? '100%' : SLOT_SIZES[size]}
+          height={iconOnly ? '100%' : SLOT_SIZES[size]}
           bg={setName ? RARITY_COLORS.set.bg : (RARITY_COLORS[item.rarity]?.bg || '#4A5568')}
           borderRadius="lg"
           borderWidth={setName ? '4px' : '2px'}
@@ -305,7 +309,7 @@ export const ItemSlot = memo(function ItemSlot({
           alignItems="center"
           justifyContent="center"
           flexDirection="column"
-          p={1}
+          p={iconOnly ? 0 : 1}
           initial={false}
           animate={{ 
             scale: isHovered && (isClickable || onClick) ? 1.08 : 1,
@@ -467,7 +471,9 @@ export const ItemSlot = memo(function ItemSlot({
               zIndex: 10,
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center'
+              alignItems: 'center',
+              width: iconOnly ? '100%' : undefined,
+              height: iconOnly ? '100%' : undefined
             }}
             animate={{
               scale: isHovered ? 1.1 : 1,
@@ -480,25 +486,27 @@ export const ItemSlot = memo(function ItemSlot({
           >
             <Icon
               as={ItemIcon}
-              boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px'}
+              boxSize={iconOnly ? '100%' : size === 'xl' ? '48px' : '50%'}
               color="white"
-              mb={0.5}
+              mb={iconOnly ? 0 : 0.5}
             />
           </motion.div>
           
           {/* Item Name */}
-          <Text
-            fontSize={size === 'sm' ? '3xs' : size === 'xl' ? 'xs' : '2xs'} 
-            fontWeight="bold" 
-            color="white"
-            textAlign="center"
-            lineHeight="1.1"
-            noOfLines={5}
-            width="100%"
-            px={0.5}
-          >
-            {displayName}
-          </Text>
+          {!iconOnly && (
+            <Text
+              fontSize={size === 'sm' ? '3xs' : size === 'xl' ? 'xs' : '2xs'} 
+              fontWeight="bold" 
+              color="white"
+              textAlign="center"
+              lineHeight="1.1"
+              noOfLines={5}
+              width="100%"
+              px={0.5}
+            >
+                {displayName}
+            </Text>
+          )}
           
           {/* Rarity indicator dot */}
           {/*<motion.div
