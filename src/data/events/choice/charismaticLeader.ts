@@ -21,8 +21,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'rare',
-            maxRarity: 'veryRare'
+            minRarity: 'rare'
           },
         ],
       },
@@ -48,8 +47,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'rare',
-            maxRarity: 'veryRare'
+            minRarity: 'rare'
           },
         ],
       },
@@ -74,8 +72,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'rare',
-            maxRarity: 'epic'
+            minRarity: 'rare'
           },
         ],
       },
@@ -99,14 +96,12 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'veryRare',
-            maxRarity: 'epic'
+            minRarity: 'veryRare'
           },
           { 
             type: 'consumable',
             itemType: 'consumable',
-            minRarity: 'rare',
-            maxRarity: 'veryRare'
+            minRarity: 'rare'
           },
         ],
       },
@@ -123,14 +118,12 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'veryRare',
-            maxRarity: 'epic'
+            minRarity: 'veryRare'
           },
           { 
             type: 'consumable',
             itemType: 'consumable',
-            minRarity: 'rare',
-            maxRarity: 'veryRare'
+            minRarity: 'rare'
           },
         ],
       },
@@ -146,14 +139,12 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'veryRare',
-            maxRarity: 'epic'
+            minRarity: 'veryRare'
           },
           { 
             type: 'item', 
             itemType: 'random',
-            minRarity: 'rare',
-            maxRarity: 'veryRare'
+            minRarity: 'rare'
           },
         ],
       },
@@ -208,8 +199,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
           { 
             type: 'consumable',
             itemType: 'consumable',
-            minRarity: 'uncommon',
-            maxRarity: 'rare'
+            minRarity: 'uncommon'
           },
         ],
       },
