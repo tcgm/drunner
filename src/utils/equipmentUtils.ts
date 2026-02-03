@@ -29,6 +29,7 @@ export function hasUpgradeAvailable(
     })
   }
   
+  // Check for any upgrade
   return availableItems.some(invItem => {
     // Skip items that are already equipped in other slots
     if (equippedItemIds.has(invItem.id)) return false

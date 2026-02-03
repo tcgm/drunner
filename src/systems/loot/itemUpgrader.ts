@@ -211,8 +211,9 @@ export function upgradeItemMaterial(
 }
 
 /**
- * Upgrade an item to the next rarity tier, or if at max rarity, upgrade material
- * Returns a new item of the same type but higher rarity or better material
+ * Upgrade an item by first upgrading material (keeping the same base), 
+ * or if material is maxed, upgrade rarity
+ * Returns a new item of the same type but better material or higher rarity
  * Unique items cannot be upgraded and will return null
  */
 export function upgradeItemRarity(
@@ -225,6 +226,16 @@ export function upgradeItemRarity(
     return null
   }
   
+  // Try to upgrade material first - this preserves the base type
+  const materialId = extractMaterialId(item)
+  const nextMaterial = materialId ? getNextMaterial(materialId) : null
+  
+  if (nextMaterial) {
+    // Can upgrade material - prioritize this to keep item identity
+    return upgradeItemMaterial(item, depth)
+  }
+
+  // Material is maxed or not found - try upgrading rarity instead
   const nextRarity = getNextRarity(item.rarity)
   if (nextRarity) {
     // Try to preserve the base template from the original item
@@ -236,7 +247,7 @@ export function upgradeItemRarity(
       baseTemplate = findBaseFromItemName(item.name, item.type)
     }
 
-    // Can upgrade rarity - do that first
+    // Upgrade rarity while preserving base template
     const upgradedItem = generateItem(
       depth,
       item.type,
@@ -248,8 +259,8 @@ export function upgradeItemRarity(
     return upgradedItem
   }
 
-  // At max rarity - try to upgrade material instead
-  return upgradeItemMaterial(item, depth)
+  // Both material and rarity are maxed - cannot upgrade
+  return null
 }
 
 /**
