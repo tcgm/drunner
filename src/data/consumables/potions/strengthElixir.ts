@@ -1,11 +1,11 @@
-import { Consumable } from '../../../types'
+import type { Consumable } from '../../../types'
 import { GiStrong } from 'react-icons/gi'
 
 export const STRENGTH_ELIXIR: Consumable = {
   id: 'strength-elixir',
   name: 'Strength Elixir',
   description: 'Increases attack by 10 for 5 events.',
-  type: 'accessory1',
+  type: 'consumable',
   rarity: 'uncommon',
   stats: {},
   value: 75,

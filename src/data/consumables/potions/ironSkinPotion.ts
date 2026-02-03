@@ -1,11 +1,11 @@
-import { Consumable } from '../../../types'
+import type { Consumable } from '../../../types'
 import { GiShield } from 'react-icons/gi'
 
 export const IRON_SKIN_POTION: Consumable = {
   id: 'iron-skin-potion',
   name: 'Iron Skin Potion',
   description: 'Increases defense by 8 for 5 events.',
-  type: 'accessory1',
+  type: 'consumable',
   rarity: 'uncommon',
   stats: {},
   value: 75,

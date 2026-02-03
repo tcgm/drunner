@@ -61,7 +61,7 @@ export function generateConsumable(
     id: uuidv4(),
     name,
     description,
-    type: 'accessory1', // Consumables use accessory slot type as base
+    type: 'consumable',
     rarity: finalRarity,
     stats: {},
     value,

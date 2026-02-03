@@ -87,8 +87,8 @@ export function slotAcceptsItemType(slotId: string, itemType: string): boolean {
   const slot = getSlotById(slotId)
   if (!slot || !slot.enabled) return false
   
-  // Consumable slots accept any item type (for now)
-  if (slot.category === 'consumable') return true
+  // Consumable slots only accept consumable items
+  if (slot.category === 'consumable') return itemType === 'consumable'
   
   // Accessory slots can accept any accessory
   if (slot.type === 'accessory' && (itemType === 'accessory1' || itemType === 'accessory2')) {

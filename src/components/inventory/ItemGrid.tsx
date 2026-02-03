@@ -20,12 +20,8 @@ interface ItemGridSlotProps {
   isSelected: boolean
   isClickable: boolean
   showCheckbox: boolean
-}
-
-// Store global handlers to avoid prop changes
-const globalHandlers = {
-  onItemClick: null as ((item: Item) => void) | null,
-  onItemSelect: null as ((itemId: string) => void) | null
+  onItemClick?: (item: Item) => void
+  onItemSelect?: (itemId: string) => void
 }
 
 // Memoize individual item slots to prevent re-rendering all items on selection change
@@ -34,15 +30,17 @@ const ItemGridSlot = memo(function ItemGridSlot({
   itemId,
   isSelected,
   isClickable,
-  showCheckbox 
+  showCheckbox,
+  onItemClick,
+  onItemSelect
 }: ItemGridSlotProps) {
   const handleCheckboxChange = useCallback(() => {
-    globalHandlers.onItemSelect?.(itemId)
-  }, [itemId])
+    onItemSelect?.(itemId)
+  }, [itemId, onItemSelect])
 
   const handleItemClick = useCallback(() => {
-    globalHandlers.onItemClick?.(item)
-  }, [item])
+    onItemClick?.(item)
+  }, [item, onItemClick])
 
   return (
     <Box
@@ -61,7 +59,7 @@ const ItemGridSlot = memo(function ItemGridSlot({
       <ItemSlot
         item={item}
         size="md"
-        onClick={globalHandlers.onItemClick ? handleItemClick : undefined}
+        onClick={onItemClick ? handleItemClick : undefined}
         isClickable={isClickable}
         showCheckbox={showCheckbox}
         isSelected={isSelected}
@@ -74,7 +72,9 @@ const ItemGridSlot = memo(function ItemGridSlot({
   return prev.itemId === next.itemId && 
          prev.isSelected === next.isSelected &&
          prev.isClickable === next.isClickable &&
-         prev.showCheckbox === next.showCheckbox
+         prev.showCheckbox === next.showCheckbox &&
+         prev.onItemClick === next.onItemClick &&
+         prev.onItemSelect === next.onItemSelect
 })
 
 export const ItemGrid = memo(function ItemGrid({ 
@@ -86,10 +86,6 @@ export const ItemGrid = memo(function ItemGrid({
   isClickable = false,
   showCheckbox = false 
 }: ItemGridProps) {
-  // Update global handlers
-  globalHandlers.onItemClick = onItemClick || null
-  globalHandlers.onItemSelect = onItemSelect || null
-
   // Memoize visible items with restored icons to prevent recalculating on every render
   const visibleItems = useMemo(() => {
     return items.slice(0, visibleCount).map(item => restoreItemIcon(item))
@@ -111,6 +107,8 @@ export const ItemGrid = memo(function ItemGrid({
           isSelected={selectedItems?.has(item.id) ?? false}
           isClickable={isClickable}
           showCheckbox={showCheckbox}
+          onItemClick={onItemClick}
+          onItemSelect={onItemSelect}
         />
       ))}
     </Box>

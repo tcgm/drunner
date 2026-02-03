@@ -439,6 +439,12 @@ export const useGameStore = create<GameStore>()(
               }
             }) : null)
 
+            // Update roster with healed heroes
+            const updatedRoster = state.heroRoster.map(rosterHero => {
+              const healedVersion = healedParty.find(h => h?.id === rosterHero.id)
+              return healedVersion || rosterHero
+            })
+
             // Create a new run
             const newRun: import('@/types').Run = {
               id: `run-${Date.now()}`,
@@ -487,6 +493,7 @@ export const useGameStore = create<GameStore>()(
             const event = getNextEvent(startingFloor, startingFloor, false, false, [])
             return {
               party: healedParty,
+              heroRoster: updatedRoster,
               alkahest: newAlkahest,
               dungeon: {
                 depth: startingFloor,
@@ -521,6 +528,12 @@ export const useGameStore = create<GameStore>()(
             // Tick effects for all heroes on every depth increment
             const updatedParty = tickEffectsForDepthProgression(state.party, newDepth)
 
+            // Update roster with latest party state
+            const updatedRoster = state.heroRoster.map(rosterHero => {
+              const updatedVersion = updatedParty.find(h => h?.id === rosterHero.id)
+              return updatedVersion || rosterHero
+            })
+
             // Roll new random target for next floor
             const newEventsRequired = completingFloor
               ? Math.floor(
@@ -554,6 +567,7 @@ export const useGameStore = create<GameStore>()(
 
             return {
               party: updatedParty,
+              heroRoster: updatedRoster,
               dungeon: {
                 ...state.dungeon,
                 depth: newDepth,
@@ -797,10 +811,18 @@ export const useGameStore = create<GameStore>()(
             // Determine if we should lose gold
             const loseGold = isWiped && GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
 
+            // Update roster with latest party state (even when not wiped)
+            if (!isWiped) {
+              updatedRoster = state.heroRoster.map(rosterHero => {
+                const updatedVersion = updatedParty.find(h => h?.id === rosterHero.id)
+                return updatedVersion || rosterHero
+              })
+            }
+
             const resultState = {
               metaXp: state.metaXp + metaXpGained,
               party: isWiped ? penalizedParty : updatedParty,
-              heroRoster: isWiped ? updatedRoster : state.heroRoster,
+              heroRoster: updatedRoster,
               dungeon: {
                 ...state.dungeon,
                 gold: loseGold ? 0 : updatedGold,
@@ -1119,7 +1141,8 @@ export const useGameStore = create<GameStore>()(
 
           const { hero: updatedHero, item } = unequipItem(hero, slotId)
           useGameStore.setState((state) => ({
-            party: state.party.map(h => h?.id === heroId ? updatedHero : h)
+            party: state.party.map(h => h?.id === heroId ? updatedHero : h),
+            heroRoster: state.heroRoster.map(h => h.id === heroId ? updatedHero : h)
           }))
 
           return item
@@ -1138,11 +1161,15 @@ export const useGameStore = create<GameStore>()(
             const updatedParty = state.party.map(h =>
               h?.id === heroId ? equipItem(h, item, slotId) : h
             )
+            const updatedRoster = state.heroRoster.map(h =>
+              h.id === heroId ? equipItem(h, item, slotId) : h
+            )
             // Remove item from dungeon inventory
             const updatedInventory = state.dungeon.inventory.filter(i => i.id !== item.id)
 
             return {
               party: updatedParty,
+              heroRoster: updatedRoster,
               dungeon: {
                 ...state.dungeon,
                 inventory: updatedInventory

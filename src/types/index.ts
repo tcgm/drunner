@@ -76,7 +76,7 @@ export interface Equipment {
 }
 
 // Only core equipment slots (excludes stretch goal slots)
-export type ItemSlot = 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2'
+export type ItemSlot = 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2' | 'consumable'
 
 export type ItemRarity = 
   // Base rarities (0-10 floors)

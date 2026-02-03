@@ -1,11 +1,11 @@
-import { Consumable } from '../../../types'
+import type { Consumable } from '../../../types'
 import { GiClover } from 'react-icons/gi'
 
 export const LUCK_ELIXIR: Consumable = {
   id: 'luck-elixir',
   name: 'Luck Elixir',
   description: 'Increases luck by 15 for 5 events.',
-  type: 'accessory1',
+  type: 'consumable',
   rarity: 'rare',
   stats: {},
   value: 100,

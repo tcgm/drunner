@@ -40,6 +40,39 @@ export function migrateHeroSlots(hero: Hero): Hero {
       if (consumables[2] && !slots.consumable3) slots.consumable3 = consumables[2]
     }
 
+    // MIGRATION: Move potions from accessory slots to consumable slots
+    // Check if accessories are consumables (potions) and move them
+    const isConsumable = (item: Item | Consumable | null): item is Consumable => {
+      return item !== null && 'consumableType' in item
+    }
+    
+    const consumableSlotIds = ['consumable1', 'consumable2', 'consumable3']
+    let nextConsumableSlot = 0
+    
+    // Check accessory1 for potions
+    if (slots.accessory1 && isConsumable(slots.accessory1)) {
+      if (nextConsumableSlot < consumableSlotIds.length) {
+        const slotId = consumableSlotIds[nextConsumableSlot]
+        if (!slots[slotId]) {
+          slots[slotId] = slots.accessory1
+          slots.accessory1 = null
+          nextConsumableSlot++
+        }
+      }
+    }
+    
+    // Check accessory2 for potions
+    if (slots.accessory2 && isConsumable(slots.accessory2)) {
+      if (nextConsumableSlot < consumableSlotIds.length) {
+        const slotId = consumableSlotIds[nextConsumableSlot]
+        if (!slots[slotId]) {
+          slots[slotId] = slots.accessory2
+          slots.accessory2 = null
+          nextConsumableSlot++
+        }
+      }
+    }
+
     const migratedHero = {
       ...hero,
       slots,
@@ -118,6 +151,39 @@ export function migrateHeroSlots(hero: Hero): Hero {
     if (consumables[0]) slots.consumable1 = consumables[0]
     if (consumables[1]) slots.consumable2 = consumables[1]
     if (consumables[2]) slots.consumable3 = consumables[2]
+  }
+  
+  // MIGRATION: Move potions from accessory slots to consumable slots
+  // Check if accessories are consumables (potions) and move them
+  const isConsumable = (item: Item | Consumable | null): item is Consumable => {
+    return item !== null && 'consumableType' in item
+  }
+  
+  const consumableSlotIds = ['consumable1', 'consumable2', 'consumable3']
+  let nextConsumableSlot = 0
+  
+  // Check accessory1 for potions
+  if (slots.accessory1 && isConsumable(slots.accessory1)) {
+    if (nextConsumableSlot < consumableSlotIds.length) {
+      const slotId = consumableSlotIds[nextConsumableSlot]
+      if (!slots[slotId]) {
+        slots[slotId] = slots.accessory1
+        slots.accessory1 = null
+        nextConsumableSlot++
+      }
+    }
+  }
+  
+  // Check accessory2 for potions
+  if (slots.accessory2 && isConsumable(slots.accessory2)) {
+    if (nextConsumableSlot < consumableSlotIds.length) {
+      const slotId = consumableSlotIds[nextConsumableSlot]
+      if (!slots[slotId]) {
+        slots[slotId] = slots.accessory2
+        slots.accessory2 = null
+        nextConsumableSlot++
+      }
+    }
   }
   
   // Return migrated hero with new slots system

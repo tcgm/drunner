@@ -1,11 +1,12 @@
 import { VStack, Box, Text, SimpleGrid, Badge, Tooltip, Flex, Button, Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Hero } from '@/types'
+import type { Hero, Consumable, Item } from '@/types'
 import { useGameStore } from '@store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getEquipmentSlotIds, getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { useConsumable as applyConsumable } from '@/systems/consumables/consumableManager'
 
 interface InventoryPanelProps {
   hero: Hero
@@ -36,13 +37,25 @@ const RARITY_COLORS: Record<string, string> = {
 }
 
 export default function InventoryPanel({ hero, onSlotClick, showBankOption }: InventoryPanelProps) {
-  const { unequipItemFromHero, sellItemForGold } = useGameStore()
+  const { unequipItemFromHero, sellItemForGold, updateHero, party, dungeon } = useGameStore()
 
   const handleUnequip = (slotId: string) => {
     const item = unequipItemFromHero(hero.id, slotId)
     if (item) {
       // For now, auto-sell unequipped items
       sellItemForGold(item)
+    }
+  }
+  
+  const handleUseConsumable = (slotId: string) => {
+    const item = hero.slots[slotId]
+    if (item && 'consumableType' in item) {
+      const result = applyConsumable(hero, slotId, dungeon.floor, party)
+      if (result.hero) {
+        updateHero(result.hero.id, result.hero)
+        // TODO: Show message to user
+        console.log(result.message)
+      }
     }
   }
   
@@ -58,10 +71,11 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
     const slotDef = getSlotById(slotId)
     const slotName = slotDef?.name || slotId
     const isEmpty = !item
+    const isConsumable = item && 'consumableType' in item
 
     return (
       <Tooltip
-        key={slot}
+        key={slotId}
         label={
           item ? (
             <VStack className="inventory-panel-tooltip" align="start" spacing={1} p={1}>
@@ -77,6 +91,11 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
                     </Text>
                   ))}
                 </Box>
+              )}
+              {isConsumable && (
+                <Text fontSize="xs" color="cyan.300" pt={1}>
+                  Click "Use" to consume
+                </Text>
               )}
               <Text fontSize="xs" color="yellow.300" pt={1}>
                 Value: {item.value} gold
@@ -126,21 +145,39 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
               >
                 {item.rarity}
               </Badge>
-              <Button
-                position="absolute"
-                bottom={1}
-                right={1}
-                size="xs"
-                colorScheme="red"
-                variant="ghost"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleUnequip(slotId)
-                }}
-                fontSize="xs"
-              >
-                Sell
-              </Button>
+              {isConsumable ? (
+                <Button
+                  position="absolute"
+                  bottom={1}
+                  right={1}
+                  size="xs"
+                  colorScheme="green"
+                  variant="solid"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleUseConsumable(slotId)
+                  }}
+                  fontSize="xs"
+                >
+                  Use
+                </Button>
+              ) : (
+                <Button
+                  position="absolute"
+                  bottom={1}
+                  right={1}
+                  size="xs"
+                  colorScheme="red"
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleUnequip(slotId)
+                  }}
+                  fontSize="xs"
+                >
+                  Sell
+                </Button>
+              )}
             </>
           )}
         </Box>
@@ -164,6 +201,17 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
         {renderEquipmentSlot('boots')}
         {renderEquipmentSlot('accessory1')}
         {renderEquipmentSlot('accessory2')}
+      </SimpleGrid>
+
+      {/* Consumables Section */}
+      <Text fontSize="sm" fontWeight="bold" color="cyan.300" pt={2}>
+        Consumables
+      </Text>
+      
+      <SimpleGrid columns={3} spacing={2} w="full">
+        {renderEquipmentSlot('consumable1')}
+        {renderEquipmentSlot('consumable2')}
+        {renderEquipmentSlot('consumable3')}
       </SimpleGrid>
 
       {/* Equipment bonuses summary */}

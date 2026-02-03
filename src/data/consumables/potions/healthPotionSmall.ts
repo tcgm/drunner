@@ -1,11 +1,11 @@
-import { Consumable } from '../../../types'
+import type { Consumable } from '../../../types'
 import { GiHealthPotion } from 'react-icons/gi'
 
 export const HEALTH_POTION_SMALL: Consumable = {
   id: 'health-potion-small',
   name: 'Small Health Potion',
   description: 'Restores 30 HP to a single hero.',
-  type: 'accessory1', // Consumables use accessory slot type as base
+  type: 'consumable',
   rarity: 'common',
   stats: {},
   value: 25,

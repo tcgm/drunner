@@ -1,11 +1,11 @@
-import { Consumable } from '../../../types'
+import type { Consumable } from '../../../types'
 import { GiHealthPotion } from 'react-icons/gi'
 
 export const HEALTH_POTION_GREATER: Consumable = {
   id: 'health-potion-greater',
   name: 'Greater Health Potion',
   description: 'Restores 200 HP to a single hero.',
-  type: 'accessory1',
+  type: 'consumable',
   rarity: 'epic',
   stats: {},
   value: 200,
