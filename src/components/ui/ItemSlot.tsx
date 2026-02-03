@@ -23,7 +23,7 @@ interface ItemSlotProps {
   item: Item
   onClick?: () => void
   isClickable?: boolean
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   showCheckbox?: boolean
   isSelected?: boolean
   onCheckboxChange?: () => void
@@ -33,7 +33,8 @@ interface ItemSlotProps {
 const SLOT_SIZES = {
   sm: '60px',
   md: '80px', 
-  lg: '100px'
+  lg: '100px',
+  xl: '140px'
 }
 
 const RARITY_COLORS: Record<string, {
@@ -476,7 +477,7 @@ export const ItemSlot = memo(function ItemSlot({
           >
             <Icon
               as={ItemIcon}
-              boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : '36px'}
+              boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px'}
               color="white"
               mb={0.5}
             />
@@ -484,7 +485,7 @@ export const ItemSlot = memo(function ItemSlot({
           
           {/* Item Name */}
           <Text
-            fontSize={size === 'sm' ? '3xs' : '2xs'} 
+            fontSize={size === 'sm' ? '3xs' : size === 'xl' ? 'xs' : '2xs'} 
             fontWeight="bold" 
             color="white"
             textAlign="center"

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, EventChoice, Item, ItemSlot } from '@/types'
+import type { GameState, Hero, EventChoice, Item, ItemSlot, Consumable } from '@/types'
 import { MusicContext } from '@/types/audio'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
@@ -252,6 +252,8 @@ interface GameStore extends GameState {
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
   unequipItemFromHero: (heroId: string, slotId: string) => Item | null
   sellItemForGold: (item: Item) => void
+  purchasePotion: (potion: Consumable) => void
+  spendBankGold: (amount: number) => boolean
   equipItemFromBank: (heroId: string, item: Item, slotId: string) => void
   moveItemToBank: (item: Item) => void
   removeItemFromBank: (itemId: string) => void
@@ -1219,6 +1221,26 @@ export const useGameStore = create<GameStore>()(
               gold: state.dungeon.gold + sellItem(item)
             }
           })),
+
+        purchasePotion: (potion) =>
+          set((state) => {
+            if (state.bankGold >= potion.value) {
+              return {
+                bankGold: state.bankGold - potion.value,
+                bankInventory: [...state.bankInventory, potion]
+              }
+            }
+            return state
+          }),
+
+        spendBankGold: (amount) => {
+          const state = useGameStore.getState()
+          if (state.bankGold >= amount) {
+            set({ bankGold: state.bankGold - amount })
+            return true
+          }
+          return false
+        },
 
         equipItemToHero: (heroId, item, slotId) =>
           set((state) => {

@@ -1,15 +1,17 @@
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { Box, HStack, Heading, Text, Button } from '@chakra-ui/react'
+import { Box, HStack, Heading, Text, Button, Icon } from '@chakra-ui/react'
+import { GiShop, GiShoppingCart } from 'react-icons/gi'
 
 interface PartySetupHeaderProps {
   bankGold: number
   metaXp: number
   onBack: () => void
   onStart: () => void
+  onOpenShop: () => void
   canStart: boolean
 }
 
-export function PartySetupHeader({ bankGold, metaXp, onBack, onStart, canStart }: PartySetupHeaderProps) {
+export function PartySetupHeader({ bankGold, metaXp, onBack, onStart, onOpenShop, canStart }: PartySetupHeaderProps) {
   return (
     <Box className="party-setup-header" bg="gray.950" borderBottom="2px solid" borderColor="orange.800" px={4} py={2} flexShrink={0}>
       <HStack className="party-setup-header-content" justify="space-between">
@@ -25,6 +27,15 @@ export function PartySetupHeader({ bankGold, metaXp, onBack, onStart, canStart }
           </HStack>
         </HStack>
         <HStack className="party-setup-header-actions" spacing={2}>
+          <Button 
+            variant="outline" 
+            colorScheme="purple" 
+            onClick={onOpenShop} 
+            size="sm"
+            leftIcon={<Icon as={GiShop} />}
+          >
+            Shop
+          </Button>
           <Button variant="outline" colorScheme="gray" onClick={onBack} size="xs">
             Back
           </Button>

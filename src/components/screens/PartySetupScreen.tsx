@@ -2,7 +2,7 @@ import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../store/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
 import { useState, useEffect } from 'react'
-import type { Hero } from '../../types'
+import type { Hero, Consumable, Item } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
 import { PartySetupSlots } from '../party/PartySetupSlots'
@@ -10,6 +10,7 @@ import { EquipmentPanel } from '../party/EquipmentPanel'
 import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import { ConfirmStartWithOverflowModal } from '../party/ConfirmStartWithOverflowModal'
+import { PotionShopModal } from '../party/PotionShopModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 import { useMusicContext } from '../../utils/useMusicContext'
@@ -40,6 +41,8 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     clearOverflow,
     metaXp,
     healParty,
+    purchasePotion,
+    spendBankGold,
   } = useGameStore()
 
   // Enable party screen music
@@ -72,6 +75,9 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Floor selection modal
   const { isOpen: isFloorSelectionOpen, onOpen: onFloorSelectionOpen, onClose: onFloorSelectionClose } = useDisclosure()
+
+  // Shop modal
+  const { isOpen: isShopOpen, onOpen: onShopOpen, onClose: onShopClose } = useDisclosure()
 
   // Auto-open overflow modal if there are overflow items
   useState(() => {
@@ -182,6 +188,17 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     onStart(floor)
   }
 
+  const handlePurchasePotion = (potion: Consumable) => {
+    purchasePotion(potion)
+  }
+
+  const handlePurchaseItem = (item: Item) => {
+    if (bankGold >= item.value) {
+      moveItemToBank(item)
+      spendBankGold(item.value)
+    }
+  }
+
   return (
     <Box className="party-setup-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
       {/* Header */}
@@ -191,6 +208,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         canStart={canStart}
         onBack={onBack}
         onStart={handleStart}
+        onOpenShop={onShopOpen}
       />
 
       <Flex className="party-setup-screen-content" flex={1} minH={0} overflow="hidden">
@@ -269,6 +287,17 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onConfirm={handleFloorSelected}
         party={party}
         alkahest={useGameStore.getState().alkahest}
+      />
+
+      {/* Potion Shop Modal */}
+      <PotionShopModal
+        isOpen={isShopOpen}
+        onClose={onShopClose}
+        bankGold={bankGold}
+        party={party}
+        onPurchase={handlePurchasePotion}
+        onPurchaseItem={handlePurchaseItem}
+        onSpendGold={spendBankGold}
       />
     </Box>
   )

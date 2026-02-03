@@ -208,6 +208,15 @@ export const GAME_CONFIG = {
     maxSize: 4, // Maximum party size (can be expanded later)
   },
 
+  // Shop
+  shop: {
+    priceMultiplier: 2.0, // Shop items cost 2x their base value
+    refreshBaseCost: 50, // Base cost to refresh shop inventory
+    refreshCostMultiplier: 0.25, // Multiplier of remaining unpurchased items value for refresh cost
+    inventorySize: 6, // Number of potions in shop
+    floorScaling: 3, // Multiplier for converting party level to effective floor for potion quality
+  },
+
   // Death penalties
   deathPenalty: {
     type: 'halve-levels' as 'none' | 'halve-levels' | 'reset-levels' | 'lose-equipment',
