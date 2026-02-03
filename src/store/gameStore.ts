@@ -946,13 +946,16 @@ export const useGameStore = create<GameStore>()(
               return penalizedVersion || rosterHero
             })
 
+            // Save to separate run history storage
+            const history = loadRunHistory()
+            saveRunHistory([completedRun, ...history])
+
             return {
               party: penalizedParty,
               heroRoster: updatedRoster,
               isGameOver: true,
               hasPendingPenalty: false,
               activeRun: completedRun,
-              runHistory: [completedRun, ...state.runHistory].slice(0, 10),
               dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
             }
           }),

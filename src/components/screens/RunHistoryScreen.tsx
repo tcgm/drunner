@@ -8,7 +8,8 @@ interface RunHistoryScreenProps {
 }
 
 export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
-  const { runHistory, activeRun } = useGameStore()
+  const { activeRun, getRunHistory } = useGameStore()
+  const runHistory = getRunHistory()
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString('en-US', {
