@@ -224,25 +224,35 @@ export const ItemSlot = memo(function ItemSlot({
       </Text>
       {item.stats && Object.keys(item.stats).length > 0 && (
         <SimpleGrid columns={2} spacing={1} w="full" fontSize="2xs" color="gray.300">
-          {Object.entries(item.stats).map(([stat, value]) => {
-            const compValue = comparisonItem?.stats?.[stat as keyof typeof comparisonItem.stats]
-            const diff = compValue !== undefined ? (value || 0) - compValue : null
-            return (
-              <HStack key={stat} spacing={1}>
-                <Text>
-                  {stat.toUpperCase()}: {value >= 0 ? '+' : ''}{value}
-                </Text>
-                {diff !== null && diff !== 0 && (
-                  <Text 
-                    color={diff > 0 ? 'green.400' : 'red.400'}
-                    fontWeight="bold"
-                  >
-                    ({diff > 0 ? '+' : ''}{diff})
+          {(() => {
+            // Get all unique stats from both items
+            const allStats = new Set([
+              ...Object.keys(item.stats || {}),
+              ...(comparisonItem?.stats ? Object.keys(comparisonItem.stats) : [])
+            ])
+
+            return Array.from(allStats).map((stat) => {
+              const value = (item.stats as any)?.[stat] || 0
+              const compValue = (comparisonItem?.stats as any)?.[stat] || 0
+              const diff = comparisonItem ? value - compValue : null
+
+              return (
+                <HStack key={stat} spacing={1}>
+                  <Text>
+                    {stat.toUpperCase()}: {value >= 0 ? '+' : ''}{value}
                   </Text>
-                )}
-              </HStack>
-            )
-          })}
+                  {diff !== null && diff !== 0 && (
+                    <Text
+                      color={diff > 0 ? 'green.400' : 'red.400'}
+                      fontWeight="bold"
+                    >
+                      ({diff > 0 ? '+' : ''}{diff})
+                    </Text>
+                  )}
+                </HStack>
+              )
+            })
+          })()}
         </SimpleGrid>
       )}
       {comparisonItem && (
@@ -255,11 +265,22 @@ export const ItemSlot = memo(function ItemSlot({
           </Text>
           {comparisonItem.stats && Object.keys(comparisonItem.stats).length > 0 && (
             <SimpleGrid columns={2} spacing={1} w="full" fontSize="2xs" color="gray.500">
-              {Object.entries(comparisonItem.stats).map(([stat, value]) => (
-                <Text key={stat}>
-                  {stat.toUpperCase()}: {value >= 0 ? '+' : ''}{value}
-                </Text>
-              ))}
+              {(() => {
+                // Get all unique stats from both items
+                const allStats = new Set([
+                  ...Object.keys(item.stats || {}),
+                  ...Object.keys(comparisonItem.stats || {})
+                ])
+
+                return Array.from(allStats).map((stat) => {
+                  const value = (comparisonItem.stats as any)?.[stat] || 0
+                  return (
+                    <Text key={stat}>
+                      {stat.toUpperCase()}: {value >= 0 ? '+' : ''}{value}
+                    </Text>
+                  )
+                })
+              })()}
             </SimpleGrid>
           )}
         </>

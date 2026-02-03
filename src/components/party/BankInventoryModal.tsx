@@ -23,6 +23,7 @@ import {
   useToast,
   Icon,
   Spacer,
+  useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useCallback, useMemo } from 'react'
 import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
@@ -35,6 +36,7 @@ import { InventoryTabs } from '@/components/inventory/InventoryTabs'
 import { useInventoryFilters } from '@/components/inventory/useInventoryFilters'
 import { useItemsByType } from '@/components/inventory/useItemsByType'
 import { useLazyLoading } from '@/components/inventory/useLazyLoading'
+import BuyBankSlotsModal from './BuyBankSlotsModal'
 
 interface BankInventoryModalProps {
   isOpen: boolean
@@ -54,6 +56,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
   const { alkahest, discardItems, bankStorageSlots, bankGold, expandBankStorage } = useGameStore()
   const toast = useToast()
+  const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
 
   // Use shared hooks
   const visibleCount = useLazyLoading({
@@ -200,27 +203,14 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
             <Spacer />
             {!pendingSlot && (
               <VStack align="end" spacing={1} mr={8}>
-                <HStack spacing={2}>
-                  <Button
-                    size="sm"
-                    colorScheme="purple"
-                    variant="outline"
-                    onClick={() => handleExpandBank(5)}
-                    isDisabled={bankGold < 5 * GAME_CONFIG.bank.costPerSlot}
-                    leftIcon={<Icon as={GiTwoCoins} />}
-                  >
-                    +5 Slots ({(5 * GAME_CONFIG.bank.costPerSlot).toLocaleString()}g)
-                  </Button>
-                  <Button
-                    size="sm"
-                    colorScheme="purple"
-                    onClick={() => handleExpandBank(10)}
-                    isDisabled={bankGold < 10 * GAME_CONFIG.bank.costPerSlot}
-                    leftIcon={<Icon as={GiTwoCoins} />}
-                  >
-                    +10 Slots ({(10 * GAME_CONFIG.bank.costPerSlot).toLocaleString()}g)
-                  </Button>
-                </HStack>
+                <Button
+                  size="sm"
+                  colorScheme="purple"
+                  onClick={onBuySlotsOpen}
+                  leftIcon={<Icon as={GiSwapBag} />}
+                >
+                  Buy Bank Slots
+                </Button>
               </VStack>
             )}
           </Flex>
@@ -358,6 +348,15 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
           </Tabs>
         </ModalBody>
       </ModalContent>
+
+      {/* Buy Bank Slots Modal */}
+      <BuyBankSlotsModal
+        isOpen={isBuySlotsOpen}
+        onClose={onBuySlotsClose}
+        onConfirm={handleExpandBank}
+        bankGold={bankGold}
+        currentSlots={bankStorageSlots}
+      />
     </Modal>
   )
 }
