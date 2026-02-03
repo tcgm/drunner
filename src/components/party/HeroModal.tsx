@@ -14,6 +14,7 @@ import {
   GridItem,
   Badge,
   useDisclosure,
+  Button,
 } from '@chakra-ui/react'
 import type { Hero, Item } from '@/types'
 import * as GameIcons from 'react-icons/gi'
@@ -38,7 +39,7 @@ interface HeroModalProps {
 export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  const { equipItemToHero, dungeon } = useGameStore()
+  const { equipItemToHero, unequipItemFromHero, dungeon } = useGameStore()
   const [swapMode, setSwapMode] = useState<string | null>(null)
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
 
@@ -91,16 +92,41 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
   const renderEquipmentSlot = (slotId: string, size: 'sm' | 'md' | 'lg' = 'md') => {
     const item = hero.slots[slotId]
     return (
-      <EquipmentSlot
-        slot={slotId}
-        item={item ? restoreItemIcon(item) : null}
-        availableItems={dungeon.inventory}
-        currentEquipment={hero.slots}
-        isSwapActive={swapMode === slotId}
-        showSwapButton={true}
-        onSwapClick={() => handleSwap(slotId)}
-        size={size}
-      />
+      <Box position="relative">
+        <EquipmentSlot
+          slot={slotId}
+          item={item ? restoreItemIcon(item) : null}
+          availableItems={dungeon.inventory}
+          currentEquipment={hero.slots}
+          isSwapActive={swapMode === slotId}
+          showSwapButton={true}
+          onSwapClick={() => handleSwap(slotId)}
+          size={size}
+        />
+        {item && (
+          <Button
+            position="absolute"
+            top="-8px"
+            right="-8px"
+            size="xs"
+            colorScheme="orange"
+            variant="solid"
+            onClick={(e) => {
+              e.stopPropagation()
+              unequipItemFromHero(hero.id, slotId)
+            }}
+            fontSize="2xs"
+            borderRadius="full"
+            minW="auto"
+            w="24px"
+            h="24px"
+            p={0}
+            zIndex={3}
+          >
+            ×
+          </Button>
+        )}
+      </Box>
     )
   }
 

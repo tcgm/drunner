@@ -1,7 +1,7 @@
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../store/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { Hero, Consumable, Item } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
@@ -157,6 +157,14 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     }
   }
 
+  const handleEquipItemDirect = useCallback((heroIndex: number, item: Item, slotId: string) => {
+    const hero = party[heroIndex]
+    if (hero) {
+      equipItemFromBank(hero.id, item, slotId)
+      onClose() // Close bank modal after swap
+    }
+  }, [party, equipItemFromBank, onClose])
+
   const handleExpandBank = (count: number) => {
     expandBankStorage(count)
   }
@@ -245,6 +253,8 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
           onSelectHero={setSelectedHeroIndex}
           onSlotClick={handleOpenBankForSlot}
           onUnequipItem={handleUnequipItem}
+          onEquipItem={handleEquipItemDirect}
+          isBankModalOpen={isOpen}
         />
       </Flex>
 

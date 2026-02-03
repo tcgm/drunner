@@ -432,7 +432,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       {formatStatName(stat)}
                     </Text>
                     <Text fontSize="md" fontWeight="bold" color={getStatColor(stat)}>
-                      +{value}
+                      {value >= 0 ? '+' : ''}{value}
                     </Text>
                   </HStack>
                 ))}
@@ -563,7 +563,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       {formatStatName(stat)}
                     </Text>
                     <Text fontSize="md" fontWeight="bold" color={getStatColor(stat)}>
-                      +{value}
+                      {value >= 0 ? '+' : ''}{value}
                     </Text>
                   </HStack>
                 ))}

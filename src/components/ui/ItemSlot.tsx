@@ -226,7 +226,7 @@ export const ItemSlot = memo(function ItemSlot({
             return (
               <HStack key={stat} spacing={1}>
                 <Text>
-                  {stat.toUpperCase()}: +{value}
+                  {stat.toUpperCase()}: {value >= 0 ? '+' : ''}{value}
                 </Text>
                 {diff !== null && diff !== 0 && (
                   <Text 
@@ -253,7 +253,7 @@ export const ItemSlot = memo(function ItemSlot({
             <SimpleGrid columns={2} spacing={1} w="full" fontSize="2xs" color="gray.500">
               {Object.entries(comparisonItem.stats).map(([stat, value]) => (
                 <Text key={stat}>
-                  {stat.toUpperCase()}: +{value}
+                  {stat.toUpperCase()}: {value >= 0 ? '+' : ''}{value}
                 </Text>
               ))}
             </SimpleGrid>

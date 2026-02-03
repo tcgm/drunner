@@ -1,4 +1,5 @@
 import { VStack, Box, Text, SimpleGrid, HStack, Button, Icon } from '@chakra-ui/react'
+import { useState, useEffect, useCallback } from 'react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
@@ -7,6 +8,7 @@ import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getEquipmentSlotIds } from '@/config/slotConfig'
+import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
 // import { useGameStore } from '@/store/gameStore'
 // import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 
@@ -45,6 +47,8 @@ interface EquipmentPanelProps {
   onSelectHero: (index: number) => void
   onSlotClick: (heroIndex: number, slotId: string) => void
   onUnequipItem: (heroIndex: number, slotId: string) => void
+  onEquipItem?: (heroIndex: number, item: Item, slotId: string) => void
+  isBankModalOpen: boolean
 }
 
 export function EquipmentPanel({
@@ -53,10 +57,58 @@ export function EquipmentPanel({
   bankInventory,
   onSelectHero,
   onSlotClick,
-  onUnequipItem
+  onUnequipItem,
+  onEquipItem,
+  isBankModalOpen
 }: EquipmentPanelProps) {
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
   const activeParty = party.filter((h): h is Hero => h !== null)
+  const [swapMode, setSwapMode] = useState<string | null>(null)
+
+  const handleSwap = (slotId: string) => {
+    if (swapMode === null) {
+      setSwapMode(slotId)
+      // Open bank modal for swap mode
+      if (selectedHeroIndex !== null) {
+        onSlotClick(selectedHeroIndex, slotId)
+      }
+    } else {
+      setSwapMode(null)
+    }
+  }
+
+  // Handle item click from ItemSlot when in swap mode
+  const handleInventoryItemClick = useCallback((item: Item) => {
+    if (swapMode !== null && selectedHeroIndex !== null && onEquipItem) {
+      // Check if item is compatible
+      const isCompatible = isItemCompatibleWithSlot(item, swapMode)
+      if (isCompatible) {
+        onEquipItem(selectedHeroIndex, item, swapMode)
+        setSwapMode(null)
+      }
+    }
+  }, [swapMode, selectedHeroIndex, onEquipItem])
+
+  // Sync swap mode with modal state - when modal closes, clear swap mode
+  useEffect(() => {
+    if (!isBankModalOpen && swapMode !== null) {
+      setSwapMode(null)
+    }
+  }, [isBankModalOpen, swapMode])
+
+  // Expose swap handler globally so inventory items can call it
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).__heroModalSwapHandler = swapMode !== null ? handleInventoryItemClick : null
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).__heroModalSwapHandler = null
+      }
+    }
+  }, [swapMode, handleInventoryItemClick])
 
   const renderEquipmentSlot = (slotId: string, size: 'sm' | 'md' | 'lg' = 'md') => {
     if (!selectedHero) return null
@@ -65,7 +117,7 @@ export function EquipmentPanel({
     const isEmpty = !item
 
     if (isEmpty) {
-      // Empty slot - clickable to equip with upgrade indicator
+      // Empty slot - clickable to equip with upgrade indicator and swap button
       return (
         <Box
           key={slotId}
@@ -77,14 +129,16 @@ export function EquipmentPanel({
             item={null}
             availableItems={bankInventory}
             currentEquipment={selectedHero.slots}
-            showSwapButton={false}
+            isSwapActive={swapMode === slotId}
+            showSwapButton={true}
+            onSwapClick={() => handleSwap(slotId)}
             size={size}
           />
         </Box>
       )
     }
 
-    // Equipped item - use EquipmentSlot component with unequip button
+    // Equipped item - show both swap button and unequip button
     return (
       <Box key={slotId} position="relative">
         <EquipmentSlot
@@ -92,7 +146,9 @@ export function EquipmentPanel({
           item={restoreItemIcon(item)}
           availableItems={bankInventory}
           currentEquipment={selectedHero.slots}
-          showSwapButton={false}
+          isSwapActive={swapMode === slotId}
+          showSwapButton={true}
+          onSwapClick={() => handleSwap(slotId)}
           size={size}
         />
         <Button
