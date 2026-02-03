@@ -61,9 +61,10 @@ export function EquipmentSlot({
           display="flex"
           alignItems="center"
           justifyContent="center"
-          cursor="default"
-          _hover={{ borderColor: isSwapActive ? "orange.300" : "gray.600" }}
+          cursor={canSwap && onSwapClick ? "pointer" : "default"}
+          _hover={{ borderColor: isSwapActive ? "orange.300" : canSwap ? "gray.600" : "gray.700" }}
           title={slotName}
+          onClick={canSwap && onSwapClick ? onSwapClick : undefined}
         >
           <Icon as={SlotIcon} boxSize={8} color="gray.600" />
         </Box>
