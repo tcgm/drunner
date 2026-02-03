@@ -197,6 +197,13 @@ export function upgradeItemMaterial(
     baseTemplate = findBaseFromItemName(item.name, item.type)
   }
 
+  // If we can't find the base template, we can't safely upgrade material
+  // because we'd risk changing the item type (e.g., club → blade)
+  if (!baseTemplate) {
+    console.warn(`Cannot upgrade material for ${item.name} - base template not found`)
+    return null
+  }
+
   // Generate a new item with the upgraded material, preserving base template
   const upgradedItem = generateItem(
     depth,
@@ -204,7 +211,7 @@ export function upgradeItemMaterial(
     item.rarity,
     item.rarity, // Keep same rarity
     0,
-    baseTemplate || nextMaterial // Use base template if found, otherwise just material
+    baseTemplate // Use the base template to preserve item identity
   )
 
   return upgradedItem
@@ -227,7 +234,7 @@ export function upgradeItemRarity(
   }
   
   // Try to upgrade material first - this preserves the base type
-  const materialId = extractMaterialId(item)
+  const materialId = extractMaterialId(item.name)
   const nextMaterial = materialId ? getNextMaterial(materialId) : null
   
   if (nextMaterial) {
