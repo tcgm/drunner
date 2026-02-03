@@ -5,7 +5,7 @@ export const AIR_ELEMENTAL_LORD: DungeonEvent = {
   id: 'air-elemental-lord',
   type: 'boss',
   title: 'Air Elemental Lord',
-  description: 'A massive vortex of sentient wind fills the chamber. Lightning crackles through its form, and the howling winds threaten to tear you apart.',
+  description: 'A massive vortex of sentient wind fills the chamber. Lightning crackles through its form, and the howling winds threaten to tear you apart. The Party must survive!',
   choices: [
     {
       text: 'Fight the storm',
