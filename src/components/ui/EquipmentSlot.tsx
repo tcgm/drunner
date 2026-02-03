@@ -111,7 +111,7 @@ export function EquipmentSlot({
         h={slotSize}
         w={slotSize}
       >
-        <ItemSlotComponent item={item} isClickable={true} size="md" />
+        <ItemSlotComponent item={item} isClickable={true} size={size} />
       </Box>
       {hasUpgrade && (
         <Icon

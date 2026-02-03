@@ -205,10 +205,13 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
       <PartySetupHeader
         bankGold={bankGold}
         metaXp={metaXp}
+        bankInventory={bankInventory.length}
+        bankStorageSlots={bankStorageSlots}
         canStart={canStart}
         onBack={onBack}
         onStart={handleStart}
         onOpenShop={onShopOpen}
+        onOpenBank={handleOpenBank}
       />
 
       <Flex className="party-setup-screen-content" flex={1} minH={0} overflow="hidden">
@@ -239,9 +242,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
           selectedHeroIndex={selectedHeroIndex}
           party={party}
           bankInventory={bankInventory}
-          bankStorageSlots={bankStorageSlots}
           onSelectHero={setSelectedHeroIndex}
-          onOpenBank={handleOpenBank}
           onSlotClick={handleOpenBankForSlot}
           onUnequipItem={handleUnequipItem}
         />

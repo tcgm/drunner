@@ -42,9 +42,7 @@ interface EquipmentPanelProps {
   party: (Hero | null)[]
   selectedHeroIndex: number | null
   bankInventory: Item[]
-  bankStorageSlots: number
   onSelectHero: (index: number) => void
-  onOpenBank: () => void
   onSlotClick: (heroIndex: number, slotId: string) => void
   onUnequipItem: (heroIndex: number, slotId: string) => void
 }
@@ -53,16 +51,14 @@ export function EquipmentPanel({
   party,
   selectedHeroIndex,
   bankInventory,
-  bankStorageSlots,
   onSelectHero,
-  onOpenBank,
   onSlotClick,
   onUnequipItem
 }: EquipmentPanelProps) {
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
   const activeParty = party.filter((h): h is Hero => h !== null)
 
-  const renderEquipmentSlot = (slotId: string) => {
+  const renderEquipmentSlot = (slotId: string, size: 'sm' | 'md' | 'lg' = 'md') => {
     if (!selectedHero) return null
     
     const item = selectedHero.slots[slotId]
@@ -82,6 +78,7 @@ export function EquipmentPanel({
             availableItems={bankInventory}
             currentEquipment={selectedHero.slots}
             showSwapButton={false}
+            size={size}
           />
         </Box>
       )
@@ -96,6 +93,7 @@ export function EquipmentPanel({
           availableItems={bankInventory}
           currentEquipment={selectedHero.slots}
           showSwapButton={false}
+          size={size}
         />
         <Button
           position="absolute"
@@ -125,16 +123,11 @@ export function EquipmentPanel({
   }
 
   return (
-    <Box className="equipment-panel" w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={4} overflowY="auto">
-      <VStack spacing={3} h="full">
-        <HStack justify="space-between" w="full">
-          <Text fontSize="sm" fontWeight="bold" color="orange.300">
-            Equipment
-          </Text>
-          <Button size="xs" colorScheme="blue" variant="outline" onClick={onOpenBank}>
-            Bank ({bankInventory.length}/{bankStorageSlots})
-          </Button>
-        </HStack>
+    <Box className="equipment-panel" w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={3} overflowY="auto">
+      <VStack spacing={2} h="full">
+        <Text fontSize="sm" fontWeight="bold" color="orange.300">
+          Equipment
+        </Text>
         
         {activeParty.length > 0 ? (
           <>
@@ -159,22 +152,29 @@ export function EquipmentPanel({
 
             {/* Inventory panel for selected hero */}
             {selectedHero && (
-              <VStack className="equipment-panel-hero-equipment" spacing={3} w="full" flex={1}>
-                <Text fontSize="sm" fontWeight="bold" color="orange.300">
+              <VStack className="equipment-panel-hero-equipment" spacing={1.5} w="full" flex={1}>
+                <Text fontSize="xs" fontWeight="bold" color="orange.300">
                   {selectedHero.name}'s Equipment
                 </Text>
 
-                <SimpleGrid columns={3} spacing={2} w="full">
+                <SimpleGrid columns={3} spacing={1.5} w="full">
                   {renderEquipmentSlot('weapon')}
                   {renderEquipmentSlot('armor')}
                   {renderEquipmentSlot('helmet')}
                 </SimpleGrid>
 
-                <SimpleGrid columns={3} spacing={2} w="full">
+                <SimpleGrid columns={3} spacing={1.5} w="full">
                   {renderEquipmentSlot('boots')}
                   {renderEquipmentSlot('accessory1')}
                   {renderEquipmentSlot('accessory2')}
                 </SimpleGrid>
+
+                {/* Consumable slots */}
+                <HStack spacing={1.5} w="full" justify="center">
+                  {renderEquipmentSlot('consumable1', 'sm')}
+                  {renderEquipmentSlot('consumable2', 'sm')}
+                  {renderEquipmentSlot('consumable3', 'sm')}
+                </HStack>
 
                 {/* Equipment bonuses summary */}
                 <Box
@@ -183,10 +183,10 @@ export function EquipmentPanel({
                   borderRadius="md"
                   borderWidth="1px"
                   borderColor="gray.600"
-                  p={2}
+                  p={1.5}
                   w="full"
                 >
-                  <Text fontSize="xs" color="gray.400" mb={1}>Equipment Bonuses:</Text>
+                  <Text fontSize="2xs" color="gray.400" mb={0.5}>Equipment Bonuses:</Text>
                   {(() => {
                     // Calculate equipment bonuses by summing up item stats
                     const equipmentBonuses = {
@@ -218,14 +218,14 @@ export function EquipmentPanel({
                     
                     if (!hasAnyBonuses) {
                       return (
-                        <Text fontSize="xs" color="gray.500" textAlign="center">
+                        <Text fontSize="2xs" color="gray.500" textAlign="center">
                           No equipment bonuses
                         </Text>
                       )
                     }
 
                     return (
-                      <SimpleGrid columns={2} spacing={1} fontSize="xs">
+                      <SimpleGrid columns={2} spacing={0.5} fontSize="2xs">
                         {equipmentBonuses.attack > 0 && (
                           <Text color={GAME_CONFIG.colors.stats.attack}>
                             ATK: +{equipmentBonuses.attack}
