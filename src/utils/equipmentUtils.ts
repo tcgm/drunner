@@ -37,7 +37,7 @@ export function hasUpgradeAvailable(
     // Check if item is compatible with slot
     const isCompatible = 
       invItem.type === slotDef.type || 
-      (slotDef.type === 'accessory' && (invItem.type === 'accessory1' || invItem.type === 'accessory2' || invItem.type === 'accessory')) ||
+      (slotDef.type === 'accessory' && (invItem.type === 'accessory1' || invItem.type === 'accessory2')) ||
       (slotDef.category === 'consumable' && invItem.type === 'consumable')
     
     if (!isCompatible) return false
@@ -80,7 +80,7 @@ export function hasCompatibleItems(
     
     if (i.type === slotDef.type) return true
     // accessory slots can accept accessory items
-    if (slotDef.type === 'accessory' && (i.type === 'accessory1' || i.type === 'accessory2' || i.type === 'accessory')) return true
+    if (slotDef.type === 'accessory' && (i.type === 'accessory1' || i.type === 'accessory2')) return true
     // consumable slots accept consumable items
     if (slotDef.category === 'consumable' && i.type === 'consumable') return true
     return false
@@ -96,7 +96,7 @@ export function isItemCompatibleWithSlot(item: Item, slotId: string): boolean {
   
   if (item.type === slotDef.type) return true
   // accessory slots can accept accessory items
-  if (slotDef.type === 'accessory' && (item.type === 'accessory1' || item.type === 'accessory2' || item.type === 'accessory')) return true
+  if (slotDef.type === 'accessory' && (item.type === 'accessory1' || item.type === 'accessory2')) return true
   // consumable slots accept consumable items
   if (slotDef.category === 'consumable' && item.type === 'consumable') return true
   return false
