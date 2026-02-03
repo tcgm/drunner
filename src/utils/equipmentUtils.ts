@@ -42,13 +42,19 @@ export function hasUpgradeAvailable(
     
     if (!isCompatible) return false
     
-    // Check if any stat is higher
+    // Calculate total stat value for comparison
+    // This prevents showing items as upgrades when they're actually sidegrades/downgrades
     if (!invItem.stats || !currentItem.stats) return false
     
-    return Object.entries(invItem.stats).some(([stat, value]) => {
-      const currentValue = currentItem.stats?.[stat as keyof typeof currentItem.stats]
-      return currentValue !== undefined && value !== undefined && value > currentValue
-    })
+    const getTotalStatValue = (stats: Partial<Record<string, number>>): number => {
+      return Object.values(stats).reduce<number>((sum, val) => sum + (val || 0), 0)
+    }
+    
+    const invItemTotal = getTotalStatValue(invItem.stats)
+    const currentItemTotal = getTotalStatValue(currentItem.stats)
+    
+    // Only consider it an upgrade if the total stat value is higher
+    return invItemTotal > currentItemTotal
   })
 }
 
