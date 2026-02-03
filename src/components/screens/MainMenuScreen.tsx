@@ -1,6 +1,9 @@
-import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast } from '@chakra-ui/react'
+import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
 import { useGameStore } from '@store/gameStore'
+import { useMusicContext } from '@/utils/useMusicContext'
+import { MusicContext } from '@/types/audio'
+import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
 
 interface MainMenuScreenProps {
   onNewRun: () => void
@@ -9,11 +12,17 @@ interface MainMenuScreenProps {
 }
 
 export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: MainMenuScreenProps) {
+  console.log('[MainMenuScreen] Component rendering');
   const { activeRun, listBackups, restoreFromBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [backups, setBackups] = useState<string[]>([])
   const toast = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Enable main menu music
+  console.log('[MainMenuScreen] About to call useMusicContext');
+  useMusicContext(MusicContext.MAIN_MENU)
+  console.log('[MainMenuScreen] useMusicContext called');
   
   // Check if there's an active dungeon run in progress
   const hasActiveRun = activeRun !== null && activeRun.result === 'active'
@@ -122,42 +131,288 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
   }
   
   return (
-    <Box className="main-menu-screen" h="100vh" w="100vw" display="flex" alignItems="center" justifyContent="center" overflow="hidden">
-      <VStack className="main-menu-content" spacing={8}>
-        <Heading className="main-menu-title" size="2xl" color="orange.400">
-          Dungeon Runner
-        </Heading>
-        <VStack className="main-menu-buttons" spacing={4}>
-          <Button className="btn-new-run" colorScheme="orange" size="lg" onClick={onNewRun}>
+    <Box 
+      className="main-menu-screen" 
+      h="100vh" 
+      w="100vw" 
+      display="flex" 
+      alignItems="center" 
+      justifyContent="center" 
+      overflow="hidden"
+      bgGradient="linear(to-b, gray.900, gray.800, gray.900)"
+      position="relative"
+      _before={{
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        bgImage: 'radial-gradient(circle at 50% 50%, rgba(251, 146, 60, 0.03), transparent 50%)',
+        pointerEvents: 'none',
+      }}
+    >
+      {/* Decorative corner elements */}
+      <Box
+        position="absolute"
+        top="0"
+        left="0"
+        width="200px"
+        height="200px"
+        borderLeft="3px solid"
+        borderTop="3px solid"
+        borderColor="orange.500"
+        opacity={0.3}
+        _after={{
+          content: '""',
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          width: '20px',
+          height: '20px',
+          borderLeft: '2px solid',
+          borderTop: '2px solid',
+          borderColor: 'orange.400',
+        }}
+      />
+      <Box
+        position="absolute"
+        top="0"
+        right="0"
+        width="200px"
+        height="200px"
+        borderRight="3px solid"
+        borderTop="3px solid"
+        borderColor="orange.500"
+        opacity={0.3}
+        _after={{
+          content: '""',
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          width: '20px',
+          height: '20px',
+          borderRight: '2px solid',
+          borderTop: '2px solid',
+          borderColor: 'orange.400',
+        }}
+      />
+      <Box
+        position="absolute"
+        bottom="0"
+        left="0"
+        width="200px"
+        height="200px"
+        borderLeft="3px solid"
+        borderBottom="3px solid"
+        borderColor="orange.500"
+        opacity={0.3}
+        _after={{
+          content: '""',
+          position: 'absolute',
+          bottom: '10px',
+          left: '10px',
+          width: '20px',
+          height: '20px',
+          borderLeft: '2px solid',
+          borderBottom: '2px solid',
+          borderColor: 'orange.400',
+        }}
+      />
+      <Box
+        position="absolute"
+        bottom="0"
+        right="0"
+        width="200px"
+        height="200px"
+        borderRight="3px solid"
+        borderBottom="3px solid"
+        borderColor="orange.500"
+        opacity={0.3}
+        _after={{
+          content: '""',
+          position: 'absolute',
+          bottom: '10px',
+          right: '10px',
+          width: '20px',
+          height: '20px',
+          borderRight: '2px solid',
+          borderBottom: '2px solid',
+          borderColor: 'orange.400',
+        }}
+      />
+
+      <VStack className="main-menu-content" spacing={10} position="relative" zIndex={1}>
+        {/* Main Title */}
+        <VStack spacing={2}>
+          <Box position="relative">
+            <Icon 
+              as={GiCrossedSwords} 
+              boxSize={32} 
+              color="orange.500"
+              opacity={0.15}
+              position="absolute"
+              top="50%"
+              left="50%"
+              transform="translate(-50%, -50%)"
+              zIndex={0}
+              filter="blur(1px)"
+            />
+            <Icon 
+              as={GiCurlyWing} 
+              boxSize={16} 
+              color="orange.400"
+              opacity={0.6}
+              position="absolute"
+              top="50%"
+              left="-80px"
+              transform="translateY(-50%)"
+              filter="drop-shadow(0 0 8px rgba(251, 146, 60, 0.4))"
+            />
+            <Icon 
+              as={GiCurlyWing} 
+              boxSize={16} 
+              color="orange.400"
+              opacity={0.6}
+              position="absolute"
+              top="50%"
+              right="-80px"
+              transform="translateY(-50%) scaleX(-1)"
+              filter="drop-shadow(0 0 8px rgba(251, 146, 60, 0.4))"
+            />
+            <Heading 
+              className="main-menu-title" 
+              size="4xl" 
+              fontWeight="bold"
+              textAlign="center"
+              color="orange.400"
+              textShadow="0 0 20px rgba(251, 146, 60, 0.5), 0 0 40px rgba(251, 146, 60, 0.3)"
+              letterSpacing="wider"
+              textTransform="uppercase"
+              position="relative"
+              zIndex={1}
+            >
+              Dungeon Runner
+            </Heading>
+          </Box>
+          <Text 
+            fontSize="md" 
+            color="orange.300" 
+            letterSpacing="widest" 
+            textTransform="uppercase"
+            opacity={0.8}
+          >
+            Descend into Dorkness
+          </Text>
+          <Box 
+            width="300px" 
+            height="2px" 
+            bgGradient="linear(to-r, transparent, orange.500, transparent)" 
+            mt={2}
+          />
+        </VStack>
+
+        {/* Menu Buttons */}
+        <VStack className="main-menu-buttons" spacing={4} width="300px">
+          <Button 
+            className="btn-new-run" 
+            colorScheme="orange" 
+            size="lg" 
+            width="100%"
+            height="60px"
+            fontSize="xl"
+            fontWeight="bold"
+            letterSpacing="wide"
+            onClick={onNewRun}
+            position="relative"
+            boxShadow="0 0 15px rgba(251, 146, 60, 0.4)"
+            _hover={{
+              transform: 'scale(1.05)',
+              boxShadow: '0 0 25px rgba(251, 146, 60, 0.6)',
+            }}
+            transition="all 0.2s"
+            leftIcon={<Icon as={GiCryptEntrance} boxSize={6} />}
+          >
             New Run
           </Button>
-          <Button 
-            className="btn-continue-run"
-            colorScheme="orange" 
-            variant="outline"
-            size="lg" 
-            onClick={onContinue}
-            isDisabled={!hasActiveRun}
-          >
-            Continue Run
-          </Button>
+          {hasActiveRun && (
+            <Button 
+              className="btn-continue-run"
+              colorScheme="orange" 
+              variant="outline"
+              size="lg" 
+              width="100%"
+              height="60px"
+              fontSize="xl"
+              fontWeight="bold"
+              letterSpacing="wide"
+              onClick={onContinue}
+              borderWidth="2px"
+              _hover={{
+                transform: 'scale(1.05)',
+                boxShadow: '0 0 20px rgba(251, 146, 60, 0.4)',
+              }}
+              transition="all 0.2s"
+              leftIcon={<Icon as={GiRun} boxSize={6} />}
+            >
+              Continue Run
+            </Button>
+          )}
           <Button 
             className="btn-run-history"
             colorScheme="gray" 
+            variant="outline"
             size="lg" 
+            width="100%"
+            height="60px"
+            fontSize="lg"
+            fontWeight="semibold"
+            letterSpacing="wide"
             onClick={onRunHistory}
+            borderWidth="2px"
+            _hover={{
+              transform: 'scale(1.05)',
+              borderColor: 'orange.400',
+              color: 'orange.400',
+            }}
+            transition="all 0.2s"
+            leftIcon={<Icon as={GiScrollUnfurled} boxSize={5} />}
           >
             Run History
           </Button>
           <Button 
             className="btn-manage-saves"
             colorScheme="blue" 
+            variant="outline"
             size="lg" 
+            width="100%"
+            height="60px"
+            fontSize="lg"
+            fontWeight="semibold"
+            letterSpacing="wide"
             onClick={handleOpenSaveManager}
+            borderWidth="2px"
+            _hover={{
+              transform: 'scale(1.05)',
+              borderColor: 'blue.400',
+              color: 'blue.400',
+            }}
+            transition="all 0.2s"
+            leftIcon={<Icon as={GiSave} boxSize={5} />}
           >
             Manage Saves
           </Button>
-          <Button className="btn-settings" colorScheme="gray" size="lg" isDisabled>
+          <Button 
+            className="btn-settings" 
+            colorScheme="gray" 
+            variant="ghost"
+            size="md" 
+            width="100%"
+            fontSize="sm"
+            opacity={0.5}
+            isDisabled
+            leftIcon={<Icon as={GiGearHammer} boxSize={4} />}
+          >
             Settings (Coming Soon)
           </Button>
         </VStack>

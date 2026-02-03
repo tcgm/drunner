@@ -1,4 +1,5 @@
 import type { IconType } from 'react-icons'
+import { MusicContext } from './audio'
 
 // Core game types
 
@@ -338,6 +339,10 @@ export interface GameState {
     }[]
     items: Item[] // Items that should be added to inventory
   } | null
+  // Music settings
+  musicVolume: number // 0-1
+  musicEnabled: boolean
+  currentMusicContext: MusicContext | null
 }
 
 export interface ShopItem {

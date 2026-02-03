@@ -6,6 +6,7 @@ import { PartySetupScreen } from '@components/screens/PartySetupScreen'
 import DungeonScreen from '@components/screens/DungeonScreen'
 import RunHistoryScreen from '@components/screens/RunHistoryScreen'
 import DevTools from '@components/ui/DevTools'
+import { MusicControls } from '@components/ui/MusicControls'
 import { useGameStore } from '@store/gameStore'
 import type { Hero } from '@/types'
 
@@ -172,6 +173,9 @@ function App() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+      
+      {/* Global Music Controls */}
+      <MusicControls />
       
       <DevTools />
     </Box>
