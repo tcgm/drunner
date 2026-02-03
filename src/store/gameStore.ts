@@ -1136,16 +1136,23 @@ export const useGameStore = create<GameStore>()(
           }),
 
         unequipItemFromHero: (heroId, slotId) => {
-          const hero = useGameStore.getState().party.find(h => h?.id === heroId)
-          if (!hero) return null
+          let unequippedItem: Item | null = null
+          
+          useGameStore.setState((state) => {
+            const hero = state.party.find(h => h?.id === heroId)
+            if (!hero) return state
 
-          const { hero: updatedHero, item } = unequipItem(hero, slotId)
-          useGameStore.setState((state) => ({
-            party: state.party.map(h => h?.id === heroId ? updatedHero : h),
-            heroRoster: state.heroRoster.map(h => h.id === heroId ? updatedHero : h)
-          }))
+            const result = unequipItem(hero, slotId)
+            unequippedItem = result.item
+            const updatedHero = result.hero
 
-          return item
+            return {
+              party: state.party.map(h => h?.id === heroId ? updatedHero : h),
+              heroRoster: state.heroRoster.map(h => h.id === heroId ? updatedHero : h)
+            }
+          })
+
+          return unequippedItem
         },
 
         sellItemForGold: (item) =>

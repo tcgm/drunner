@@ -7,7 +7,8 @@ import { getSlotById } from '@/config/slotConfig'
 export function hasUpgradeAvailable(
   slotId: string,
   currentItem: Item | null,
-  availableItems: Item[]
+  availableItems: Item[],
+  currentEquipment?: Record<string, Item | null>
 ): boolean {
   if (!currentItem) return false
   
@@ -17,7 +18,21 @@ export function hasUpgradeAvailable(
   const slotDef = getSlotById(slotId)
   if (!slotDef) return false
   
+  // Get IDs of items currently equipped in other slots
+  const equippedItemIds = new Set<string>()
+  if (currentEquipment) {
+    Object.entries(currentEquipment).forEach(([slot, item]) => {
+      // Skip the current slot we're checking
+      if (slot !== slotId && item) {
+        equippedItemIds.add(item.id)
+      }
+    })
+  }
+  
   return availableItems.some(invItem => {
+    // Skip items that are already equipped in other slots
+    if (equippedItemIds.has(invItem.id)) return false
+    
     // Check if item is compatible with slot
     const isCompatible = 
       invItem.type === slotDef.type || 
@@ -41,12 +56,27 @@ export function hasUpgradeAvailable(
  */
 export function hasCompatibleItems(
   slotId: string,
-  availableItems: Item[]
+  availableItems: Item[],
+  currentEquipment?: Record<string, Item | null>
 ): boolean {
   const slotDef = getSlotById(slotId)
   if (!slotDef) return false
   
+  // Get IDs of items currently equipped in other slots
+  const equippedItemIds = new Set<string>()
+  if (currentEquipment) {
+    Object.entries(currentEquipment).forEach(([slot, item]) => {
+      // Skip the current slot we're checking
+      if (slot !== slotId && item) {
+        equippedItemIds.add(item.id)
+      }
+    })
+  }
+  
   return availableItems.some(i => {
+    // Skip items that are already equipped in other slots
+    if (equippedItemIds.has(i.id)) return false
+    
     if (i.type === slotDef.type) return true
     // accessory slots can accept accessory items
     if (slotDef.type === 'accessory' && (i.type === 'accessory1' || i.type === 'accessory2' || i.type === 'accessory')) return true

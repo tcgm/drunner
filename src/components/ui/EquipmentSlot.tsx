@@ -23,6 +23,7 @@ interface EquipmentSlotProps {
   slot: string
   item: Item | null
   availableItems: Item[]
+  currentEquipment?: Record<string, Item | null>
   isSwapActive?: boolean
   showSwapButton?: boolean
   onSwapClick?: () => void
@@ -33,6 +34,7 @@ export function EquipmentSlot({
   slot,
   item,
   availableItems,
+  currentEquipment,
   isSwapActive = false,
   showSwapButton = false,
   onSwapClick,
@@ -42,8 +44,8 @@ export function EquipmentSlot({
   const SlotIcon = SLOT_ICONS[slot] || GameIcons.GiSquare
   const slotName = slotDef?.name || slot
   const isEmpty = !item
-  const hasUpgrade = hasUpgradeAvailable(slot, item, availableItems)
-  const canSwap = hasCompatibleItems(slot, availableItems)
+  const hasUpgrade = hasUpgradeAvailable(slot, item, availableItems, currentEquipment)
+  const canSwap = hasCompatibleItems(slot, availableItems, currentEquipment)
   const slotSize = size === 'lg' ? '80px' : '80px' // Can adjust if needed
 
   if (isEmpty) {

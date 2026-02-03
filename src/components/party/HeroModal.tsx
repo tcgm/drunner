@@ -95,6 +95,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
         slot={slotId}
         item={item ? restoreItemIcon(item) : null}
         availableItems={dungeon.inventory}
+        currentEquipment={hero.slots}
         isSwapActive={swapMode === slotId}
         showSwapButton={true}
         onSwapClick={() => handleSwap(slotId)}

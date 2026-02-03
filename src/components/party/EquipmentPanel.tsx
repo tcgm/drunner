@@ -80,6 +80,7 @@ export function EquipmentPanel({
             slot={slotId}
             item={null}
             availableItems={bankInventory}
+            currentEquipment={selectedHero.slots}
             showSwapButton={false}
           />
         </Box>
@@ -93,6 +94,7 @@ export function EquipmentPanel({
           slot={slotId}
           item={restoreItemIcon(item)}
           availableItems={bankInventory}
+          currentEquipment={selectedHero.slots}
           showSwapButton={false}
         />
         <Button
