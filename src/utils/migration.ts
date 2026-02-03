@@ -75,6 +75,9 @@ export function migrateRun(run: Run): Run {
  * Migrates entire game state to new floor system, slot system, and item stat calculation
  */
 export function migrateGameState(state: GameState): GameState {
+  // Log incoming state to debug value loss
+  console.log(`[Migration] Input state - bankGold: ${state.bankGold}, alkahest: ${state.alkahest}`)
+
   // Collect any orphaned equipment from legacy format before migration
   const orphanedItems: Item[] = []
 
@@ -139,12 +142,24 @@ export function migrateGameState(state: GameState): GameState {
     console.log(`[Migration] Added ${migratedOrphanedItems.length} orphaned items to bank inventory`)
   }
 
-  return {
+  const result = {
     ...state,
     party: migratedParty,
     heroRoster: migratedRosterFiltered,
     bankInventory: finalBankInventory,
     overflowInventory: migratedOverflowInventory,
+    // Ensure critical fields are preserved with defaults if missing
+    alkahest: state.alkahest ?? 0,
+    bankGold: state.bankGold ?? 0,
+    bankStorageSlots: state.bankStorageSlots ?? GAME_CONFIG.bank.startingSlots,
+    metaXp: state.metaXp ?? 0,
+    isGameOver: state.isGameOver ?? false,
+    isPaused: state.isPaused ?? false,
+    hasPendingPenalty: state.hasPendingPenalty ?? false,
+    musicVolume: state.musicVolume ?? 0.7,
+    musicEnabled: state.musicEnabled ?? true,
+    currentMusicContext: state.currentMusicContext ?? null,
+    lastOutcome: state.lastOutcome ?? null,
     dungeon: {
       ...migrateDungeon(state.dungeon),
       inventory: migratedDungeonInventory,
@@ -152,6 +167,9 @@ export function migrateGameState(state: GameState): GameState {
     activeRun: state.activeRun ? migrateRun(state.activeRun) : null,
     runHistory: state.runHistory.map(migrateRun),
   }
+
+  console.log(`[Migration] Output state - bankGold: ${result.bankGold}, alkahest: ${result.alkahest}`)
+  return result
 }
 
 /**
