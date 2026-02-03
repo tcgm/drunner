@@ -5,12 +5,12 @@ export const AIR_ELEMENTAL_LORD: DungeonEvent = {
   id: 'air-elemental-lord',
   type: 'boss',
   title: 'Air Elemental Lord',
-  description: 'A massive vortex of sentient wind fills the chamber. Lightning crackles through its form, and the howling winds threaten to tear you apart. The Party must survive!',
+  description: 'A massive vortex of sentient wind fills the chamber, as if torn from the heart of an eternal tempest. Lightning crackles through its form like the wrath of ancient skies. The howling winds carry whispers of a fury that has raged since before the world knew dawn. The very air remembers what came before. The Party must survive.',
   choices: [
     {
-      text: 'Fight the storm',
+      text: 'Fight the Storm!',
       outcome: {
-        text: 'You\'re buffeted by hurricane-force winds! Lightning strikes relentlessly!',
+        text: 'Hurricane-force winds tear at your flesh as lightning strikes with the fury of ages! You feel the weight of a thousand storms bearing down upon you, an endless gale that existed before mountains rose and will rage long after they fall!',
         effects: [
           { type: 'damage', target: 'all', value: 118 },
           { type: 'xp', value: 460 },

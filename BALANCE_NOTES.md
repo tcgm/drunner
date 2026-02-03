@@ -19,6 +19,30 @@
 
 **Decision**: Pending review - marked for future consideration
 
+## Future Design Ideas
+
+### Zone Effects & Environmental Bosses
+**Concept**: Add persistent zone effects that modify gameplay and introduce themed environmental challenges.
+
+**The Storm Zone**:
+- Environmental effect: "The Great Storm" - a primal, world-ending tempest that has existed since before memory
+- Constant wind/lightning damage over time
+- Reduced visibility/accuracy
+- Chance for sudden electrical discharges
+- Boss encounter: A manifestation or avatar of the storm itself
+- Narrative hook: Ancient texts speak of a storm that has raged since the world's creation, growing stronger with each passing age
+
+**Other Zone Ideas**:
+- Temporal flux zones (time distortion)
+- Reality-thin areas (dimensional bleeding)
+- Necromantic plague zones (undead corruption)
+- Primordial chaos pockets (reality instability)
+
+**Implementation Notes**:
+- Zone effects could stack with boss mechanics
+- Could replace or complement existing zone bosses (Floor 50 candidate?)
+- Atmospheric descriptions should hint at cosmic/primordial scale without explicit explanation
+
 ---
 
 *Last Updated: 2026-02-03*
