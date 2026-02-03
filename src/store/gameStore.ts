@@ -11,6 +11,7 @@ import { equipItem, unequipItem, sellItem, calculateStatsWithEquipment } from '@
 import { repairItemNames } from '@/systems/loot/lootGenerator'
 import { migrateGameState } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
+import { useAbility as applyAbility } from '@/systems/abilities/abilityManager'
 import { getClassById } from '@/data/classes'
 import LZString from 'lz-string'
 import { audioManager } from '@/systems/audio/audioManager'
@@ -248,6 +249,8 @@ interface GameStore extends GameState {
   healParty: () => void
   getRunHistory: () => import('@/types').Run[]
   clearRunHistory: () => void
+  // Ability actions
+  useAbility: (heroId: string, abilityId: string) => { success: boolean; message: string }
   // Inventory actions
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
   unequipItemFromHero: (heroId: string, slotId: string) => Item | null
@@ -1193,6 +1196,35 @@ export const useGameStore = create<GameStore>()(
               heroRoster: newRoster
             }
           }),
+
+        useAbility: (heroId, abilityId) => {
+          const state = useGameStore.getState()
+          const hero = state.party.find(h => h?.id === heroId)
+
+          if (!hero) {
+            return { success: false, message: 'Hero not found' }
+          }
+
+          // Use the current floor for cooldown tracking
+          const result = applyAbility(hero, abilityId, state.dungeon.floor, state.party)
+
+          if (result.success) {
+            // Update the hero and party state
+            set((state) => ({
+              party: state.party.map(h => {
+                if (!h) return null
+                const updatedHero = result.party.find(ph => ph?.id === h.id)
+                return updatedHero || h
+              }),
+              heroRoster: state.heroRoster.map(h => {
+                const updatedHero = result.party.find(ph => ph?.id === h.id) as Hero | undefined
+                return updatedHero || h
+              })
+            }))
+          }
+
+          return { success: result.success, message: result.message }
+        },
 
         unequipItemFromHero: (heroId, slotId) => {
           let unequippedItem: Item | null = null

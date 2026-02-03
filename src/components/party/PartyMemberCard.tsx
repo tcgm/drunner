@@ -11,6 +11,7 @@ import { FloatingNumber } from '@components/ui/FloatingNumber'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { useGameStore } from '@/store/gameStore'
 import { useConsumable as applyConsumable } from '@/systems/consumables/consumableManager'
+import { getAbilityStatus } from '@/systems/abilities/abilityManager'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { ItemSlot } from '@components/ui/ItemSlot'
 
@@ -27,7 +28,7 @@ interface PartyMemberCardProps {
 export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMemberCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
-  const { updateHero, party, dungeon } = useGameStore()
+  const { updateHero, party, dungeon, useAbility } = useGameStore()
   
   const handleEffectComplete = (id: string) => {
     // Filtering is handled by AnimatePresence and the effect completion
@@ -45,6 +46,13 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
     }
   }
   
+  const handleUseAbility = (abilityId: string, event: React.MouseEvent) => {
+    event.stopPropagation()
+    const result = useAbility(hero.id, abilityId)
+    // TODO: Show message to user (could use a toast or floating message)
+    console.log(result.message)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
   
@@ -142,6 +150,68 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
                 max={calculateXpForLevel(hero.level)}
                 colorScheme="cyan"
               />
+
+              {/* Abilities row */}
+              {hero.abilities && hero.abilities.length > 0 && (
+                <HStack spacing={1} pt={1}>
+                  {hero.abilities.slice(0, 3).map(ability => {
+                    const status = getAbilityStatus(ability, dungeon.floor)
+                    return (
+                      <Tooltip
+                        key={ability.id}
+                        label={`${ability.name}: ${ability.description}\n${status.statusText}`}
+                        fontSize="xs"
+                        placement="top"
+                      >
+                        <Box
+                          w="24px"
+                          h="24px"
+                          bg={status.canUse ? 'purple.900' : 'gray.800'}
+                          borderRadius="md"
+                          borderWidth="1px"
+                          borderColor={status.canUse ? 'purple.500' : 'gray.600'}
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          cursor={status.canUse && hero.isAlive ? 'pointer' : 'not-allowed'}
+                          opacity={status.canUse && hero.isAlive ? 1 : 0.5}
+                          onClick={(e) => {
+                            if (status.canUse && hero.isAlive) {
+                              handleUseAbility(ability.id, e)
+                            }
+                          }}
+                          _hover={status.canUse && hero.isAlive ? {
+                            bg: 'purple.800',
+                            borderColor: 'purple.400'
+                          } : undefined}
+                          position="relative"
+                        >
+                          <Icon as={GameIcons.GiSparkles} boxSize={3} color={status.canUse ? 'purple.300' : 'gray.500'} />
+                          {status.cooldownRemaining > 0 && (
+                            <Text
+                              position="absolute"
+                              bottom="-2px"
+                              right="-2px"
+                              fontSize="8px"
+                              fontWeight="bold"
+                              color="white"
+                              bg="gray.900"
+                              borderRadius="full"
+                              w="12px"
+                              h="12px"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                            >
+                              {status.cooldownRemaining}
+                            </Text>
+                          )}
+                        </Box>
+                      </Tooltip>
+                    )
+                  })}
+                </HStack>
+              )}
             </VStack>
             
             {/* Consumables column on the right */}
