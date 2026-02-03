@@ -54,6 +54,7 @@ export interface Hero {
   abilities: Ability[]
   isAlive: boolean
   activeEffects: TimedEffect[] // Active timed effects on this hero
+  pendingResurrection?: boolean // True if hero will be revived at start of next event (from Amulet of Resurrection)
   
   // Legacy fields for migration
   equipment?: Equipment

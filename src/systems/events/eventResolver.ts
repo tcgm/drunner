@@ -337,6 +337,16 @@ export function resolveEventOutcome(
           hero.stats.hp = Math.max(0, hero.stats.hp - finalDamage)
           if (hero.stats.hp === 0) {
             hero.isAlive = false
+            
+            // Check for Amulet of Resurrection
+            const hasAmulet = Object.values(hero.slots).some(item => 
+              item && 'name' in item && item.name === 'Amulet of Resurrection'
+            )
+            
+            if (hasAmulet) {
+              // Mark for resurrection at next event
+              hero.pendingResurrection = true
+            }
           }
           
           damageBreakdown.push({

@@ -526,7 +526,51 @@ export const useGameStore = create<GameStore>()(
             const resetEvents = completingFloor ? 0 : newEventsThisFloor
 
             // Tick effects for all heroes on every depth increment
-            const updatedParty = tickEffectsForDepthProgression(state.party, newDepth)
+            let updatedParty = tickEffectsForDepthProgression(state.party, newDepth)
+
+            // Handle pending resurrections from Amulet of Resurrection
+            const resurrectedHeroes: string[] = []
+            updatedParty = updatedParty.map(hero => {
+              if (hero && hero.pendingResurrection) {
+                // Find and remove the amulet
+                const newSlots = { ...hero.slots }
+                let amuletSlot: string | null = null
+                
+                for (const [slotId, item] of Object.entries(newSlots)) {
+                  if (item && 'name' in item && item.name === 'Amulet of Resurrection') {
+                    amuletSlot = slotId
+                    break
+                  }
+                }
+                
+                if (amuletSlot) {
+                  // Remove the amulet (it shatters)
+                  delete newSlots[amuletSlot]
+                  
+                  // Revive the hero with 50% HP
+                  const maxHp = hero.stats.maxHp
+                  resurrectedHeroes.push(hero.name)
+                  
+                  return {
+                    ...hero,
+                    isAlive: true,
+                    pendingResurrection: false,
+                    stats: {
+                      ...hero.stats,
+                      hp: Math.floor(maxHp * 0.5)
+                    },
+                    slots: newSlots
+                  }
+                }
+                
+                // If amulet not found (shouldn't happen), just clear the flag
+                return {
+                  ...hero,
+                  pendingResurrection: false
+                }
+              }
+              return hero
+            })
 
             // Update roster with latest party state
             const updatedRoster = state.heroRoster.map(rosterHero => {
@@ -557,6 +601,16 @@ export const useGameStore = create<GameStore>()(
 
             const event = getNextEvent(newDepth, newFloor, isNextEventBoss, isMajorBoss, state.dungeon.eventHistory)
 
+            // Create resurrection outcome if any heroes were revived
+            const resurrectionOutcome = resurrectedHeroes.length > 0 ? {
+              title: 'Resurrection',
+              description: resurrectedHeroes.length === 1 
+                ? `${resurrectedHeroes[0]}'s Amulet of Resurrection shatters in a blinding flash! They are revived with half health.`
+                : `The Amulets of Resurrection shatter in blinding flashes! ${resurrectedHeroes.join(', ')} revived with half health.`,
+              effects: [],
+              items: []
+            } : null
+
             // Update active run
             const updatedRun = state.activeRun ? {
               ...state.activeRun,
@@ -580,7 +634,7 @@ export const useGameStore = create<GameStore>()(
                 eventHistory: event ? [...state.dungeon.eventHistory, event.id] : state.dungeon.eventHistory
               },
               activeRun: updatedRun,
-              lastOutcome: null
+              lastOutcome: resurrectionOutcome
             }
           }),
 
