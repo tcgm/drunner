@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, EventChoice, Item } from '@/types'
+import type { GameState, Hero, EventChoice, Item, ItemSlot } from '@/types'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -11,6 +11,7 @@ import { repairItemNames } from '@/systems/loot/lootGenerator'
 import { migrateGameState } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { getClassById } from '@/data/classes'
+import LZString from 'lz-string'
 
 /**
  * Create a backup of the current state
@@ -20,22 +21,38 @@ function createBackup(name: string): void {
     const current = localStorage.getItem(name)
     if (current) {
       const timestamp = Date.now()
-      localStorage.setItem(`${name}-backup-${timestamp}`, current)
       
-      // Keep only the last 5 backups
+      // Check localStorage size before attempting backup
+      const currentSize = new Blob([current]).size
+      console.log(`[Backup] Current save size: ${(currentSize / 1024).toFixed(2)} KB`)
+
+      // Keep only the last 3 backups (reduced from 5 to save space)
       const backupKeys = Object.keys(localStorage)
         .filter(key => key.startsWith(`${name}-backup-`))
         .sort()
       
-      while (backupKeys.length > 5) {
+      while (backupKeys.length > 2) {
         const oldestKey = backupKeys.shift()
-        if (oldestKey) localStorage.removeItem(oldestKey)
+        if (oldestKey) {
+          localStorage.removeItem(oldestKey)
+          console.log(`[Backup] Removed old backup: ${oldestKey}`)
+        }
       }
       
+      // Try to create backup
+      localStorage.setItem(`${name}-backup-${timestamp}`, current)
       console.log(`[Backup] Created backup: ${name}-backup-${timestamp}`)
     }
   } catch (error) {
     console.error('[Backup] Failed to create backup:', error)
+    // If quota exceeded, delete all backups and try again
+    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+      console.log('[Backup] Quota exceeded, clearing all backups...')
+      const backupKeys = Object.keys(localStorage)
+        .filter(key => key.startsWith(`${name}-backup-`))
+      backupKeys.forEach(key => localStorage.removeItem(key))
+      console.log(`[Backup] Cleared ${backupKeys.length} old backups`)
+    }
   }
 }
 
@@ -173,6 +190,8 @@ function applyPenaltyToParty(party: (Hero | null)[]): (Hero | null)[] {
           speed: hero.class.baseStats.speed,
           luck: hero.class.baseStats.luck,
           magicPower: hero.class.baseStats.magicPower,
+          wisdom: hero.class.baseStats.wisdom || 0,
+          charisma: hero.class.baseStats.charisma || 0,
         }
         break
         
@@ -222,6 +241,8 @@ interface GameStore extends GameState {
   migrateHeroStats: () => void
   recalculateHeroStats: () => void
   healParty: () => void
+  getRunHistory: () => import('@/types').Run[]
+  clearRunHistory: () => void
   // Inventory actions
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
   unequipItemFromHero: (heroId: string, slotId: string) => Item | null
@@ -239,6 +260,36 @@ interface GameStore extends GameState {
   restoreFromBackup: (backupKey: string) => boolean
   exportSave: () => void
   importSave: (jsonString: string) => boolean
+}
+
+/**
+ * Save run history to separate localStorage key to keep main save small
+ */
+function saveRunHistory(runHistory: any[]) {
+  try {
+    const json = JSON.stringify(runHistory)
+    const compressed = LZString.compressToUTF16(json)
+    localStorage.setItem('dungeon-runner-run-history', compressed)
+    console.log(`[RunHistory] Saved ${runHistory.length} runs`)
+  } catch (error) {
+    console.error('[RunHistory] Failed to save:', error)
+  }
+}
+
+/**
+ * Load run history from separate localStorage key
+ */
+function loadRunHistory(): any[] {
+  try {
+    const compressed = localStorage.getItem('dungeon-runner-run-history')
+    if (!compressed) return []
+
+    const json = LZString.decompressFromUTF16(compressed) || compressed
+    return JSON.parse(json) || []
+  } catch (error) {
+    console.error('[RunHistory] Failed to load:', error)
+    return []
+  }
 }
 
 const initialState: GameState = {
@@ -734,7 +785,7 @@ export const useGameStore = create<GameStore>()(
       // Determine if we should lose gold
       const loseGold = isWiped && GAME_CONFIG.deathPenalty.loseAllGoldOnDefeat
       
-      return {
+      const resultState = {
         metaXp: state.metaXp + metaXpGained,
         party: isWiped ? penalizedParty : updatedParty,
         heroRoster: isWiped ? updatedRoster : state.heroRoster,
@@ -748,9 +799,16 @@ export const useGameStore = create<GameStore>()(
         isGameOver: isWiped,
         lastOutcome: resolvedOutcome,
         activeRun: completedRun || updatedRun,
-        runHistory: completedRun ? [completedRun, ...state.runHistory] : state.runHistory,
         hasPendingPenalty: false
       }
+
+      // Save completed run to separate storage
+      if (completedRun) {
+        const history = loadRunHistory()
+        saveRunHistory([completedRun, ...history])
+      }
+
+      return resultState
     }),
   
   endGame: () => 
@@ -806,7 +864,7 @@ export const useGameStore = create<GameStore>()(
         isGameOver: true,
         hasPendingPenalty: false,
         activeRun: completedRun,
-        runHistory: [completedRun, ...state.runHistory],
+        runHistory: [completedRun, ...state.runHistory].slice(0, 10),
         dungeon: loseGold ? { ...state.dungeon, gold: 0 } : state.dungeon
       }
     }),
@@ -835,7 +893,7 @@ export const useGameStore = create<GameStore>()(
         const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
         const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
         
-        return {
+        const resultState = {
           dungeon: {
             depth: 0,
             floor: 0,
@@ -853,8 +911,13 @@ export const useGameStore = create<GameStore>()(
           overflowInventory: [...state.overflowInventory, ...itemsToOverflow],
           isGameOver: true,
           activeRun: completedRun,
-          runHistory: [completedRun, ...state.runHistory],
         }
+
+        // Save to separate run history storage
+        const history = loadRunHistory()
+        saveRunHistory([completedRun, ...history])
+
+        return resultState
       }
       
       return { isGameOver: true }
@@ -869,12 +932,17 @@ export const useGameStore = create<GameStore>()(
           endDate: Date.now(),
           result: 'retreat',
           finalDepth: state.dungeon.depth,
+          finalFloor: state.dungeon.floor,
           heroesUsed: state.party.filter((h): h is Hero => h !== null).map(h => ({
             name: h.name,
             class: h.class.name,
             level: h.level
           }))
         }
+
+        // Save to separate run history storage
+        const history = loadRunHistory()
+        saveRunHistory([completedRun, ...history])
         
         // Add in-run gold to bank on successful retreat
         const goldToBank = Math.max(0, state.dungeon.gold)
@@ -903,7 +971,6 @@ export const useGameStore = create<GameStore>()(
           isGameOver: false,
           hasPendingPenalty: false,
           activeRun: null,
-          runHistory: [completedRun, ...state.runHistory]
         }
       }
       
@@ -1054,6 +1121,23 @@ export const useGameStore = create<GameStore>()(
       }
     })),
   
+        equipItemToHero: (heroId, item, slotId) =>
+          set((state) => {
+            const updatedParty = state.party.map(h =>
+              h?.id === heroId ? equipItem(h, item, slotId) : h
+            )
+            // Remove item from dungeon inventory
+            const updatedInventory = state.dungeon.inventory.filter(i => i.id !== item.id)
+
+            return {
+              party: updatedParty,
+              dungeon: {
+                ...state.dungeon,
+                inventory: updatedInventory
+              }
+            }
+          }),
+
   equipItemFromBank: (heroId, item, slotId) =>
     set((state) => {
       const updatedParty = state.party.map(h =>
@@ -1141,6 +1225,16 @@ export const useGameStore = create<GameStore>()(
   resetGame: () => 
     set(initialState),
   
+      // Run History functions
+      getRunHistory: () => {
+        return loadRunHistory()
+      },
+
+      clearRunHistory: () => {
+        localStorage.removeItem('dungeon-runner-run-history')
+        console.log('[RunHistory] Cleared all run history')
+      },
+
   // Backup/Recovery functions
   listBackups: () => {
     return listBackups('dungeon-runner-storage')
@@ -1218,8 +1312,16 @@ export const useGameStore = create<GameStore>()(
       name: 'dungeon-runner-storage',
       storage: {
         getItem: (name) => {
-          const str = localStorage.getItem(name)
-          if (!str) return null
+          const compressed = localStorage.getItem(name)
+          if (!compressed) return null
+
+          // Try to decompress - if it fails, assume it's old uncompressed data
+          let str: string
+          try {
+            str = LZString.decompressFromUTF16(compressed) || compressed
+          } catch {
+            str = compressed
+          }
           
           // Create backup before attempting repair
           createBackup(name)
@@ -1423,6 +1525,24 @@ export const useGameStore = create<GameStore>()(
             const migratedState = migrateGameState(actualState)
             state.state = migratedState
             
+            // Migrate run history to separate storage if it exists
+            if (migratedState.runHistory && migratedState.runHistory.length > 0) {
+              console.log(`[RunHistory Migration] Found ${migratedState.runHistory.length} runs in old save, migrating to separate storage`)
+              const existingHistory = loadRunHistory()
+
+              // Merge old and new, deduplicate by run ID
+              const allRuns = [...migratedState.runHistory, ...existingHistory]
+              const uniqueRuns = allRuns.filter((run, index, self) =>
+                index === self.findIndex(r => r.id === run.id)
+              )
+
+              saveRunHistory(uniqueRuns)
+              console.log(`[RunHistory Migration] Saved ${uniqueRuns.length} total runs`)
+
+              // Clear from main state
+              migratedState.runHistory = []
+            }
+
             return state
           } catch (error) {
             console.error('Error loading game state:', error)
@@ -1438,7 +1558,15 @@ export const useGameStore = create<GameStore>()(
             }
             return val
           }
-          localStorage.setItem(name, JSON.stringify(value, replacer))
+          const json = JSON.stringify(value, replacer)
+
+          // Compress the JSON before saving
+          const compressed = LZString.compressToUTF16(json)
+          const originalSize = new Blob([json]).size
+          const compressedSize = new Blob([compressed]).size
+          console.log(`[Storage] Compressed save: ${(originalSize / 1024).toFixed(2)} KB → ${(compressedSize / 1024).toFixed(2)} KB (${((1 - compressedSize / originalSize) * 100).toFixed(1)}% reduction)`)
+
+          localStorage.setItem(name, compressed)
         },
         removeItem: (name) => localStorage.removeItem(name),
       },
