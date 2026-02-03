@@ -14,9 +14,9 @@ const SLOT_ICONS: Record<string, IconType> = {
   accessory1: GameIcons.GiRing,
   accessory2: GameIcons.GiGemNecklace,
   // Add consumable icons
-  consumable1: GameIcons.GiPotion,
-  consumable2: GameIcons.GiPotion,
-  consumable3: GameIcons.GiPotion,
+  consumable1: GameIcons.GiApothecary,
+  consumable2: GameIcons.GiApothecary,
+  consumable3: GameIcons.GiApothecary,
 }
 
 interface EquipmentSlotProps {
