@@ -486,7 +486,10 @@ export const ItemSlot = memo(function ItemSlot({
           >
             <Icon
               as={ItemIcon}
-              boxSize={iconOnly ? '100%' : size === 'xl' ? '48px' : '50%'}
+              boxSize={iconOnly 
+                ? '100%'
+                : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
+              }
               color="white"
               mb={iconOnly ? 0 : 0.5}
             />
