@@ -2,6 +2,7 @@ import type { Item } from '@/types'
 import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { allBases } from '@/data/items/bases'
+import { ALL_CONSUMABLE_BASES, getConsumableBaseById } from '@/data/consumables/bases'
 
 /**
  * Restore icon for unique/set items after deserialization
@@ -11,6 +12,14 @@ import { allBases } from '@/data/items/bases'
 export function restoreItemIcon(item: Item): Item {
   // Skip if item already has an icon
   if (item.icon !== undefined) return item
+
+  // Check if it's a consumable item
+  if (item.type === 'consumable' && 'baseId' in item) {
+    const base = getConsumableBaseById(item.baseId as string)
+    if (base?.icon) {
+      return { ...item, icon: base.icon }
+    }
+  }
 
   // Check if it's a unique item
   if (item.isUnique) {

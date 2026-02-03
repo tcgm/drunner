@@ -16,6 +16,7 @@ import { GiGoldBar as GiTreasure, GiSparkles } from 'react-icons/gi'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 import { getItemSetName } from '@/data/items/sets'
+import { restoreItemIcon } from '@/utils/itemUtils'
 
 const MotionBox = motion.create(Box)
 
@@ -135,8 +136,10 @@ export const ItemSlot = memo(function ItemSlot({
 }: ItemSlotProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
-  // Use the icon directly from the item, or fallback to GiTreasure
-  const ItemIcon = item.icon || GiTreasure
+  
+  // Restore icon if missing (handles deserialization issues without needing to call restoreItemIcon everywhere)
+  const restoredItem = useMemo(() => restoreItemIcon(item), [item])
+  const ItemIcon = restoredItem.icon || GiTreasure
 
   const handleClick = () => {
     // Check if there's a global swap handler active (from HeroModal)
