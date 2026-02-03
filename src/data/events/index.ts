@@ -7,7 +7,7 @@ import { CHOICE_EVENTS } from './choice'
 import { REST_EVENTS } from './rest'
 import { MERCHANT_EVENTS } from './merchant'
 import { TRAP_EVENTS } from './trap'
-import { BOSS_EVENTS } from './boss'
+import { BOSS_EVENTS } from './boss/normal'
 
 // Export all event arrays
 export {

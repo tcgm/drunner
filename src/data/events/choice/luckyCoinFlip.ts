@@ -74,7 +74,7 @@ export const LUCKY_COIN_FLIP: DungeonEvent = {
           { 
             type: 'item', 
             itemType: 'random',
-            maxRarity: 'uncommon' // Safe option, low reward
+            minRarity: 'common' // Safe option, modest reward
           },
         ],
       },

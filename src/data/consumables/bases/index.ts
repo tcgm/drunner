@@ -1,6 +1,7 @@
 import type { ConsumableEffect } from '@/types'
 import type { IconType } from 'react-icons'
-import * as GameIcons from 'react-icons/gi'
+import { GiHealthPotion, GiStrong, GiShield, GiRun, GiClover } from 'react-icons/gi'
+import { LiaGripfire } from 'react-icons/lia'
 
 /**
  * Base consumable template - defines the effect type
@@ -25,7 +26,7 @@ export const HEALTH_BASE: ConsumableBase = {
   name: 'Health',
   description: 'Restores HP',
   effectType: 'heal',
-  icon: GameIcons.GiHealthPotion,
+  icon: GiHealthPotion,
   baseValue: 50,
   target: 'self',
   usableInCombat: true,
@@ -38,7 +39,7 @@ export const STRENGTH_BASE: ConsumableBase = {
   name: 'Strength',
   description: 'Increases attack power',
   effectType: 'buff',
-  icon: GameIcons.GiStrong,
+  icon: GiStrong,
   baseValue: 10,
   stat: 'attack',
   duration: 3,
@@ -53,7 +54,7 @@ export const IRON_SKIN_BASE: ConsumableBase = {
   name: 'Iron Skin',
   description: 'Increases defense',
   effectType: 'buff',
-  icon: GameIcons.GiShield,
+  icon: GiShield,
   baseValue: 10,
   stat: 'defense',
   duration: 3,
@@ -68,7 +69,7 @@ export const HASTE_BASE: ConsumableBase = {
   name: 'Haste',
   description: 'Increases speed',
   effectType: 'buff',
-  icon: GameIcons.GiRun,
+  icon: GiRun,
   baseValue: 10,
   stat: 'speed',
   duration: 3,
@@ -83,7 +84,7 @@ export const LUCK_BASE: ConsumableBase = {
   name: 'Luck',
   description: 'Increases luck',
   effectType: 'buff',
-  icon: GameIcons.GiClover,
+  icon: GiClover,
   baseValue: 10,
   stat: 'luck',
   duration: 3,
@@ -98,7 +99,7 @@ export const PHOENIX_DOWN_BASE: ConsumableBase = {
   name: 'Phoenix Down',
   description: 'Resurrects a fallen hero',
   effectType: 'revive',
-  icon: GameIcons.GiPhoenix,
+  icon: LiaGripfire,
   baseValue: 30, // Base HP restored on revive
   target: 'ally',
   usableInCombat: true,
