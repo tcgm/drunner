@@ -147,7 +147,10 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
             {/* Consumables column on the right */}
             <VStack spacing={0.5} flexShrink={0}>
               {consumableSlots.map(slotId => {
-                const consumable = hero.slots[slotId] ? restoreItemIcon(hero.slots[slotId]) : null
+                const item = hero.slots[slotId] ? restoreItemIcon(hero.slots[slotId]) : null
+                const consumable = item && 'consumableType' in item ? item as Consumable : null
+                const isRevive = consumable?.effect?.type === 'revive'
+                const canUse = hero.isAlive || isRevive
                 
                 if (!consumable) {
                   // Empty slot - show empty box with potion icon
@@ -174,13 +177,17 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
                   <Box
                     key={slotId}
                     onClick={(e) => {
-                      e.stopPropagation()
-                      handleUseConsumable(slotId)
+                      if (canUse) {
+                        e.stopPropagation()
+                        handleUseConsumable(slotId)
+                      }
                     }}
                     w="24px"
                     h="24px"
+                    cursor={canUse ? 'pointer' : 'not-allowed'}
+                    opacity={canUse ? 1 : 0.5}
                   >
-                    <ItemSlot item={consumable} size="sm" isClickable={true} iconOnly={true} />
+                    <ItemSlot item={consumable} size="sm" isClickable={canUse || false} iconOnly={true} />
                   </Box>
                 )
               })}

@@ -92,12 +92,26 @@ export const LUCK_BASE: ConsumableBase = {
   usableOutOfCombat: true,
 }
 
+// Resurrection - high rarity only
+export const PHOENIX_DOWN_BASE: ConsumableBase = {
+  id: 'phoenix-down',
+  name: 'Phoenix Down',
+  description: 'Resurrects a fallen hero',
+  effectType: 'revive',
+  icon: GameIcons.GiPhoenix,
+  baseValue: 30, // Base HP restored on revive
+  target: 'ally',
+  usableInCombat: true,
+  usableOutOfCombat: true,
+}
+
 export const ALL_CONSUMABLE_BASES: ConsumableBase[] = [
   HEALTH_BASE,
   STRENGTH_BASE,
   IRON_SKIN_BASE,
   HASTE_BASE,
   LUCK_BASE,
+  PHOENIX_DOWN_BASE,
 ]
 
 export function getConsumableBaseById(id: string): ConsumableBase | undefined {

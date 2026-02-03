@@ -16,9 +16,15 @@ export function generateConsumable(
   floor?: number
 ): Consumable {
   // Select base
-  const base: ConsumableBase = baseId 
+  let base: ConsumableBase = baseId 
     ? getConsumableBaseById(baseId) || getRandomConsumableBase()
     : getRandomConsumableBase()
+  
+  // Phoenix Down can only be rare or higher
+  if (base.id === 'phoenix-down' && rarity && !['rare', 'epic', 'legendary', 'mythic'].includes(rarity)) {
+    // Re-roll to a different base if rarity is too low
+    base = ALL_CONSUMABLE_BASES.filter(b => b.id !== 'phoenix-down')[Math.floor(Math.random() * (ALL_CONSUMABLE_BASES.length - 1))]
+  }
   
   // Select size
   const size: ConsumableSize = sizeId
@@ -51,9 +57,11 @@ export function generateConsumable(
   // Generate description
   const effectDesc = base.effectType === 'heal' 
     ? `Restores ${effectValue} HP`
-    : base.effectType === 'buff'
-      ? `Increases ${base.stat} by ${effectValue} for ${base.duration} floors`
-      : base.description
+    : base.effectType === 'revive'
+      ? `Resurrects a fallen hero with ${effectValue} HP`
+      : base.effectType === 'buff'
+        ? `Increases ${base.stat} by ${effectValue} for ${base.duration} floors`
+        : base.description
   const qualityDesc = potency.id !== 'normal' ? `, ${potency.name.toLowerCase()} concentration` : ''
   const description = `${effectDesc}. ${size.name} size${qualityDesc}, ${finalRarity} quality.`
   

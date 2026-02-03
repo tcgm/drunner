@@ -142,8 +142,8 @@ export interface Consumable extends Item {
 }
 
 export interface ConsumableEffect {
-  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special'
-  value?: number // Heal amount, damage, or stat modifier
+  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special' | 'revive'
+  value?: number // Heal amount, damage, or stat modifier (or HP restored on revive)
   stat?: keyof Stats // For buff effects
   duration?: number // In events (depths)
   isPermanent?: boolean

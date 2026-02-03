@@ -39,6 +39,20 @@ export function useConsumable(
       }
       break
 
+    case 'revive':
+      if (!hero.isAlive && consumable.effect.value) {
+        // Revive the hero with the specified HP amount
+        updatedHero.isAlive = true
+        updatedHero.stats = {
+          ...updatedHero.stats,
+          hp: Math.min(consumable.effect.value, hero.stats.maxHp),
+        }
+        message = `${hero.name} was revived with ${consumable.effect.value} HP!`
+      } else if (hero.isAlive) {
+        message = `${hero.name} is already alive!`
+      }
+      break
+
     case 'buff':
       if (consumable.effect.stat && consumable.effect.value && consumable.effect.duration) {
         const effectToApply = {
