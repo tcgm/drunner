@@ -1,3 +1,15 @@
+/**
+ * LEGACY CONSUMABLES - Kept for backwards compatibility
+ * 
+ * The game now uses the procedural generation system (bases + sizes + potencies)
+ * These hardcoded consumables are maintained for:
+ * - Backwards compatibility with saved games
+ * - Reference examples
+ * - Specific unique consumables that don't fit the procedural system
+ * 
+ * New consumables should use generateConsumable() or generateConsumableForFloor()
+ */
+
 // Health Potions
 export { HEALTH_POTION_SMALL } from './healthPotionSmall'
 export { HEALTH_POTION_MEDIUM } from './healthPotionMedium'
