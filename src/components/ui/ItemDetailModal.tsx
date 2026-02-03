@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -279,8 +279,22 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
   const IconComponent = item.icon || GameIcons.GiSwordman
   const GemIcon = RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond
   
+  // Sanitize item name in case it got corrupted with icon function
+  const displayName = useMemo(() => {
+    if (typeof item.name === 'string' && item.name.includes('function ')) {
+      // Extract the actual name after the function code
+      const match = item.name.match(/}\)\(t\)\s+(.+)/)
+      if (match && match[1]) {
+        return match[1].trim()
+      }
+      // Fallback: just say "Unknown Item"
+      return "Unknown Item"
+    }
+    return item.name
+  }, [item.name])
+
   // Detect set membership
-  const setName = getItemSetName(item.name)
+  const setName = getItemSetName(displayName)
   const setDefinition = setName ? ALL_SETS.find(s => s.name === setName) : null
 
   // Use set theme if item is part of a set
@@ -397,7 +411,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
             <VStack spacing={0}>
               <RarityLabel
                 rarity={item.rarity}
-                text={item.name}
+                text={displayName}
                 isUnique={item.isUnique}
                 modifiers={item.modifiers}
                 size="xl"

@@ -12,11 +12,12 @@ import {
 } from '@chakra-ui/react'
 import { useState, memo, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { GiGoldBar as GiTreasure, GiSparkles } from 'react-icons/gi'
+import { GiGoldBar as GiTreasure, GiSparkles, GiCursedStar } from 'react-icons/gi'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { getModifierById } from '@/data/items/mods'
 
 const MotionBox = motion.create(Box)
 
@@ -143,6 +144,11 @@ export const ItemSlot = memo(function ItemSlot({
   const restoredItem = useMemo(() => restoreItemIcon(item), [item])
   const ItemIcon = restoredItem.icon || GiTreasure
 
+  // Check if item is cursed
+  const isCursed = useMemo(() =>
+    item.modifiers?.includes('cursed') ?? false
+    , [item.modifiers])
+
   const handleClick = () => {
     // Check if there's a global swap handler active (from HeroModal)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,7 +187,7 @@ export const ItemSlot = memo(function ItemSlot({
     <VStack align="start" spacing={1} maxW="300px">
       <HStack justify="space-between" w="full">
         <Text fontSize="sm" fontWeight="bold" color={RARITY_COLORS[item.rarity]?.text || '#9CA3AF'}>
-          {item.name}
+          {displayName}
         </Text>
         <VStack align="end" spacing={0}>
           {item.isUnique && (
@@ -205,6 +211,19 @@ export const ItemSlot = memo(function ItemSlot({
               boxShadow="0 0 8px rgba(20, 184, 166, 0.4)"
             >
               🦊 {setName.toUpperCase()}
+            </Badge>
+          )}
+          {isCursed && (
+            <Badge
+              fontSize="2xs"
+              bg="purple.900"
+              color="purple.300"
+              fontWeight="bold"
+              borderWidth="1px"
+              borderColor="purple.500"
+              boxShadow="0 0 8px rgba(124, 58, 237, 0.6)"
+            >
+              ⚠️ CURSED
             </Badge>
           )}
           <Badge 
@@ -289,7 +308,7 @@ export const ItemSlot = memo(function ItemSlot({
         Value: {item.value} gold
       </Text>
     </VStack>
-  ), [item, setName, comparisonItem])
+  ), [item, setName, comparisonItem, displayName])
 
   return (
     <>
@@ -447,6 +466,71 @@ export const ItemSlot = memo(function ItemSlot({
                 filter="drop-shadow(0 0 4px rgba(255, 215, 0, 0.8))"
               />
             </motion.div>
+          )}
+
+          {/* Cursed Item Effect - Dark pulsing overlay */}
+          {isCursed && (
+            <>
+              {/* Pulsing dark glow */}
+              <motion.div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 1,
+                  pointerEvents: 'none',
+                  background: 'radial-gradient(circle, rgba(124, 58, 237, 0.3) 0%, transparent 70%)',
+                  borderRadius: '8px'
+                }}
+                animate={{
+                  opacity: [0.3, 0.6, 0.3],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              {/* Cursed star icon overlay */}
+              <motion.div
+                style={{
+                  position: 'absolute',
+                  top: '4px',
+                  left: '4px',
+                  bottom: '4px',
+                  right: '4px',
+                  zIndex: 2,
+                  pointerEvents: 'none'
+                }}
+                animate={{
+                  rotate: [0, -360],
+                  scale: [1, 1.15, 1]
+                }}
+                transition={{
+                  rotate: {
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "linear"
+                  },
+                  scale: {
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                }}
+              >
+                <Icon
+                  as={GiCursedStar}
+                  boxSize="100%"
+                  color="purple.400"
+                  opacity={0.35}
+                  filter="drop-shadow(0 0 6px rgba(124, 58, 237, 0.9))"
+                />
+              </motion.div>
+            </>
           )}
 
           {/* Set Indicator Badge */}

@@ -1,4 +1,4 @@
-import { Text, Box } from '@chakra-ui/react';
+import { Text, Box, Icon } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
 import type { Item } from '@/types';
 import { getModifierById } from '@/data/items/mods';
@@ -61,7 +61,7 @@ export function RarityLabel({
   
   const color = primaryModifier ? primaryModifier.color : (isUnique ? '#FFD700' : rarityTheme.text);
   const glowColor = primaryModifier ? `${primaryModifier.color}99` : (isUnique ? 'rgba(255, 215, 0, 0.5)' : rarityTheme.glow);
-  const displayText = primaryModifier ? `${primaryModifier.icon} ${text}` : text;
+  const ModifierIcon = primaryModifier?.icon;
 
   const animations = [];
   if (withPulse || isUnique || modifiers.length > 0) animations.push(`${pulse} 2s ease-in-out infinite`);
@@ -101,8 +101,12 @@ export function RarityLabel({
           '--glow-color': glowColor,
           animation: animations.length > 0 ? animations.join(', ') : undefined,
         }}
+        display="flex"
+        alignItems="center"
+        gap={2}
       >
-        {displayText}
+        {ModifierIcon && <Icon as={ModifierIcon} boxSize="1em" />}
+        {text}
       </Text>
     </Box>
   );
