@@ -236,6 +236,8 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         bankInventory={bankInventory}
         pendingSlot={pendingSlot}
         onEquipItem={handleEquipFromBank}
+        selectedHeroIndex={selectedHeroIndex}
+        party={party}
       />
 
       {/* Overflow Inventory Modal */}

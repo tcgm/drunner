@@ -27,6 +27,7 @@ interface ItemSlotProps {
   showCheckbox?: boolean
   isSelected?: boolean
   onCheckboxChange?: () => void
+  comparisonItem?: Item | null // Item to compare against (equipped item)
 }
 
 const SLOT_SIZES = {
@@ -128,7 +129,8 @@ export const ItemSlot = memo(function ItemSlot({
   size = 'md',
   showCheckbox = false,
   isSelected = false,
-  onCheckboxChange
+  onCheckboxChange,
+  comparisonItem
 }: ItemSlotProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
@@ -214,18 +216,51 @@ export const ItemSlot = memo(function ItemSlot({
       </Text>
       {item.stats && Object.keys(item.stats).length > 0 && (
         <SimpleGrid columns={2} spacing={1} w="full" fontSize="2xs" color="gray.300">
-          {Object.entries(item.stats).map(([stat, value]) => (
-            <Text key={stat}>
-              {stat.toUpperCase()}: +{value}
-            </Text>
-          ))}
+          {Object.entries(item.stats).map(([stat, value]) => {
+            const compValue = comparisonItem?.stats?.[stat as keyof typeof comparisonItem.stats]
+            const diff = compValue !== undefined ? (value || 0) - compValue : null
+            return (
+              <HStack key={stat} spacing={1}>
+                <Text>
+                  {stat.toUpperCase()}: +{value}
+                </Text>
+                {diff !== null && diff !== 0 && (
+                  <Text 
+                    color={diff > 0 ? 'green.400' : 'red.400'}
+                    fontWeight="bold"
+                  >
+                    ({diff > 0 ? '+' : ''}{diff})
+                  </Text>
+                )}
+              </HStack>
+            )
+          })}
         </SimpleGrid>
+      )}
+      {comparisonItem && (
+        <>
+          <Text fontSize="xs" color="gray.500" fontWeight="bold" mt={1}>
+            ─── Currently Equipped ───
+          </Text>
+          <Text fontSize="2xs" color="gray.400" fontWeight="bold">
+            {comparisonItem.name}
+          </Text>
+          {comparisonItem.stats && Object.keys(comparisonItem.stats).length > 0 && (
+            <SimpleGrid columns={2} spacing={1} w="full" fontSize="2xs" color="gray.500">
+              {Object.entries(comparisonItem.stats).map(([stat, value]) => (
+                <Text key={stat}>
+                  {stat.toUpperCase()}: +{value}
+                </Text>
+              ))}
+            </SimpleGrid>
+          )}
+        </>
       )}
       <Text fontSize="2xs" color="yellow.300">
         Value: {item.value} gold
       </Text>
     </VStack>
-  ), [item, setName])
+  ), [item, setName, comparisonItem])
 
   return (
     <>

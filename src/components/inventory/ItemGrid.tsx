@@ -12,6 +12,7 @@ interface ItemGridProps {
   onItemSelect?: (itemId: string) => void
   isClickable?: boolean
   showCheckbox?: boolean
+  comparisonItem?: Item | null
 }
 
 interface ItemGridSlotProps {
@@ -22,6 +23,7 @@ interface ItemGridSlotProps {
   showCheckbox: boolean
   onItemClick?: (item: Item) => void
   onItemSelect?: (itemId: string) => void
+  comparisonItem?: Item | null
 }
 
 // Memoize individual item slots to prevent re-rendering all items on selection change
@@ -32,7 +34,8 @@ const ItemGridSlot = memo(function ItemGridSlot({
   isClickable,
   showCheckbox,
   onItemClick,
-  onItemSelect
+  onItemSelect,
+  comparisonItem
 }: ItemGridSlotProps) {
   const handleCheckboxChange = useCallback(() => {
     onItemSelect?.(itemId)
@@ -64,6 +67,7 @@ const ItemGridSlot = memo(function ItemGridSlot({
         showCheckbox={showCheckbox}
         isSelected={isSelected}
         onCheckboxChange={handleCheckboxChange}
+        comparisonItem={comparisonItem}
       />
     </Box>
   )
@@ -84,7 +88,8 @@ export const ItemGrid = memo(function ItemGrid({
   onItemClick,
   onItemSelect,
   isClickable = false,
-  showCheckbox = false 
+  showCheckbox = false,
+  comparisonItem
 }: ItemGridProps) {
   // Memoize visible items with restored icons to prevent recalculating on every render
   const visibleItems = useMemo(() => {
@@ -109,6 +114,7 @@ export const ItemGrid = memo(function ItemGrid({
           showCheckbox={showCheckbox}
           onItemClick={onItemClick}
           onItemSelect={onItemSelect}
+          comparisonItem={comparisonItem}
         />
       ))}
     </Box>

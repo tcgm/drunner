@@ -42,9 +42,11 @@ interface BankInventoryModalProps {
   bankInventory: Item[]
   pendingSlot: string | null
   onEquipItem: (itemId: string) => void
+  selectedHeroIndex: number | null
+  party: any[]
 }
 
-export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot, onEquipItem }: BankInventoryModalProps) {
+export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot, onEquipItem, selectedHeroIndex, party }: BankInventoryModalProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -71,6 +73,16 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   })
 
   const itemsByType = useItemsByType(filteredAndSortedItems)
+
+  // Get currently equipped item for comparison
+  const equippedItem = useMemo(() => {
+    if (!pendingSlot || selectedHeroIndex === null || !party[selectedHeroIndex]) {
+      return null
+    }
+    const hero = party[selectedHeroIndex]
+    const slotItem = hero.slots[pendingSlot]
+    return slotItem || null
+  }, [pendingSlot, selectedHeroIndex, party])
 
   // Memoize selected count to prevent re-renders
   const selectedCount = useMemo(() => selectedItems.size, [selectedItems])
@@ -317,28 +329,29 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                       onItemSelect={isSelectionMode ? handleItemSelect : undefined}
                 isClickable={true}
                       showCheckbox={isSelectionMode}
+                comparisonItem={equippedItem}
               />
             </Box>
           ) : (
             // Tabbed view - tabs are in sticky header
             <TabPanels mt={1} px={2} pb={2}>
               <TabPanel px={0} py={1}>
-                        <ItemGrid items={itemsByType.all || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
+                        <ItemGrid items={itemsByType.all || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                        <ItemGrid items={itemsByType.weapon || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
+                        <ItemGrid items={itemsByType.weapon || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                        <ItemGrid items={itemsByType.armor || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
+                        <ItemGrid items={itemsByType.armor || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                        <ItemGrid items={itemsByType.helmet || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
+                        <ItemGrid items={itemsByType.helmet || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                        <ItemGrid items={itemsByType.boots || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
+                        <ItemGrid items={itemsByType.boots || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
               </TabPanel>
               <TabPanel px={0} py={1}>
-                        <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} />
+                        <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
               </TabPanel>
             </TabPanels>
           )}

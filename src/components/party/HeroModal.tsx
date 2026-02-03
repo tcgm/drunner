@@ -377,6 +377,7 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
         inventory={dungeon.inventory}
         gold={dungeon.gold}
         pendingSlot={swapMode}
+        hero={hero}
       />
     </Modal>
   )

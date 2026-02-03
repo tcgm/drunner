@@ -31,12 +31,16 @@ interface DungeonInventoryModalProps {
   inventory: Item[]
   gold: number
   pendingSlot?: string | null
+  hero?: any
 }
 
-export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold, pendingSlot = null }: DungeonInventoryModalProps) {
+export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold, pendingSlot = null, hero }: DungeonInventoryModalProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rarity')
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
+
+  // Get currently equipped item for comparison
+  const equippedItem = pendingSlot && hero?.slots?.[pendingSlot] ? hero.slots[pendingSlot] : null
 
   const visibleCount = useLazyLoading({
     isOpen,
@@ -67,6 +71,7 @@ export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold
       items={items}
       visibleCount={visibleCount}
       isClickable={true}
+      comparisonItem={equippedItem}
     />
   )
 
