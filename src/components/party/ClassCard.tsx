@@ -27,18 +27,43 @@ export default function ClassCard({
     <VStack className="class-card-tooltip" align="start" spacing={1} p={1}>
       <Text className="class-card-tooltip-name" fontWeight="bold" fontSize="sm">{heroClass.name}</Text>
       <Text className="class-card-tooltip-desc" fontSize="xs" color="gray.300">{heroClass.description}</Text>
-      <SimpleGrid className="class-card-tooltip-stats" columns={2} spacing={2} pt={1} fontSize="xs">
-        <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{maxHp}</Text></Text>
-        <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{heroClass.baseStats.attack}</Text></Text>
-        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{heroClass.baseStats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(heroClass.baseStats.defense)}</Text></Text></Text>
-        <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{heroClass.baseStats.speed}</Text></Text>
-        <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>{heroClass.baseStats.luck}</Text></Text>
-      </SimpleGrid>
+      <HStack spacing={4} pt={1} align="start">
+        <VStack align="start" spacing={1}>
+          <Text fontSize="xs" fontWeight="bold" color="gray.400">Base Stats</Text>
+          <SimpleGrid className="class-card-tooltip-stats" columns={2} spacing={2} fontSize="xs">
+            <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{maxHp}</Text></Text>
+            <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{heroClass.baseStats.attack}</Text></Text>
+            <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{heroClass.baseStats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(heroClass.baseStats.defense)}</Text></Text></Text>
+            <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{heroClass.baseStats.speed}</Text></Text>
+            <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>{heroClass.baseStats.luck}</Text></Text>
+            <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{heroClass.baseStats.wisdom}</Text></Text>
+            <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{heroClass.baseStats.charisma}</Text></Text>
+            {heroClass.baseStats.magicPower !== undefined && (
+              <Text>MAG: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower}>{heroClass.baseStats.magicPower}</Text></Text>
+            )}
+          </SimpleGrid>
+        </VStack>
+        <VStack align="start" spacing={1}>
+          <Text fontSize="xs" fontWeight="bold" color="gray.400">Per Level</Text>
+          <SimpleGrid className="class-card-tooltip-gains" columns={2} spacing={2} fontSize="xs">
+            <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>+{heroClass.statGains.maxHp}</Text></Text>
+            <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>+{heroClass.statGains.attack}</Text></Text>
+            <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>+{heroClass.statGains.defense}</Text></Text>
+            <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>+{heroClass.statGains.speed}</Text></Text>
+            <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>+{heroClass.statGains.luck}</Text></Text>
+            <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>+{heroClass.statGains.wisdom}</Text></Text>
+            <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>+{heroClass.statGains.charisma}</Text></Text>
+            {heroClass.statGains.magicPower !== undefined && (
+              <Text>MAG: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower}>+{heroClass.statGains.magicPower}</Text></Text>
+            )}
+          </SimpleGrid>
+        </VStack>
+      </HStack>
     </VStack>
   )
   
   return (
-    <Tooltip label={tooltipLabel} placement="top" hasArrow bg="gray.800" color="white" p={2}>
+    <Tooltip label={tooltipLabel} placement="right" hasArrow bg="gray.800" color="white" p={2}>
       <Box
         className={`class-card ${isSelected ? 'class-card--selected' : ''} ${partyHasClass ? 'class-card--in-party' : ''}`}
         position="relative"
