@@ -34,14 +34,24 @@ interface HeroModalProps {
   hero: Hero
   isOpen: boolean
   onClose: () => void
+  isDungeon?: boolean // Flag to indicate if this is being used in dungeon context
 }
 
-export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
+export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: HeroModalProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  const { equipItemToHero, unequipItemFromHero, dungeon } = useGameStore()
+  const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables } = useGameStore()
   const [swapMode, setSwapMode] = useState<string | null>(null)
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
+
+  // Use appropriate autofill function based on context
+  const handleAutofill = () => {
+    if (isDungeon) {
+      autofillDungeonConsumables(hero.id)
+    } else {
+      autofillConsumables(hero.id)
+    }
+  }
 
   // Listen for clicks on inventory items when in swap mode
   const handleInventoryItemClick = useCallback((item: Item) => {
@@ -212,11 +222,22 @@ export default function HeroModal({ hero, isOpen, onClose }: HeroModalProps) {
                   </Box>
 
                   {/* Consumable Slots */}
-                  <HStack spacing={2} justify="center" flex="0 0 auto" mt={2}>
-                    {renderEquipmentSlot('consumable1', 'sm')}
-                    {renderEquipmentSlot('consumable2', 'sm')}
-                    {renderEquipmentSlot('consumable3', 'sm')}
-                  </HStack>
+                  <VStack spacing={1} flex="0 0 auto" mt={2}>
+                    <HStack spacing={1}>
+                      {renderEquipmentSlot('consumable1', 'sm')}
+                      {renderEquipmentSlot('consumable2', 'sm')}
+                      {renderEquipmentSlot('consumable3', 'sm')}
+                    </HStack>
+                    <Button
+                      size="xs"
+                      colorScheme="cyan"
+                      variant="ghost"
+                      onClick={handleAutofill}
+                      fontSize="2xs"
+                    >
+                      Auto-fill Consumables
+                    </Button>
+                  </VStack>
                 </VStack>
 
                 {/* Right equipment column */}

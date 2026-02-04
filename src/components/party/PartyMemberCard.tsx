@@ -23,9 +23,10 @@ const MotionBox = motion.create(Box)
 interface PartyMemberCardProps {
   hero: Hero
   floatingEffects?: Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>
+  isDungeon?: boolean
 }
 
-export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMemberCardProps) {
+export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon = false }: PartyMemberCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
   const { updateHero, party, dungeon, useAbility: activateAbility } = useGameStore()
@@ -267,7 +268,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
         </MotionBox>
       </HeroTooltip>
 
-      <HeroModal hero={hero} isOpen={isOpen} onClose={onClose} />
+      <HeroModal hero={hero} isOpen={isOpen} onClose={onClose} isDungeon={isDungeon} />
     </>
   )
 }

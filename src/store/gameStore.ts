@@ -260,6 +260,7 @@ interface GameStore extends GameState {
   spendBankGold: (amount: number) => boolean
   equipItemFromBank: (heroId: string, item: Item, slotId: string) => void
   autofillConsumables: (heroId: string) => void
+  autofillDungeonConsumables: (heroId: string) => void
   moveItemToBank: (item: Item) => void
   removeItemFromBank: (itemId: string) => void
   expandBankStorage: (slots: number) => void
@@ -1357,8 +1358,44 @@ export const useGameStore = create<GameStore>()(
 
         autofillConsumables: (heroId) =>
           set((state) => {
-            // Get consumables from bank
-            const bankConsumables = state.bankInventory.filter(
+            let updatedParty = state.party
+            let updatedRoster = state.heroRoster
+            let updatedBank = state.bankInventory
+            
+            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
+            
+            // First, unequip all existing consumables and return them to bank
+            consumableSlots.forEach(slotId => {
+              updatedParty = updatedParty.map(h => {
+                if (h?.id === heroId) {
+                  const existingItem = h.slots[slotId]
+                  if (existingItem) {
+                    updatedBank = [...updatedBank, existingItem]
+                    return {
+                      ...h,
+                      slots: { ...h.slots, [slotId]: null }
+                    }
+                  }
+                }
+                return h
+              })
+              
+              updatedRoster = updatedRoster.map(h => {
+                if (h.id === heroId) {
+                  const existingItem = h.slots[slotId]
+                  if (existingItem) {
+                    return {
+                      ...h,
+                      slots: { ...h.slots, [slotId]: null }
+                    }
+                  }
+                }
+                return h
+              })
+            })
+            
+            // Get consumables from bank (now includes unequipped ones)
+            const bankConsumables = updatedBank.filter(
               (item): item is Consumable => 'consumableType' in item
             )
             
@@ -1366,11 +1403,6 @@ export const useGameStore = create<GameStore>()(
             const selectedConsumables = selectConsumablesForAutofill(bankConsumables)
             
             // Equip each consumable to the hero's consumable slots
-            let updatedParty = state.party
-            let updatedRoster = state.heroRoster
-            let updatedBank = state.bankInventory
-            
-            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
             
             selectedConsumables.forEach((consumable, index) => {
               if (consumable) {
@@ -1415,22 +1447,51 @@ export const useGameStore = create<GameStore>()(
             }
           }),
 
-        autofillConsumables: (heroId) =>
+        autofillDungeonConsumables: (heroId) =>
           set((state) => {
-            // Get consumables from bank
-            const bankConsumables = state.bankInventory.filter(
+            let updatedParty = state.party
+            let updatedRoster = state.heroRoster
+            let updatedDungeonInventory = state.dungeon.inventory
+            
+            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
+            
+            // First, unequip all existing consumables and return them to dungeon inventory
+            consumableSlots.forEach(slotId => {
+              updatedParty = updatedParty.map(h => {
+                if (h?.id === heroId) {
+                  const existingItem = h.slots[slotId]
+                  if (existingItem) {
+                    updatedDungeonInventory = [...updatedDungeonInventory, existingItem]
+                    return {
+                      ...h,
+                      slots: { ...h.slots, [slotId]: null }
+                    }
+                  }
+                }
+                return h
+              })
+              
+              updatedRoster = updatedRoster.map(h => {
+                if (h.id === heroId) {
+                  const existingItem = h.slots[slotId]
+                  if (existingItem) {
+                    return {
+                      ...h,
+                      slots: { ...h.slots, [slotId]: null }
+                    }
+                  }
+                }
+                return h
+              })
+            })
+            
+            // Get consumables from dungeon inventory (now includes unequipped ones)
+            const dungeonConsumables = updatedDungeonInventory.filter(
               (item): item is Consumable => 'consumableType' in item
             )
             
             // Select best consumables
-            const selectedConsumables = selectConsumablesForAutofill(bankConsumables)
-            
-            // Equip each consumable to the hero's consumable slots
-            let updatedParty = state.party
-            let updatedRoster = state.heroRoster
-            let updatedBank = state.bankInventory
-            
-            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
+            const selectedConsumables = selectConsumablesForAutofill(dungeonConsumables)
             
             selectedConsumables.forEach((consumable, index) => {
               if (consumable) {
@@ -1458,12 +1519,12 @@ export const useGameStore = create<GameStore>()(
                   return h
                 })
                 
-                // Remove equipped consumable from bank
-                updatedBank = updatedBank.filter(i => i.id !== consumable.id)
+                // Remove equipped consumable from dungeon inventory
+                updatedDungeonInventory = updatedDungeonInventory.filter(i => i.id !== consumable.id)
                 
-                // Add replaced item back to bank
+                // Add replaced item back to dungeon inventory
                 if (replacedItem) {
-                  updatedBank = [...updatedBank, replacedItem]
+                  updatedDungeonInventory = [...updatedDungeonInventory, replacedItem]
                 }
               }
             })
@@ -1471,67 +1532,10 @@ export const useGameStore = create<GameStore>()(
             return {
               party: updatedParty,
               heroRoster: updatedRoster,
-              bankInventory: updatedBank
-            }
-          }),
-
-        autofillConsumables: (heroId) =>
-          set((state) => {
-            // Get consumables from bank
-            const bankConsumables = state.bankInventory.filter(
-              (item): item is Consumable => 'consumableType' in item
-            )
-            
-            // Select best consumables
-            const selectedConsumables = selectConsumablesForAutofill(bankConsumables)
-            
-            // Equip each consumable to the hero's consumable slots
-            let updatedParty = state.party
-            let updatedRoster = state.heroRoster
-            let updatedBank = state.bankInventory
-            
-            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
-            
-            selectedConsumables.forEach((consumable, index) => {
-              if (consumable) {
-                const slotId = consumableSlots[index]
-                let replacedItem: Item | null = null
-                
-                // Update party
-                updatedParty = updatedParty.map(h => {
-                  if (h?.id === heroId) {
-                    const result = equipItem(h, consumable, slotId)
-                    if (result.replacedItem) {
-                      replacedItem = result.replacedItem
-                    }
-                    return result.hero
-                  }
-                  return h
-                })
-                
-                // Update roster
-                updatedRoster = updatedRoster.map(h => {
-                  if (h.id === heroId) {
-                    const result = equipItem(h, consumable, slotId)
-                    return result.hero
-                  }
-                  return h
-                })
-                
-                // Remove equipped consumable from bank
-                updatedBank = updatedBank.filter(i => i.id !== consumable.id)
-                
-                // Add replaced item back to bank
-                if (replacedItem) {
-                  updatedBank = [...updatedBank, replacedItem]
-                }
+              dungeon: {
+                ...state.dungeon,
+                inventory: updatedDungeonInventory
               }
-            })
-            
-            return {
-              party: updatedParty,
-              heroRoster: updatedRoster,
-              bankInventory: updatedBank
             }
           }),
 

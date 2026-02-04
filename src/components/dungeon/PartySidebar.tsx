@@ -20,6 +20,7 @@ export default function PartySidebar({ party, heroEffects = {} }: PartySidebarPr
             key={hero.id} 
             hero={hero} 
             floatingEffects={heroEffects[hero.id] || []}
+            isDungeon={true}
           />
         ))}
         
