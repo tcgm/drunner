@@ -13,6 +13,8 @@ class AudioManager {
   private fadeInterval: number | null = null;
   private shuffleHistory: number[] = [];
   private pendingContext: MusicPlaylist | null = null; // Store context until user interaction
+  private isChangingContext: boolean = false; // Flag to prevent concurrent context changes
+  private contextChangeAborted: boolean = false; // Flag to abort ongoing context change
 
   constructor() {
     // Load preferences from localStorage
@@ -118,19 +120,31 @@ class AudioManager {
       return;
     }
 
-    // Cancel any pending fades
-    if (this.fadeInterval) {
-      clearInterval(this.fadeInterval);
-      this.fadeInterval = null;
-      this.isFading = false;
+    // If already changing context, interrupt and clean up properly
+    if (this.isChangingContext) {
+      console.log('[Audio] Interrupting previous context change for new request');
+      this.contextChangeAborted = true;
+      
+      // Cancel any pending fades immediately
+      if (this.fadeInterval) {
+        clearInterval(this.fadeInterval);
+        this.fadeInterval = null;
+        this.isFading = false;
+      }
+
+      // Clean up nextAudio from previous change
+      if (this.nextAudio) {
+        this.nextAudio.pause();
+        this.nextAudio.src = '';
+        this.nextAudio = null;
+      }
+      
+      // Wait a tick for cleanup to complete
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
 
-    // Clean up nextAudio if it exists (prevents duplicate audio)
-    if (this.nextAudio) {
-      this.nextAudio.pause();
-      this.nextAudio.src = '';
-      this.nextAudio = null;
-    }
+    this.isChangingContext = true;
+    this.contextChangeAborted = false;
 
     this.currentPlaylist = playlist;
     this.currentTrackIndex = 0;
@@ -144,6 +158,13 @@ class AudioManager {
     
     try {
       await this.playTrackWithFade(this.currentTrackIndex, fadeDuration);
+      
+      // Check if this context change was aborted
+      if (this.contextChangeAborted) {
+        console.log('[Audio] Context change was aborted');
+        return;
+      }
+      
       console.log('[Audio] Successfully started playing:', playlist.tracks[this.currentTrackIndex].name);
     } catch (error) {
       // If autoplay is blocked, store the context to play after user interaction
@@ -153,6 +174,8 @@ class AudioManager {
       } else {
         console.error('[Audio] Failed to change context:', error);
       }
+    } finally {
+      this.isChangingContext = false;
     }
   }
 
@@ -161,6 +184,12 @@ class AudioManager {
    */
   private async playTrackWithFade(trackIndex: number, fadeDuration: number): Promise<void> {
     if (!this.currentPlaylist || trackIndex >= this.currentPlaylist.tracks.length) {
+      return;
+    }
+
+    // Check if context change was aborted
+    if (this.contextChangeAborted) {
+      console.log('[Audio] Context change aborted, skipping playback');
       return;
     }
 
@@ -198,6 +227,18 @@ class AudioManager {
 
     try {
       await this.nextAudio.play();
+      
+      // Check again after async operation
+      if (this.contextChangeAborted) {
+        console.log('[Audio] Context change aborted after play started, cleaning up');
+        if (this.nextAudio) {
+          this.nextAudio.pause();
+          this.nextAudio.src = '';
+          this.nextAudio = null;
+        }
+        return;
+      }
+      
       console.log('[Audio] Playing track:', track.name);
       
       // Crossfade if there's a current track
@@ -230,35 +271,61 @@ class AudioManager {
     
     const currentStartVolume = this.currentAudio.volume;
     const nextTargetVolume = this.masterVolume * (nextTrack?.volume ?? 1);
+    
+    // Save references to avoid issues if they get cleared during fade
+    const fadingOutAudio = this.currentAudio;
+    const fadingInAudio = this.nextAudio;
 
     return new Promise((resolve) => {
       let step = 0;
       
       this.fadeInterval = setInterval(() => {
+        // Check if context change was aborted
+        if (this.contextChangeAborted) {
+          if (this.fadeInterval) clearInterval(this.fadeInterval);
+          this.fadeInterval = null;
+          this.isFading = false;
+          
+          // Clean up the audio that was fading in (it's being replaced)
+          if (fadingInAudio) {
+            fadingInAudio.pause();
+            fadingInAudio.src = '';
+          }
+          
+          resolve();
+          return;
+        }
+        
         step++;
         const progress = step / steps;
         
-        if (this.currentAudio) {
-          this.currentAudio.volume = currentStartVolume * (1 - progress);
+        // Fade out current audio
+        if (fadingOutAudio && !fadingOutAudio.paused) {
+          fadingOutAudio.volume = currentStartVolume * (1 - progress);
         }
         
-        if (this.nextAudio) {
-          this.nextAudio.volume = nextTargetVolume * progress;
+        // Fade in next audio
+        if (fadingInAudio && !fadingInAudio.paused) {
+          fadingInAudio.volume = nextTargetVolume * progress;
         }
 
         if (step >= steps) {
           if (this.fadeInterval) clearInterval(this.fadeInterval);
+          this.fadeInterval = null;
           
           // Stop and clean up old audio
-          if (this.currentAudio) {
-            this.currentAudio.pause();
-            this.currentAudio.src = '';
+          if (fadingOutAudio) {
+            fadingOutAudio.pause();
+            fadingOutAudio.src = '';
           }
           
-          this.currentAudio = this.nextAudio;
-          this.nextAudio = null;
-          this.isFading = false;
+          // Only update current audio if not aborted
+          if (!this.contextChangeAborted) {
+            this.currentAudio = fadingInAudio;
+            this.nextAudio = null;
+          }
           
+          this.isFading = false;
           resolve();
         }
       }, stepDuration);
