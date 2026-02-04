@@ -1,14 +1,16 @@
-import { VStack, Box, Text, SimpleGrid, HStack, Button, Icon } from '@chakra-ui/react'
+import { VStack, Box, Text, SimpleGrid, HStack, Button, Icon, IconButton, Tooltip } from '@chakra-ui/react'
 import { useState, useEffect, useCallback } from 'react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Hero, Item } from '../../types'
+import type { Hero, Item, ItemSlot } from '../../types'
 import { ItemSlot as ItemSlotComponent } from '@/components/ui/ItemSlot'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getEquipmentSlotIds } from '@/config/slotConfig'
 import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
+import { useGameStore } from '@/store/gameStore'
+import { LiaArrowRightSolid } from 'react-icons/lia'
 // import { useGameStore } from '@/store/gameStore'
 // import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 
@@ -19,6 +21,7 @@ const SLOT_ICONS: Record<ItemSlot, IconType> = {
   boots: GameIcons.GiBootStomp,
   accessory1: GameIcons.GiRing,
   accessory2: GameIcons.GiGemNecklace,
+  consumable: GameIcons.GiHealthPotion,
 }
 
 const SLOT_NAMES: Record<ItemSlot, string> = {
@@ -28,6 +31,7 @@ const SLOT_NAMES: Record<ItemSlot, string> = {
   boots: 'Boots',
   accessory1: 'Accessory',
   accessory2: 'Accessory',
+  consumable: 'Consumable',
 }
 
 // const RARITY_COLORS: Record<string, string> = {
@@ -64,6 +68,13 @@ export function EquipmentPanel({
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
   const activeParty = party.filter((h): h is Hero => h !== null)
   const [swapMode, setSwapMode] = useState<string | null>(null)
+  const { autofillConsumables } = useGameStore()
+
+  const handleAutofill = () => {
+    if (selectedHero) {
+      autofillConsumables(selectedHero.id)
+    }
+  }
 
   const handleSwap = (slotId: string) => {
     if (swapMode === null) {
@@ -92,6 +103,7 @@ export function EquipmentPanel({
   // Sync swap mode with modal state - when modal closes, clear swap mode
   useEffect(() => {
     if (!isBankModalOpen && swapMode !== null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSwapMode(null)
     }
   }, [isBankModalOpen, swapMode])
@@ -227,6 +239,17 @@ export function EquipmentPanel({
 
                 {/* Consumable slots */}
                 <HStack spacing={1.5} w="full" justify="center">
+                  <Tooltip label="Autofill consumables from bank" placement="top">
+                    <IconButton
+                      aria-label="Autofill consumables"
+                      icon={<Icon as={LiaArrowRightSolid} />}
+                      size="sm"
+                      variant="ghost"
+                      colorScheme="orange"
+                      onClick={handleAutofill}
+                      fontSize="lg"
+                    />
+                  </Tooltip>
                   {renderEquipmentSlot('consumable1', 'sm')}
                   {renderEquipmentSlot('consumable2', 'sm')}
                   {renderEquipmentSlot('consumable3', 'sm')}

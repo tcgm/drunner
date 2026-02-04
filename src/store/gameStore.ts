@@ -8,6 +8,7 @@ import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/event
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem, calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
+import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
 import { migrateGameState } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
@@ -258,6 +259,7 @@ interface GameStore extends GameState {
   purchasePotion: (potion: Consumable) => void
   spendBankGold: (amount: number) => boolean
   equipItemFromBank: (heroId: string, item: Item, slotId: string) => void
+  autofillConsumables: (heroId: string) => void
   moveItemToBank: (item: Item) => void
   removeItemFromBank: (itemId: string) => void
   expandBankStorage: (slots: number) => void
@@ -1346,6 +1348,186 @@ export const useGameStore = create<GameStore>()(
               updatedBank = [...updatedBank, replacedItem]
             }
 
+            return {
+              party: updatedParty,
+              heroRoster: updatedRoster,
+              bankInventory: updatedBank
+            }
+          }),
+
+        autofillConsumables: (heroId) =>
+          set((state) => {
+            // Get consumables from bank
+            const bankConsumables = state.bankInventory.filter(
+              (item): item is Consumable => 'consumableType' in item
+            )
+            
+            // Select best consumables
+            const selectedConsumables = selectConsumablesForAutofill(bankConsumables)
+            
+            // Equip each consumable to the hero's consumable slots
+            let updatedParty = state.party
+            let updatedRoster = state.heroRoster
+            let updatedBank = state.bankInventory
+            
+            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
+            
+            selectedConsumables.forEach((consumable, index) => {
+              if (consumable) {
+                const slotId = consumableSlots[index]
+                let replacedItem: Item | null = null
+                
+                // Update party
+                updatedParty = updatedParty.map(h => {
+                  if (h?.id === heroId) {
+                    const result = equipItem(h, consumable, slotId)
+                    if (result.replacedItem) {
+                      replacedItem = result.replacedItem
+                    }
+                    return result.hero
+                  }
+                  return h
+                })
+                
+                // Update roster
+                updatedRoster = updatedRoster.map(h => {
+                  if (h.id === heroId) {
+                    const result = equipItem(h, consumable, slotId)
+                    return result.hero
+                  }
+                  return h
+                })
+                
+                // Remove equipped consumable from bank
+                updatedBank = updatedBank.filter(i => i.id !== consumable.id)
+                
+                // Add replaced item back to bank
+                if (replacedItem) {
+                  updatedBank = [...updatedBank, replacedItem]
+                }
+              }
+            })
+            
+            return {
+              party: updatedParty,
+              heroRoster: updatedRoster,
+              bankInventory: updatedBank
+            }
+          }),
+
+        autofillConsumables: (heroId) =>
+          set((state) => {
+            // Get consumables from bank
+            const bankConsumables = state.bankInventory.filter(
+              (item): item is Consumable => 'consumableType' in item
+            )
+            
+            // Select best consumables
+            const selectedConsumables = selectConsumablesForAutofill(bankConsumables)
+            
+            // Equip each consumable to the hero's consumable slots
+            let updatedParty = state.party
+            let updatedRoster = state.heroRoster
+            let updatedBank = state.bankInventory
+            
+            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
+            
+            selectedConsumables.forEach((consumable, index) => {
+              if (consumable) {
+                const slotId = consumableSlots[index]
+                let replacedItem: Item | null = null
+                
+                // Update party
+                updatedParty = updatedParty.map(h => {
+                  if (h?.id === heroId) {
+                    const result = equipItem(h, consumable, slotId)
+                    if (result.replacedItem) {
+                      replacedItem = result.replacedItem
+                    }
+                    return result.hero
+                  }
+                  return h
+                })
+                
+                // Update roster
+                updatedRoster = updatedRoster.map(h => {
+                  if (h.id === heroId) {
+                    const result = equipItem(h, consumable, slotId)
+                    return result.hero
+                  }
+                  return h
+                })
+                
+                // Remove equipped consumable from bank
+                updatedBank = updatedBank.filter(i => i.id !== consumable.id)
+                
+                // Add replaced item back to bank
+                if (replacedItem) {
+                  updatedBank = [...updatedBank, replacedItem]
+                }
+              }
+            })
+            
+            return {
+              party: updatedParty,
+              heroRoster: updatedRoster,
+              bankInventory: updatedBank
+            }
+          }),
+
+        autofillConsumables: (heroId) =>
+          set((state) => {
+            // Get consumables from bank
+            const bankConsumables = state.bankInventory.filter(
+              (item): item is Consumable => 'consumableType' in item
+            )
+            
+            // Select best consumables
+            const selectedConsumables = selectConsumablesForAutofill(bankConsumables)
+            
+            // Equip each consumable to the hero's consumable slots
+            let updatedParty = state.party
+            let updatedRoster = state.heroRoster
+            let updatedBank = state.bankInventory
+            
+            const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
+            
+            selectedConsumables.forEach((consumable, index) => {
+              if (consumable) {
+                const slotId = consumableSlots[index]
+                let replacedItem: Item | null = null
+                
+                // Update party
+                updatedParty = updatedParty.map(h => {
+                  if (h?.id === heroId) {
+                    const result = equipItem(h, consumable, slotId)
+                    if (result.replacedItem) {
+                      replacedItem = result.replacedItem
+                    }
+                    return result.hero
+                  }
+                  return h
+                })
+                
+                // Update roster
+                updatedRoster = updatedRoster.map(h => {
+                  if (h.id === heroId) {
+                    const result = equipItem(h, consumable, slotId)
+                    return result.hero
+                  }
+                  return h
+                })
+                
+                // Remove equipped consumable from bank
+                updatedBank = updatedBank.filter(i => i.id !== consumable.id)
+                
+                // Add replaced item back to bank
+                if (replacedItem) {
+                  updatedBank = [...updatedBank, replacedItem]
+                }
+              }
+            })
+            
             return {
               party: updatedParty,
               heroRoster: updatedRoster,
