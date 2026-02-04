@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, EventChoice, Item, ItemSlot, Consumable } from '@/types'
+import type { GameState, Hero, EventChoice, Item, ItemSlot, Consumable, Run, Equipment } from '@/types'
 import { MusicContext } from '@/types/audio'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
@@ -282,7 +282,7 @@ interface GameStore extends GameState {
 /**
  * Save run history to separate localStorage key to keep main save small
  */
-function saveRunHistory(runHistory: any[]) {
+function saveRunHistory(runHistory: Run[]) {
   try {
     const json = JSON.stringify(runHistory)
     const compressed = LZString.compressToUTF16(json)
@@ -296,7 +296,7 @@ function saveRunHistory(runHistory: any[]) {
 /**
  * Load run history from separate localStorage key
  */
-function loadRunHistory(): any[] {
+function loadRunHistory(): Run[] {
   try {
     const compressed = localStorage.getItem('dungeon-runner-run-history')
     if (!compressed) return []
@@ -611,8 +611,7 @@ export const useGameStore = create<GameStore>()(
 
             // Create resurrection outcome if any heroes were revived
             const resurrectionOutcome = resurrectedHeroes.length > 0 ? {
-              title: 'Resurrection',
-              description: resurrectedHeroes.length === 1 
+              text: resurrectedHeroes.length === 1 
                 ? `${resurrectedHeroes[0]}'s Amulet of Resurrection shatters in a blinding flash! They are revived with half health.`
                 : `The Amulets of Resurrection shatter in blinding flashes! ${resurrectedHeroes.join(', ')} revived with half health.`,
               effects: [],
@@ -1641,7 +1640,7 @@ export const useGameStore = create<GameStore>()(
               data: state
             }
             // Use custom replacer to strip out icon functions
-            const replacer = (key: string, val: any) => {
+            const replacer = (key: string, val: unknown) => {
               if (key === 'icon' && typeof val === 'function') {
                 return undefined
               }
@@ -1825,14 +1824,15 @@ export const useGameStore = create<GameStore>()(
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
                   const repairedItems = repairItemNames(equippedItems)
-                  const newEquipment = { ...hero.equipment }
+                  const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
-                  for (const slot in newEquipment) {
-                    if (newEquipment[slot as ItemSlot] !== null) {
-                      newEquipment[slot as ItemSlot] = repairedItems[itemIndex]
+                  Object.keys(newEquipment).forEach((slot) => {
+                    const key = slot as keyof Equipment
+                    if (newEquipment[key] !== null) {
+                      newEquipment[key] = repairedItems[itemIndex]
                       itemIndex++
                     }
-                  }
+                  })
                   return { ...hero, equipment: newEquipment }
                 }
                 return hero
@@ -1919,14 +1919,15 @@ export const useGameStore = create<GameStore>()(
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
                   const repairedItems = repairItemNames(equippedItems)
-                  const newEquipment = { ...hero.equipment }
+                  const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
-                  for (const slot in newEquipment) {
-                    if (newEquipment[slot as ItemSlot] !== null) {
-                      newEquipment[slot as ItemSlot] = repairedItems[itemIndex]
+                  Object.keys(newEquipment).forEach((slot) => {
+                    const key = slot as keyof Equipment
+                    if (newEquipment[key] !== null) {
+                      newEquipment[key] = repairedItems[itemIndex]
                       itemIndex++
                     }
-                  }
+                  })
                   return { ...hero, equipment: newEquipment }
                 }
                 return hero
@@ -1963,7 +1964,7 @@ export const useGameStore = create<GameStore>()(
         },
         setItem: (name, value) => {
           // Custom replacer to strip out icon functions that shouldn't be serialized
-          const replacer = (key: string, val: any) => {
+          const replacer = (key: string, val: unknown) => {
             // Skip icon functions
             if (key === 'icon' && typeof val === 'function') {
               return undefined
