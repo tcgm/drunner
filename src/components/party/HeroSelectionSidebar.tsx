@@ -23,22 +23,22 @@ export function HeroSelectionSidebar({
   onRosterHeroClick
 }: HeroSelectionSidebarProps) {
   return (
-    <Box className="hero-selection-sidebar" w="280px" minW="280px" overflowY="auto" px={3} py={3} bg="gray.900" borderRight="2px solid" borderColor="gray.800">
-      <Tabs size="sm" colorScheme="orange" isLazy index={tabIndex} onChange={onTabChange}>
-        <TabList mb={3}>
+    <Box className="hero-selection-sidebar" w="280px" minW="280px" px={3} py={3} bg="gray.900" borderRight="2px solid" borderColor="gray.800" display="flex" flexDirection="column" overflow="hidden">
+      <Tabs size="sm" colorScheme="orange" isLazy index={tabIndex} onChange={onTabChange} display="flex" flexDirection="column" flex={1} overflow="hidden">
+        <TabList mb={3} flexShrink={0}>
           <Tab>Classes</Tab>
           <Tab>Roster</Tab>
         </TabList>
 
-        <TabPanels>
-          <TabPanel p={0}>
+        <TabPanels flex={1} overflow="hidden">
+          <TabPanel p={0} h="100%">
             <ClassSelectionTab
               selectedClass={selectedClass}
               onClassSelect={onClassSelect}
             />
           </TabPanel>
 
-          <TabPanel p={0}>
+          <TabPanel p={0} h="100%">
             <RosterTab
               storedHeroes={storedHeroes}
               selectedHeroFromRoster={selectedHeroFromRoster}
