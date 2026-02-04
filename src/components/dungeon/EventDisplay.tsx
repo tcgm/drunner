@@ -87,7 +87,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
         }
         borderRadius={isDangerous ? 'lg' : 'none'}
         p={isDangerous ? 4 : 0}
-        pt={isDangerous ? 8 : 0}
+        pt={isDangerous ? 2 : 0}
         boxShadow={
           isZoneBoss 
             ? '0 0 30px rgba(220, 38, 38, 0.6), inset 0 0 20px rgba(220, 38, 38, 0.2)'
@@ -112,6 +112,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
         {/* Floating Boss Labels - positioned to overlap top border */}
         {isFloorBoss && (
           <Badge 
+            className="event-display-boss-badge event-display-boss-badge--floor"
             position="absolute"
             top="-14px"
             left="50%"
@@ -127,13 +128,14 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
             alignItems="center"
             gap={1.5}
           >
-            <Icon as={GiCrossedSwords} boxSize={4} />
+            <Icon className="event-display-boss-icon" as={GiCrossedSwords} boxSize={4} />
             FLOOR BOSS
-            <Icon as={GiCrossedSwords} boxSize={4} />
+            <Icon className="event-display-boss-icon" as={GiCrossedSwords} boxSize={4} />
           </Badge>
         )}
         {isZoneBoss && (
           <Badge 
+            className="event-display-boss-badge event-display-boss-badge--zone"
             position="absolute"
             top="-18px"
             left="50%"
@@ -142,7 +144,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
             colorScheme="red" 
             fontSize="lg" 
             px={4} 
-            py={1.5} 
+            py={1} 
             variant="solid"
             boxShadow="0 0 20px rgba(220, 38, 38, 0.8)"
             fontWeight="black"
@@ -150,15 +152,16 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
             alignItems="center"
             gap={2}
           >
-            <Icon as={GiSkullCrossedBones} boxSize={5} />
+            <Icon className="event-display-boss-icon" as={GiSkullCrossedBones} boxSize={5} />
             ZONE BOSS
-            <Icon as={GiSkullCrossedBones} boxSize={5} />
+            <Icon className="event-display-boss-icon" as={GiSkullCrossedBones} boxSize={5} />
           </Badge>
         )}
       
         <HStack className="event-display-type" justify="flex-start" w="full" mb={1.5}>
           {!isDangerous && (
             <Badge 
+              className="event-display-type-badge"
               colorScheme={EVENT_TYPE_COLORS[event.type]} 
               fontSize="xs" 
               px={2} 
@@ -169,14 +172,16 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
           )}
         </HStack>
         <HStack 
+          className="event-display-title-container"
           spacing={3} 
           align="center" 
           justify={isDangerous ? "center" : "flex-start"}
-          mb={2}
+          mb={1}
           w="full"
         >
           {event.icon && (
             <Icon 
+              className="event-display-icon"
               as={event.icon} 
               boxSize={isDangerous ? 12 : 8} 
               color={
@@ -231,7 +236,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
       </MotionBox>
 
       {/* Choices */}
-      <Heading size="sm" color="gray.400" fontSize="md" mb={1}>
+      <Heading className="event-display-choices-heading" size="sm" color="gray.400" fontSize="md" mb={1}>
         What will you do?
       </Heading>
       <VStack className="event-display-choices" spacing={2} align="stretch" flex={1} minH={0} overflowY="auto">
@@ -282,13 +287,14 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
                 transition: 'background-color 0.2s, border-color 0.2s, box-shadow 0.2s, padding 0.2s'
               }}
             >
-              <VStack align="start" spacing={0.5}>
-                <HStack justify="space-between" w="full">
-                  <Text fontWeight="bold" fontSize="sm">
+              <VStack className="event-display-choice-content" align="start" spacing={0.5}>
+                <HStack className="event-display-choice-header" justify="space-between" w="full">
+                  <Text className="event-display-choice-text" fontWeight="bold" fontSize="sm">
                     {choice.text}
                   </Text>
                   {successChance !== null && (
                     <Badge 
+                      className="event-display-choice-chance"
                       colorScheme={
                         successChance >= 0.75 ? 'green' : 
                         successChance >= 0.5 ? 'yellow' : 
@@ -301,7 +307,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
                   )}
                 </HStack>
                 {choice.requirements && (
-                  <Text fontSize="xs" color={canSelect ? 'gray.400' : 'red.400'}>
+                  <Text className="event-display-choice-requirements" fontSize="xs" color={canSelect ? 'gray.400' : 'red.400'}>
                     {getRequirementText(choice.requirements, depth)}
                   </Text>
                 )}
