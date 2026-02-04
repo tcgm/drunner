@@ -14,6 +14,16 @@ export const PALADIN: HeroClass = {
     charisma: 10,
     magicPower: 8,
   },
+  statGains: {
+    maxHp: 8,
+    attack: 5,
+    defense: 7,
+    speed: 3,
+    luck: 4,
+    wisdom: 5,
+    charisma: 6,
+    magicPower: 5,
+  },
   abilities: [
     SMITE_PALADIN,
     LAY_ON_HANDS,

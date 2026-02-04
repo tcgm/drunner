@@ -13,6 +13,15 @@ export const ROGUE: HeroClass = {
     wisdom: 6,
     charisma: 7,
   },
+  statGains: {
+    maxHp: 5,
+    attack: 6,
+    defense: 2,
+    speed: 9,
+    luck: 9,
+    wisdom: 3,
+    charisma: 4,
+  },
   abilities: [
     BACKSTAB,
     DODGE,

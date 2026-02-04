@@ -90,15 +90,6 @@ export const GAME_CONFIG = {
     xpPerLevel: 100, // Base XP needed per level (level * this value)
   },
 
-  // Stat gains per level
-  statGains: {
-    attack: 5,
-    defense: 5,
-    speed: 5,
-    luck: 5,
-    maxHp: 5,
-  },
-
   // Dungeon
   dungeon: {
     maxFloors: 100, // Maximum number of floors before victory

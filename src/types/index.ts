@@ -40,6 +40,7 @@ export interface HeroClass {
   name: string
   description: string
   baseStats: Omit<Stats, 'hp' | 'maxHp'>
+  statGains: Omit<Stats, 'hp'> // Stat increases per level (includes maxHp but not current hp)
   abilities: Ability[]
   icon: string // react-icons/gi name
 }

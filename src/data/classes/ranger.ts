@@ -13,6 +13,16 @@ export const RANGER: HeroClass = {
     wisdom: 8,
     charisma: 6,
   },
+  statGains: {
+    maxHp: 6,
+    attack: 6,
+    defense: 4,
+    speed: 7,
+    luck: 6,
+    wisdom: 5,
+    charisma: 4,
+    magicPower: 2,
+  },
   abilities: [
     AIMED_SHOT,
     QUICK_SHOT,

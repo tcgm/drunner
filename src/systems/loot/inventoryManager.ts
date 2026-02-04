@@ -57,19 +57,20 @@ export function unequipItem(hero: Hero, slotId: string): { hero: Hero; item: Ite
 export function calculateStatsWithEquipment(hero: Hero) {
   const baseStats = { ...hero.stats }
   
-  // Start with base stats (without equipment)
-  const levelBonus = (hero.level - 1) * GAME_CONFIG.hero.statGainPerLevel
+  // Start with base stats (without equipment) using class-specific gains
+  const levelBonus = hero.level - 1
+  const gains = hero.class.statGains
   const stats = {
     hp: baseStats.hp, // Keep current HP
     maxHp: GAME_CONFIG.hero.baseHp + (hero.level * GAME_CONFIG.hero.hpPerLevel) + (hero.class.baseStats.defense * GAME_CONFIG.hero.hpPerDefense),
-    attack: hero.class.baseStats.attack + levelBonus,
-    defense: hero.class.baseStats.defense + levelBonus,
-    speed: hero.class.baseStats.speed + levelBonus,
-    luck: hero.class.baseStats.luck + levelBonus,
-    wisdom: hero.class.baseStats.wisdom + levelBonus,
-    charisma: hero.class.baseStats.charisma + levelBonus,
-    magicPower: hero.class.baseStats.magicPower 
-      ? hero.class.baseStats.magicPower + levelBonus 
+    attack: hero.class.baseStats.attack + (levelBonus * gains.attack),
+    defense: hero.class.baseStats.defense + (levelBonus * gains.defense),
+    speed: hero.class.baseStats.speed + (levelBonus * gains.speed),
+    luck: hero.class.baseStats.luck + (levelBonus * gains.luck),
+    wisdom: hero.class.baseStats.wisdom + (levelBonus * gains.wisdom),
+    charisma: hero.class.baseStats.charisma + (levelBonus * gains.charisma),
+    magicPower: gains.magicPower !== undefined && hero.class.baseStats.magicPower !== undefined
+      ? hero.class.baseStats.magicPower + (levelBonus * gains.magicPower)
       : undefined,
   }
   

@@ -172,13 +172,19 @@ function applyPenaltyToParty(party: (Hero | null)[]): (Hero | null)[] {
           newHero.level = Math.max(1, Math.floor(hero.level / 2))
           console.log(`Halving level for ${hero.name}: ${oldLevel} → ${newHero.level}`)
           newHero.xp = 0
-          // Recalculate stats based on new level
+          // Recalculate stats based on new level using class-specific stat gains
           const levelDifference = hero.level - newHero.level
+          const gains = hero.class.statGains
           newHero.stats = { ...hero.stats }
-          newHero.stats.attack = Math.max(hero.class.baseStats.attack, hero.stats.attack - (levelDifference * GAME_CONFIG.statGains.attack))
-          newHero.stats.defense = Math.max(hero.class.baseStats.defense, hero.stats.defense - (levelDifference * GAME_CONFIG.statGains.defense))
-          newHero.stats.speed = Math.max(hero.class.baseStats.speed, hero.stats.speed - (levelDifference * GAME_CONFIG.statGains.speed))
-          newHero.stats.luck = Math.max(hero.class.baseStats.luck, hero.stats.luck - (levelDifference * GAME_CONFIG.statGains.luck))
+          newHero.stats.attack = Math.max(hero.class.baseStats.attack, hero.stats.attack - (levelDifference * gains.attack))
+          newHero.stats.defense = Math.max(hero.class.baseStats.defense, hero.stats.defense - (levelDifference * gains.defense))
+          newHero.stats.speed = Math.max(hero.class.baseStats.speed, hero.stats.speed - (levelDifference * gains.speed))
+          newHero.stats.luck = Math.max(hero.class.baseStats.luck, hero.stats.luck - (levelDifference * gains.luck))
+          newHero.stats.wisdom = Math.max(hero.class.baseStats.wisdom, hero.stats.wisdom - (levelDifference * gains.wisdom))
+          newHero.stats.charisma = Math.max(hero.class.baseStats.charisma, hero.stats.charisma - (levelDifference * gains.charisma))
+          if (gains.magicPower !== undefined && hero.stats.magicPower !== undefined) {
+            newHero.stats.magicPower = Math.max(hero.class.baseStats.magicPower || 0, hero.stats.magicPower - (levelDifference * gains.magicPower))
+          }
           newHero.stats.maxHp = calculateMaxHp(newHero.level, hero.class.baseStats.defense)
           newHero.stats.hp = newHero.stats.maxHp
           newHero.isAlive = true // Revive on penalty

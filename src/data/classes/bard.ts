@@ -14,6 +14,16 @@ export const BARD: HeroClass = {
     charisma: 12,
     magicPower: 9,
   },
+  statGains: {
+    maxHp: 5,
+    attack: 3,
+    defense: 3,
+    speed: 6,
+    luck: 7,
+    wisdom: 5,
+    charisma: 8,
+    magicPower: 6,
+  },
   abilities: [
     INSPIRE,
     SONG_OF_REST,

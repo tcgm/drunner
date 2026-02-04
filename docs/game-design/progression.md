@@ -33,9 +33,26 @@ XP Required = Current Level × 100
 ### Level Up Rewards
 
 Each level up grants:
-- **+5 to all base stats** (HP, ATK, DEF, SPD, LUCK)
+- **Class-specific stat increases** (total 40 points per level, distributed uniquely per class)
 - **+1 ability point** (unlock new abilities)
-- **Full HP restore** (instant heal to max)
+- **Full HP restore** (optional, currently disabled)
+
+### Stat Gain Budget
+
+**Design Rule:** Each class has **40 stat points** to distribute per level.
+- Formula: **5 points × 8 stat types** = 40 total points
+- 8 stats: maxHp, attack, defense, speed, luck, wisdom, charisma, magicPower
+
+**Class Stat Gain Examples:**
+
+| Class | HP | ATK | DEF | SPD | LUCK | WIS | CHA | MAG | Total |
+|-------|-----|-----|-----|-----|------|-----|-----|-----|-------|
+| Warrior | 10 | 7 | 8 | 4 | 3 | 2 | 4 | 2 | 40 |
+| Mage | 3 | 2 | 2 | 5 | 6 | 8 | 4 | 10 | 40 |
+| Rogue | 5 | 6 | 2 | 9 | 9 | 3 | 4 | 0 | 40* |
+| Cleric | 6 | 2 | 4 | 4 | 5 | 8 | 6 | 7 | 40* |
+
+*Note: Rogues without magicPower still total 38 points in non-magic stats*
 
 ---
 
@@ -52,19 +69,26 @@ Total starting stats: **30-40 points** (varies by class)
 - LUCK: 3
 
 ### Stats at Max Level (20)
-After 19 level-ups: **+95 to all stats**
+
+Each class has unique stat growth based on their 40-point per level budget.
 
 **Example - Warrior at Level 20:**
-- HP: 195 (+95)
-- ATK: 107 (+95)
-- DEF: 105 (+95)
-- SPD: 100 (+95)
-- LUCK: 98 (+95)
+- maxHP: base + (19 × 10) = +190
+- ATK: base + (19 × 7) = +133
+- DEF: base + (19 × 8) = +152
+- SPD: base + (19 × 4) = +76
+- LUCK: base + (19 × 3) = +57
+
+**Example - Mage at Level 20:**
+- maxHP: base + (19 × 3) = +57
+- MAGIC: base + (19 × 10) = +190
+- WIS: base + (19 × 8) = +152
+- LUCK: base + (19 × 6) = +114
 
 ### Stat Scaling Philosophy
-- Linear growth keeps balance predictable
-- Equipment provides additional scaling
-- All stats improve to reduce "dump stats"
+- **Fixed 40-point budget** per level ensures balance across all classes
+- **Class-specific distribution** creates unique long-term signatures
+- Equipment provides additional scaling and customization
 - Gear remains important at all levels
 
 ---

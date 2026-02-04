@@ -296,6 +296,67 @@ Complete breakdown of all 20 hero classes in Dungeon Runner.
 
 ## Class Balance Philosophy
 
+### Stat Growth Budget System
+
+**Core Design Rule:** Each class receives **40 stat points per level** to distribute.
+
+**Formula:** `5 points per stat type × 8 stats = 40 points/level`
+
+**8 Stat Types:**
+1. maxHp
+2. attack
+3. defense
+4. speed
+5. luck
+6. wisdom
+7. charisma
+8. magicPower
+
+**Distribution Guidelines:**
+- **Tank classes** (Warrior, Paladin): Heavy in HP/defense (18-20 combined)
+- **DPS classes** (Rogue, Ranger): High attack/speed/luck (18-22 combined)
+- **Caster classes** (Mage, Necromancer): Max magic/wisdom (16-18 combined), low physical
+- **Support classes** (Cleric, Bard): Balanced wisdom/charisma/magic (19-22 combined)
+
+**Example - Warrior (40 points):**
+- maxHp: 10, attack: 7, defense: 8, speed: 4, luck: 3, wisdom: 2, charisma: 4, magicPower: 2
+
+**Example - Mage (40 points):**
+- maxHp: 3, attack: 2, defense: 2, speed: 5, luck: 6, wisdom: 8, charisma: 4, magicPower: 10
+
+### Class Stat Gain Signatures
+
+Complete breakdown of per-level stat gains for all 8 core classes:
+
+| Class | HP | ATK | DEF | SPD | LUCK | WIS | CHA | MAG | Total | Primary Focus |
+|-------|-----|-----|-----|-----|------|-----|-----|-----|-------|---------------|
+| **Warrior** | 10 | 7 | 8 | 4 | 3 | 2 | 4 | 2 | 40 | Unkillable tank |
+| **Mage** | 3 | 2 | 2 | 5 | 6 | 8 | 4 | 10 | 40 | Glass cannon caster |
+| **Rogue** | 5 | 6 | 2 | 9 | 9 | 3 | 4 | 0 | 38* | Speed/crit demon |
+| **Cleric** | 6 | 2 | 4 | 4 | 5 | 8 | 6 | 7 | 40* | Wise healer |
+| **Ranger** | 6 | 6 | 4 | 7 | 6 | 5 | 4 | 2 | 40 | Balanced striker |
+| **Paladin** | 8 | 5 | 7 | 3 | 4 | 5 | 6 | 5 | 40* | Holy defender |
+| **Bard** | 5 | 3 | 3 | 6 | 7 | 5 | 8 | 6 | 40* | Charming buffer |
+| **Necromancer** | 4 | 2 | 2 | 5 | 6 | 7 | 2 | 10 | 40* | Dark summoner |
+
+*Classes with magicPower = 40 total; Rogue lacks magicPower stat*
+
+**Unique Identifiers:**
+- **Warrior/Paladin**: Both tanks, but Warrior is pure physical (HP/Def/Atk), Paladin adds Cha/Mag
+- **Mage/Necromancer**: Both max 10 magic, but Mage emphasizes wisdom, Necro emphasizes luck
+- **Rogue**: Only class with dual 9s (Speed/Luck) - extreme crit/evasion build
+- **Ranger**: Most balanced, no stat below 4, no stat above 7
+- **Cleric**: Highest wisdom (8) tied with Mage, support-focused
+- **Bard**: Only class with 8 charisma, utility master
+
+This ensures:
+- **Balance**: All classes gain equal total power per level (40 points)
+- **Identity**: Distribution creates distinct long-term stat signatures
+- **Scaling**: Predictable power curves for combat balancing
+- **Diversity**: No two classes share the same top-3 stat priorities
+
+### General Balance
+
 - **8 core classes** cover all major RPG archetypes
 - **12 stretch classes** add unique mechanics and hybrid roles
 - Each class should have clear strengths and weaknesses

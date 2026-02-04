@@ -1,6 +1,52 @@
 import type { Hero, Equipment, Consumable, Item } from '@/types'
 import { getEnabledSlots } from '@/config/slotConfig'
 import { getClassById } from '@/data/classes'
+import { calculateMaxHp } from '@/utils/heroUtils'
+
+/**
+ * Recalculate hero stats based on class-specific stat gains
+ * This fixes heroes from old saves that used the flat +5 system
+ */
+function recalculateHeroStats(hero: Hero): Hero {
+  const currentClass = getClassById(hero.class.id) || hero.class
+  
+  // If class doesn't have statGains, it's an old class definition - skip recalculation
+  if (!currentClass.statGains) {
+    console.log(`[Hero Migration] Skipping ${hero.name} - class has no statGains`)
+    return hero
+  }
+  
+  // Calculate what stats should be at this level with new system
+  const levelBonus = hero.level - 1
+  const gains = currentClass.statGains
+  
+  const recalculatedStats = {
+    hp: hero.stats.hp, // Keep current HP
+    maxHp: calculateMaxHp(hero.level, currentClass.baseStats.defense),
+    attack: currentClass.baseStats.attack + (levelBonus * gains.attack),
+    defense: currentClass.baseStats.defense + (levelBonus * gains.defense),
+    speed: currentClass.baseStats.speed + (levelBonus * gains.speed),
+    luck: currentClass.baseStats.luck + (levelBonus * gains.luck),
+    wisdom: currentClass.baseStats.wisdom + (levelBonus * gains.wisdom),
+    charisma: currentClass.baseStats.charisma + (levelBonus * gains.charisma),
+    magicPower: gains.magicPower !== undefined && currentClass.baseStats.magicPower !== undefined
+      ? currentClass.baseStats.magicPower + (levelBonus * gains.magicPower)
+      : hero.stats.magicPower,
+  }
+  
+  // Cap HP at new maxHp if it somehow exceeds it
+  if (recalculatedStats.hp > recalculatedStats.maxHp) {
+    recalculatedStats.hp = recalculatedStats.maxHp
+  }
+  
+  console.log(`[Hero Migration] Recalculated ${hero.name} (${hero.class.name} L${hero.level}): wisdom ${hero.stats.wisdom}→${recalculatedStats.wisdom}, charisma ${hero.stats.charisma}→${recalculatedStats.charisma}`)
+  
+  return {
+    ...hero,
+    class: currentClass,
+    stats: recalculatedStats,
+  }
+}
 
 /**
  * Migrate a hero from old equipment/consumableSlots format to new slots format
@@ -94,7 +140,8 @@ export function migrateHeroSlots(hero: Hero): Hero {
       }
     }
 
-    return migratedHero
+    // Recalculate all stats using new class-specific gains
+    return recalculateHeroStats(migratedHero)
   }
 
   // If already fully migrated (has slots, no legacy fields), just ensure stats
@@ -120,7 +167,8 @@ export function migrateHeroSlots(hero: Hero): Hero {
       }
     }
     
-    return migratedHero
+    // Recalculate all stats using new class-specific gains
+    return recalculateHeroStats(migratedHero)
   }
   
   // Full migration from legacy format
@@ -209,7 +257,8 @@ export function migrateHeroSlots(hero: Hero): Hero {
     charisma: needsCharisma ? currentClass.baseStats.charisma + levelBonus : migratedHero.stats.charisma,
   }
   
-  return migratedHero
+  // Recalculate all stats using new class-specific gains
+  return recalculateHeroStats(migratedHero)
 }
 
 /**

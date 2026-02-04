@@ -75,7 +75,7 @@ export function addExperience(hero: Hero, xp: number): Hero {
   // If leveled up, apply stat increases
   if (newLevel > hero.level) {
     const levelGain = newLevel - hero.level
-    const statIncrease = levelGain * 5
+    const gains = hero.class.statGains
     
     return {
       ...hero,
@@ -84,13 +84,15 @@ export function addExperience(hero: Hero, xp: number): Hero {
       stats: {
         ...hero.stats,
         maxHp: calculateMaxHp(newLevel, hero.class.baseStats.defense),
-        attack: hero.stats.attack + statIncrease,
-        defense: hero.stats.defense + statIncrease,
-        speed: hero.stats.speed + statIncrease,
-        luck: hero.stats.luck + statIncrease,
-        wisdom: hero.stats.wisdom + statIncrease,
-        charisma: hero.stats.charisma + statIncrease,
-        magicPower: hero.stats.magicPower ? hero.stats.magicPower + statIncrease : undefined,
+        attack: hero.stats.attack + (levelGain * gains.attack),
+        defense: hero.stats.defense + (levelGain * gains.defense),
+        speed: hero.stats.speed + (levelGain * gains.speed),
+        luck: hero.stats.luck + (levelGain * gains.luck),
+        wisdom: hero.stats.wisdom + (levelGain * gains.wisdom),
+        charisma: hero.stats.charisma + (levelGain * gains.charisma),
+        magicPower: gains.magicPower !== undefined && hero.stats.magicPower !== undefined
+          ? hero.stats.magicPower + (levelGain * gains.magicPower)
+          : hero.stats.magicPower,
       },
     }
   }

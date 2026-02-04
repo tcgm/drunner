@@ -466,12 +466,18 @@ export function resolveEventOutcome(
             while (hero.xp >= hero.level * 100 && hero.level < GAME_CONFIG.levelUp.maxLevel) {
               hero.level++
               hero.xp -= (hero.level - 1) * 100
-              // Increase stats on level up
-              hero.stats.attack += GAME_CONFIG.statGains.attack
-              hero.stats.defense += GAME_CONFIG.statGains.defense
-              hero.stats.speed += GAME_CONFIG.statGains.speed
-              hero.stats.luck += GAME_CONFIG.statGains.luck
-              hero.stats.maxHp += GAME_CONFIG.statGains.maxHp
+              // Increase stats on level up using class-specific gains
+              const gains = hero.class.statGains
+              hero.stats.attack += gains.attack
+              hero.stats.defense += gains.defense
+              hero.stats.speed += gains.speed
+              hero.stats.luck += gains.luck
+              hero.stats.wisdom += gains.wisdom
+              hero.stats.charisma += gains.charisma
+              hero.stats.maxHp += gains.maxHp
+              if (gains.magicPower !== undefined && hero.stats.magicPower !== undefined) {
+                hero.stats.magicPower += gains.magicPower
+              }
               if (GAME_CONFIG.levelUp.healToFull) {
                 hero.stats.hp = hero.stats.maxHp
               }
@@ -509,11 +515,18 @@ export function resolveEventOutcome(
               while (hero.xp >= hero.level * 100 && hero.level < GAME_CONFIG.levelUp.maxLevel) {
                 hero.level++
                 hero.xp -= (hero.level - 1) * 100
-                hero.stats.attack += GAME_CONFIG.statGains.attack
-                hero.stats.defense += GAME_CONFIG.statGains.defense
-                hero.stats.speed += GAME_CONFIG.statGains.speed
-                hero.stats.luck += GAME_CONFIG.statGains.luck
-                hero.stats.maxHp += GAME_CONFIG.statGains.maxHp
+                // Use class-specific stat gains
+                const gains = hero.class.statGains
+                hero.stats.attack += gains.attack
+                hero.stats.defense += gains.defense
+                hero.stats.speed += gains.speed
+                hero.stats.luck += gains.luck
+                hero.stats.wisdom += gains.wisdom
+                hero.stats.charisma += gains.charisma
+                hero.stats.maxHp += gains.maxHp
+                if (gains.magicPower !== undefined && hero.stats.magicPower !== undefined) {
+                  hero.stats.magicPower += gains.magicPower
+                }
                 if (GAME_CONFIG.levelUp.healToFull) {
                   hero.stats.hp = hero.stats.maxHp
                 }

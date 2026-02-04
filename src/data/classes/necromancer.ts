@@ -14,6 +14,16 @@ export const NECROMANCER: HeroClass = {
     charisma: 3,
     magicPower: 13,
   },
+  statGains: {
+    maxHp: 4,
+    attack: 2,
+    defense: 2,
+    speed: 5,
+    luck: 6,
+    wisdom: 7,
+    charisma: 2,
+    magicPower: 10,
+  },
   abilities: [
     SUMMON_SKELETON,
     CURSE,
