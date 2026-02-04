@@ -63,7 +63,7 @@ export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
                'Defeated'}
             </Badge>
             <Badge colorScheme="blue" fontSize="sm">
-              Floor {run.finalDepth}
+              Floor {run.finalFloor || run.finalDepth}
             </Badge>
           </HStack>
           <Text fontSize="xs" color="gray.500">
