@@ -28,7 +28,7 @@ interface PartyMemberCardProps {
 export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMemberCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
-  const { updateHero, party, dungeon, useAbility } = useGameStore()
+  const { updateHero, party, dungeon, useAbility: activateAbility } = useGameStore()
   
   const handleEffectComplete = (id: string) => {
     // Filtering is handled by AnimatePresence and the effect completion
@@ -48,7 +48,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
   
   const handleUseAbility = (abilityId: string, event: React.MouseEvent) => {
     event.stopPropagation()
-    const result = useAbility(hero.id, abilityId)
+    const result = activateAbility(hero.id, abilityId)
     // TODO: Show message to user (could use a toast or floating message)
     console.log(result.message)
   }
