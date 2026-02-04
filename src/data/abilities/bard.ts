@@ -16,6 +16,7 @@ export const INSPIRE: Ability = {
         target: 'all-allies',
         duration: 3,
     },
+    icon: 'GiMusicalNotes',
 }
 
 /**
@@ -34,6 +35,7 @@ export const SONG_OF_REST: Ability = {
         target: 'all-allies',
         duration: 3,
     },
+    icon: 'GiMusicalScore',
 }
 
 /**
@@ -52,4 +54,5 @@ export const DISCORDANT_NOTE: Ability = {
         target: 'enemy',
         duration: 2,
     },
+    icon: 'GiMicrophone',
 }

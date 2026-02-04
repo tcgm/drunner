@@ -1,0 +1,19 @@
+import type { Ability } from '@/types'
+
+/**
+ * Warrior: Power Strike
+ * High damage single attack
+ */
+export const POWER_STRIKE: Ability = {
+    id: 'power-strike',
+    name: 'Power Strike',
+    description: 'High damage single attack',
+    cooldown: 2,
+    currentCooldown: 0,
+    effect: {
+        type: 'damage',
+        value: 20,
+        target: 'enemy',
+    },
+    icon: 'GiPunch',
+}

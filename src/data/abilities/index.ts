@@ -1,17 +1,46 @@
 /**
  * Ability definitions by hero class
  * 
- * Each class has its own file defining its abilities.
+ * Each ability has its own file for easy maintenance and expansion.
  * Abilities are then referenced in the class definitions.
- * 
- * This allows for easy maintenance and expansion of the ability system.
  */
 
-export * from './warrior'
-export * from './mage'
-export * from './rogue'
-export * from './cleric'
-export * from './ranger'
-export * from './paladin'
-export * from './necromancer'
-export * from './bard'
+// Warrior abilities
+export * from './powerStrike'
+export * from './defend'
+export * from './taunt'
+
+// Mage abilities
+export * from './fireball'
+export * from './magicMissile'
+export * from './manaShield'
+
+// Rogue abilities
+export * from './backstab'
+export * from './dodge'
+export * from './poisonBlade'
+
+// Cleric abilities
+export * from './heal'
+export * from './bless'
+export * from './holyLight'
+
+// Ranger abilities
+export * from './aimedShot'
+export * from './quickShot'
+export * from './track'
+
+// Paladin abilities
+export * from './smitePaladin'
+export * from './layOnHands'
+export * from './divineShield'
+
+// Necromancer abilities
+export * from './summonSkeleton'
+export * from './curse'
+export * from './drainLife'
+
+// Bard abilities
+export * from './inspire'
+export * from './songOfRest'
+export * from './discordantNote'

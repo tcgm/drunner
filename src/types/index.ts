@@ -25,6 +25,7 @@ export interface Ability {
   charges?: number // Limited uses per run (optional)
   chargesUsed?: number // Charges consumed this run
   effect: AbilityEffect
+  icon?: string // react-icons/gi name
 }
 
 export interface AbilityEffect {

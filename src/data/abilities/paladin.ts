@@ -15,6 +15,7 @@ export const SMITE_PALADIN: Ability = {
         value: 20,
         target: 'enemy',
     },
+    icon: 'GiHolySymbol',
 }
 
 /**
@@ -32,6 +33,7 @@ export const LAY_ON_HANDS: Ability = {
         value: 20,
         target: 'ally',
     },
+    icon: 'GiHeal',
 }
 
 /**
@@ -50,4 +52,5 @@ export const DIVINE_SHIELD: Ability = {
         target: 'self',
         duration: 1,
     },
+    icon: 'GiArmorUpgrade',
 }

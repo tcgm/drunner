@@ -15,6 +15,7 @@ export const FIREBALL: Ability = {
         value: 25,
         target: 'enemy',
     },
+    icon: 'GiFireball',
 }
 
 /**
@@ -32,6 +33,7 @@ export const MAGIC_MISSILE: Ability = {
         value: 15,
         target: 'enemy',
     },
+    icon: 'GiMagicSwirl',
 }
 
 /**
@@ -50,4 +52,5 @@ export const MANA_SHIELD: Ability = {
         target: 'self',
         duration: 2,
     },
+    icon: 'GiMagicShield',
 }

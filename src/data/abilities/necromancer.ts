@@ -16,6 +16,7 @@ export const SUMMON_SKELETON: Ability = {
         target: 'self',
         duration: 5,
     },
+    icon: 'GiSkeletonKey',
 }
 
 /**
@@ -34,6 +35,7 @@ export const CURSE: Ability = {
         target: 'enemy',
         duration: 3,
     },
+    icon: 'GiCursedStar',
 }
 
 /**
@@ -51,4 +53,5 @@ export const DRAIN_LIFE: Ability = {
         value: 15,
         target: 'enemy',
     },
+    icon: 'GiVampireDracula',
 }

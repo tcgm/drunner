@@ -15,6 +15,7 @@ export const POWER_STRIKE: Ability = {
         value: 20,
         target: 'enemy',
     },
+    icon: 'GiPunch',
 }
 
 /**
@@ -33,6 +34,7 @@ export const DEFEND: Ability = {
         target: 'self',
         duration: 1,
     },
+    icon: 'GiShield',
 }
 
 /**
@@ -51,4 +53,5 @@ export const TAUNT: Ability = {
         target: 'enemy',
         duration: 2,
     },
+    icon: 'GiRoar',
 }

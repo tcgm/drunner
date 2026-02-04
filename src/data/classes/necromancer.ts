@@ -1,4 +1,5 @@
 import type { HeroClass } from '@/types'
+import { SUMMON_SKELETON, CURSE, DRAIN_LIFE } from '@/data/abilities'
 
 export const NECROMANCER: HeroClass = {
   id: 'necromancer',
@@ -14,44 +15,9 @@ export const NECROMANCER: HeroClass = {
     magicPower: 13,
   },
   abilities: [
-    {
-      id: 'summon-skeleton',
-      name: 'Summon Skeleton',
-      description: 'Create undead minion ally',
-      cooldown: 5,
-      currentCooldown: 0,
-      effect: {
-        type: 'special',
-        value: 15,
-        target: 'self',
-        duration: 5,
-      },
-    },
-    {
-      id: 'curse',
-      name: 'Curse',
-      description: 'Debuff enemy stats',
-      cooldown: 3,
-      currentCooldown: 0,
-      effect: {
-        type: 'debuff',
-        value: 5,
-        target: 'enemy',
-        duration: 3,
-      },
-    },
-    {
-      id: 'drain-life',
-      name: 'Drain Life',
-      description: 'Damage enemy and heal self',
-      cooldown: 2,
-      currentCooldown: 0,
-      effect: {
-        type: 'damage',
-        value: 15,
-        target: 'enemy',
-      },
-    },
+    SUMMON_SKELETON,
+    CURSE,
+    DRAIN_LIFE,
   ],
   icon: 'GiDeathSkull',
 }

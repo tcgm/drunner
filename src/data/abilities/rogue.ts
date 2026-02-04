@@ -15,6 +15,7 @@ export const BACKSTAB: Ability = {
         value: 30,
         target: 'enemy',
     },
+    icon: 'GiSwordSmithing',
 }
 
 /**
@@ -33,22 +34,24 @@ export const POISON_BLADE: Ability = {
         target: 'enemy',
         duration: 3,
     },
+    icon: 'GiPoisonBottle',
 }
 
 /**
- * Rogue: Evasion
- * Increase dodge chance
+ * Rogue: Dodge
+ * Avoid next attack
  */
-export const EVASION: Ability = {
-    id: 'evasion',
-    name: 'Evasion',
-    description: 'Increase dodge chance',
-    cooldown: 4,
+export const DODGE: Ability = {
+    id: 'dodge',
+    name: 'Dodge',
+    description: 'Avoid next attack',
+    cooldown: 3,
     currentCooldown: 0,
     effect: {
         type: 'buff',
-        value: 20,
+        value: 100,
         target: 'self',
-        duration: 2,
+        duration: 1,
     },
+    icon: 'GiDodge',
 }

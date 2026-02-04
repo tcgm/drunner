@@ -1,4 +1,5 @@
 import type { HeroClass } from '@/types'
+import { INSPIRE, SONG_OF_REST, DISCORDANT_NOTE } from '@/data/abilities'
 
 export const BARD: HeroClass = {
   id: 'bard',
@@ -14,45 +15,9 @@ export const BARD: HeroClass = {
     magicPower: 9,
   },
   abilities: [
-    {
-      id: 'inspire',
-      name: 'Inspire',
-      description: 'Buff all allies',
-      cooldown: 4,
-      currentCooldown: 0,
-      effect: {
-        type: 'buff',
-        value: 3,
-        target: 'all-allies',
-        duration: 3,
-      },
-    },
-    {
-      id: 'song-of-rest',
-      name: 'Song of Rest',
-      description: 'Heal over time to all allies',
-      cooldown: 5,
-      currentCooldown: 0,
-      effect: {
-        type: 'heal',
-        value: 10,
-        target: 'all-allies',
-        duration: 3,
-      },
-    },
-    {
-      id: 'discordant-note',
-      name: 'Discordant Note',
-      description: 'Debuff enemy stats',
-      cooldown: 3,
-      currentCooldown: 0,
-      effect: {
-        type: 'debuff',
-        value: 4,
-        target: 'enemy',
-        duration: 2,
-      },
-    },
+    INSPIRE,
+    SONG_OF_REST,
+    DISCORDANT_NOTE,
   ],
   icon: 'GiMusicalNotes',
 }

@@ -15,6 +15,7 @@ export const AIMED_SHOT: Ability = {
         value: 18,
         target: 'enemy',
     },
+    icon: 'GiBullseye',
 }
 
 /**
@@ -32,6 +33,7 @@ export const QUICK_SHOT: Ability = {
         value: 12,
         target: 'enemy',
     },
+    icon: 'GiBowArrow',
 }
 
 /**
@@ -49,4 +51,5 @@ export const TRACK: Ability = {
         value: 0,
         target: 'self',
     },
+    icon: 'GiFootprint',
 }

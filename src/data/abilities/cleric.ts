@@ -15,39 +15,42 @@ export const HEAL: Ability = {
         value: 30,
         target: 'ally',
     },
+    icon: 'GiHealing',
 }
 
 /**
- * Cleric: Smite
- * Holy damage to enemy
+ * Cleric: Bless
+ * Buff ally stats
  */
-export const SMITE: Ability = {
-    id: 'smite',
-    name: 'Smite',
-    description: 'Holy damage to enemy',
-    cooldown: 3,
-    currentCooldown: 0,
-    effect: {
-        type: 'damage',
-        value: 20,
-        target: 'enemy',
-    },
-}
-
-/**
- * Cleric: Divine Protection
- * Grant defensive buff
- */
-export const DIVINE_PROTECTION: Ability = {
-    id: 'divine-protection',
-    name: 'Divine Protection',
-    description: 'Grant defensive buff',
+export const BLESS: Ability = {
+    id: 'bless',
+    name: 'Bless',
+    description: 'Buff ally stats',
     cooldown: 4,
     currentCooldown: 0,
     effect: {
         type: 'buff',
-        value: 15,
-        target: 'all-allies',
-        duration: 2,
+        value: 5,
+        target: 'ally',
+        duration: 3,
     },
+    icon: 'GiSparkles',
+}
+
+/**
+ * Cleric: Holy Light
+ * Damage enemy with minor self heal
+ */
+export const HOLY_LIGHT: Ability = {
+    id: 'holy-light',
+    name: 'Holy Light',
+    description: 'Damage enemy with minor self heal',
+    cooldown: 3,
+    currentCooldown: 0,
+    effect: {
+        type: 'damage',
+        value: 15,
+        target: 'enemy',
+    },
+    icon: 'GiSunbeams',
 }

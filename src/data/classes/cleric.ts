@@ -1,4 +1,5 @@
 import type { HeroClass } from '@/types'
+import { HEAL, BLESS, HOLY_LIGHT } from '@/data/abilities'
 
 export const CLERIC: HeroClass = {
   id: 'cleric',
@@ -14,43 +15,9 @@ export const CLERIC: HeroClass = {
     magicPower: 12,
   },
   abilities: [
-    {
-      id: 'heal',
-      name: 'Heal',
-      description: 'Restore HP to ally',
-      cooldown: 2,
-      currentCooldown: 0,
-      effect: {
-        type: 'heal',
-        value: 25,
-        target: 'ally',
-      },
-    },
-    {
-      id: 'bless',
-      name: 'Bless',
-      description: 'Buff ally stats',
-      cooldown: 4,
-      currentCooldown: 0,
-      effect: {
-        type: 'buff',
-        value: 5,
-        target: 'ally',
-        duration: 3,
-      },
-    },
-    {
-      id: 'holy-light',
-      name: 'Holy Light',
-      description: 'Damage enemy with minor self heal',
-      cooldown: 3,
-      currentCooldown: 0,
-      effect: {
-        type: 'damage',
-        value: 15,
-        target: 'enemy',
-      },
-    },
+    HEAL,
+    BLESS,
+    HOLY_LIGHT,
   ],
   icon: 'GiHolySymbol',
 }
