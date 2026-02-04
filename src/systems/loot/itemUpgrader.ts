@@ -127,8 +127,8 @@ export function findLowestRarityItem(hero: Hero): { item: Item; slot: string } |
   
   for (const slotId of slots) {
     const item = hero.slots[slotId]
-    // Skip null slots, unique items, set items, and consumables
-    if (item && 'stats' in item && !item.isUnique && !item.setId) {
+    // Skip null slots, unique items, set items, consumables, and alkahest shards
+    if (item && 'stats' in item && !item.isUnique && !item.setId && item.name !== 'Alkahest Shard') {
       const rarityIndex = RARITY_ORDER.indexOf(item.rarity)
       if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
         lowestRarityIndex = rarityIndex
@@ -151,8 +151,8 @@ export function findLowestRarityItemInCollection(items: Item[]): Item | null {
   let lowestRarityIndex = RARITY_ORDER.length
   
   for (const item of items) {
-    // Skip unique and set items
-    if (!item.isUnique && !item.setId) {
+    // Skip unique items, set items, and alkahest shards
+    if (!item.isUnique && !item.setId && item.name !== 'Alkahest Shard') {
       const rarityIndex = RARITY_ORDER.indexOf(item.rarity)
       if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
         lowestRarityIndex = rarityIndex
@@ -173,8 +173,8 @@ export function upgradeItemMaterial(
   item: Item,
   depth: number
 ): Item | null {
-  // Unique items and set items should never be upgraded
-  if (item.isUnique || item.setId) {
+  // Unique items, set items, and alkahest shards should never be upgraded
+  if (item.isUnique || item.setId || item.name === 'Alkahest Shard') {
     return null
   }
 
