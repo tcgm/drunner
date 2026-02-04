@@ -1,5 +1,5 @@
 import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from '@chakra-ui/react'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { useGameStore } from '@store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import PartySidebar from '@components/dungeon/PartySidebar'
@@ -11,6 +11,8 @@ import GameOverScreen from '@components/dungeon/GameOverScreen'
 import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
+import { useMusicContext } from '@/utils/useMusicContext'
+import { MusicContext } from '@/types/audio'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero } from '@/types'
 
@@ -26,6 +28,52 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   // const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure() // Disabled
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
+  
+  // Determine music context based on current dungeon state
+  const musicContext = useMemo(() => {
+    const currentEvent = dungeon.currentEvent;
+    
+    // No event yet - normal exploration
+    if (!currentEvent) {
+      return MusicContext.DUNGEON_NORMAL;
+    }
+    
+    // Boss events
+    if (currentEvent.type === 'boss') {
+      // Final boss (Floor 100)
+      if (currentEvent.isFinalBoss) {
+        return MusicContext.FINAL_BOSS;
+      }
+      
+      // Zone bosses (10, 20, 30, etc.)
+      if (currentEvent.isZoneBoss) {
+        return MusicContext.ZONE_BOSS;
+      }
+      
+      // Floor bosses (5, 15, 25, etc.)
+      if (dungeon.bossType === 'floor') {
+        return MusicContext.FLOOR_BOSS;
+      }
+      
+      // Regular dungeon bosses
+      return MusicContext.DUNGEON_BOSS;
+    }
+    
+    // Special event types
+    if (currentEvent.type === 'merchant') {
+      return MusicContext.SHOP;
+    }
+    
+    if (currentEvent.type === 'rest') {
+      return MusicContext.REST;
+    }
+    
+    // Default to normal dungeon music
+    return MusicContext.DUNGEON_NORMAL;
+  }, [dungeon.currentEvent, dungeon.bossType]);
+  
+  // Apply the music context
+  useMusicContext(musicContext);
   
   // When outcome changes, create floating numbers
   useEffect(() => {

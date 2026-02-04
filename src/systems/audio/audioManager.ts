@@ -104,6 +104,12 @@ class AudioManager {
       return;
     }
 
+    // Skip if playlist has no tracks
+    if (!playlist.tracks || playlist.tracks.length === 0) {
+      console.warn('[Audio] Playlist has no tracks, skipping:', playlist.context);
+      return;
+    }
+
     console.log('[Audio] Changing context to:', playlist.context);
 
     // If same context and already playing, do nothing
