@@ -149,6 +149,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
                 current={hero.xp}
                 max={calculateXpForLevel(hero.level)}
                 colorScheme="cyan"
+                height={0.5}
               />
 
               {/* Abilities row */}

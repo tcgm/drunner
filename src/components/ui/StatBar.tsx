@@ -12,6 +12,7 @@ interface StatBarProps {
   size?: 'xs' | 'sm' | 'md' | 'lg'
   showValues?: boolean
   valueSize?: string
+  height?: number | string;
 }
 
 export default function StatBar({ 
@@ -21,7 +22,8 @@ export default function StatBar({
   colorScheme, 
   size = 'xs',
   showValues = true,
-  valueSize = '2xs'
+  valueSize = '2xs',
+  height
 }: StatBarProps) {
   const [displayValue, setDisplayValue] = useState(current)
   const [prevValue, setPrevValue] = useState(current)
@@ -100,6 +102,7 @@ export default function StatBar({
           colorScheme={getColorScheme()}
           borderRadius="full"
           bg="gray.700"
+          height={height}
           sx={{
             '& > div': {
               transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
