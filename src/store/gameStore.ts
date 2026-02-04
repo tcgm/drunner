@@ -608,9 +608,29 @@ export const useGameStore = create<GameStore>()(
 
             // Check for victory - completed max floors
             if (newFloor > GAME_CONFIG.dungeon.maxFloors) {
-              // Player has completed all floors, trigger victory
-              // This will be handled by calling victoryGame externally
-              return state
+              // Player has completed all floors - update state and trigger victory
+              const victoryRun = state.activeRun ? {
+                ...state.activeRun,
+                finalDepth: newDepth,
+                finalFloor: GAME_CONFIG.dungeon.maxFloors, // Cap at max floor
+                eventsCompleted: state.activeRun.eventsCompleted + 1,
+                result: 'victory' as const,
+                endDate: Date.now(),
+              } : null
+
+              return {
+                party: updatedParty,
+                heroRoster: updatedRoster,
+                dungeon: {
+                  ...state.dungeon,
+                  depth: newDepth,
+                  floor: newFloor, // Set floor to 101 to trigger victory screen
+                  eventsThisFloor: 0,
+                  currentEvent: null,
+                },
+                activeRun: victoryRun,
+                isGameOver: true,
+              }
             }
 
             const event = getNextEvent(newDepth, newFloor, isNextEventBoss, isMajorBoss, state.dungeon.eventHistory)

@@ -131,3 +131,33 @@ export function damageHero(hero: Hero, amount: number): Hero {
     isAlive: newHp > 0,
   }
 }
+
+/**
+ * Level up a hero by 1 level
+ */
+export function levelUpHero(hero: Hero, maxLevel: number = 20): Hero {
+  if (hero.level >= maxLevel) {
+    return hero
+  }
+
+  const gains = hero.class.statGains
+  const newLevel = hero.level + 1
+
+  return {
+    ...hero,
+    level: newLevel,
+    stats: {
+      ...hero.stats,
+      attack: hero.stats.attack + gains.attack,
+      defense: hero.stats.defense + gains.defense,
+      speed: hero.stats.speed + gains.speed,
+      luck: hero.stats.luck + gains.luck,
+      maxHp: hero.stats.maxHp + gains.maxHp,
+      wisdom: hero.stats.wisdom + gains.wisdom,
+      charisma: hero.stats.charisma + gains.charisma,
+      magicPower: hero.stats.magicPower !== undefined && gains.magicPower !== undefined 
+        ? hero.stats.magicPower + gains.magicPower 
+        : hero.stats.magicPower,
+    },
+  }
+}

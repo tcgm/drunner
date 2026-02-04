@@ -44,6 +44,8 @@ import { allBases } from '@/data/items/bases'
 import { allMaterials } from '@/data/items/materials'
 import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
+import { levelUpHero } from '@/utils/heroUtils'
+import { BOSS_EVENTS } from '@/data/events/boss/normal'
 
 type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
 
@@ -167,18 +169,10 @@ export default function DevTools() {
 
   const handleLevelUp = () => {
     const state = useGameStore.getState()
-    const leveledParty = party.filter((hero): hero is Hero => hero !== null).map(hero => ({
-      ...hero,
-      level: Math.min(GAME_CONFIG.levelUp.maxLevel, hero.level + 1),
-      stats: {
-        ...hero.stats,
-        attack: hero.stats.attack + GAME_CONFIG.statGains.attack,
-        defense: hero.stats.defense + GAME_CONFIG.statGains.defense,
-        speed: hero.stats.speed + GAME_CONFIG.statGains.speed,
-        luck: hero.stats.luck + GAME_CONFIG.statGains.luck,
-        maxHp: hero.stats.maxHp + GAME_CONFIG.statGains.maxHp,
-      },
-    }))
+    const leveledParty = party
+      .filter((hero): hero is Hero => hero !== null)
+      .map(hero => levelUpHero(hero, GAME_CONFIG.levelUp.maxLevel))
+    
     // Update roster as well
     const leveledRoster = state.heroRoster.map(rosterHero => {
       const leveledVersion = leveledParty.find(h => h.id === rosterHero.id)
@@ -239,6 +233,113 @@ export default function DevTools() {
         ...dungeon,
         depth: dungeon.depth + floors,
       }
+    })
+  }
+
+  const handleGoToFloor = (floor: number) => {
+    // Reset floor state completely to avoid inconsistencies
+    const newEventsRequired = Math.floor(
+      Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
+    ) + GAME_CONFIG.dungeon.minEventsPerFloor
+
+    useGameStore.setState({
+      dungeon: {
+        ...dungeon,
+        floor: floor,
+        eventsThisFloor: 0, // Reset to start of floor
+        eventsRequiredThisFloor: newEventsRequired,
+        isNextEventBoss: false,
+        bossType: null,
+      }
+    })
+  }
+
+  const handleWinEvent = () => {
+    const state = useGameStore.getState()
+    const currentEvent = state.dungeon.currentEvent
+    
+    if (!currentEvent) {
+      alert('No active event!')
+      return
+    }
+
+    // Find the first choice with a success outcome
+    const winChoice = currentEvent.choices.find(c => c.successOutcome)
+    
+    if (winChoice?.successOutcome) {
+      // Force select the success outcome
+      state.selectChoice(winChoice)
+    } else {
+      alert('No winning choice found in this event!')
+    }
+  }
+
+  const handleKillEnemy = () => {
+    const state = useGameStore.getState()
+    const currentEvent = state.dungeon.currentEvent
+    
+    if (!currentEvent) {
+      alert('No active event!')
+      return
+    }
+
+    if (currentEvent.type !== 'combat' && currentEvent.type !== 'boss') {
+      alert('Not a combat event!')
+      return
+    }
+
+    // Find the attack/fight choice
+    const fightChoice = currentEvent.choices.find(c => 
+      c.text.toLowerCase().includes('fight') || 
+      c.text.toLowerCase().includes('attack') ||
+      c.successOutcome
+    )
+    
+    if (fightChoice) {
+      state.selectChoice(fightChoice)
+    } else {
+      alert('No fight option found!')
+    }
+  }
+
+  const handleSkipEvent = () => {
+    const state = useGameStore.getState()
+    if (!state.dungeon.currentEvent) {
+      alert('No active event!')
+      return
+    }
+
+    // Clear the event and advance
+    useGameStore.setState({
+      dungeon: {
+        ...state.dungeon,
+        currentEvent: null,
+      }
+    })
+    
+    // Advance to next floor
+    state.advanceDungeon()
+  }
+
+  const handleHealAllFull = () => {
+    const state = useGameStore.getState()
+    const healedParty = state.party.filter((hero): hero is Hero => hero !== null).map(hero => ({
+      ...hero,
+      isAlive: true,
+      stats: {
+        ...hero.stats,
+        hp: hero.stats.maxHp,
+      },
+    }))
+    
+    const healedRoster = state.heroRoster.map(rosterHero => {
+      const healedVersion = healedParty.find(h => h.id === rosterHero.id)
+      return healedVersion ?? rosterHero
+    })
+    
+    useGameStore.setState({ 
+      party: healedParty as (Hero | null)[], 
+      heroRoster: healedRoster 
     })
   }
 
@@ -357,6 +458,7 @@ export default function DevTools() {
                 <Tab>Party</Tab>
                 <Tab>Items</Tab>
                 <Tab>Dungeon</Tab>
+                <Tab>Event</Tab>
                 <Tab>System</Tab>
               </TabList>
 
@@ -580,6 +682,9 @@ export default function DevTools() {
                     <Button size="sm" colorScheme="cyan" onClick={() => handleAdvanceFloor(-5)}>
                       Go Back -5 Floors
                     </Button>
+                    <Button size="sm" colorScheme="purple" onClick={() => handleGoToFloor(100)}>
+                      Go to Floor 100
+                    </Button>
                     <Button size="sm" colorScheme="red" onClick={() => setConfirmAction('apply-penalty')}>
                       Apply Death Penalty
                     </Button>
@@ -589,8 +694,53 @@ export default function DevTools() {
                 <TabPanel>
                   <VStack spacing={3} align="stretch">
                     <Text fontSize="sm" fontWeight="bold" color="gray.400">
+                      Event Control
+                    </Text>
+                    {dungeon.currentEvent ? (
+                      <>
+                        <Text fontSize="xs" color="cyan.400">
+                          Current Event: {dungeon.currentEvent.title} ({dungeon.currentEvent.type})
+                        </Text>
+                        <Button size="sm" colorScheme="green" onClick={handleWinEvent}>
+                          Win Event (Auto-Success)
+                        </Button>
+                        {(dungeon.currentEvent.type === 'combat' || dungeon.currentEvent.type === 'boss') && (
+                          <Button size="sm" colorScheme="orange" onClick={handleKillEnemy}>
+                            Kill Enemy (Fight Choice)
+                          </Button>
+                        )}
+                        <Button size="sm" colorScheme="yellow" onClick={handleSkipEvent}>
+                          Skip Event (Force Continue)
+                        </Button>
+                        <Button size="sm" colorScheme="blue" onClick={handleHealAllFull}>
+                          Heal All to Full HP
+                        </Button>
+                      </>
+                    ) : (
+                      <Text fontSize="sm" color="gray.500">
+                        No active event. Enter the dungeon to see event controls.
+                      </Text>
+                    )}
+                  </VStack>
+                </TabPanel>
+
+                <TabPanel>
+                  <VStack spacing={3} align="stretch">
+                    <Text fontSize="sm" fontWeight="bold" color="gray.400">
                       Game State
                     </Text>
+                    <Button 
+                      size="sm" 
+                      colorScheme="cyan" 
+                      onClick={() => {
+                        console.log('Total boss events loaded:', BOSS_EVENTS.length)
+                        console.log('Zone bosses:', BOSS_EVENTS.filter(e => (e as any).isZoneBoss).map(e => `${e.title} (floor ${(e as any).zoneBossFloor})`))
+                        console.log('Final boss:', BOSS_EVENTS.find(e => (e as any).isFinalBoss))
+                        alert(`Boss events loaded: ${BOSS_EVENTS.length}\nCheck console for details`)
+                      }}
+                    >
+                      Debug: Log Boss Events
+                    </Button>
                     <Button size="sm" colorScheme="red" variant="outline" onClick={() => setConfirmAction('reset-game')}>
                       Reset Entire Game
                     </Button>

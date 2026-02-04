@@ -374,6 +374,7 @@ export interface Material {
 }
 
 export interface BaseTemplate {
+  icon: IconType
   description: string
   type: ItemSlot
   stats: Partial<Omit<Stats, 'hp'>>

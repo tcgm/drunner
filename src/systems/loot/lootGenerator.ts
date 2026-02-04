@@ -7,8 +7,17 @@ import { getRandomSetItem, ALL_SET_ITEMS } from '@data/items/sets'
 import { applyModifiers, getModifierById } from '@data/items/mods'
 import { GiCrystalShine } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { getRarityConfig } from '@/systems/rarity/raritySystem'
+import { getRarityConfig, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 import { CURRENT_STAT_VERSION } from '@/utils/itemMigration'
+
+/**
+ * Get all rarities ordered by their minFloor (progression order)
+ */
+function getRarityOrder(): ItemRarity[] {
+  return Object.entries(RARITY_CONFIGS)
+    .sort(([, a], [, b]) => a.minFloor - b.minFloor)
+    .map(([rarity]) => rarity as ItemRarity)
+}
 
 /**
  * Loot generation configuration
@@ -51,8 +60,8 @@ const LOOT_CONFIG = {
 /**
  * Adjust rarity weights based on dungeon depth
  */
-function getDepthAdjustedWeights(depth: number): Record<ItemRarity, number> {
-  const weights = { ...LOOT_CONFIG.baseRarityWeights }
+function getDepthAdjustedWeights(depth: number): Partial<Record<ItemRarity, number>> {
+  const weights: Partial<Record<ItemRarity, number>> = { ...LOOT_CONFIG.baseRarityWeights }
 
   if (depth <= 5) {
     // Early floors: mostly junk and common
@@ -64,8 +73,6 @@ function getDepthAdjustedWeights(depth: number): Record<ItemRarity, number> {
     weights.legendary = 0
     weights.mythic = 0
     weights.artifact = 0
-    weights.cursed = 0
-    weights.set = 0
   } else if (depth <= 10) {
     // Early-mid floors
     weights.junk = 20
@@ -76,8 +83,6 @@ function getDepthAdjustedWeights(depth: number): Record<ItemRarity, number> {
     weights.legendary = 0
     weights.mythic = 0
     weights.artifact = 0
-    weights.cursed = 0
-    weights.set = 0
   } else if (depth <= 20) {
     // Mid floors
     weights.junk = 5
@@ -88,8 +93,6 @@ function getDepthAdjustedWeights(depth: number): Record<ItemRarity, number> {
     weights.legendary = 2
     weights.mythic = 0
     weights.artifact = 0
-    weights.cursed = 0
-    weights.set = 0
   } else {
     // Deep floors: shift toward higher rarities
     weights.junk = 0
@@ -100,8 +103,6 @@ function getDepthAdjustedWeights(depth: number): Record<ItemRarity, number> {
     weights.legendary = 12
     weights.mythic = 3
     weights.artifact = 0
-    weights.cursed = 0
-    weights.set = 0
   }
 
   return weights
@@ -113,10 +114,17 @@ function getDepthAdjustedWeights(depth: number): Record<ItemRarity, number> {
 function selectRarity(depth: number, minRarity?: ItemRarity, maxRarity?: ItemRarity): ItemRarity {
   const weights = getDepthAdjustedWeights(depth)
   
-  // Filter weights based on min/max constraints
-  const rarityOrder: ItemRarity[] = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'artifact']
+  // Get rarity order dynamically from the rarity system (sorted by minFloor)
+  const rarityOrder = getRarityOrder()
   const minIndex = minRarity ? rarityOrder.indexOf(minRarity) : 0
   const maxIndex = maxRarity ? rarityOrder.indexOf(maxRarity) : rarityOrder.length - 1
+  
+  // If min/max rarities are specified but not in weights, use them directly
+  if (minRarity && maxRarity && minIndex >= 0 && maxIndex >= 0) {
+    // For high-tier rarities not in the weight table, pick randomly from the range
+    const validRarities = rarityOrder.slice(minIndex, maxIndex + 1)
+    return validRarities[Math.floor(Math.random() * validRarities.length)]
+  }
   
   const filteredWeights: Record<string, number> = {}
   for (const [rarity, weight] of Object.entries(weights)) {
@@ -186,7 +194,7 @@ function applyMaterialToStats(
  */
 function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): string {
   // If base template has explicit baseNames, randomly pick one
-  if ('baseNames' in baseTemplate && baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+  if ('baseNames' in baseTemplate && Array.isArray(baseTemplate.baseNames) && baseTemplate.baseNames.length > 0) {
     const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
     return `${materialPrefix} ${randomName}`
   }
@@ -278,8 +286,7 @@ export function generateItem(
       // If we have a forced type, only use set item if it matches appropriately
       if (!forceType || 
           setTemplate.type === forceType || 
-          (forceType === 'accessory1' && setTemplate.type === 'accessory') ||
-          (forceType === 'accessory2' && setTemplate.type === 'accessory')) {
+          ((forceType === 'accessory1' || forceType === 'accessory2') && (setTemplate.type === 'accessory1' || setTemplate.type === 'accessory2'))) {
         
         // Get the rarity multiplier for the set item's rarity
         const rarityConfig = getRarityConfig(setTemplate.rarity)
@@ -325,8 +332,7 @@ export function generateItem(
       // Generate unique item with proper type matching if possible
       if (!forceType || 
           uniqueTemplate.type === forceType ||
-          (forceType === 'accessory1' && uniqueTemplate.type === 'accessory') ||
-          (forceType === 'accessory2' && uniqueTemplate.type === 'accessory')) {
+          ((forceType === 'accessory1' || forceType === 'accessory2') && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
         return {
           ...uniqueTemplate,
           id: uuidv4(),
@@ -353,12 +359,16 @@ export function generateItem(
       material = typeof forceMaterialOrBase === 'string'
         ? getMaterialById(forceMaterialOrBase)
         : forceMaterialOrBase
-      baseTemplate = getCompatibleBase(type, material.id)
+      if (material) {
+        baseTemplate = getCompatibleBase(type, material.id)
+      }
     }
   } else {
     // Generate procedural item from material + base
     material = getCompatibleMaterial(rarity, type)
-    baseTemplate = getCompatibleBase(type, material.id)
+    if (material) {
+      baseTemplate = getCompatibleBase(type, material.id)
+    }
   }
   
   // Retry up to 10 times if we can't find a compatible combination
@@ -375,7 +385,7 @@ export function generateItem(
   if (!baseTemplate || !material) {
     console.warn(`Failed to generate compatible item for type ${type} with rarity ${rarity} after ${maxAttempts} attempts - giving alkahest`)
     // Create an alkahest shard item that represents raw crafting material
-    const alkahestValue = Math.floor(GAME_CONFIG.loot.baseItemValue * (material?.valueMultiplier || 1))
+    const alkahestValue = Math.floor(GAME_CONFIG.loot.baseItemValue * ((material?.valueMultiplier) || 1))
     return {
       id: uuidv4(),
       name: 'Alkahest Shard',
@@ -385,11 +395,16 @@ export function generateItem(
       stats: {}, // No stats - just crafting material
       value: alkahestValue,
       icon: GiCrystalShine,
+      isUnique: false,
     }
   }
   
+  // At this point, both baseTemplate and material are guaranteed to be defined
   // Generate the item from the base and material
-  const base: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = baseTemplate
+  const base: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
+    ...baseTemplate,
+    icon: baseTemplate.icon || GiCrystalShine,
+  }
   
   // Get rarity multiplier
   const rarityConfig = getRarityConfig(rarity)
@@ -480,8 +495,9 @@ export function generateItem(
   }
   
   // Apply modifiers if any
+  // Apply modifiers if any
   if (modifiers.length > 0) {
-    const modifierObjects = modifiers.map(id => getModifierById(id)).filter(Boolean)
+    const modifierObjects = modifiers.map(id => getModifierById(id)).filter((m): m is NonNullable<typeof m> => m !== null && m !== undefined)
     const modifiedItem = applyModifiers(item, modifierObjects)
     
     // Update description with modifier info
@@ -519,7 +535,6 @@ export function repairItemName(item: Item): Item {
       return {
         ...item,
         name: extractedName,
-        icon: undefined, // Clear corrupted icon, let repairItemIcon handle it
       }
     } else {
       // Couldn't extract name, try to reconstruct from description
@@ -535,7 +550,6 @@ export function repairItemName(item: Item): Item {
       return {
         ...item,
         name: `Unknown ${typeNames[item.type] || 'Item'}`,
-        icon: undefined, // Clear corrupted icon
       }
     }
   }

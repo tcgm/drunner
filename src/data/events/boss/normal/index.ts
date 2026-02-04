@@ -1,9 +1,12 @@
-// Boss event aggregator - auto-discovers all events in this directory
+// Boss event aggregator - auto-discovers all events in this directory and zone bosses
 import type { DungeonEvent } from '@/types'
 
-const eventModules = import.meta.glob<{ default?: DungeonEvent; [key: string]: unknown }>('./*.ts', { eager: true })
+const normalBossModules = import.meta.glob<{ default?: DungeonEvent; [key: string]: unknown }>('./*.ts', { eager: true })
+const zoneBossModules = import.meta.glob<{ default?: DungeonEvent; [key: string]: unknown }>('../zone/*.ts', { eager: true })
 
-export const BOSS_EVENTS: DungeonEvent[] = Object.values(eventModules)
+const allBossModules = { ...normalBossModules, ...zoneBossModules }
+
+export const BOSS_EVENTS: DungeonEvent[] = Object.values(allBossModules)
   .filter(module => module !== undefined)
   .flatMap(module => 
     Object.values(module).filter((exp): exp is DungeonEvent => 

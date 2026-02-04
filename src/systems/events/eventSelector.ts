@@ -7,6 +7,12 @@ import {
 } from '@data/events'
 
 /**
+ * NOTE: The "depth" property in event data is a LEGACY TERM that actually means "minimum floor".
+ * Events with depth: 5 become available starting from floor 5.
+ * The depth parameter passed to functions is still the actual event count for future use.
+ */
+
+/**
  * Select a random event based on current dungeon state and weighted probabilities
  */
 export function selectRandomEvent(
@@ -18,8 +24,9 @@ export function selectRandomEvent(
 ): DungeonEvent | null {
   // If this should be a floor boss or major boss
   if (isFloorBoss || isMajorBoss) {
+    // Get boss events available at current floor (using depth property as minFloor)
     let bossEvents = getEventsByType('boss').filter(e => 
-      e.depth <= depth && !excludeIds.includes(e.id)
+      e.depth <= floor && !excludeIds.includes(e.id)
     )
     
     // Check if this is THE final boss (Floor 100)
@@ -39,11 +46,12 @@ export function selectRandomEvent(
       const zoneBoss = bossEvents.find(e => (e as any).zoneBossFloor === floor)
       if (zoneBoss) return zoneBoss
       
-      // Fallback to highest depth boss if no zone boss found
+      // Fallback to random boss if no zone boss found
       const sortedBosses = [...bossEvents]
         .filter(e => !(e as any).isZoneBoss) // Exclude other zone bosses
-        .sort((a, b) => b.depth - a.depth)
-      if (sortedBosses.length > 0) return sortedBosses[0]
+      if (sortedBosses.length > 0) {
+        return sortedBosses[Math.floor(Math.random() * sortedBosses.length)]
+      }
     }
     
     if (bossEvents.length > 0) {
@@ -57,10 +65,10 @@ export function selectRandomEvent(
     }
   }
   
-  // Filter events available at current depth
+  // Filter regular events available at current floor (using depth property as minFloor)
   const availableEvents = ALL_EVENTS.filter(e => 
     e.type !== 'boss' && 
-    e.depth <= depth && 
+    e.depth <= floor && 
     !excludeIds.includes(e.id)
   )
   
