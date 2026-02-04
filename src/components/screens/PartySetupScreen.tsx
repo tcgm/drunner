@@ -1,6 +1,7 @@
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../store/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
+import { GAME_CONFIG } from '../../config/gameConfig'
 import { useState, useEffect, useCallback } from 'react'
 import type { Hero, Consumable, Item } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
@@ -13,6 +14,7 @@ import { ConfirmStartWithOverflowModal } from '../party/ConfirmStartWithOverflow
 import { PotionShopModal } from '../party/PotionShopModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
+import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
 
 interface PartySetupScreenProps {
   onBack: () => void
@@ -73,6 +75,9 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Shop modal
   const { isOpen: isShopOpen, onOpen: onShopOpen, onClose: onShopClose } = useDisclosure()
+
+  // Buy bank slots modal
+  const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
 
   // Auto-open overflow modal if there are overflow items
   useState(() => {
@@ -160,10 +165,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     }
   }, [party, equipItemFromBank, onClose])
 
-  const handleExpandBank = (count: number) => {
-    expandBankStorage(count)
-  }
-
   const handleKeepOverflow = (itemId: string) => {
     keepOverflowItem(itemId)
   }
@@ -196,9 +197,24 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   }
 
   const handlePurchaseItem = (item: Item) => {
+    // Check if bank is full
+    if (bankInventory.length >= bankStorageSlots) {
+      onBuySlotsOpen()
+      return
+    }
+    
     if (bankGold >= item.value) {
       moveItemToBank(item)
       spendBankGold(item.value)
+    }
+  }
+
+  const handleExpandBank = (slots: number) => {
+    const costPerSlot = GAME_CONFIG.bank.costPerSlot
+    const totalCost = slots * costPerSlot
+    
+    if (bankGold >= totalCost) {
+      expandBankStorage(slots)
     }
   }
 
@@ -304,6 +320,17 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onPurchase={handlePurchasePotion}
         onPurchaseItem={handlePurchaseItem}
         onSpendGold={spendBankGold}
+        bankInventory={bankInventory}
+        bankStorageSlots={bankStorageSlots}
+      />
+
+      {/* Buy Bank Slots Modal */}
+      <BuyBankSlotsModal
+        isOpen={isBuySlotsOpen}
+        onClose={onBuySlotsClose}
+        onConfirm={handleExpandBank}
+        bankGold={bankGold}
+        currentSlots={bankStorageSlots}
       />
     </Box>
   )

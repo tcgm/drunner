@@ -33,6 +33,8 @@ interface PotionShopModalProps {
   onPurchase: (potion: Consumable) => void
   onPurchaseItem: (item: Item) => void
   onSpendGold: (amount: number) => boolean
+  bankInventory: Item[]
+  bankStorageSlots: number
 }
 
 const SHOP_SIZE = GAME_CONFIG.shop.inventorySize
@@ -50,7 +52,7 @@ const getRarityColor = (rarity: string): string => {
   return rarityColors[rarity] || 'gray.500'
 }
 
-export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, onPurchaseItem, onSpendGold }: PotionShopModalProps) {
+export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, onPurchaseItem, onSpendGold, bankInventory, bankStorageSlots }: PotionShopModalProps) {
   const [potions, setPotions] = useState<Consumable[]>([])
   const [featuredItem, setFeaturedItem] = useState<Item | null>(null)
   const [selectedPotion, setSelectedPotion] = useState<Consumable | null>(null)
@@ -134,6 +136,13 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
     if (featuredItem) {
       const shopPrice = getShopPrice(featuredItem)
       if (bankGold >= shopPrice && !featuredItemPurchased) {
+        // Check if bank is full
+        if (bankInventory.length >= bankStorageSlots) {
+          // Bank is full, onPurchaseItem will handle opening the buy slots modal
+          onPurchaseItem(featuredItem)
+          return
+        }
+        
         onPurchaseItem(featuredItem)
         setFeaturedItemPurchased(true)
       }
