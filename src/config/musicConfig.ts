@@ -3,9 +3,13 @@ import type { MusicPlaylist } from '@/types/audio';
 
 // Import music files using Vite's explicit URL import
 // The ?url suffix tells Vite to return the file path as a string
-import partyMusic1 from '@/assets/audio/music/Lanterns Up B 2 (Casual Dungeon Prep).mp3?url';
-import partyMusic2 from '@/assets/audio/music/Lanterns Up B3 (Casual Dungeon Prep).mp3?url';
-import menuMusic from '@/assets/audio/music/Entrance (Casual Dungeon Main Menu).mp3?url';
+import partyMusic1 from '@/assets/audio/music/lanternsUpB2.mp3?url';
+import partyMusic2 from '@/assets/audio/music/lanternsUpB3.mp3?url';
+import menuMusic from '@/assets/audio/music/entrance.mp3?url';
+import exploreMusic1 from '@/assets/audio/music/explore2-1.mp3?url';
+import exploreMusic2 from '@/assets/audio/music/explore2-2.mp3?url';
+import exploreMusic3 from '@/assets/audio/music/explore2-3.mp3?url';
+import exploreMusic4 from '@/assets/audio/music/explore2-4.mp3?url';
 
 /**
  * Music playlists for different game contexts
@@ -54,13 +58,31 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
     context: MusicContext.DUNGEON_NORMAL,
     tracks: [
       {
-        name: 'Dungeon Exploration',
-        path: partyMusic1, // Placeholder - add your dungeon music
+        name: 'Dungeon Exploration 1',
+        path: exploreMusic1,
+        volume: 0.6,
+        loop: true
+      },
+      {
+        name: 'Dungeon Exploration 2',
+        path: exploreMusic2,
+        volume: 0.6,
+        loop: true
+      },
+      {
+        name: 'Dungeon Exploration 3',
+        path: exploreMusic3,
+        volume: 0.6,
+        loop: true
+      },
+      {
+        name: 'Dungeon Exploration 4',
+        path: exploreMusic4,
         volume: 0.6,
         loop: true
       }
     ],
-    shuffle: false,
+    shuffle: true,
     crossfadeDuration: 1500
   },
 
