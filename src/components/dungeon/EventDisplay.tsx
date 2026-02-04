@@ -87,6 +87,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
         }
         borderRadius={isDangerous ? 'lg' : 'none'}
         p={isDangerous ? 4 : 0}
+        pt={isDangerous ? 8 : 0}
         boxShadow={
           isZoneBoss 
             ? '0 0 30px rgba(220, 38, 38, 0.6), inset 0 0 20px rgba(220, 38, 38, 0.2)'
@@ -108,55 +109,65 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
           pointerEvents: 'none'
         } : undefined}
       >
-        <VStack spacing={1.5} w="full">
-          {isFloorBoss && (
+        {/* Floating Boss Labels - positioned to overlap top border */}
+        {isFloorBoss && (
+          <Badge 
+            position="absolute"
+            top="-14px"
+            left="50%"
+            transform="translateX(-50%)"
+            zIndex={10}
+            colorScheme="purple" 
+            fontSize="md" 
+            px={3} 
+            py={1} 
+            variant="solid"
+            boxShadow="0 0 10px rgba(196, 67, 224, 0.6)"
+            display="flex"
+            alignItems="center"
+            gap={1.5}
+          >
+            <Icon as={GiCrossedSwords} boxSize={4} />
+            FLOOR BOSS
+            <Icon as={GiCrossedSwords} boxSize={4} />
+          </Badge>
+        )}
+        {isZoneBoss && (
+          <Badge 
+            position="absolute"
+            top="-18px"
+            left="50%"
+            transform="translateX(-50%)"
+            zIndex={10}
+            colorScheme="red" 
+            fontSize="lg" 
+            px={4} 
+            py={1.5} 
+            variant="solid"
+            boxShadow="0 0 20px rgba(220, 38, 38, 0.8)"
+            fontWeight="black"
+            display="flex"
+            alignItems="center"
+            gap={2}
+          >
+            <Icon as={GiSkullCrossedBones} boxSize={5} />
+            ZONE BOSS
+            <Icon as={GiSkullCrossedBones} boxSize={5} />
+          </Badge>
+        )}
+      
+        <HStack className="event-display-type" justify="flex-start" w="full" mb={1.5}>
+          {!isDangerous && (
             <Badge 
-              colorScheme="purple" 
-              fontSize="md" 
-              px={3} 
-              py={1} 
-              variant="solid"
-              boxShadow="0 0 10px rgba(196, 67, 224, 0.6)"
-              display="flex"
-              alignItems="center"
-              gap={1.5}
+              colorScheme={EVENT_TYPE_COLORS[event.type]} 
+              fontSize="xs" 
+              px={2} 
+              py={0.5}
             >
-              <Icon as={GiCrossedSwords} boxSize={4} />
-              FLOOR BOSS
-              <Icon as={GiCrossedSwords} boxSize={4} />
+              {event.type.toUpperCase()}
             </Badge>
           )}
-          {isZoneBoss && (
-            <Badge 
-              colorScheme="red" 
-              fontSize="lg" 
-              px={4} 
-              py={1.5} 
-              variant="solid"
-              boxShadow="0 0 20px rgba(220, 38, 38, 0.8)"
-              fontWeight="black"
-              display="flex"
-              alignItems="center"
-              gap={2}
-            >
-              <Icon as={GiSkullCrossedBones} boxSize={5} />
-              ZONE BOSS
-              <Icon as={GiSkullCrossedBones} boxSize={5} />
-            </Badge>
-          )}
-          <HStack className="event-display-type" justify="flex-start" w="full">
-            {!isDangerous && (
-              <Badge 
-                colorScheme={EVENT_TYPE_COLORS[event.type]} 
-                fontSize="xs" 
-                px={2} 
-                py={0.5}
-              >
-                {event.type.toUpperCase()}
-              </Badge>
-            )}
-          </HStack>
-        </VStack>
+        </HStack>
         <HStack 
           spacing={3} 
           align="center" 
