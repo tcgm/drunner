@@ -7,25 +7,24 @@ import { MusicContext } from '@/types/audio'
  * Usage: useMusicContext(MusicContext.PARTY_SCREEN)
  */
 export function useMusicContext(context: MusicContext | null) {
-  const changeMusicContext = useGameStore(state => state.changeMusicContext)
-  const musicEnabled = useGameStore(state => state.musicEnabled)
   const lastContext = useRef<MusicContext | null>(null)
 
   useEffect(() => {
-    console.log('[useMusicContext] Hook called with:', { context, musicEnabled });
-    
-    // Skip if same as last context (prevents duplicate calls from strict mode)
+    // Skip if same as last context (prevents duplicate calls)
     if (context === lastContext.current) {
-      console.log('[useMusicContext] Same context as last call, skipping');
       return;
     }
     
-    if (context && musicEnabled) {
+    if (context) {
       console.log('[useMusicContext] Triggering music change to:', context);
       lastContext.current = context;
-      changeMusicContext(context)
-    } else {
-      console.log('[useMusicContext] Skipping music change:', { hasContext: !!context, musicEnabled });
+      
+      // Get fresh references from store on each call
+      const { changeMusicContext, musicEnabled } = useGameStore.getState();
+      
+      if (musicEnabled) {
+        changeMusicContext(context);
+      }
     }
-  }, [context, changeMusicContext, musicEnabled])
+  }, [context])
 }
