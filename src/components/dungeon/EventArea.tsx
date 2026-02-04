@@ -28,6 +28,16 @@ export default function EventArea({
   onContinue,
   onAdvance
 }: EventAreaProps) {
+  // Determine background based on boss type
+  const isZoneBoss = bossType === 'major'
+  const isFloorBoss = bossType === 'floor'
+  
+  const backgroundGradient = isZoneBoss
+    ? 'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.2) 0%, rgba(153, 27, 27, 0.1) 40%, transparent 70%)'
+    : isFloorBoss
+      ? 'radial-gradient(circle at 50% 50%, rgba(196, 67, 224, 0.15) 0%, rgba(126, 34, 206, 0.08) 40%, transparent 70%)'
+      : 'radial-gradient(circle at 50% 50%, rgba(251, 146, 60, 0.05) 0%, transparent 50%)'
+  
   return (
     <Box 
       className="event-area"
@@ -39,8 +49,17 @@ export default function EventArea({
       flexDirection="column"
       minH={0}
       position="relative"
-      backgroundImage="radial-gradient(circle at 50% 50%, rgba(251, 146, 60, 0.05) 0%, transparent 50%)"
-      overflowY="auto"
+      backgroundImage={backgroundGradient}
+      overflow="hidden"
+      borderWidth={isZoneBoss ? '2px' : isFloorBoss ? '1px' : '0'}
+      borderColor={isZoneBoss ? 'red.600' : isFloorBoss ? 'purple.600' : 'transparent'}
+      boxShadow={
+        isZoneBoss 
+          ? '0 0 25px rgba(220, 38, 38, 0.4), inset 0 0 40px rgba(220, 38, 38, 0.1)'
+          : isFloorBoss
+            ? '0 0 15px rgba(196, 67, 224, 0.3), inset 0 0 25px rgba(196, 67, 224, 0.08)'
+            : 'none'
+      }
     >
       {currentOutcome ? (
         <OutcomeDisplay 

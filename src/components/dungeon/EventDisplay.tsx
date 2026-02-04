@@ -5,6 +5,7 @@ import type { DungeonEvent, EventChoice } from '@/types'
 import { checkRequirements } from '@systems/events/eventResolver'
 import type { Hero } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { GiCrossedSwords, GiSkullCrossedBones } from 'react-icons/gi'
 
 const MotionButton = motion.create(Button)
 const MotionBox = motion.create(Box)
@@ -51,6 +52,11 @@ function selectText(text: string | Array<{ weight: number; text: string }>): str
 export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice }: EventDisplayProps) {
   // Select description text once when event loads
   const description = useMemo(() => selectText(event.description), [event.description])
+  
+  // Determine danger level for boss styling
+  const isFloorBoss = bossType === 'floor'
+  const isZoneBoss = bossType === 'major'
+  const isDangerous = isFloorBoss || isZoneBoss
 
   return (
     <VStack className="event-display" spacing={3} align="stretch" h="full">
@@ -63,40 +69,161 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
           duration: 0.3,
           ease: "easeOut"
         }}
+        // Boss styling - dramatic danger appearance
+        bg={
+          isZoneBoss 
+            ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.3) 0%, rgba(153, 27, 27, 0.4) 100%)'
+            : isFloorBoss
+              ? 'linear-gradient(135deg, rgba(196, 67, 224, 0.25) 0%, rgba(126, 34, 206, 0.3) 100%)'
+              : 'transparent'
+        }
+        borderWidth={isDangerous ? '3px' : '0'}
+        borderColor={
+          isZoneBoss 
+            ? 'red.500' 
+            : isFloorBoss 
+              ? 'purple.500' 
+              : 'transparent'
+        }
+        borderRadius={isDangerous ? 'lg' : 'none'}
+        p={isDangerous ? 4 : 0}
+        boxShadow={
+          isZoneBoss 
+            ? '0 0 30px rgba(220, 38, 38, 0.6), inset 0 0 20px rgba(220, 38, 38, 0.2)'
+            : isFloorBoss
+              ? '0 0 20px rgba(196, 67, 224, 0.5), inset 0 0 15px rgba(196, 67, 224, 0.15)'
+              : 'none'
+        }
+        position="relative"
+        _before={isZoneBoss ? {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(90deg, transparent 0%, rgba(220, 38, 38, 0.4) 50%, transparent 100%)',
+          animation: 'pulse 2s ease-in-out infinite',
+          borderRadius: 'lg',
+          pointerEvents: 'none'
+        } : undefined}
       >
-        <HStack className="event-display-type" mb={1.5}>
-          <Badge colorScheme={EVENT_TYPE_COLORS[event.type]} fontSize="xs" px={2} py={0.5}>
-            {event.type.toUpperCase()}
-          </Badge>
-          {bossType === 'floor' && (
-            <Badge colorScheme="purple" fontSize="xs" px={2} py={0.5} variant="solid">
+        <VStack spacing={1.5} w="full">
+          {isFloorBoss && (
+            <Badge 
+              colorScheme="purple" 
+              fontSize="md" 
+              px={3} 
+              py={1} 
+              variant="solid"
+              boxShadow="0 0 10px rgba(196, 67, 224, 0.6)"
+              display="flex"
+              alignItems="center"
+              gap={1.5}
+            >
+              <Icon as={GiCrossedSwords} boxSize={4} />
               FLOOR BOSS
+              <Icon as={GiCrossedSwords} boxSize={4} />
             </Badge>
           )}
-          {bossType === 'major' && (
-            <Badge colorScheme="red" fontSize="xs" px={2} py={0.5} variant="solid">
-              🔥 ZONE BOSS
+          {isZoneBoss && (
+            <Badge 
+              colorScheme="red" 
+              fontSize="lg" 
+              px={4} 
+              py={1.5} 
+              variant="solid"
+              boxShadow="0 0 20px rgba(220, 38, 38, 0.8)"
+              fontWeight="black"
+              display="flex"
+              alignItems="center"
+              gap={2}
+            >
+              <Icon as={GiSkullCrossedBones} boxSize={5} />
+              ZONE BOSS
+              <Icon as={GiSkullCrossedBones} boxSize={5} />
             </Badge>
           )}
-        </HStack>
-        <HStack spacing={3} align="start" mb={2}>
+          <HStack className="event-display-type" justify="flex-start" w="full">
+            {!isDangerous && (
+              <Badge 
+                colorScheme={EVENT_TYPE_COLORS[event.type]} 
+                fontSize="xs" 
+                px={2} 
+                py={0.5}
+              >
+                {event.type.toUpperCase()}
+              </Badge>
+            )}
+          </HStack>
+        </VStack>
+        <HStack 
+          spacing={3} 
+          align="center" 
+          justify={isDangerous ? "center" : "flex-start"}
+          mb={2}
+          w="full"
+        >
           {event.icon && (
-            <Icon as={event.icon} boxSize={8} color="orange.400" flexShrink={0} />
+            <Icon 
+              as={event.icon} 
+              boxSize={isDangerous ? 12 : 8} 
+              color={
+                isZoneBoss 
+                  ? 'red.400' 
+                  : isFloorBoss 
+                    ? 'purple.400' 
+                    : 'orange.400'
+              }
+              flexShrink={0}
+              filter={
+                isZoneBoss 
+                  ? 'drop-shadow(0 0 8px rgba(220, 38, 38, 0.8))'
+                  : isFloorBoss
+                    ? 'drop-shadow(0 0 6px rgba(196, 67, 224, 0.6))'
+                    : 'none'
+              }
+            />
           )}
-          <Heading className="event-display-title" size="sm" color="orange.400">
+          <Heading 
+            className="event-display-title" 
+            size={isDangerous ? 'lg' : 'sm'} 
+            color={
+              isZoneBoss 
+                ? 'red.300' 
+                : isFloorBoss 
+                  ? 'purple.300' 
+                  : 'orange.400'
+            }
+            textShadow={
+              isZoneBoss 
+                ? '0 0 10px rgba(220, 38, 38, 0.8)' 
+                : isFloorBoss
+                  ? '0 0 8px rgba(196, 67, 224, 0.6)'
+                  : 'none'
+            }
+            fontWeight={isDangerous ? 'black' : 'bold'}
+            textAlign={isDangerous ? 'center' : 'left'}
+          >
             {event.title}
           </Heading>
         </HStack>
-        <Text className="event-display-description" fontSize="sm" color="gray.300" lineHeight="short">
+        <Text 
+          className="event-display-description" 
+          fontSize={isDangerous ? 'md' : 'sm'} 
+          color={isDangerous ? 'gray.200' : 'gray.300'} 
+          lineHeight="short"
+          fontWeight={isDangerous ? 'semibold' : 'normal'}
+        >
           {description}
         </Text>
       </MotionBox>
 
       {/* Choices */}
-      <VStack className="event-display-choices" spacing={2} align="stretch" flex={1}>
-        <Heading size="sm" color="gray.400" fontSize="md">
-          What will you do?
-        </Heading>
+      <Heading size="sm" color="gray.400" fontSize="md" mb={1}>
+        What will you do?
+      </Heading>
+      <VStack className="event-display-choices" spacing={2} align="stretch" flex={1} minH={0} overflowY="auto">
         {/* Sort choices: available first, unavailable last */}
         {[...event.choices]
           .map((choice, originalIndex) => ({ choice, originalIndex }))
