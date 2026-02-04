@@ -14,9 +14,7 @@ import { useConsumable as applyConsumable } from '@/systems/consumables/consumab
 import { getAbilityStatus } from '@/systems/abilities/abilityManager'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { ItemSlot } from '@components/ui/ItemSlot'
-
-// Rarity color mapping
-const RARITY_COLORS = GAME_CONFIG.colors.rarity as Record<string, string>
+import { EquipmentPips } from './EquipmentPips'
 
 const MotionBox = motion.create(Box)
 
@@ -114,17 +112,11 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               
               {/* Equipment pips */}
               <VStack className="party-member-card-equipment-pips" spacing={0.5} align="start">
-                {Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item).map((item, idx) => (
-                  <Tooltip key={idx} label={item.name} fontSize="xs" placement="right">
-                    <Box
-                      w="6px"
-                      h="6px"
-                      borderRadius="full"
-                      bg={RARITY_COLORS[item.rarity] || 'gray.500'}
-                      boxShadow={`0 0 4px ${RARITY_COLORS[item.rarity] || 'gray.500'}`}
-                    />
-                  </Tooltip>
-                ))}
+                <EquipmentPips 
+                  items={Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)}
+                  layout="vertical"
+                  size="sm"
+                />
               </VStack>
             </HStack>
             

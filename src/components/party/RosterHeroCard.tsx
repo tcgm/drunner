@@ -4,9 +4,8 @@ import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
-
-// Rarity color mapping
-const RARITY_COLORS = GAME_CONFIG.colors.rarity as Record<string, string>
+import { EquipmentPips } from './EquipmentPips'
+import { getRarityColors } from '@/systems/rarity/rarities'
 
 interface RosterHeroCardProps {
   hero: Hero
@@ -33,11 +32,14 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
       {equippedItems.length > 0 && (
         <VStack align="start" spacing={0.5} pt={2} w="full">
           <Text fontSize="2xs" color="gray.400" fontWeight="bold">Equipped:</Text>
-          {equippedItems.map((item, idx) => (
-            <Text key={idx} fontSize="2xs" color={RARITY_COLORS[item.rarity] || 'gray.400'}>
-              • {item.name}
-            </Text>
-          ))}
+          {equippedItems.map((item, idx) => {
+            const colors = getRarityColors(item.rarity)
+            return (
+              <Text key={idx} fontSize="2xs" color={colors.text}>
+                • {item.name}
+              </Text>
+            )
+          })}
         </VStack>
       )}
     </VStack>
@@ -83,33 +85,11 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
             <Icon as={IconComponent} boxSize={10} color="blue.300" />
             
             {/* Equipment pips around icon */}
-            {equippedItems.length > 0 && (() => {
-              const angleStep = 360 / equippedItems.length
-              const radius = 28
-              return equippedItems.map((item, idx) => {
-                const angle = (angleStep * idx - 90) * (Math.PI / 180)
-                const x = Math.cos(angle) * radius
-                const y = Math.sin(angle) * radius
-                return (
-                  <Tooltip key={idx} label={item.name} fontSize="xs" placement="top">
-                    <Box
-                      className="roster-hero-card-equipment-pip"
-                      position="absolute"
-                      left="50%"
-                      top="50%"
-                      transform={`translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`}
-                      w="8px"
-                      h="8px"
-                      borderRadius="full"
-                      bg={RARITY_COLORS[item.rarity] || 'gray.500'}
-                      boxShadow={`0 0 6px ${RARITY_COLORS[item.rarity] || 'gray.500'}`}
-                      borderWidth="1px"
-                      borderColor="gray.900"
-                    />
-                  </Tooltip>
-                )
-              })
-            })()}
+            <EquipmentPips 
+              items={equippedItems}
+              layout="circular"
+              radius={28}
+            />
           </Box>
           
           {/* Hero Info */}
