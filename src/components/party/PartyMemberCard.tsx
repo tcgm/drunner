@@ -221,7 +221,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
                 const item = hero.slots[slotId] ? restoreItemIcon(hero.slots[slotId]) : null
                 const consumable = item && 'consumableType' in item ? item as Consumable : null
                 const isRevive = consumable?.effect?.type === 'revive'
-                const canUse = hero.isAlive || isRevive
+                const canUse = isRevive ? !hero.isAlive : hero.isAlive
                 
                 if (!consumable) {
                   // Empty slot - show empty box with potion icon

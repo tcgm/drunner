@@ -153,6 +153,11 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
                   size="xs"
                   colorScheme="green"
                   variant="solid"
+                  isDisabled={(() => {
+                    const consumable = item as Consumable
+                    const isRevive = consumable.effect?.type === 'revive'
+                    return isRevive ? hero.isAlive : false
+                  })()}
                   onClick={(e) => {
                     e.stopPropagation()
                     handleUseConsumable(slotId)
