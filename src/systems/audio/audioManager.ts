@@ -134,8 +134,14 @@ class AudioManager {
 
       // Clean up nextAudio from previous change
       if (this.nextAudio) {
+        this.nextAudio.onerror = null;
+        this.nextAudio.onended = null;
         this.nextAudio.pause();
-        this.nextAudio.src = '';
+        // Use setTimeout to avoid invalid URI errors during cleanup
+        const audioToClean = this.nextAudio;
+        setTimeout(() => {
+          audioToClean.src = '';
+        }, 50);
         this.nextAudio = null;
       }
       
@@ -232,8 +238,16 @@ class AudioManager {
       if (this.contextChangeAborted) {
         console.log('[Audio] Context change aborted after play started, cleaning up');
         if (this.nextAudio) {
+          // Remove error handler before cleanup to prevent spurious errors
+          this.nextAudio.onerror = null;
+          this.nextAudio.onended = null;
           this.nextAudio.pause();
-          this.nextAudio.src = '';
+          // Small delay before clearing src to avoid invalid URI errors
+          setTimeout(() => {
+            if (this.nextAudio) {
+              this.nextAudio.src = '';
+            }
+          }, 50);
           this.nextAudio = null;
         }
         return;
@@ -288,8 +302,15 @@ class AudioManager {
           
           // Clean up the audio that was fading in (it's being replaced)
           if (fadingInAudio) {
+            fadingInAudio.onerror = null;
+            fadingInAudio.onended = null;
             fadingInAudio.pause();
-            fadingInAudio.src = '';
+            // Delay clearing src to avoid invalid URI errors
+            setTimeout(() => {
+              if (fadingInAudio) {
+                fadingInAudio.src = '';
+              }
+            }, 50);
           }
           
           resolve();

@@ -153,7 +153,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
 
               {/* Abilities row */}
               {hero.abilities && hero.abilities.length > 0 && (
-                <HStack spacing={1} pt={1}>
+                <HStack spacing={1} pt={0}>
                   {hero.abilities.slice(0, 3).map(ability => {
                     const status = getAbilityStatus(ability, dungeon.floor)
                     return (
@@ -164,8 +164,8 @@ export default function PartyMemberCard({ hero, floatingEffects = [] }: PartyMem
                         placement="top"
                       >
                         <Box
-                          w="24px"
-                          h="24px"
+                          w="20px"
+                          h="20px"
                           bg={status.canUse ? 'purple.900' : 'gray.800'}
                           borderRadius="md"
                           borderWidth="1px"

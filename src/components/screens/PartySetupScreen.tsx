@@ -13,8 +13,6 @@ import { ConfirmStartWithOverflowModal } from '../party/ConfirmStartWithOverflow
 import { PotionShopModal } from '../party/PotionShopModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
-import { useMusicContext } from '../../utils/useMusicContext'
-import { MusicContext } from '../../types/audio'
 
 interface PartySetupScreenProps {
   onBack: () => void
@@ -44,9 +42,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     purchasePotion,
     spendBankGold,
   } = useGameStore()
-
-  // Enable party screen music
-  useMusicContext(MusicContext.PARTY_SCREEN)
 
   // Heal all heroes when the party setup screen is mounted
   useEffect(() => {

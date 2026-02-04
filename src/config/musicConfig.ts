@@ -89,12 +89,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.DUNGEON_BOSS]: {
     context: MusicContext.DUNGEON_BOSS,
     tracks: [
-      {
-        name: 'Boss Battle',
-        path: partyMusic2, // Placeholder - add your boss music
-        volume: 0.8,
-        loop: true
-      }
+      // {
+      //   name: 'Boss Battle',
+      //   path: partyMusic2, // Placeholder - add your boss music
+      //   volume: 0.8,
+      //   loop: true
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 500 // Faster transition for combat
@@ -103,12 +103,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.FLOOR_BOSS]: {
     context: MusicContext.FLOOR_BOSS,
     tracks: [
-      {
-        name: 'Floor Boss',
-        path: partyMusic2, // Placeholder - add your floor boss music
-        volume: 0.85,
-        loop: true
-      }
+      // {
+      //   name: 'Floor Boss',
+      //   path: partyMusic2, // Placeholder - add your floor boss music
+      //   volume: 0.85,
+      //   loop: true
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 500
@@ -117,12 +117,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.ZONE_BOSS]: {
     context: MusicContext.ZONE_BOSS,
     tracks: [
-      {
-        name: 'Zone Boss',
-        path: partyMusic2, // Placeholder - add your zone boss music
-        volume: 0.9,
-        loop: true
-      }
+      // {
+      //   name: 'Zone Boss',
+      //   path: partyMusic2, // Placeholder - add your zone boss music
+      //   volume: 0.9,
+      //   loop: true
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 500
@@ -131,12 +131,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.FINAL_BOSS]: {
     context: MusicContext.FINAL_BOSS,
     tracks: [
-      {
-        name: 'Final Confrontation',
-        path: partyMusic2, // Placeholder - add your final boss music
-        volume: 0.95,
-        loop: true
-      }
+      // {
+      //   name: 'Final Confrontation',
+      //   path: partyMusic2, // Placeholder - add your final boss music
+      //   volume: 0.95,
+      //   loop: true
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 1000
@@ -145,12 +145,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.VICTORY]: {
     context: MusicContext.VICTORY,
     tracks: [
-      {
-        name: 'Victory',
-        path: partyMusic1, // Placeholder - add your victory music
-        volume: 0.8,
-        loop: false // Victory music plays once
-      }
+      // {
+      //   name: 'Victory',
+      //   path: partyMusic1, // Placeholder - add your victory music
+      //   volume: 0.8,
+      //   loop: false // Victory music plays once
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 1000
@@ -159,12 +159,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.DEFEAT]: {
     context: MusicContext.DEFEAT,
     tracks: [
-      {
-        name: 'Defeat',
-        path: partyMusic2, // Placeholder - add your defeat music
-        volume: 0.7,
-        loop: false // Defeat music plays once
-      }
+      // {
+      //   name: 'Defeat',
+      //   path: partyMusic2, // Placeholder - add your defeat music
+      //   volume: 0.7,
+      //   loop: false // Defeat music plays once
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 1500
@@ -173,12 +173,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.SHOP]: {
     context: MusicContext.SHOP,
     tracks: [
-      {
-        name: 'Merchant\'s Haven',
-        path: partyMusic1, // Placeholder - add your shop music
-        volume: 0.65,
-        loop: true
-      }
+      // {
+      //   name: 'Merchant\'s Haven',
+      //   path: partyMusic1, // Placeholder - add your shop music
+      //   volume: 0.65,
+      //   loop: true
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 1500
@@ -187,12 +187,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.REST]: {
     context: MusicContext.REST,
     tracks: [
-      {
-        name: 'Peaceful Rest',
-        path: partyMusic1, // Placeholder - add your rest music
-        volume: 0.6,
-        loop: true
-      }
+      // {
+      //   name: 'Peaceful Rest',
+      //   path: partyMusic1, // Placeholder - add your rest music
+      //   volume: 0.6,
+      //   loop: true
+      // }
     ],
     shuffle: false,
     crossfadeDuration: 2000 // Slower transition for peaceful music
