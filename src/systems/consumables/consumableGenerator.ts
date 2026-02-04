@@ -46,8 +46,7 @@ export function generateConsumable(
   
   // Calculate final values: base × floor × size × potency × rarity
   const effectValue = Math.floor(base.baseValue * floorMultiplier * size.multiplier * potency.multiplier * rarityMultiplier)
-  const baseGoldValue = 20
-  const value = Math.floor(baseGoldValue * floorMultiplier * size.valueMultiplier * potency.valueMultiplier * rarityMultiplier)
+  const value = Math.floor(base.baseGoldValue * floorMultiplier * size.valueMultiplier * potency.valueMultiplier * rarityMultiplier)
   
   // Generate name (potency and size prefixes, with rarity if not common)
   const rarityPrefix = finalRarity !== 'common' ? `${rarityConfig.name} ` : ''

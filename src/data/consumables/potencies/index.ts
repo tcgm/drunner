@@ -1,70 +1,20 @@
-/**
- * Consumable potency - affects concentration/quality of the potion
- * This is separate from size (which is physical quantity)
- */
-export interface ConsumablePotency {
-  id: string
-  name: string
-  prefix: string // Name prefix (e.g., "Weak", "Potent")
-  multiplier: number // Multiplier for effect value
-  valueMultiplier: number // Multiplier for gold value
-}
+export * from './types'
+export * from './diluted'
+export * from './weak'
+export * from './normal'
+export * from './strong'
+export * from './potent'
+export * from './concentrated'
+export * from './pure'
 
-export const DILUTED: ConsumablePotency = {
-  id: 'diluted',
-  name: 'Diluted',
-  prefix: 'Diluted',
-  multiplier: 0.6,
-  valueMultiplier: 0.5,
-}
-
-export const WEAK: ConsumablePotency = {
-  id: 'weak',
-  name: 'Weak',
-  prefix: 'Weak',
-  multiplier: 0.8,
-  valueMultiplier: 0.7,
-}
-
-export const NORMAL: ConsumablePotency = {
-  id: 'normal',
-  name: 'Normal',
-  prefix: '', // No prefix for normal
-  multiplier: 1.0,
-  valueMultiplier: 1.0,
-}
-
-export const STRONG: ConsumablePotency = {
-  id: 'strong',
-  name: 'Strong',
-  prefix: 'Strong',
-  multiplier: 1.4,
-  valueMultiplier: 1.6,
-}
-
-export const POTENT: ConsumablePotency = {
-  id: 'potent',
-  name: 'Potent',
-  prefix: 'Potent',
-  multiplier: 2.0,
-  valueMultiplier: 2.5,
-}
-
-export const CONCENTRATED: ConsumablePotency = {
-  id: 'concentrated',
-  name: 'Concentrated',
-  prefix: 'Concentrated',
-  multiplier: 3.0,
-  valueMultiplier: 4.0,
-}
-
-export const PURE: ConsumablePotency = {
-  id: 'pure',
-  name: 'Pure',
-  prefix: 'Pure',
-  multiplier: 5.0,
-  valueMultiplier: 7.0,
-}
+import { DILUTED } from './diluted'
+import { WEAK } from './weak'
+import { NORMAL } from './normal'
+import { STRONG } from './strong'
+import { POTENT } from './potent'
+import { CONCENTRATED } from './concentrated'
+import { PURE } from './pure'
+import type { ConsumablePotency } from './types'
 
 export const ALL_POTENCIES: ConsumablePotency[] = [
   DILUTED,

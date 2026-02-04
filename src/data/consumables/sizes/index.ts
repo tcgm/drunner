@@ -1,61 +1,18 @@
-/**
- * Consumable size - affects potency
- */
-export interface ConsumableSize {
-  id: string
-  name: string
-  prefix: string // Name prefix (e.g., "Small", "Greater")
-  multiplier: number // Multiplier for base value
-  valueMultiplier: number // Multiplier for gold value
-}
+export * from './types'
+export * from './tiny'
+export * from './small'
+export * from './medium'
+export * from './large'
+export * from './greater'
+export * from './superior'
 
-export const TINY: ConsumableSize = {
-  id: 'tiny',
-  name: 'Tiny',
-  prefix: 'Tiny',
-  multiplier: 0.5,
-  valueMultiplier: 0.4,
-}
-
-export const SMALL: ConsumableSize = {
-  id: 'small',
-  name: 'Small',
-  prefix: 'Small',
-  multiplier: 1.0,
-  valueMultiplier: 1.0,
-}
-
-export const MEDIUM: ConsumableSize = {
-  id: 'medium',
-  name: 'Medium',
-  prefix: 'Medium',
-  multiplier: 1.5,
-  valueMultiplier: 1.8,
-}
-
-export const LARGE: ConsumableSize = {
-  id: 'large',
-  name: 'Large',
-  prefix: 'Large',
-  multiplier: 2.0,
-  valueMultiplier: 2.5,
-}
-
-export const GREATER: ConsumableSize = {
-  id: 'greater',
-  name: 'Greater',
-  prefix: 'Greater',
-  multiplier: 3.0,
-  valueMultiplier: 4.0,
-}
-
-export const SUPERIOR: ConsumableSize = {
-  id: 'superior',
-  name: 'Superior',
-  prefix: 'Superior',
-  multiplier: 5.0,
-  valueMultiplier: 8.0,
-}
+import { TINY } from './tiny'
+import { SMALL } from './small'
+import { MEDIUM } from './medium'
+import { LARGE } from './large'
+import { GREATER } from './greater'
+import { SUPERIOR } from './superior'
+import type { ConsumableSize } from './types'
 
 export const ALL_SIZES: ConsumableSize[] = [
   TINY,
