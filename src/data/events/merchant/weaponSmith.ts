@@ -17,7 +17,7 @@ export const WEAPON_SMITH: DungeonEvent = {
         effects: [
           { type: 'gold', value: -100 },
           { type: 'xp', value: 30 },
-          { type: 'upgradeItem', upgradeType: 'material' },
+          { type: 'upgradeItem', upgradeType: 'auto' },
         ],
       },
     },

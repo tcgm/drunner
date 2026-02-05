@@ -56,8 +56,8 @@ const MATERIAL_ORDER = [
   'obsidian', 'crystal', 'moonstone',
   // Magical tier
   'arcane', 'spectral', 'ethereal',
-  // Epic tier (final material for epic - celestial and demon are parallel alternatives, not upgrades)
-  'adamantine',
+  // Epic tier (adamantine is upgradeable to, celestial/demon are skipped)
+  'adamantine', 'celestial', 'demon',
   // Legendary tier
   'divine', 'ancient', 'voidstone',
   // Mythic tier
@@ -73,6 +73,12 @@ const MATERIAL_ORDER = [
 ]
 
 /**
+ * Materials that can be upgraded FROM but not upgraded TO
+ * These are thematic variants that should only be found/generated
+ */
+const UPGRADE_BLACKLIST = new Set(['celestial', 'demon'])
+
+/**
  * Get the next rarity tier
  */
 function getNextRarity(currentRarity: ItemRarity): ItemRarity | null {
@@ -84,15 +90,23 @@ function getNextRarity(currentRarity: ItemRarity): ItemRarity | null {
 }
 
 /**
- * Get the next material tier
+ * Get the next material tier, skipping blacklisted materials
  */
 function getNextMaterial(currentMaterialId: string): Material | null {
   const currentIndex = MATERIAL_ORDER.indexOf(currentMaterialId)
   if (currentIndex === -1 || currentIndex >= MATERIAL_ORDER.length - 1) {
     return null // Already at max material or not found
   }
-  const nextMaterialId = MATERIAL_ORDER[currentIndex + 1]
-  return getMaterialById(nextMaterialId) || null
+  
+  // Find next non-blacklisted material
+  for (let i = currentIndex + 1; i < MATERIAL_ORDER.length; i++) {
+    const nextMaterialId = MATERIAL_ORDER[i]
+    if (!UPGRADE_BLACKLIST.has(nextMaterialId)) {
+      return getMaterialById(nextMaterialId) || null
+    }
+  }
+  
+  return null // No valid next material found
 }
 
 /**
