@@ -1,9 +1,9 @@
 import { 
   GiSpellBook,
-  GiTome,
   GiScrollUnfurled,
   GiOpenBook,
   GiBookCover,
+  GiSecretBook,
 } from 'react-icons/gi'
 import type { BaseItemTemplate } from '../index'
 
@@ -17,7 +17,7 @@ export const BOOK_BASE: BaseItemTemplate = {
   baseNames: ['Book', 'Tome', 'Grimoire', 'Codex', 'Manuscript'],
   baseNameIcons: {
     'Book': GiOpenBook,
-    'Tome': GiTome,
+    'Tome': GiSecretBook,
     'Grimoire': GiSpellBook,
     'Codex': GiBookCover,
     'Manuscript': GiScrollUnfurled,
