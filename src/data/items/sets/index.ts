@@ -101,11 +101,11 @@ export function getSetItemsByName(setName: string): Array<Omit<Item, 'id'>> {
 }
 
 /**
- * Identify which set an item belongs to (by name prefix)
+ * Identify which set an item belongs to
  */
 export function getItemSetName(itemName: string): string | null {
   for (const set of ALL_SETS) {
-    if (itemName.startsWith(set.name)) {
+    if (set.items.some(item => item.name === itemName)) {
       return set.name
     }
   }
