@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import type { DungeonEvent, EventChoice } from '@/types'
 import { checkRequirements } from '@systems/events/eventResolver'
 import type { Hero } from '@/types'
+import { calculateTotalStats } from '@/utils/statCalculator'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { GiCrossedSwords, GiSkullCrossedBones } from 'react-icons/gi'
 
@@ -334,7 +335,11 @@ function calculateSuccessChance(choice: EventChoice, party: (Hero | null)[]): nu
     const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
     if (aliveHeroes.length > 0) {
       // Use the highest stat value among alive heroes
-      const maxStat = Math.max(...aliveHeroes.map(h => h.stats[choice.statModifier!] || 0))
+      // Use effective stats (includes equipment and active effect bonuses)
+      const maxStat = Math.max(...aliveHeroes.map(h => {
+        const effectiveStats = calculateTotalStats(h)
+        return effectiveStats[choice.statModifier!] || 0
+      }))
       // Calculate final chance with stat bonus
       finalChance = Math.min(
         GAME_CONFIG.chances.maxSuccess,

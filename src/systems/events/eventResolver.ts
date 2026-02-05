@@ -1,11 +1,12 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
-import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
+import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem } from '@/systems/loot/itemUpgrader'
 import { ALL_SET_ITEMS, getRandomSetItemBySetId, getSetIdFromItemName } from '@/data/items/sets'
 import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
+import { getEffectiveSpeed, getEffectiveLuck, getEffectiveDefense, calculateTotalStats } from '@/utils/statCalculator'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
@@ -93,7 +94,11 @@ export function resolveChoiceOutcome(
       const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
       if (aliveHeroes.length > 0) {
         // Use the highest stat value among alive heroes (not average)
-        const maxStat = Math.max(...aliveHeroes.map(h => h.stats[choice.statModifier!] || 0))
+        // Use effective stats (includes equipment and active effect bonuses)
+        const maxStat = Math.max(...aliveHeroes.map(h => {
+          const effectiveStats = calculateTotalStats(h)
+          return effectiveStats[choice.statModifier!] || 0
+        }))
         // Each point in the stat adds to success chance (capped at max)
         finalChance = Math.min(
           GAME_CONFIG.chances.maxSuccess, 
@@ -320,7 +325,9 @@ export function resolveEventOutcome(
         
         targets.forEach(hero => {
           // Dodge check: speed gives chance to dodge (0.1% per speed point, max 50%)
-          const dodgeChance = Math.min(0.50, (hero.stats.speed || 0) * 0.001)
+          // Use effective speed (includes equipment and active effect bonuses)
+          const effectiveSpeed = getEffectiveSpeed(hero)
+          const dodgeChance = Math.min(0.50, effectiveSpeed * 0.001)
           const isDodge = Math.random() < dodgeChance
           
           if (isDodge) {
@@ -335,15 +342,19 @@ export function resolveEventOutcome(
           }
           
           // Critical hit check: luck gives chance for enemy to crit (0.1% per floor, increased by -luck)
+          // Use effective luck (includes equipment and active effect bonuses)
+          const effectiveLuck = getEffectiveLuck(hero)
           const enemyBaseCrit = floor * 0.001 // 0.1% per floor
-          const luckReduction = (hero.stats.luck || 0) * 0.001 // Luck reduces enemy crit chance
+          const luckReduction = effectiveLuck * 0.001 // Luck reduces enemy crit chance
           const enemyCritChance = Math.max(0.01, Math.min(0.30, enemyBaseCrit - luckReduction))
           const isCrit = Math.random() < enemyCritChance
           
           // Apply defense reduction using configured formula
+          // Use effective defense (includes equipment and active effect bonuses)
+          const effectiveDefense = getEffectiveDefense(hero)
           let finalDamage = isTrueDamage 
             ? damage 
-            : applyDefenseReduction(damage, hero.stats.defense)
+            : applyDefenseReduction(damage, effectiveDefense)
           
           // Critical hits deal 2x damage
           if (isCrit) {
@@ -757,6 +768,21 @@ export function resolveEventOutcome(
         const rarityBoost = effect.rarityBoost || 0
         const upgradeType = effect.upgradeType || 'auto' // Default to auto (material first, then rarity)
         
+        // Check if upgrade is possible BEFORE charging gold
+        if (!canUpgradeItem(item, upgradeType)) {
+          const failureReason = upgradeType === 'material' 
+            ? 'maximum material'
+            : upgradeType === 'rarity'
+            ? 'maximum rarity'
+            : 'maximum rarity and material'
+          resolvedEffects.push({
+            type: 'upgradeItem',
+            target: [hero.id],
+            description: `${hero.name}'s ${item.name} cannot be upgraded further (${failureReason})`
+          })
+          break
+        }
+        
         let upgradedItem: Item | null = null
         
         // Determine which upgrade function to use based on upgradeType
@@ -923,7 +949,9 @@ export function checkRequirements(
     const scaledMinValue = scaleValue(requirements.minValue, depth, GAME_CONFIG.scaling.statRequirements)
     const hasStat = party.some(h => {
       if (!h || !h.isAlive) return false
-      const statValue = h.stats[requirements.stat as keyof typeof h.stats]
+      // Use effective stats (includes equipment and active effect bonuses)
+      const effectiveStats = calculateTotalStats(h)
+      const statValue = effectiveStats[requirements.stat as keyof typeof effectiveStats]
       return typeof statValue === 'number' && statValue >= scaledMinValue
     })
     if (!hasStat) return false

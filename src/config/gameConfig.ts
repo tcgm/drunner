@@ -186,7 +186,7 @@ export const GAME_CONFIG = {
     trueDamage: 0.12, // 12% per floor for true damage (bypasses defense so scales slower)
     healing: 0.015, // 1.5% per floor
     rewards: 0.05, // 5% per floor (XP/Gold)
-    statRequirements: 0.25, // 15% per floor
+    statRequirements: 0.05, // 5% per floor
   },
 
   // Event system

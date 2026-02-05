@@ -29,8 +29,9 @@ export function equipItem(hero: Hero, item: Item, slotId: string): { hero: Hero;
   // Equip new item
   updatedHero.slots[slotId] = item
   
-  // Recalculate stats
-  updatedHero.stats = calculateStatsWithEquipment(updatedHero)
+  // Note: We don't recalculate stats here anymore.
+  // Stats are calculated on-demand using calculateTotalStats which includes equipment + effects.
+  // hero.stats should only contain base stats (class + level).
   
   return { hero: updatedHero, replacedItem }
 }
@@ -45,8 +46,9 @@ export function unequipItem(hero: Hero, slotId: string): { hero: Hero; item: Ite
   updatedHero.slots = { ...hero.slots }
   updatedHero.slots[slotId] = null
   
-  // Recalculate stats
-  updatedHero.stats = calculateStatsWithEquipment(updatedHero)
+  // Note: We don't recalculate stats here anymore.
+  // Stats are calculated on-demand using calculateTotalStats which includes equipment + effects.
+  // hero.stats should only contain base stats (class + level).
   
   return { hero: updatedHero, item }
 }

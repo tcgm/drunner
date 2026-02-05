@@ -56,10 +56,10 @@ const MATERIAL_ORDER = [
   'obsidian', 'crystal', 'moonstone',
   // Magical tier
   'arcane', 'spectral', 'ethereal',
-  // Epic tier
-  'adamantine', 'celestial-mat', 'demon',
+  // Epic tier (final material for epic - celestial and demon are parallel alternatives, not upgrades)
+  'adamantine',
   // Legendary tier
-  'divine-mat', 'ancient', 'voidstone',
+  'divine', 'ancient', 'voidstone',
   // Mythic tier
   'primordial', 'cosmic', 'eternal', 'adamantium',
   // Mythicc tier
@@ -179,6 +179,47 @@ export function findLowestRarityItemInCollection(items: Item[]): Item | null {
 }
 
 /**
+ * Check if an item can have its material upgraded
+ */
+export function canUpgradeMaterial(item: Item): boolean {
+  if (item.isUnique || item.setId || item.name === 'Alkahest Shard') {
+    return false
+  }
+  
+  const currentMaterialId = extractMaterialId(item.name)
+  if (!currentMaterialId) return false
+  
+  const nextMaterial = getNextMaterial(currentMaterialId)
+  return nextMaterial !== null
+}
+
+/**
+ * Check if an item can have its rarity upgraded
+ */
+export function canUpgradeRarity(item: Item): boolean {
+  if (item.isUnique || item.setId || item.name === 'Alkahest Shard') {
+    return false
+  }
+  
+  const nextRarity = getNextRarity(item.rarity)
+  return nextRarity !== null
+}
+
+/**
+ * Check if an item can be upgraded (material or rarity)
+ */
+export function canUpgradeItem(item: Item, upgradeType: 'material' | 'rarity' | 'auto'): boolean {
+  if (upgradeType === 'material') {
+    return canUpgradeMaterial(item)
+  } else if (upgradeType === 'rarity') {
+    return canUpgradeRarity(item)
+  } else {
+    // auto: can upgrade if either material or rarity can be upgraded
+    return canUpgradeMaterial(item) || canUpgradeRarity(item)
+  }
+}
+
+/**
  * Main upgrade function that handles both material and rarity upgrades
  * Returns a new upgraded item or null if upgrade is not possible
  */
@@ -209,12 +250,26 @@ function upgradeItem(
     const nextMaterial = getNextMaterial(currentMaterialId)
     if (!nextMaterial || !currentMaterial) return null
 
-    // Get base template to preserve the base name
+    // Get base template - use name only to locate, not to construct new name
     let baseTemplate = item.baseTemplateId ? getBaseById(item.baseTemplateId) : null
     if (!baseTemplate) {
       baseTemplate = findBaseFromItemName(item.name, item.type)
     }
     if (!baseTemplate) return null
+
+    // Find which baseName variant was used in the original item
+    // This preserves whether it was "Helmet" vs "Helm", "Plate Armor" vs "Plate Mail", etc.
+    let baseName = baseTemplate.baseNames?.[0] || 'Item' // fallback
+    if (baseTemplate.baseNames) {
+      const nameWithoutMaterial = extractBaseName(item.name)
+      // Find which baseName from the template matches the current item
+      const matchingBaseName = baseTemplate.baseNames.find(bn => 
+        nameWithoutMaterial.toLowerCase().includes(bn.toLowerCase())
+      )
+      if (matchingBaseName) {
+        baseName = matchingBaseName
+      }
+    }
 
     // Calculate multiplier ratio and apply to stats
     const statMultiplier = nextMaterial.statMultiplier / currentMaterial.statMultiplier
@@ -224,8 +279,6 @@ function upgradeItem(
         upgradedStats[statKey as keyof typeof upgradedStats] = Math.floor(value * statMultiplier)
       }
     }
-
-    const baseName = baseTemplate.baseNames?.[0] || extractBaseName(item.name)
     
     return {
       ...item,
