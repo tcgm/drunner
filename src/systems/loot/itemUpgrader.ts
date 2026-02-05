@@ -1,7 +1,8 @@
-import type { Item, ItemRarity, Hero } from '@/types'
+import type { Item, ItemRarity, Hero, Stats } from '@/types'
 import { generateItem } from './lootGenerator'
 import { MATERIALS_BY_RARITY, getMaterialById, type Material } from '@/data/items/materials'
 import { getBaseById, findBaseFromItemName } from '@/data/items/bases'
+import { getRarityConfig } from '@/systems/rarity/raritySystem'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
@@ -91,7 +92,7 @@ function getNextMaterial(currentMaterialId: string): Material | null {
     return null // Already at max material or not found
   }
   const nextMaterialId = MATERIAL_ORDER[currentIndex + 1]
-  return getMaterialById(nextMaterialId)
+  return getMaterialById(nextMaterialId) || null
 }
 
 /**
@@ -114,6 +115,18 @@ function extractMaterialId(itemName: string): string | null {
   }
 
   return null
+}
+
+/**
+ * Extract base name from item name (removes material prefix)
+ * Returns the base name or empty string if can't extract
+ */
+function extractBaseName(itemName: string): string {
+  const words = itemName.split(' ')
+  if (words.length < 2) return itemName
+  
+  // Remove first word (material prefix) and return the rest
+  return words.slice(1).join(' ')
 }
 
 /**
@@ -166,6 +179,95 @@ export function findLowestRarityItemInCollection(items: Item[]): Item | null {
 }
 
 /**
+ * Main upgrade function that handles both material and rarity upgrades
+ * Returns a new upgraded item or null if upgrade is not possible
+ */
+function upgradeItem(
+  item: Item,
+  depth: number,
+  upgradeType: 'material' | 'rarity' | 'auto',
+  rarityBoost: number = 0
+): Item | null {
+  // Unique items, set items, and alkahest shards should never be upgraded
+  if (item.isUnique || item.setId || item.name === 'Alkahest Shard') {
+    return null
+  }
+
+  // Auto mode: try material first, then rarity
+  if (upgradeType === 'auto') {
+    const materialUpgrade = upgradeItem(item, depth, 'material', rarityBoost)
+    if (materialUpgrade) return materialUpgrade
+    return upgradeItem(item, depth, 'rarity', rarityBoost)
+  }
+
+  // Material upgrade
+  if (upgradeType === 'material') {
+    const currentMaterialId = extractMaterialId(item.name)
+    if (!currentMaterialId) return null
+
+    const currentMaterial = getMaterialById(currentMaterialId)
+    const nextMaterial = getNextMaterial(currentMaterialId)
+    if (!nextMaterial || !currentMaterial) return null
+
+    // Get base template to preserve the base name
+    let baseTemplate = item.baseTemplateId ? getBaseById(item.baseTemplateId) : null
+    if (!baseTemplate) {
+      baseTemplate = findBaseFromItemName(item.name, item.type)
+    }
+    if (!baseTemplate) return null
+
+    // Calculate multiplier ratio and apply to stats
+    const statMultiplier = nextMaterial.statMultiplier / currentMaterial.statMultiplier
+    const upgradedStats: Partial<Omit<Stats, 'hp'>> = {}
+    for (const [statKey, value] of Object.entries(item.stats)) {
+      if (typeof value === 'number') {
+        upgradedStats[statKey as keyof typeof upgradedStats] = Math.floor(value * statMultiplier)
+      }
+    }
+
+    const baseName = baseTemplate.baseNames?.[0] || extractBaseName(item.name)
+    
+    return {
+      ...item,
+      id: uuidv4(),
+      name: `${nextMaterial.prefix} ${baseName}`,
+      materialId: nextMaterial.id,
+      stats: upgradedStats,
+      value: Math.floor(item.value * (nextMaterial.valueMultiplier / currentMaterial.valueMultiplier))
+    }
+  }
+
+  // Rarity upgrade
+  if (upgradeType === 'rarity') {
+    const currentRarity = item.rarity
+    const nextRarity = getNextRarity(currentRarity)
+    if (!nextRarity) return null
+
+    const currentRarityConfig = getRarityConfig(currentRarity)
+    const nextRarityConfig = getRarityConfig(nextRarity)
+    
+    // Calculate multiplier ratio and apply to stats
+    const statMultiplier = nextRarityConfig.statMultiplierBase / currentRarityConfig.statMultiplierBase
+    const upgradedStats: Partial<Omit<Stats, 'hp'>> = {}
+    for (const [statKey, value] of Object.entries(item.stats)) {
+      if (typeof value === 'number') {
+        upgradedStats[statKey as keyof typeof upgradedStats] = Math.floor(value * statMultiplier)
+      }
+    }
+
+    return {
+      ...item,
+      id: uuidv4(),
+      rarity: nextRarity,
+      stats: upgradedStats,
+      value: Math.floor(item.value * statMultiplier)
+    }
+  }
+
+  return null
+}
+
+/**
  * Upgrade an item's material to the next tier
  * Returns a new item with better material but same rarity
  * Returns null if material cannot be upgraded
@@ -174,49 +276,7 @@ export function upgradeItemMaterial(
   item: Item,
   depth: number
 ): Item | null {
-  // Unique items, set items, and alkahest shards should never be upgraded
-  if (item.isUnique || item.setId || item.name === 'Alkahest Shard') {
-    return null
-  }
-
-  const currentMaterialId = extractMaterialId(item.name)
-  if (!currentMaterialId) {
-    return null // No material prefix found
-  }
-
-  const nextMaterial = getNextMaterial(currentMaterialId)
-  if (!nextMaterial) {
-    return null // Already at max material
-  }
-
-  // Try to preserve the base template from the original item
-  let baseTemplate = null
-  if (item.baseTemplateId) {
-    baseTemplate = getBaseById(item.baseTemplateId)
-  }
-  if (!baseTemplate) {
-    baseTemplate = findBaseFromItemName(item.name, item.type)
-  }
-
-  // If we can't find the base template, we can't safely upgrade material
-  // because we'd risk changing the item type (e.g., club → blade)
-  if (!baseTemplate) {
-    console.warn(`Cannot upgrade material for ${item.name} - base template not found`)
-    return null
-  }
-
-  // Create the upgraded item manually to preserve both material AND base
-  const upgradedItem: Item = {
-    ...item,
-    id: uuidv4(),
-    name: `${nextMaterial.prefix} ${baseTemplate.name}`,
-    materialId: nextMaterial.id,
-    material: nextMaterial,
-    baseTemplateId: baseTemplate.id,
-    value: Math.floor(baseTemplate.value * nextMaterial.valueMultiplier),
-  }
-
-  return upgradedItem
+  return upgradeItem(item, depth, 'material')
 }
 
 /**
@@ -229,37 +289,7 @@ export function upgradeItemRarityOnly(
   depth: number,
   rarityBoost: number = 0
 ): Item | null {
-  // Unique items and set items should never be upgraded
-  if (item.isUnique || item.setId) {
-    return null
-  }
-
-  // Try upgrading rarity
-  const nextRarity = getNextRarity(item.rarity)
-  if (nextRarity) {
-    // Try to preserve the base template from the original item
-    let baseTemplate = null
-    if (item.baseTemplateId) {
-      baseTemplate = getBaseById(item.baseTemplateId)
-    }
-    if (!baseTemplate) {
-      baseTemplate = findBaseFromItemName(item.name, item.type)
-    }
-
-    // Upgrade rarity while preserving base template
-    const upgradedItem = generateItem(
-      depth,
-      item.type,
-      nextRarity,
-      nextRarity, // Force exactly the next rarity tier
-      rarityBoost,
-      baseTemplate // Preserve the base template
-    )
-    return upgradedItem
-  }
-
-  // Rarity is maxed - cannot upgrade
-  return null
+  return upgradeItem(item, depth, 'rarity', rarityBoost)
 }
 
 /**
@@ -273,22 +303,7 @@ export function upgradeItemRarity(
   depth: number,
   rarityBoost: number = 0
 ): Item | null {
-  // Unique items and set items should never be upgraded
-  if (item.isUnique || item.setId) {
-    return null
-  }
-  
-  // Try to upgrade material first - this preserves the base type
-  const materialId = extractMaterialId(item.name)
-  const nextMaterial = materialId ? getNextMaterial(materialId) : null
-  
-  if (nextMaterial) {
-    // Can upgrade material - prioritize this to keep item identity
-    return upgradeItemMaterial(item, depth)
-  }
-
-  // Material is maxed or not found - try upgrading rarity instead
-  return upgradeItemRarityOnly(item, depth, rarityBoost)
+  return upgradeItem(item, depth, 'auto', rarityBoost)
 }
 
 /**
