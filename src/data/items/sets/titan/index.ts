@@ -7,7 +7,7 @@ export * from './accessory1'
 export * from './accessory2'
 
 import { TITANS_WRATH } from './weapon'
-import { TITANS_BULWARK } from './armor'
+import { TITANS_GUARD } from './armor'
 import { TITANS_CROWN } from './helmet'
 import { TITANS_STRIDE } from './boots'
 import { TITANS_FIST } from './accessory1'
@@ -15,7 +15,7 @@ import { TITANS_AEGIS } from './accessory2'
 
 export const TITAN_SET_ITEMS = [
   TITANS_WRATH,
-  TITANS_BULWARK,
+  TITANS_GUARD,
   TITANS_CROWN,
   TITANS_STRIDE,
   TITANS_FIST,
