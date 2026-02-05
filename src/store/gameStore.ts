@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
 import type { GameState, Hero, EventChoice, Item, ItemSlot, Consumable, Run, Equipment } from '@/types'
+import type { ItemStorage } from '@/types/items-v3'
 import { MusicContext } from '@/types/audio'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
@@ -14,6 +15,7 @@ import { migrateGameState } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { useAbility as applyAbility } from '@/systems/abilities/abilityManager'
 import { getClassById } from '@/data/classes'
+import { hydrateItem, hydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
 import { audioManager } from '@/systems/audio/audioManager'
 import { getPlaylistForContext } from '@/config/musicConfig'
@@ -1812,50 +1814,43 @@ export const useGameStore = create<GameStore>()(
               })
             }
 
-            // Repair item names and icons in inventories
+            // Hydrate and repair item names/icons in inventories
             if (actualState.bankInventory?.length > 0) {
-              actualState.bankInventory = repairItemNames(actualState.bankInventory)
+              actualState.bankInventory = hydrateItems(actualState.bankInventory as ItemStorage[])
             }
             if (actualState.dungeon?.inventory?.length > 0) {
-              actualState.dungeon.inventory = repairItemNames(actualState.dungeon.inventory)
+              actualState.dungeon.inventory = hydrateItems(actualState.dungeon.inventory as ItemStorage[])
             }
             if (actualState.overflowInventory?.length > 0) {
-              actualState.overflowInventory = repairItemNames(actualState.overflowInventory)
+              actualState.overflowInventory = hydrateItems(actualState.overflowInventory as ItemStorage[])
             }
 
-            // Repair equipped items on heroes in party
+            // Hydrate equipped items on heroes in party
             if (actualState.party?.length > 0) {
               actualState.party = actualState.party.map((hero: Hero | null) => {
                 if (!hero) return null
 
                 // Handle new slot format
                 if (hero.slots) {
-                  const slotItems = Object.values(hero.slots).filter((item): item is Item => item !== null && 'stats' in item)
-                  if (slotItems.length > 0) {
-                    const repairedItems = repairItemNames(slotItems)
-                    const newSlots = { ...hero.slots }
-                    let itemIndex = 0
-                    for (const slotId in newSlots) {
-                      if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                        newSlots[slotId] = repairedItems[itemIndex]
-                        itemIndex++
-                      }
+                  const newSlots = { ...hero.slots }
+                  for (const slotId in newSlots) {
+                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                      newSlots[slotId] = hydrateItem(newSlots[slotId] as ItemStorage)
                     }
-                    return { ...hero, slots: newSlots }
                   }
-                  return hero
+                  return { ...hero, slots: newSlots }
                 }
 
                 // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
-                  const repairedItems = repairItemNames(equippedItems)
+                  const hydratedItems = hydrateItems(equippedItems as ItemStorage[])
                   const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
                   Object.keys(newEquipment).forEach((slot) => {
                     const key = slot as keyof Equipment
                     if (newEquipment[key] !== null) {
-                      newEquipment[key] = repairedItems[itemIndex]
+                      newEquipment[key] = hydratedItems[itemIndex]
                       itemIndex++
                     }
                   })
@@ -1925,32 +1920,25 @@ export const useGameStore = create<GameStore>()(
               actualState.heroRoster = actualState.heroRoster.map((hero: Hero) => {
                 // Handle new slot format
                 if (hero.slots) {
-                  const slotItems = Object.values(hero.slots).filter((item): item is Item => item !== null && 'stats' in item)
-                  if (slotItems.length > 0) {
-                    const repairedItems = repairItemNames(slotItems)
-                    const newSlots = { ...hero.slots }
-                    let itemIndex = 0
-                    for (const slotId in newSlots) {
-                      if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                        newSlots[slotId] = repairedItems[itemIndex]
-                        itemIndex++
-                      }
+                  const newSlots = { ...hero.slots }
+                  for (const slotId in newSlots) {
+                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                      newSlots[slotId] = hydrateItem(newSlots[slotId] as ItemStorage)
                     }
-                    return { ...hero, slots: newSlots }
                   }
-                  return hero
+                  return { ...hero, slots: newSlots }
                 }
 
                 // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
-                  const repairedItems = repairItemNames(equippedItems)
+                  const hydratedItems = hydrateItems(equippedItems as ItemStorage[])
                   const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
                   Object.keys(newEquipment).forEach((slot) => {
                     const key = slot as keyof Equipment
                     if (newEquipment[key] !== null) {
-                      newEquipment[key] = repairedItems[itemIndex]
+                      newEquipment[key] = hydratedItems[itemIndex]
                       itemIndex++
                     }
                   })

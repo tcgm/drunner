@@ -1,4 +1,5 @@
 import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
+import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3 } from '@/types/items-v3'
 import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
@@ -6,6 +7,7 @@ import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMate
 import { getRandomUnique, ALL_UNIQUE_ITEMS } from '@data/items/uniques'
 import { getRandomSetItem, ALL_SET_ITEMS, getSetIdFromItemName } from '@data/items/sets'
 import { applyModifiers, getModifierById } from '@data/items/mods'
+import { hydrateItem } from '@/utils/itemHydration'
 import { GiCrystalShine } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getRarityConfig, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
@@ -301,41 +303,21 @@ export function generateItem(
           setTemplate.type === forceType || 
           ((forceType === 'accessory1' || forceType === 'accessory2') && (setTemplate.type === 'accessory1' || setTemplate.type === 'accessory2'))) {
         
-        // Get the rarity multiplier for the set item's rarity
-        const rarityConfig = getRarityConfig(setTemplate.rarity)
-        const rarityMultiplier = rarityConfig.statMultiplierBase
-
-        // Apply rarity multiplier to base stats first
-        const baseStats = Object.entries(setTemplate.stats).reduce((acc, [key, value]) => {
-          acc[key] = Math.floor((value as number) * rarityMultiplier)
-          return acc
-        }, {} as Record<string, number>)
-
-        // Check if this set item should roll as unique (additional boost)
+        // Generate V3 set item
+        const templateId = setTemplate.name.toUpperCase().replace(/['\s]/g, '_')
         const rollAsUnique = Math.random() < LOOT_CONFIG.setUniqueChance
         
-        // If rolling as unique, apply additional boost on top of rarity multiplier
-        const stats = rollAsUnique 
-          ? Object.entries(baseStats).reduce((acc, [key, value]) => {
-              acc[key] = Math.floor((value as number) * LOOT_CONFIG.setUniqueBoost)
-              return acc
-            }, {} as Record<string, number>)
-          : baseStats
-        
-        // Get the appropriate setId from the item name
-        const setId = getSetIdFromItemName(setTemplate.name) || 'unknown'
-        
-        return {
-          ...setTemplate,
+        const v3Item: SetItemV3 = {
+          version: 3,
           id: uuidv4(),
-          type: forceType || setTemplate.type, // Use forced type for specific accessory slots
-          setId, // Mark as set item with correct set ID
-          isUnique: rollAsUnique, // Mark if this rolled as unique
-          stats,
-          value: rollAsUnique 
-            ? Math.floor(setTemplate.value * rarityMultiplier * LOOT_CONFIG.setUniqueBoost)
-            : Math.floor(setTemplate.value * rarityMultiplier),
+          itemType: 'set',
+          templateId,
+          isUniqueRoll: rollAsUnique,
+          modifiers: modifiers.length > 0 ? modifiers : undefined
         }
+        
+        // Hydrate and return
+        return hydrateItem(v3Item)
       }
     }
   }
@@ -349,12 +331,20 @@ export function generateItem(
       if (!forceType || 
           uniqueTemplate.type === forceType ||
           ((forceType === 'accessory1' || forceType === 'accessory2') && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
-        return {
-          ...uniqueTemplate,
+        
+        // Generate V3 unique item
+        const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
+        
+        const v3Item: UniqueItemV3 = {
+          version: 3,
           id: uuidv4(),
-          type: forceType || uniqueTemplate.type, // Use forced type for specific accessory slots
-          isUnique: true, // Mark as unique item
+          itemType: 'unique',
+          templateId,
+          modifiers: modifiers.length > 0 ? modifiers : undefined
         }
+        
+        // Hydrate and return
+        return hydrateItem(v3Item)
       }
       // If forced type doesn't match unique, generate procedural item instead
     }
@@ -438,7 +428,7 @@ export function generateItem(
     ? `${base.description} - ${material.description}`
     : base.description
   
-  // Generate item name and icon - if we can't generate a proper name, try to repair it first
+  // Generate item name and icon
   const { name, icon: generatedIcon } = generateItemName(material.prefix, base)
   const itemIcon = generatedIcon || base.icon
   
@@ -494,24 +484,27 @@ export function generateItem(
     }
   }
   
-  // Create final item with metadata for repair
-  const item: Item = {
+  // Extract just the baseName from the generated name (remove material prefix)
+  const baseName = name.replace(`${material.prefix} `, '')
+  
+  // Create V3 procedural item
+  const baseTemplateId = `${base.type}_${base.description.split(' ')[0].toLowerCase()}`
+  
+  const v3Item: ProceduralItemV3 = {
+    version: 3,
     id: uuidv4(),
-    name,
-    description: description,
-    type: forceType || base.type,
-    rarity,
-    stats: modifiedStats,
-    value,
-    icon: itemIcon,
+    itemType: 'procedural',
     materialId: material.id,
-    baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
-    isUnique: false, // Procedurally generated item
-    modifiers: modifiers.length > 0 ? modifiers : undefined,
-    statVersion: CURRENT_STAT_VERSION, // Mark with current stat calculation version
+    baseTemplateId,
+    baseName,
+    rarity,
+    itemSlot: forceType || base.type,
+    modifiers: modifiers.length > 0 ? modifiers : undefined
   }
   
-  // Apply modifiers if any
+  // Hydrate to get full Item
+  const item = hydrateItem(v3Item)
+  
   // Apply modifiers if any
   if (modifiers.length > 0) {
     const modifierObjects = modifiers.map(id => getModifierById(id)).filter((m): m is NonNullable<typeof m> => m !== null && m !== undefined)

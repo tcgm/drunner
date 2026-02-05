@@ -382,3 +382,6 @@ export interface BaseTemplate {
   type: ItemSlot
   stats: Partial<Omit<Stats, 'hp'>>
 }
+
+// Re-export V3 types
+export * from './items-v3'
