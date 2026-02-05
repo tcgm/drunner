@@ -274,14 +274,24 @@ function upgradeItem(
   if (!baseTemplate) return null
 
   // Step 3: Find which baseName variant is used (from bases data)
+  // Extract the name without material prefix
   const nameWithoutMaterial = extractBaseName(item.name)
   let baseName = baseTemplate.baseNames?.[0] || 'Item'
   if (baseTemplate.baseNames) {
-    const matchingBaseName = baseTemplate.baseNames.find(bn => 
-      nameWithoutMaterial.toLowerCase().includes(bn.toLowerCase())
+    // Find exact match first, then try partial match
+    const exactMatch = baseTemplate.baseNames.find(bn => 
+      bn.toLowerCase() === nameWithoutMaterial.toLowerCase()
     )
-    if (matchingBaseName) {
-      baseName = matchingBaseName
+    if (exactMatch) {
+      baseName = exactMatch
+    } else {
+      // If no exact match, find which baseName the item name contains
+      const partialMatch = baseTemplate.baseNames.find(bn => 
+        nameWithoutMaterial.toLowerCase().includes(bn.toLowerCase())
+      )
+      if (partialMatch) {
+        baseName = partialMatch
+      }
     }
   }
 
