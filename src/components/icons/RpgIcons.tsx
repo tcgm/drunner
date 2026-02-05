@@ -4,13 +4,34 @@
  * Usage identical to react-icons: import { RaSword } from '@/components/icons/RpgIcons'
  */
 
+import React from 'react'
+
 interface RpgIconProps {
   className?: string
   style?: React.CSSProperties
+  size?: string | number
+  color?: string
+  width?: string | number
+  height?: string | number
 }
 
-const createIcon = (name: string) => (props: RpgIconProps) =>
-  <i className={`ra ra-${name}`} {...props} />
+const createIcon = (name: string) => {
+  const Component = React.forwardRef<HTMLElement, RpgIconProps>((props, ref) => {
+    const { className, style, ...rest } = props
+    
+    return (
+      <i 
+        ref={ref as React.Ref<HTMLElement>}
+        className={`ra ra-${name} ${className || ''}`} 
+        style={style}
+        {...rest}
+      />
+    )
+  })
+  
+  Component.displayName = `RpgIcon(${name})`
+  return Component
+}
 
 // ============================================================================
 // WEAPON BASE ICONS
@@ -125,6 +146,8 @@ export const RaFrostmourne = createIcon('ice-sword')
 export const RaThunderfury = createIcon('lightning-sword')
 export const RaSoulreaper = createIcon('death-skull')
 export const RaInfinityEdge = createIcon('large-hammer')
+export const RaNecronomicon = createIcon('book-necronomicon')
+export const RaNekonomicon = createIcon('book-cat')
 
 // ============================================================================
 // UNIQUE ARMOR ICONS

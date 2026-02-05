@@ -144,6 +144,9 @@ export const ItemSlot = memo(function ItemSlot({
   const restoredItem = useMemo(() => restoreItemIcon(item), [item])
   const ItemIcon = restoredItem.icon || GiTreasure
 
+  // Check if this is an RPG Awesome icon (function name starts with 'RpgIcon')
+  const isRpgAwesomeIcon = ItemIcon.displayName?.startsWith('RpgIcon')
+
   // Check if item is cursed
   const isCursed = useMemo(() =>
     item.modifiers?.includes('cursed') ?? false
@@ -589,15 +592,25 @@ export const ItemSlot = memo(function ItemSlot({
               rotate: { duration: 0.5, ease: "easeInOut" }
             }}
           >
-            <Icon
-              as={ItemIcon}
-              boxSize={iconOnly 
-                ? '100%'
-                : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
-              }
-              color="white"
-              mb={iconOnly ? 0 : 0.5}
-            />
+            {isRpgAwesomeIcon ? (
+              <ItemIcon
+                style={{
+                  fontSize: iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px'),
+                  color: 'white',
+                  marginBottom: iconOnly ? 0 : '0.125rem',
+                }}
+              />
+            ) : (
+              <Icon
+                as={ItemIcon}
+                boxSize={iconOnly 
+                  ? '100%'
+                  : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
+                }
+                color="white"
+                mb={iconOnly ? 0 : 0.5}
+              />
+            )}
           </motion.div>
           
           {/* Item Name */}

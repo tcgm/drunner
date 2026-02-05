@@ -277,6 +277,7 @@ interface ItemDetailModalProps {
 export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
   const rarityTheme = RARITY_COLORS[item.rarity] || RARITY_COLORS.common
   const IconComponent = item.icon || GameIcons.GiSwordman
+  const isRpgAwesomeIcon = IconComponent.displayName?.startsWith('RpgIcon')
   const GemIcon = RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond
   
   // Sanitize item name in case it got corrupted with icon function
@@ -505,19 +506,36 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     />
                     
                     {/* Icon */}
-                    <ChakraIcon 
-                      as={IconComponent} 
-                      boxSize="65px" 
-                      color={(() => {
-                        if (item.modifiers && item.modifiers.length > 0) {
-                          const mod = getModifierById(item.modifiers[0]);
-                          return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
-                        }
-                        return item.isUnique ? '#FFD700' : rarityTheme.text;
-                      })()}
-                      position="relative"
-                      zIndex={1}
-                    />
+                    {isRpgAwesomeIcon ? (
+                      <IconComponent
+                        style={{
+                          fontSize: '65px',
+                          color: (() => {
+                            if (item.modifiers && item.modifiers.length > 0) {
+                              const mod = getModifierById(item.modifiers[0]);
+                              return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
+                            }
+                            return item.isUnique ? '#FFD700' : rarityTheme.text;
+                          })(),
+                          position: 'relative',
+                          zIndex: 1,
+                        }}
+                      />
+                    ) : (
+                      <ChakraIcon 
+                        as={IconComponent} 
+                        boxSize="65px" 
+                        color={(() => {
+                          if (item.modifiers && item.modifiers.length > 0) {
+                            const mod = getModifierById(item.modifiers[0]);
+                            return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
+                          }
+                          return item.isUnique ? '#FFD700' : rarityTheme.text;
+                        })()}
+                        position="relative"
+                        zIndex={1}
+                      />
+                    )}
                   </Box>
                 </Box>
 

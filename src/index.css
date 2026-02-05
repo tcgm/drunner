@@ -1,6 +1,12 @@
 /* RPG Awesome Icon Font */
 @import 'rpg-awesome/css/rpg-awesome.min.css';
 
+/* Override RPG Awesome defaults for proper sizing */
+.ra::before {
+  font-size: 1em;
+  line-height: 1;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
