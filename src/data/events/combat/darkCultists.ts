@@ -21,7 +21,7 @@ export const DARK_CULTISTS: DungeonEvent = {
     {
       text: 'Counter their magic (requires Mage or Necromancer)',
       requirements: {
-        class: 'mage',
+        class: ['Mage', 'Necromancer'],
       },
       outcome: {
         text: 'You turn their dark magic against them!',

@@ -1,7 +1,7 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
-import { upgradeItemRarity, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
+import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
@@ -739,7 +739,19 @@ export function resolveEventOutcome(
         
         const { hero, item, slot } = lowestItemData
         const rarityBoost = effect.rarityBoost || 0
-        const upgradedItem = upgradeItemRarity(item, floor, rarityBoost)
+        const upgradeType = effect.upgradeType || 'auto' // Default to auto (material first, then rarity)
+        
+        let upgradedItem: Item | null = null
+        
+        // Determine which upgrade function to use based on upgradeType
+        if (upgradeType === 'material') {
+          upgradedItem = upgradeItemMaterial(item, floor)
+        } else if (upgradeType === 'rarity') {
+          upgradedItem = upgradeItemRarityOnly(item, floor, rarityBoost)
+        } else {
+          // auto: Try material first, then rarity
+          upgradedItem = upgradeItemRarity(item, floor, rarityBoost)
+        }
         
         if (!upgradedItem) {
           // Refund any gold cost from this outcome
@@ -752,10 +764,15 @@ export function resolveEventOutcome(
               description: `${goldCostThisOutcome} gold refunded`
             })
           }
+          const failureReason = upgradeType === 'material' 
+            ? 'maximum material'
+            : upgradeType === 'rarity'
+            ? 'maximum rarity'
+            : 'maximum rarity and material'
           resolvedEffects.push({
             type: 'upgradeItem',
             target: [hero.id],
-            description: `${hero.name}'s ${item.name} cannot be upgraded further (maximum rarity and material)`
+            description: `${hero.name}'s ${item.name} cannot be upgraded further (${failureReason})`
           })
           break
         }
@@ -833,7 +850,7 @@ function selectTargets(
  */
 export function checkRequirements(
   requirements: {
-    class?: string
+    class?: string | string[]
     stat?: string
     minValue?: number
     item?: string
@@ -855,7 +872,12 @@ export function checkRequirements(
   }
   
   if (requirements.class) {
-    const hasClass = party.some(h => h !== null && h.isAlive && h.class.id.toLowerCase() === requirements.class!.toLowerCase())
+    const requiredClasses = Array.isArray(requirements.class) ? requirements.class : [requirements.class]
+    const hasClass = party.some(h => 
+      h !== null && h.isAlive && requiredClasses.some(reqClass => 
+        h.class.id.toLowerCase() === reqClass.toLowerCase()
+      )
+    )
     if (!hasClass) return false
   }
   

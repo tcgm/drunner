@@ -2,6 +2,7 @@ import type { Item, ItemRarity, Hero } from '@/types'
 import { generateItem } from './lootGenerator'
 import { MATERIALS_BY_RARITY, getMaterialById, type Material } from '@/data/items/materials'
 import { getBaseById, findBaseFromItemName } from '@/data/items/bases'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * Rarity tier ordering for upgrades
@@ -204,26 +205,26 @@ export function upgradeItemMaterial(
     return null
   }
 
-  // Generate a new item with the upgraded material, preserving base template
-  const upgradedItem = generateItem(
-    depth,
-    item.type,
-    item.rarity,
-    item.rarity, // Keep same rarity
-    0,
-    baseTemplate // Use the base template to preserve item identity
-  )
+  // Create the upgraded item manually to preserve both material AND base
+  const upgradedItem: Item = {
+    ...item,
+    id: uuidv4(),
+    name: `${nextMaterial.prefix} ${baseTemplate.name}`,
+    materialId: nextMaterial.id,
+    material: nextMaterial,
+    baseTemplateId: baseTemplate.id,
+    value: Math.floor(baseTemplate.value * nextMaterial.valueMultiplier),
+  }
 
   return upgradedItem
 }
 
 /**
- * Upgrade an item by first upgrading material (keeping the same base), 
- * or if material is maxed, upgrade rarity
- * Returns a new item of the same type but better material or higher rarity
- * Unique items cannot be upgraded and will return null
+ * Upgrade ONLY the item's rarity tier (not material)
+ * Returns a new item with higher rarity
+ * Returns null if rarity cannot be upgraded
  */
-export function upgradeItemRarity(
+export function upgradeItemRarityOnly(
   item: Item,
   depth: number,
   rarityBoost: number = 0
@@ -232,17 +233,8 @@ export function upgradeItemRarity(
   if (item.isUnique || item.setId) {
     return null
   }
-  
-  // Try to upgrade material first - this preserves the base type
-  const materialId = extractMaterialId(item.name)
-  const nextMaterial = materialId ? getNextMaterial(materialId) : null
-  
-  if (nextMaterial) {
-    // Can upgrade material - prioritize this to keep item identity
-    return upgradeItemMaterial(item, depth)
-  }
 
-  // Material is maxed or not found - try upgrading rarity instead
+  // Try upgrading rarity
   const nextRarity = getNextRarity(item.rarity)
   if (nextRarity) {
     // Try to preserve the base template from the original item
@@ -266,8 +258,37 @@ export function upgradeItemRarity(
     return upgradedItem
   }
 
-  // Both material and rarity are maxed - cannot upgrade
+  // Rarity is maxed - cannot upgrade
   return null
+}
+
+/**
+ * Upgrade an item by first upgrading material (keeping the same base), 
+ * or if material is maxed, upgrade rarity (auto mode)
+ * Returns a new item of the same type but better material or higher rarity
+ * Unique items cannot be upgraded and will return null
+ */
+export function upgradeItemRarity(
+  item: Item,
+  depth: number,
+  rarityBoost: number = 0
+): Item | null {
+  // Unique items and set items should never be upgraded
+  if (item.isUnique || item.setId) {
+    return null
+  }
+  
+  // Try to upgrade material first - this preserves the base type
+  const materialId = extractMaterialId(item.name)
+  const nextMaterial = materialId ? getNextMaterial(materialId) : null
+  
+  if (nextMaterial) {
+    // Can upgrade material - prioritize this to keep item identity
+    return upgradeItemMaterial(item, depth)
+  }
+
+  // Material is maxed or not found - try upgrading rarity instead
+  return upgradeItemRarityOnly(item, depth, rarityBoost)
 }
 
 /**

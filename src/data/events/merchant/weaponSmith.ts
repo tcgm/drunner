@@ -8,16 +8,30 @@ export const WEAPON_SMITH: DungeonEvent = {
   description: 'A skilled smith offers to upgrade your weapons or repair your armor.',
   choices: [
     {
-      text: 'Upgrade equipment',
+      text: 'Reforge with better material',
       requirements: {
-        gold: 120,
+        gold: 100,
       },
       outcome: {
-        text: 'The smith upgrades your weakest equipment to superior quality!',
+        text: 'The smith reforges your weakest equipment with superior materials!',
         effects: [
-          { type: 'gold', value: -120 },
-          { type: 'xp', value: 40 },
-          { type: 'upgradeItem', rarityBoost: 5 },
+          { type: 'gold', value: -100 },
+          { type: 'xp', value: 30 },
+          { type: 'upgradeItem', upgradeType: 'material' },
+        ],
+      },
+    },
+    {
+      text: 'Enchant equipment',
+      requirements: {
+        gold: 150,
+      },
+      outcome: {
+        text: 'The smith imbues your weakest equipment with powerful magic!',
+        effects: [
+          { type: 'gold', value: -150 },
+          { type: 'xp', value: 50 },
+          { type: 'upgradeItem', upgradeType: 'rarity', rarityBoost: 5 },
         ],
       },
     },

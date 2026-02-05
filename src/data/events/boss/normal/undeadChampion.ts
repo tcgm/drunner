@@ -22,7 +22,7 @@ export const UNDEAD_CHAMPION: DungeonEvent = {
     {
       text: 'Holy attack (Cleric/Paladin bonus)',
       requirements: {
-        class: 'Cleric',
+        class: ['Cleric', 'Paladin'],
       },
       outcome: {
         text: 'Your holy power is devastating against the undead!',
@@ -48,7 +48,7 @@ export const UNDEAD_CHAMPION: DungeonEvent = {
       text: 'Target weak points (Attack check)',
       requirements: {
         stat: 'attack',
-        value: 15,
+        minValue: 15,
       },
       outcome: {
         text: 'Your precise strikes shatter the champion!',

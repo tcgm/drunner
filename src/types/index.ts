@@ -178,7 +178,7 @@ export type EventType =
 export interface EventChoice {
   text: string
   requirements?: {
-    class?: string
+    class?: string | string[] // Single class or multiple classes (any match)
     stat?: keyof Stats
     minValue?: number
     item?: string
@@ -205,6 +205,7 @@ export interface EventOutcome {
     consumableId?: string // ID of consumable to give (for type: 'consumable')
     value?: number
     isTrueDamage?: boolean // For damage effects: ignore defense (true damage)
+    upgradeType?: 'material' | 'rarity' | 'auto' // For upgradeItem: specify material, rarity, or auto (material first, then rarity)
     // Item generation specifications (only one should be used)
     itemType?: 'random' | ItemSlot // Generate random item of specific type or any type
     uniqueItem?: string | Omit<Item, 'id'> // Generate specific unique item by ID or literal import

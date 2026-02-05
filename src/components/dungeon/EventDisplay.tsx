@@ -355,7 +355,12 @@ function getRequirementText(requirements: EventChoice['requirements'], depth: nu
   const parts: string[] = []
   
   if (requirements.class) {
-    parts.push(`Requires ${requirements.class}`)
+    const classes = Array.isArray(requirements.class) ? requirements.class : [requirements.class]
+    if (classes.length === 1) {
+      parts.push(`Requires ${classes[0]}`)
+    } else {
+      parts.push(`Requires ${classes.join(' or ')}`)
+    }
   }
   
   if (requirements.stat && requirements.minValue) {
