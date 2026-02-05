@@ -1,4 +1,4 @@
-import { GiPiercingSword } from 'react-icons/gi'
+import { GiRuneSword } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -9,7 +9,7 @@ export const FROSTMOURNE: Omit<Item, 'id'> = {
   description: 'A cursed runeblade that hungers for souls. Its frozen surface chills the very air around it.',
   type: 'weapon',
   rarity: 'mythic',
-  icon: GiPiercingSword,
+  icon: GiRuneSword,
   stats: {
     attack: 200,
     speed: 15,
