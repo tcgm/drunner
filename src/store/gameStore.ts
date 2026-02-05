@@ -2160,11 +2160,13 @@ export const useGameStore = create<GameStore>()(
             }
 
             // Check if migration is needed BEFORE applying it
+            // But skip if we're already in pending migration state (to avoid loop)
             const migrationNeeded = needsMigration(actualState)
             
-            if (migrationNeeded) {
+            if (migrationNeeded && !actualState.pendingMigration) {
               console.log('[Migration] Save file needs migration, setting pending state and prompting user')
-              // Return a state that shows the migration dialog
+              // Return pending state but DON'T save to localStorage yet
+              // User must approve first
               return {
                 state: {
                   ...initialState,
@@ -2172,6 +2174,12 @@ export const useGameStore = create<GameStore>()(
                   pendingMigrationData: compressed, // Store the compressed data for later
                 }
               }
+            }
+
+            // If already in pending migration state, just return it
+            if (actualState.pendingMigration) {
+              console.log('[Migration] Already in pending migration state')
+              return state
             }
 
             // Migrate to new floor-based system
@@ -2215,6 +2223,12 @@ export const useGameStore = create<GameStore>()(
           }
         },
         setItem: (name, value) => {
+          // Don't persist to localStorage if migration is pending - wait for user approval
+          if (value?.state?.pendingMigration) {
+            console.log('[Storage] Skipping save - migration pending user approval')
+            return
+          }
+
           // Custom replacer to strip out icon functions that shouldn't be serialized
           const replacer = (key: string, val: unknown) => {
             // Skip icon functions

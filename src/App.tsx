@@ -1,5 +1,5 @@
 import { Box, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Button } from '@chakra-ui/react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
 import { PartySetupScreen } from '@components/screens/PartySetupScreen'
@@ -41,6 +41,16 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
   const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  // Remove HTML loading screen once React is ready
+  useEffect(() => {
+    const loader = document.getElementById('app-loader')
+    if (loader) {
+      loader.style.opacity = '0'
+      loader.style.transition = 'opacity 0.3s'
+      setTimeout(() => loader.remove(), 300)
+    }
+  }, [])
   
   const handleStartDungeon = (startingFloor: number = 0) => {
     // Calculate alkahest cost
