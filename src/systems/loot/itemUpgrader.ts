@@ -236,6 +236,13 @@ export function canUpgradeItem(item: Item, upgradeType: 'material' | 'rarity' | 
 /**
  * Main upgrade function that handles both material and rarity upgrades
  * Returns a new upgraded item or null if upgrade is not possible
+ * 
+ * Process:
+ * 1. Extract material name from item name and FIND it in materials data
+ * 2. Extract base name from item name and FIND it in bases data
+ * 3. Get rarity from item data
+ * 4. Upgrade material or rarity using data files
+ * 5. Construct new item name from found data (material.prefix + base.baseName)
  */
 function upgradeItem(
   item: Item,
@@ -255,35 +262,39 @@ function upgradeItem(
     return upgradeItem(item, depth, 'rarity', rarityBoost)
   }
 
+  // Step 1: Find current material in data files (if present)
+  const currentMaterialId = extractMaterialId(item.name)
+  const currentMaterial = currentMaterialId ? getMaterialById(currentMaterialId) : null
+
+  // Step 2: Find base item in data files
+  let baseTemplate = item.baseTemplateId ? getBaseById(item.baseTemplateId) : null
+  if (!baseTemplate) {
+    baseTemplate = findBaseFromItemName(item.name, item.type)
+  }
+  if (!baseTemplate) return null
+
+  // Step 3: Find which baseName variant is used (from bases data)
+  const nameWithoutMaterial = extractBaseName(item.name)
+  let baseName = baseTemplate.baseNames?.[0] || 'Item'
+  if (baseTemplate.baseNames) {
+    const matchingBaseName = baseTemplate.baseNames.find(bn => 
+      nameWithoutMaterial.toLowerCase().includes(bn.toLowerCase())
+    )
+    if (matchingBaseName) {
+      baseName = matchingBaseName
+    }
+  }
+
+  // Step 4: Get current rarity from item data
+  const currentRarity = item.rarity
+
   // Material upgrade
   if (upgradeType === 'material') {
-    const currentMaterialId = extractMaterialId(item.name)
-    if (!currentMaterialId) return null
+    if (!currentMaterial) return null
 
-    const currentMaterial = getMaterialById(currentMaterialId)
-    const nextMaterial = getNextMaterial(currentMaterialId)
-    if (!nextMaterial || !currentMaterial) return null
-
-    // Get base template - use name only to locate, not to construct new name
-    let baseTemplate = item.baseTemplateId ? getBaseById(item.baseTemplateId) : null
-    if (!baseTemplate) {
-      baseTemplate = findBaseFromItemName(item.name, item.type)
-    }
-    if (!baseTemplate) return null
-
-    // Find which baseName variant was used in the original item
-    // This preserves whether it was "Helmet" vs "Helm", "Plate Armor" vs "Plate Mail", etc.
-    let baseName = baseTemplate.baseNames?.[0] || 'Item' // fallback
-    if (baseTemplate.baseNames) {
-      const nameWithoutMaterial = extractBaseName(item.name)
-      // Find which baseName from the template matches the current item
-      const matchingBaseName = baseTemplate.baseNames.find(bn => 
-        nameWithoutMaterial.toLowerCase().includes(bn.toLowerCase())
-      )
-      if (matchingBaseName) {
-        baseName = matchingBaseName
-      }
-    }
+    // Find next material in materials data
+    const nextMaterial = getNextMaterial(currentMaterialId!)
+    if (!nextMaterial) return null
 
     // Calculate multiplier ratio and apply to stats
     const statMultiplier = nextMaterial.statMultiplier / currentMaterial.statMultiplier
@@ -294,6 +305,7 @@ function upgradeItem(
       }
     }
     
+    // Construct name from found data: nextMaterial.prefix + baseName (from bases data)
     return {
       ...item,
       id: uuidv4(),
@@ -306,7 +318,6 @@ function upgradeItem(
 
   // Rarity upgrade
   if (upgradeType === 'rarity') {
-    const currentRarity = item.rarity
     const nextRarity = getNextRarity(currentRarity)
     if (!nextRarity) return null
 
@@ -322,9 +333,13 @@ function upgradeItem(
       }
     }
 
+    // Construct name from found data: currentMaterial.prefix (if exists) + baseName (from bases data)
+    const upgradedName = currentMaterial ? `${currentMaterial.prefix} ${baseName}` : baseName
+
     return {
       ...item,
       id: uuidv4(),
+      name: upgradedName,
       rarity: nextRarity,
       stats: upgradedStats,
       value: Math.floor(item.value * statMultiplier)
