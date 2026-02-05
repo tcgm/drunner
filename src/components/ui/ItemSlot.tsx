@@ -210,7 +210,7 @@ export const ItemSlot = memo(function ItemSlot({
               borderColor="teal.400"
               boxShadow="0 0 8px rgba(20, 184, 166, 0.4)"
             >
-              🦊 {setName.toUpperCase()}
+              {setName.toUpperCase()}
             </Badge>
           )}
           {isCursed && (
