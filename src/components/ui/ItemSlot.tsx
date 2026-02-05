@@ -265,7 +265,7 @@ export const ItemSlot = memo(function ItemSlot({
     <>
       <Tooltip
         label={tooltipContent}
-        placement="top"
+        placement="auto"
         hasArrow
         bg="gray.700" 
         color="white"

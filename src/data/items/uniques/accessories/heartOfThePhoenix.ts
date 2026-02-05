@@ -1,5 +1,6 @@
 import { GiEgyptianBird } from 'react-icons/gi'
 import type { Item } from '@/types'
+import { RaHeartOfThePhoenix } from '@/components/icons/RpgIcons'
 
 /**
  * Heart of the Phoenix - Mythic rebirth charm
@@ -9,7 +10,7 @@ export const HEART_OF_THE_PHOENIX: Omit<Item, 'id'> = {
   description: 'The crystallized heart of an eternal phoenix. Burns with the fire of rebirth.',
   type: 'accessory1',
   rarity: 'mythic',
-  icon: GiEgyptianBird,
+  icon: RaHeartOfThePhoenix,
   stats: {
     maxHp: 200,
     defense: 60,
