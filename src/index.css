@@ -94,3 +94,220 @@ button:focus-visible {
     box-shadow: 0 0 40px rgba(220, 38, 38, 0.8);
   }
 }
+
+/* ============================================================================
+   ITEM SLOT OPTIMIZED STYLES - Performance Critical
+   ============================================================================ */
+
+/* Base item slot styles */
+.item-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.item-slot--clickable {
+  cursor: pointer;
+}
+
+.item-slot--icon-only {
+  padding: 0;
+}
+
+.item-slot--with-padding {
+  padding: 0.25rem;
+}
+
+/* Size variants */
+.item-slot--sm {
+  width: 60px;
+  height: 60px;
+}
+
+.item-slot--md {
+  width: 80px;
+  height: 80px;
+}
+
+.item-slot--lg {
+  width: 100px;
+  height: 100px;
+}
+
+.item-slot--xl {
+  width: 140px;
+  height: 140px;
+}
+
+/* Rarity backgrounds and borders */
+.item-slot--junk {
+  background-color: #2D3748;
+  border-color: #4A5568;
+  box-shadow: 0 0 8px rgba(74, 85, 104, 0.125);
+}
+
+.item-slot--common {
+  background-color: #065F46;
+  border-color: #22C55E;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.125);
+}
+
+.item-slot--uncommon {
+  background-color: #1E3A8A;
+  border-color: #3B82F6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.125);
+}
+
+.item-slot--rare {
+  background-color: #581C87;
+  border-color: #A855F7;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.125);
+}
+
+.item-slot--epic {
+  background-color: #831843;
+  border-color: #EC4899;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.125);
+}
+
+.item-slot--legendary {
+  background-color: #9A3412;
+  border-color: #F97316;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.125);
+}
+
+.item-slot--mythic {
+  background-color: #991B1B;
+  border-color: #EF4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.125);
+}
+
+.item-slot--artifact {
+  background-color: #92400E;
+  border-color: #EAB308;
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.125);
+}
+
+.item-slot--cursed {
+  background-color: #111827;
+  border-color: #1F2937;
+  box-shadow: 0 0 8px rgba(31, 41, 55, 0.125);
+}
+
+.item-slot--abundant {
+  background-color: #064E3B;
+  border-color: #10B981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.125);
+}
+
+.item-slot--set {
+  background-color: #134E4A;
+  border-color: #14B8A6;
+  border-width: 4px;
+  box-shadow: 0 0 12px rgba(20, 184, 166, 0.6), 0 0 20px rgba(20, 184, 166, 0.4);
+}
+
+/* Unique items */
+.item-slot--unique {
+  border-color: #FFD700 !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Selected state */
+.item-slot--selected {
+  border-color: #60A5FA !important;
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.8), 0 0 24px rgba(96, 165, 250, 0.5) !important;
+}
+
+/* Hover effects - only for clickable items */
+.item-slot--clickable:hover.item-slot--junk {
+  box-shadow: 0 0 24px rgba(74, 85, 104, 0.375), 0 0 40px rgba(74, 85, 104, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--common {
+  box-shadow: 0 0 24px rgba(34, 197, 94, 0.375), 0 0 40px rgba(34, 197, 94, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--uncommon {
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.375), 0 0 40px rgba(59, 130, 246, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--rare {
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.375), 0 0 40px rgba(168, 85, 247, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--epic {
+  box-shadow: 0 0 24px rgba(236, 72, 153, 0.375), 0 0 40px rgba(236, 72, 153, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--legendary {
+  box-shadow: 0 0 24px rgba(249, 115, 22, 0.375), 0 0 40px rgba(249, 115, 22, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--mythic {
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.375), 0 0 40px rgba(239, 68, 68, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--artifact {
+  box-shadow: 0 0 24px rgba(234, 179, 8, 0.375), 0 0 40px rgba(234, 179, 8, 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--set {
+  box-shadow: 0 0 32px rgba(20, 184, 166, 0.8), 0 0 48px rgba(20, 184, 166, 0.6), 0 0 64px rgba(20, 184, 166, 0.4);
+}
+
+.item-slot--clickable:hover.item-slot--unique {
+  box-shadow: 0 0 32px rgba(255, 215, 0, 0.8), 0 0 48px rgba(255, 215, 0, 0.5), 0 0 64px rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Set item inner border */
+.item-slot__inner-border {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 0.375rem;
+  border-width: 2px;
+  border-style: solid;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+.item-slot--junk .item-slot__inner-border {
+  border-color: #4A5568;
+}
+
+.item-slot--common .item-slot__inner-border {
+  border-color: #22C55E;
+}
+
+.item-slot--uncommon .item-slot__inner-border {
+  border-color: #3B82F6;
+}
+
+.item-slot--rare .item-slot__inner-border {
+  border-color: #A855F7;
+}
+
+.item-slot--epic .item-slot__inner-border {
+  border-color: #EC4899;
+}
+
+.item-slot--legendary .item-slot__inner-border {
+  border-color: #F97316;
+}
+
+.item-slot--mythic .item-slot__inner-border {
+  border-color: #EF4444;
+}
+
+.item-slot--artifact .item-slot__inner-border {
+  border-color: #EAB308;
+}
