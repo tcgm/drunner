@@ -18,6 +18,7 @@ import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
+import { MultIcon } from '@/components/ui/MultIcon'
 
 const MotionBox = motion.create(Box)
 
@@ -33,97 +34,34 @@ interface ItemSlotProps {
   iconOnly?: boolean // Only show icon, no text
 }
 
-const SLOT_SIZES = {
-  sm: '60px',
-  md: '80px', 
-  lg: '100px',
-  xl: '140px'
+// Keep rarity colors for dynamic effects that need JavaScript
+const RARITY_GLOW_COLORS: Record<string, string> = {
+  junk: 'rgba(74, 85, 104, 0.4)',
+  common: 'rgba(34, 197, 94, 0.4)',
+  uncommon: 'rgba(59, 130, 246, 0.4)',
+  rare: 'rgba(168, 85, 247, 0.4)',
+  epic: 'rgba(236, 72, 153, 0.4)',
+  legendary: 'rgba(249, 115, 22, 0.4)',
+  mythic: 'rgba(239, 68, 68, 0.4)',
+  artifact: 'rgba(234, 179, 8, 0.4)',
+  cursed: 'rgba(31, 41, 55, 0.4)',
+  abundant: 'rgba(16, 185, 129, 0.4)',
+  set: 'rgba(20, 184, 166, 0.4)',
 }
 
-const RARITY_COLORS: Record<string, {
-  border: string;
-  borderHover: string;
-  text: string;
-  textLight: string;
-  bg: string;
-}> = {
-  junk: {
-    border: '#4A5568',
-    borderHover: '#2D3748',
-    text: '#9CA3AF',
-    textLight: '#D1D5DB',
-    bg: '#2D3748'
-  },
-  common: {
-    border: '#22C55E',
-    borderHover: '#16A34A',
-    text: '#4ADE80',
-    textLight: '#BBF7D0',
-    bg: '#065F46'
-  },
-  uncommon: {
-    border: '#3B82F6',
-    borderHover: '#2563EB',
-    text: '#60A5FA',
-    textLight: '#DBEAFE',
-    bg: '#1E3A8A'
-  },
-  rare: {
-    border: '#A855F7',
-    borderHover: '#9333EA',
-    text: '#C084FC',
-    textLight: '#E9D5FF',
-    bg: '#581C87'
-  },
-  epic: {
-    border: '#EC4899',
-    borderHover: '#DB2777',
-    text: '#F472B6',
-    textLight: '#FCE7F3',
-    bg: '#831843'
-  },
-  legendary: {
-    border: '#F97316',
-    borderHover: '#EA580C',
-    text: '#FB923C',
-    textLight: '#FED7AA',
-    bg: '#9A3412'
-  },
-  mythic: {
-    border: '#EF4444',
-    borderHover: '#DC2626',
-    text: '#F87171',
-    textLight: '#FEE2E2',
-    bg: '#991B1B'
-  },
-  artifact: {
-    border: '#EAB308',
-    borderHover: '#CA8A04',
-    text: '#FACC15',
-    textLight: '#FEF3C7',
-    bg: '#92400E'
-  },
-  cursed: {
-    border: '#1F2937',
-    borderHover: '#111827',
-    text: '#6B7280',
-    textLight: '#F3F4F6',
-    bg: '#111827'
-  },
-  abundant: {
-    border: '#10B981',
-    borderHover: '#059669',
-    text: '#34D399',
-    textLight: '#D1FAE5',
-    bg: '#064E3B'
-  },
-  set: {
-    border: '#14B8A6',
-    borderHover: '#0D9488',
-    text: '#5EEAD4',
-    textLight: '#CCFBF1',
-    bg: '#134E4A'
-  }
+// Keep text and bg colors for tooltips and dynamic content
+const RARITY_COLORS: Record<string, { text: string; bg: string }> = {
+  junk: { text: '#9CA3AF', bg: '#2D3748' },
+  common: { text: '#4ADE80', bg: '#065F46' },
+  uncommon: { text: '#60A5FA', bg: '#1E3A8A' },
+  rare: { text: '#C084FC', bg: '#581C87' },
+  epic: { text: '#F472B6', bg: '#831843' },
+  legendary: { text: '#FB923C', bg: '#9A3412' },
+  mythic: { text: '#F87171', bg: '#991B1B' },
+  artifact: { text: '#FACC15', bg: '#92400E' },
+  cursed: { text: '#6B7280', bg: '#111827' },
+  abundant: { text: '#34D399', bg: '#064E3B' },
+  set: { text: '#5EEAD4', bg: '#134E4A' },
 }
 
 export const ItemSlot = memo(function ItemSlot({
@@ -310,11 +248,22 @@ export const ItemSlot = memo(function ItemSlot({
     </VStack>
   ), [item, setName, comparisonItem, displayName, isCursed])
 
+  // Build className string
+  const slotClassName = [
+    'item-slot',
+    `item-slot--${size}`,
+    setName ? 'item-slot--set' : `item-slot--${item.rarity}`,
+    item.isUnique && 'item-slot--unique',
+    isSelected && 'item-slot--selected',
+    (isClickable || onClick) && 'item-slot--clickable',
+    iconOnly ? 'item-slot--icon-only' : 'item-slot--with-padding'
+  ].filter(Boolean).join(' ')
+
   return (
     <>
       <Tooltip
         label={tooltipContent}
-        placement="top"
+        placement="auto"
         hasArrow
         bg="gray.700" 
         color="white"
@@ -323,47 +272,18 @@ export const ItemSlot = memo(function ItemSlot({
         isOpen={isHovered}
       >
         <MotionBox
-          className={`item-slot item-slot-${item.rarity} item-type-${item.type}${item.isUnique ? ' item-unique' : ''}${setName ? ' item-set' : ''}${isSelected ? ' item-selected' : ''}`}
-          width={iconOnly ? '100%' : SLOT_SIZES[size]}
-          height={iconOnly ? '100%' : SLOT_SIZES[size]}
-          bg={setName ? RARITY_COLORS.set.bg : (RARITY_COLORS[item.rarity]?.bg || '#4A5568')}
-          borderRadius="lg"
-          borderWidth={setName ? '4px' : '2px'}
-          borderColor={isSelected ? 'blue.400' : (setName ? RARITY_COLORS.set.border : (item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.border || '#4A5568'))}
-          position="relative"
-          cursor={isClickable || onClick ? "pointer" : "default"}
-          boxShadow={isSelected
-            ? '0 0 16px rgba(96, 165, 250, 0.8), 0 0 24px rgba(96, 165, 250, 0.5)'
-            : setName
-              ? `0 0 12px rgba(20, 184, 166, 0.6), 0 0 20px rgba(20, 184, 166, 0.4)`
-              : item.isUnique
-                ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
-                : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`}
+          className={slotClassName}
+          width={iconOnly ? '100%' : undefined}
+          height={iconOnly ? '100%' : undefined}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
           data-item-icon={item.icon?.name || 'unknown'}
           onClick={handleClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          flexDirection="column"
-          p={iconOnly ? 0 : 1}
           initial={false}
           animate={{ 
             scale: isHovered && (isClickable || onClick) ? 1.08 : 1,
-            boxShadow: isHovered 
-              ? setName
-                ? `0 0 32px rgba(20, 184, 166, 0.8), 0 0 48px rgba(20, 184, 166, 0.6), 0 0 64px rgba(20, 184, 166, 0.4)`
-                : item.isUnique
-                  ? `0 0 32px rgba(255, 215, 0, 0.8), 0 0 48px rgba(255, 215, 0, 0.5), 0 0 64px rgba(255, 215, 0, 0.3)`
-                  : `0 0 24px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}60, 0 0 40px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40`
-              : setName
-                ? `0 0 12px rgba(20, 184, 166, 0.6), 0 0 20px rgba(20, 184, 166, 0.4)`
-                : item.isUnique
-                  ? `0 0 12px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3)`
-                  : `0 0 8px ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}20`
           }}
           whileTap={isClickable || onClick ? { scale: 0.95 } : {}}
           transition={{
@@ -374,19 +294,7 @@ export const ItemSlot = memo(function ItemSlot({
         >
           {/* Inner rarity border for set items */}
           {setName && (
-            <Box
-              position="absolute"
-              top="-4px"
-              left="-4px"
-              right="-4px"
-              bottom="-4px"
-              borderRadius="md"
-              borderWidth="2px"
-              borderColor={RARITY_COLORS[item.rarity]?.border || '#4A5568'}
-              pointerEvents="none"
-              zIndex={1}
-              opacity={0.8}
-            />
+            <div className={`item-slot__inner-border item-slot__inner-border--${item.rarity}`} />
           )}
 
           {/* Selection Checkbox */}
@@ -421,10 +329,10 @@ export const ItemSlot = memo(function ItemSlot({
                   inset: '-4px',
                   borderRadius: '12px',
                   background: setName
-                    ? `radial-gradient(circle, rgba(20, 184, 166, 0.7) 0%, transparent 70%)`
+                    ? 'radial-gradient(circle, rgba(20, 184, 166, 0.7) 0%, transparent 70%)'
                     : item.isUnique
-                      ? `radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%)`
-                      : `radial-gradient(circle, ${RARITY_COLORS[item.rarity]?.border || '#4A5568'}40 0%, transparent 70%)`,
+                      ? 'radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%)'
+                      : `radial-gradient(circle, ${RARITY_GLOW_COLORS[item.rarity] || 'rgba(74, 85, 104, 0.4)'} 0%, transparent 70%)`,
                   pointerEvents: 'none',
                   zIndex: -1
                 }}
@@ -589,12 +497,13 @@ export const ItemSlot = memo(function ItemSlot({
               rotate: { duration: 0.5, ease: "easeInOut" }
             }}
           >
-            <Icon
-              as={ItemIcon}
+            <MultIcon
+              icon={ItemIcon}
               boxSize={iconOnly 
                 ? '100%'
                 : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
               }
+              fontSize={iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')}
               color="white"
               mb={iconOnly ? 0 : 0.5}
             />

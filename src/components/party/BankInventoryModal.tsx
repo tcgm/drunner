@@ -26,7 +26,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useCallback, useMemo } from 'react'
-import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
+import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion } from 'react-icons/gi'
 import type { Item } from '../../types'
 import { useGameStore } from '@/store/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -287,6 +287,10 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                 <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
                   Accessories ({itemsByType.accessories?.length || 0})
                 </Tab>
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+                  <Icon as={GiHealthPotion} mr={2} />
+                  Consumables ({itemsByType.consumables?.length || 0})
+                </Tab>
               </TabList>
             )}
           </VStack>
@@ -342,6 +346,9 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               </TabPanel>
               <TabPanel px={0} py={1}>
                         <ItemGrid items={itemsByType.accessories || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
+              </TabPanel>
+              <TabPanel px={0} py={1}>
+                        <ItemGrid items={itemsByType.consumables || []} visibleCount={visibleCount} selectedItems={selectedItems} onItemClick={(isSelectionMode || pendingSlot) ? handleItemClick : undefined} onItemSelect={isSelectionMode ? handleItemSelect : undefined} isClickable={true} showCheckbox={isSelectionMode} comparisonItem={equippedItem} />
               </TabPanel>
             </TabPanels>
           )}

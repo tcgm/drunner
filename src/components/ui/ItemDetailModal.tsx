@@ -21,6 +21,8 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
 import { getModifierById } from '@/data/items/mods'
 import { getItemSetName, ALL_SETS } from '@/data/items/sets'
+import { MultIcon } from '@/components/ui/MultIcon'
+import { restoreItemIcon } from '@/utils/itemUtils'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -275,9 +277,11 @@ interface ItemDetailModalProps {
 }
 
 export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
-  const rarityTheme = RARITY_COLORS[item.rarity] || RARITY_COLORS.common
-  const IconComponent = item.icon || GameIcons.GiSwordman
-  const GemIcon = RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond
+  // Restore icon if missing (handles deserialization issues)
+  const restoredItem = useMemo(() => restoreItemIcon(item), [item])
+  const rarityTheme = RARITY_COLORS[restoredItem.rarity] || RARITY_COLORS.common
+  const IconComponent = restoredItem.icon || GameIcons.GiSwordman
+  const GemIcon = RARITY_GEM_ICONS[restoredItem.rarity] || GameIcons.GiCutDiamond
   
   // Sanitize item name in case it got corrupted with icon function
   const displayName = useMemo(() => {
@@ -343,65 +347,13 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
         }}
       >
         {/* Decorative corner accents */}
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          w="60px"
-          h="60px"
-          borderLeft={`3px solid ${borderColor}`}
-          borderTop={`3px solid ${borderColor}`}
-          opacity={0.3}
-          pointerEvents="none"
-          zIndex={1}
-        />
-        <Box
-          position="absolute"
-          top={0}
-          right={0}
-          w="60px"
-          h="60px"
-          borderRight={`3px solid ${borderColor}`}
-          borderTop={`3px solid ${borderColor}`}
-          opacity={0.3}
-          pointerEvents="none"
-          zIndex={1}
-        />
-        <Box
-          position="absolute"
-          bottom={0}
-          left={0}
-          w="60px"
-          h="60px"
-          borderLeft={`3px solid ${borderColor}`}
-          borderBottom={`3px solid ${borderColor}`}
-          opacity={0.3}
-          pointerEvents="none"
-          zIndex={1}
-        />
-        <Box
-          position="absolute"
-          bottom={0}
-          right={0}
-          w="60px"
-          h="60px"
-          borderRight={`3px solid ${borderColor}`}
-          borderBottom={`3px solid ${borderColor}`}
-          opacity={0.3}
-          pointerEvents="none"
-          zIndex={1}
-        />
+        <div className="item-detail-modal__corner item-detail-modal__corner--top-left" />
+        <div className="item-detail-modal__corner item-detail-modal__corner--top-right" />
+        <div className="item-detail-modal__corner item-detail-modal__corner--bottom-left" />
+        <div className="item-detail-modal__corner item-detail-modal__corner--bottom-right" />
 
         {/* Background gradient */}
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          bg={`radial-gradient(circle at center, ${effectiveTheme.bg} 0%, transparent 70%)`}
-          pointerEvents="none"
-        />
+        <div className="item-detail-modal__bg-gradient" />
 
         <ModalCloseButton zIndex={2} />
         
@@ -441,14 +393,14 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
               {/* Left Stats Column */}
               <VStack className="item-detail-modal-left-stats" spacing={2} flex={1} align="stretch">
                 {leftStats.map(([stat, value]) => (
-                  <HStack key={stat} justify="space-between" p={2} bg="whiteAlpha.50" borderRadius="md">
+                  <div key={stat} className="item-detail-modal__stat-row">
                     <Text fontSize="sm" color="gray.400">
                       {formatStatName(stat)}
                     </Text>
                     <Text fontSize="md" fontWeight="bold" color={getStatColor(stat)}>
                       {value >= 0 ? '+' : ''}{value}
                     </Text>
-                  </HStack>
+                  </div>
                 ))}
               </VStack>
 
@@ -456,58 +408,18 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
               <VStack className="item-detail-modal-center" spacing={2}>
                 <Box position="relative">
                   {/* Outer glow ring */}
-                  <Box
-                    position="absolute"
-                    top="50%"
-                    left="50%"
-                    transform="translate(-50%, -50%)"
-                    w="140px"
-                    h="140px"
-                    borderRadius="full"
-                    bg={`radial-gradient(circle, ${rarityTheme.glow} 0%, transparent 70%)`}
-                    opacity={0.6}
-                    pointerEvents="none"
-                  />
+                  <div className="item-detail-modal__icon-glow" />
                   
                   {/* Icon frame */}
-                  <Box
-                    className="item-detail-modal-icon-frame"
-                    position="relative"
-                    w="110px"
-                    h="110px"
-                    borderRadius="xl"
-                    bg="gray.800"
-                    borderWidth="4px"
-                    borderColor={item.isUnique ? '#FFD700' : rarityTheme.border}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    overflow="hidden"
-                    boxShadow={`0 0 20px ${rarityTheme.glow}`}
-                    sx={{
-                      willChange: 'transform',
-                    }}
-                  >
+                  <div className="item-detail-modal__icon-frame">
                     {/* Shimmer effect overlay */}
-                    <Box
-                      position="absolute"
-                      top={0}
-                      left="-100%"
-                      w="50%"
-                      h="100%"
-                      bg={`linear-gradient(90deg, transparent 0%, ${rarityTheme.glow} 50%, transparent 100%)`}
-                      sx={{ 
-                        animation: `${shimmer} 4s ease-in-out infinite`,
-                        willChange: 'transform',
-                      }}
-                      opacity={0.2}
-                      pointerEvents="none"
-                    />
+                    <div className="item-detail-modal__shimmer" />
                     
                     {/* Icon */}
-                    <ChakraIcon 
-                      as={IconComponent} 
-                      boxSize="65px" 
+                    <MultIcon
+                      icon={IconComponent}
+                      boxSize="65px"
+                      fontSize="65px"
                       color={(() => {
                         if (item.modifiers && item.modifiers.length > 0) {
                           const mod = getModifierById(item.modifiers[0]);
@@ -515,10 +427,13 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                         }
                         return item.isUnique ? '#FFD700' : rarityTheme.text;
                       })()}
-                      position="relative"
-                      zIndex={1}
+                      style={{
+                        position: 'relative',
+                        zIndex: 1,
+                      }}
+                      className={`itemDetailModalIcon ${item.name}`}
                     />
-                  </Box>
+                  </div>
                 </Box>
 
                 {/* Rarity Gem Indicator */}
@@ -552,19 +467,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       boxSize="32px" 
                       color={rarityTheme.gem}
                     />
-                    <Box
-                      position="absolute"
-                      top="50%"
-                      left="50%"
-                      transform="translate(-50%, -50%)"
-                      w="40px"
-                      h="40px"
-                      borderRadius="full"
-                      bg={`radial-gradient(circle, ${rarityTheme.glow} 0%, transparent 70%)`}
-                      opacity={0.5}
-                      zIndex={-1}
-                      pointerEvents="none"
-                    />
+                    <div className="item-detail-modal__gem-glow" />
                   </Box>
                 </Tooltip>
               </VStack>
@@ -572,32 +475,24 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
               {/* Right Stats Column */}
               <VStack className="item-detail-modal-right-stats" spacing={2} flex={1} align="stretch">
                 {rightStats.map(([stat, value]) => (
-                  <HStack key={stat} justify="space-between" p={2} bg="whiteAlpha.50" borderRadius="md">
+                  <div key={stat} className="item-detail-modal__stat-row">
                     <Text fontSize="sm" color="gray.400">
                       {formatStatName(stat)}
                     </Text>
                     <Text fontSize="md" fontWeight="bold" color={getStatColor(stat)}>
                       {value >= 0 ? '+' : ''}{value}
                     </Text>
-                  </HStack>
+                  </div>
                 ))}
               </VStack>
             </HStack>
 
             {/* Description */}
-            <Box
-              className="item-detail-modal-description"
-              w="full"
-              bg="whiteAlpha.50"
-              p={3}
-              borderRadius="lg"
-              borderWidth="1px"
-              borderColor="whiteAlpha.200"
-            >
+            <div className="item-detail-modal__description">
               <Text fontSize="sm" color="gray.300" textAlign="center" fontStyle="italic">
                 "{item.description}"
               </Text>
-            </Box>
+            </div>
 
             {/* Set Information */}
             {setDefinition && (

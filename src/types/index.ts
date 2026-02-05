@@ -349,6 +349,9 @@ export interface GameState {
   musicVolume: number // 0-1
   musicEnabled: boolean
   currentMusicContext: MusicContext | null
+  // Migration state
+  pendingMigration: boolean // True if save data needs migration
+  pendingMigrationData: string | null // Compressed save data awaiting migration
 }
 
 export interface ShopItem {
@@ -382,3 +385,6 @@ export interface BaseTemplate {
   type: ItemSlot
   stats: Partial<Omit<Stats, 'hp'>>
 }
+
+// Re-export V3 types
+export * from './items-v3'

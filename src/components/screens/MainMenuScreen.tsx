@@ -10,7 +10,7 @@ interface MainMenuScreenProps {
 }
 
 export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: MainMenuScreenProps) {
-  const { activeRun, listBackups, restoreFromBackup, exportSave, importSave } = useGameStore()
+  const { activeRun, listBackups, createManualBackup, restoreFromBackup, downloadBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [backups, setBackups] = useState<string[]>([])
   const toast = useToast()
@@ -25,11 +25,56 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     onOpen()
   }
 
+  const handleCreateBackup = () => {
+    const success = createManualBackup()
+    if (success) {
+      toast({
+        title: 'Backup Created',
+        description: 'Manual backup created successfully.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
+      // Refresh backup list
+      const availableBackups = listBackups()
+      setBackups(availableBackups)
+    } else {
+      toast({
+        title: 'Backup Failed',
+        description: 'Failed to create backup.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+  }
+
   const handleRestoreBackup = (backupKey: string) => {
     const timestamp = parseInt(backupKey.split('-').pop() || '0')
     const date = new Date(timestamp).toLocaleString()
     if (confirm(`Restore save from ${date}?\n\nThis will reload the page and restore your game state. Current unsaved progress will be lost.`)) {
       restoreFromBackup(backupKey)
+    }
+  }
+
+  const handleDownloadBackup = (backupKey: string) => {
+    const success = downloadBackup(backupKey)
+    if (success) {
+      toast({
+        title: 'Backup Downloaded',
+        description: 'Backup has been downloaded as a JSON file.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
+    } else {
+      toast({
+        title: 'Download Failed',
+        description: 'Failed to download backup.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
     }
   }
 
@@ -411,16 +456,25 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
       </VStack>
 
       {/* Save Management Modal */}
-      <Modal className="save-management-modal" isOpen={isOpen} onClose={onClose} size="lg" scrollBehavior="inside">
-        <ModalOverlay />
-        <ModalContent className="save-management-content" bg="gray.800">
-          <ModalHeader className="save-management-header" color="blue.400">Save Management</ModalHeader>
+      <Modal className="save-management-modal" isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
+        <ModalOverlay bg="blackAlpha.700" />
+        <ModalContent className="save-management-content" bg="gray.800" maxW="700px">
+          <ModalHeader className="save-management-header" color="orange.400" fontSize="2xl" pb={3}>
+            <HStack>
+              <Icon as={GiSave} boxSize={6} />
+              <Text>Save Management</Text>
+            </HStack>
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody className="save-management-body" pb={6}>
-            <VStack className="save-management-sections" spacing={4} align="stretch">
-              <Box>
-                <Text fontSize="sm" color="gray.400" mb={2}>
-                  Automatic backups are created when the game loads. Restoring a backup will reload the page.
+            <VStack className="save-management-sections" spacing={5} align="stretch">
+              {/* Info Box */}
+              <Box bg="blue.900" borderLeft="4px solid" borderColor="blue.400" p={3} borderRadius="md">
+                <Text fontSize="sm" color="blue.100">
+                  💾 Automatic backups are created every 5 minutes (up to 10 backups)
+                </Text>
+                <Text fontSize="sm" color="blue.100" mt={1}>
+                  ⚠️ Restoring a backup will reload the page
                 </Text>
               </Box>
 
@@ -457,57 +511,107 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
               <Divider />
 
               <Box className="backups-section">
-                <HStack className="backups-header" justify="space-between" mb={3}>
-                  <Text className="backups-title" fontSize="md" fontWeight="bold" color="gray.300">
-                    Available Backups
-                  </Text>
-                  <Badge className="backups-count" colorScheme="blue">{backups.length} saves</Badge>
+                <HStack className="backups-header" justify="space-between" align="start" mb={3}>
+                  <VStack align="start" spacing={1}>
+                    <Text className="backups-title" fontSize="lg" fontWeight="bold" color="orange.300">
+                      📂 Automatic Backups
+                    </Text>
+                    {backups.length > 0 && (
+                      <Text fontSize="xs" color="gray.500">
+                        Last backup: {formatBackupDate(backups[0]).relative}
+                      </Text>
+                    )}
+                  </VStack>
+                  <HStack spacing={2}>
+                    <Button
+                      size="sm"
+                      colorScheme="orange"
+                      variant="outline"
+                      onClick={handleCreateBackup}
+                      leftIcon={<Icon as={GiSave} />}
+                    >
+                      Create Backup
+                    </Button>
+                    <Badge className="backups-count" colorScheme="orange" fontSize="md" px={3} py={1}>
+                      {backups.length}/10
+                    </Badge>
+                  </HStack>
                 </HStack>
 
                 {backups.length === 0 ? (
-                  <Box className="no-backups" bg="gray.900" p={4} borderRadius="md" textAlign="center">
-                    <Text color="gray.500" fontSize="sm">
-                      No backups found. Backups are created automatically when the game loads.
+                  <Box className="no-backups" bg="gray.900" p={6} borderRadius="md" textAlign="center" borderWidth="2px" borderColor="gray.700" borderStyle="dashed">
+                    <Text color="gray.400" fontSize="md" fontWeight="semibold">
+                      No backups available yet
+                    </Text>
+                    <Text color="gray.500" fontSize="sm" mt={2}>
+                      Backups are created automatically every 5 minutes during gameplay
                     </Text>
                   </Box>
                 ) : (
-                  <VStack className="backups-list" spacing={2} align="stretch" maxH="400px" overflowY="auto">
+                  <VStack className="backups-list" spacing={2} align="stretch" maxH="450px" overflowY="auto" pr={2}>
                     {backups.map((backup, index) => {
                       const { date, time, relative } = formatBackupDate(backup)
                       return (
                         <Box
                           key={backup}
                           className="backup-item"
-                          bg="gray.900"
-                          p={3}
-                          borderRadius="md"
-                          borderWidth="1px"
-                          borderColor="gray.700"
-                          _hover={{ borderColor: 'blue.500', bg: 'gray.850' }}
+                          bg={index === 0 ? 'gray.750' : 'gray.900'}
+                          p={4}
+                          borderRadius="lg"
+                          borderWidth="2px"
+                          borderColor={index === 0 ? 'orange.500' : 'gray.700'}
+                          _hover={{ borderColor: index === 0 ? 'orange.400' : 'blue.500', transform: 'translateX(4px)', shadow: 'lg' }}
                           transition="all 0.2s"
+                          position="relative"
                         >
-                          <HStack className="backup-item-content" justify="space-between" align="start">
-                            <VStack className="backup-item-info" align="start" spacing={0} flex={1}>
-                              <HStack className="backup-item-header">
-                                <Text className="backup-item-number" fontSize="sm" fontWeight="bold" color="gray.200">
-                                  Backup #{backups.length - index}
+                          {index === 0 && (
+                            <Badge 
+                              position="absolute" 
+                              top="-2" 
+                              right="-2" 
+                              colorScheme="orange" 
+                              fontSize="xs"
+                              fontWeight="bold"
+                            >
+                              LATEST
+                            </Badge>
+                          )}
+                          <HStack className="backup-item-content" justify="space-between" align="center">
+                            <VStack className="backup-item-info" align="start" spacing={1} flex={1}>
+                              <HStack className="backup-item-header" spacing={3}>
+                                <Text className="backup-item-number" fontSize="lg" fontWeight="bold" color={index === 0 ? 'orange.300' : 'gray.200'}>
+                                  #{backups.length - index}
                                 </Text>
-                                <Badge className="backup-item-relative-time" colorScheme="green" fontSize="xs">
+                                <Badge className="backup-item-relative-time" colorScheme={index === 0 ? 'orange' : 'blue'} fontSize="sm" px={2}>
                                   {relative}
                                 </Badge>
                               </HStack>
-                              <Text className="backup-item-timestamp" fontSize="xs" color="gray.500">
-                                {date} at {time}
+                              <Text className="backup-item-timestamp" fontSize="sm" color="gray.400" fontWeight="medium">
+                                📅 {date} ⏰ {time}
                               </Text>
                             </VStack>
-                            <Button
-                              className="btn-restore-backup"
-                              size="sm"
-                              colorScheme="blue"
-                              onClick={() => handleRestoreBackup(backup)}
-                            >
-                              Restore
-                            </Button>
+                            <HStack spacing={2}>
+                              <Button
+                                className="btn-download-backup"
+                                size="md"
+                                colorScheme="green"
+                                variant="outline"
+                                onClick={() => handleDownloadBackup(backup)}
+                                title="Download this backup"
+                              >
+                                💾
+                              </Button>
+                              <Button
+                                className="btn-restore-backup"
+                                size="md"
+                                colorScheme={index === 0 ? 'orange' : 'blue'}
+                                variant={index === 0 ? 'solid' : 'outline'}
+                                onClick={() => handleRestoreBackup(backup)}
+                                minW="100px"
+                              >
+                                Restore
+                              </Button>
+                            </HStack>
                           </HStack>
                         </Box>
                       )

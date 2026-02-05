@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { StateCreator } from 'zustand'
 import type { GameState, Hero, EventChoice, Item, ItemSlot, Consumable, Run, Equipment } from '@/types'
+import type { ItemStorage } from '@/types/items-v3'
 import { MusicContext } from '@/types/audio'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
@@ -10,33 +11,67 @@ import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem, calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
-import { migrateGameState } from '@/utils/migration'
+import { migrateGameState, needsMigration } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { useAbility as applyAbility } from '@/systems/abilities/abilityManager'
 import { getClassById } from '@/data/classes'
+import { hydrateItem, hydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
 import { audioManager } from '@/systems/audio/audioManager'
 import { getPlaylistForContext } from '@/config/musicConfig'
 
+// Backup configuration
+const BACKUP_CONFIG = {
+  maxBackups: 10,
+  minIntervalMs: 5 * 60 * 1000, // 5 minutes between backups
+  storageKey: 'dungeon-runner-last-backup'
+}
+
+/**
+ * Get the timestamp of the last backup
+ */
+function getLastBackupTime(): number {
+  const lastBackup = localStorage.getItem(BACKUP_CONFIG.storageKey)
+  return lastBackup ? parseInt(lastBackup) : 0
+}
+
+/**
+ * Set the timestamp of the last backup
+ */
+function setLastBackupTime(timestamp: number): void {
+  localStorage.setItem(BACKUP_CONFIG.storageKey, timestamp.toString())
+}
+
 /**
  * Create a backup of the current state
+ * Throttled to prevent excessive backups
  */
-function createBackup(name: string): void {
+function createBackup(name: string, force = false): void {
   try {
     const current = localStorage.getItem(name)
     if (current) {
       const timestamp = Date.now()
+      
+      // Check throttling (skip if recent backup exists)
+      if (!force) {
+        const lastBackup = getLastBackupTime()
+        const timeSinceLastBackup = timestamp - lastBackup
+        if (timeSinceLastBackup < BACKUP_CONFIG.minIntervalMs) {
+          console.log(`[Backup] Skipping backup (last backup ${Math.floor(timeSinceLastBackup / 1000)}s ago, minimum ${BACKUP_CONFIG.minIntervalMs / 1000}s)`)
+          return
+        }
+      }
 
       // Check localStorage size before attempting backup
       const currentSize = new Blob([current]).size
       console.log(`[Backup] Current save size: ${(currentSize / 1024).toFixed(2)} KB`)
 
-      // Keep only the last 3 backups (reduced from 5 to save space)
+      // Keep only the configured number of backups
       const backupKeys = Object.keys(localStorage)
         .filter(key => key.startsWith(`${name}-backup-`))
         .sort()
 
-      while (backupKeys.length > 2) {
+      while (backupKeys.length >= BACKUP_CONFIG.maxBackups) {
         const oldestKey = backupKeys.shift()
         if (oldestKey) {
           localStorage.removeItem(oldestKey)
@@ -46,6 +81,7 @@ function createBackup(name: string): void {
 
       // Try to create backup
       localStorage.setItem(`${name}-backup-${timestamp}`, current)
+      setLastBackupTime(timestamp)
       console.log(`[Backup] Created backup: ${name}-backup-${timestamp}`)
     }
   } catch (error) {
@@ -276,13 +312,18 @@ interface GameStore extends GameState {
   clearOverflow: () => void
   // Backup/Recovery actions
   listBackups: () => string[]
+  createManualBackup: () => boolean
   restoreFromBackup: (backupKey: string) => boolean
+  downloadBackup: (backupKey: string) => boolean
   exportSave: () => void
   importSave: (jsonString: string) => boolean
   // Music actions
   setMusicVolume: (volume: number) => void
   setMusicEnabled: (enabled: boolean) => void
   changeMusicContext: (context: MusicContext) => void
+  // Migration actions
+  approveMigration: () => void
+  cancelMigration: () => void
 }
 
 /**
@@ -346,6 +387,8 @@ const initialState: GameState = {
   musicVolume: 0.7,
   musicEnabled: true,
   currentMusicContext: null,
+  pendingMigration: false,
+  pendingMigrationData: null,
 }
 
 export const useGameStore = create<GameStore>()(
@@ -743,6 +786,35 @@ export const useGameStore = create<GameStore>()(
                 }
               }
             })
+
+            // Process unique item effects (e.g., Heart of the Phoenix on boss defeat)
+            if (currentEvent.type === 'boss') {
+              const uniqueEffectResult = processUniqueEffects(updatedParty, 'onBossDefeat', {
+                eventType: currentEvent.type,
+                resolvedOutcome,
+                floor: state.dungeon.floor
+              })
+              
+              if (uniqueEffectResult) {
+                updatedParty = uniqueEffectResult.party
+                
+                // Add effects to the resolved outcome
+                if (uniqueEffectResult.additionalEffects) {
+                  uniqueEffectResult.additionalEffects.forEach(effect => {
+                    resolvedOutcome.effects.push(effect)
+                    
+                    // Track statistics
+                    if (effect.type === 'revive') {
+                      revivals += effect.target.length
+                      effect.target.forEach(heroId => {
+                        const hero = updatedParty.find(h => h?.id === heroId)
+                        if (hero) heroesAffected.add(hero.name)
+                      })
+                    }
+                  })
+                }
+              }
+            }
 
             // Create event log entry
             const eventLogEntry: import('@/types').EventLogEntry = {
@@ -1648,6 +1720,20 @@ export const useGameStore = create<GameStore>()(
           return listBackups('dungeon-runner-storage')
         },
 
+        createManualBackup: () => {
+          try {
+            const current = localStorage.getItem('dungeon-runner-storage')
+            if (current) {
+              createBackup('dungeon-runner-storage', true) // Force=true bypasses throttling
+              return true
+            }
+            return false
+          } catch (error) {
+            console.error('[Backup] Failed to create manual backup:', error)
+            return false
+          }
+        },
+
         restoreFromBackup: (backupKey: string) => {
           const success = restoreBackup('dungeon-runner-storage', backupKey)
           if (success) {
@@ -1655,6 +1741,64 @@ export const useGameStore = create<GameStore>()(
             window.location.reload()
           }
           return success
+        },
+
+        downloadBackup: (backupKey: string) => {
+          try {
+            const compressed = localStorage.getItem(backupKey)
+            if (!compressed) {
+              console.error('[Backup] Backup not found:', backupKey)
+              return false
+            }
+
+            // Decompress the backup data
+            let str: string
+            try {
+              str = LZString.decompressFromUTF16(compressed) || compressed
+            } catch {
+              str = compressed
+            }
+
+            // Parse the state
+            const state = JSON.parse(str)
+
+            // Format as a save file export
+            const saveData = {
+              version: 1,
+              timestamp: Date.now(),
+              backupKey: backupKey,
+              data: state.state || state
+            }
+
+            // Use custom replacer to strip out icon functions
+            const replacer = (key: string, val: unknown) => {
+              if (key === 'icon' && typeof val === 'function') {
+                return undefined
+              }
+              return val
+            }
+
+            const json = JSON.stringify(saveData, replacer, 2)
+            const blob = new Blob([json], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            
+            // Extract timestamp from backup key for filename
+            const timestamp = backupKey.split('-').pop() || Date.now()
+            link.download = `dungeon-runner-backup-${timestamp}.json`
+            
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+            
+            console.log('[Backup] Downloaded backup:', backupKey)
+            return true
+          } catch (error) {
+            console.error('[Backup] Failed to download backup:', error)
+            return false
+          }
         },
 
         exportSave: () => {
@@ -1743,6 +1887,75 @@ export const useGameStore = create<GameStore>()(
           set({ currentMusicContext: context });
           audioManager.changeContext(playlist)
         },
+
+        // Migration actions
+        approveMigration: () => {
+          const { pendingMigrationData } = get()
+          if (!pendingMigrationData) {
+            console.error('[Migration] No pending migration data')
+            return
+          }
+
+          try {
+            // Decompress and parse the pending data
+            let str: string
+            try {
+              str = LZString.decompressFromUTF16(pendingMigrationData) || pendingMigrationData
+            } catch {
+              str = pendingMigrationData
+            }
+
+            const state = JSON.parse(str)
+            const actualState = state?.state
+
+            if (!actualState) {
+              console.error('[Migration] Invalid pending migration data')
+              set({ pendingMigration: false, pendingMigrationData: null })
+              return
+            }
+
+            // Apply the migration
+            console.log('[Migration] User approved migration, applying changes...')
+            const migratedState = migrateGameState(actualState)
+            
+            // Migrate run history to separate storage if it exists
+            if (migratedState.runHistory && migratedState.runHistory.length > 0) {
+              console.log(`[RunHistory Migration] Found ${migratedState.runHistory.length} runs in old save, migrating to separate storage`)
+              const existingHistory = loadRunHistory()
+
+              // Merge old and new, deduplicate by run ID
+              const allRuns = [...migratedState.runHistory, ...existingHistory]
+              const uniqueRuns = allRuns.filter((run, index, self) =>
+                index === self.findIndex(r => r.id === run.id)
+              )
+
+              saveRunHistory(uniqueRuns)
+              console.log(`[RunHistory Migration] Saved ${uniqueRuns.length} total runs`)
+
+              // Clear from main state
+              migratedState.runHistory = []
+            }
+
+            // Apply the migrated state and clear pending flags
+            set({ 
+              ...migratedState,
+              pendingMigration: false,
+              pendingMigrationData: null 
+            })
+            
+            console.log('[Migration] Migration completed successfully')
+          } catch (error) {
+            console.error('[Migration] Failed to apply migration:', error)
+            set({ pendingMigration: false, pendingMigrationData: null })
+          }
+        },
+
+        cancelMigration: () => {
+          console.log('[Migration] User cancelled migration')
+          set({ pendingMigration: false, pendingMigrationData: null })
+          // Reset to initial state
+          set(initialState)
+        },
       })
     ),
     {
@@ -1812,50 +2025,43 @@ export const useGameStore = create<GameStore>()(
               })
             }
 
-            // Repair item names and icons in inventories
+            // Hydrate and repair item names/icons in inventories
             if (actualState.bankInventory?.length > 0) {
-              actualState.bankInventory = repairItemNames(actualState.bankInventory)
+              actualState.bankInventory = hydrateItems(actualState.bankInventory as ItemStorage[])
             }
             if (actualState.dungeon?.inventory?.length > 0) {
-              actualState.dungeon.inventory = repairItemNames(actualState.dungeon.inventory)
+              actualState.dungeon.inventory = hydrateItems(actualState.dungeon.inventory as ItemStorage[])
             }
             if (actualState.overflowInventory?.length > 0) {
-              actualState.overflowInventory = repairItemNames(actualState.overflowInventory)
+              actualState.overflowInventory = hydrateItems(actualState.overflowInventory as ItemStorage[])
             }
 
-            // Repair equipped items on heroes in party
+            // Hydrate equipped items on heroes in party
             if (actualState.party?.length > 0) {
               actualState.party = actualState.party.map((hero: Hero | null) => {
                 if (!hero) return null
 
                 // Handle new slot format
                 if (hero.slots) {
-                  const slotItems = Object.values(hero.slots).filter((item): item is Item => item !== null && 'stats' in item)
-                  if (slotItems.length > 0) {
-                    const repairedItems = repairItemNames(slotItems)
-                    const newSlots = { ...hero.slots }
-                    let itemIndex = 0
-                    for (const slotId in newSlots) {
-                      if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                        newSlots[slotId] = repairedItems[itemIndex]
-                        itemIndex++
-                      }
+                  const newSlots = { ...hero.slots }
+                  for (const slotId in newSlots) {
+                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                      newSlots[slotId] = hydrateItem(newSlots[slotId] as ItemStorage)
                     }
-                    return { ...hero, slots: newSlots }
                   }
-                  return hero
+                  return { ...hero, slots: newSlots }
                 }
 
                 // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
-                  const repairedItems = repairItemNames(equippedItems)
+                  const hydratedItems = hydrateItems(equippedItems as ItemStorage[])
                   const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
                   Object.keys(newEquipment).forEach((slot) => {
                     const key = slot as keyof Equipment
                     if (newEquipment[key] !== null) {
-                      newEquipment[key] = repairedItems[itemIndex]
+                      newEquipment[key] = hydratedItems[itemIndex]
                       itemIndex++
                     }
                   })
@@ -1925,32 +2131,25 @@ export const useGameStore = create<GameStore>()(
               actualState.heroRoster = actualState.heroRoster.map((hero: Hero) => {
                 // Handle new slot format
                 if (hero.slots) {
-                  const slotItems = Object.values(hero.slots).filter((item): item is Item => item !== null && 'stats' in item)
-                  if (slotItems.length > 0) {
-                    const repairedItems = repairItemNames(slotItems)
-                    const newSlots = { ...hero.slots }
-                    let itemIndex = 0
-                    for (const slotId in newSlots) {
-                      if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                        newSlots[slotId] = repairedItems[itemIndex]
-                        itemIndex++
-                      }
+                  const newSlots = { ...hero.slots }
+                  for (const slotId in newSlots) {
+                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                      newSlots[slotId] = hydrateItem(newSlots[slotId] as ItemStorage)
                     }
-                    return { ...hero, slots: newSlots }
                   }
-                  return hero
+                  return { ...hero, slots: newSlots }
                 }
 
                 // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
-                  const repairedItems = repairItemNames(equippedItems)
+                  const hydratedItems = hydrateItems(equippedItems as ItemStorage[])
                   const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
                   Object.keys(newEquipment).forEach((slot) => {
                     const key = slot as keyof Equipment
                     if (newEquipment[key] !== null) {
-                      newEquipment[key] = repairedItems[itemIndex]
+                      newEquipment[key] = hydratedItems[itemIndex]
                       itemIndex++
                     }
                   })
@@ -1958,6 +2157,29 @@ export const useGameStore = create<GameStore>()(
                 }
                 return hero
               })
+            }
+
+            // Check if migration is needed BEFORE applying it
+            // But skip if we're already in pending migration state (to avoid loop)
+            const migrationNeeded = needsMigration(actualState)
+            
+            if (migrationNeeded && !actualState.pendingMigration) {
+              console.log('[Migration] Save file needs migration, setting pending state and prompting user')
+              // Return pending state but DON'T save to localStorage yet
+              // User must approve first
+              return {
+                state: {
+                  ...initialState,
+                  pendingMigration: true,
+                  pendingMigrationData: compressed, // Store the compressed data for later
+                }
+              }
+            }
+
+            // If already in pending migration state, just return it
+            if (actualState.pendingMigration) {
+              console.log('[Migration] Already in pending migration state')
+              return state
             }
 
             // Migrate to new floor-based system
@@ -1982,6 +2204,18 @@ export const useGameStore = create<GameStore>()(
               migratedState.runHistory = []
             }
 
+            // Save the state immediately after hydration to persist any icon/baseTemplateId fixes
+            // Do this silently without going through setItem to avoid triggering backups on every load
+            const replacer = (key: string, val: unknown) => {
+              if (key === 'icon' && typeof val === 'function') {
+                return undefined
+              }
+              return val
+            }
+            const json = JSON.stringify(state, replacer)
+            const compressedOutput = LZString.compressToUTF16(json)
+            localStorage.setItem(name, compressedOutput)
+
             return state
           } catch (error) {
             console.error('Error loading game state:', error)
@@ -1989,6 +2223,12 @@ export const useGameStore = create<GameStore>()(
           }
         },
         setItem: (name, value) => {
+          // Don't persist to localStorage if migration is pending - wait for user approval
+          if (value?.state?.pendingMigration) {
+            console.log('[Storage] Skipping save - migration pending user approval')
+            return
+          }
+
           // Custom replacer to strip out icon functions that shouldn't be serialized
           const replacer = (key: string, val: unknown) => {
             // Skip icon functions

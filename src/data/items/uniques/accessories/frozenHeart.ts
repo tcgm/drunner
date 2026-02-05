@@ -1,5 +1,6 @@
 import { GiFrozenBlock } from 'react-icons/gi'
 import type { Item } from '@/types'
+import { RaFrozenHeart } from '@/components/icons/RpgIcons'
 
 /**
  * Frozen Heart - Mythic ice accessory
@@ -9,7 +10,7 @@ export const FROZEN_HEART: Omit<Item, 'id'> = {
   description: 'A heart encased in eternal ice. Its cold touch slows enemies and fortifies the bearer with unbreakable resolve.',
   type: 'accessory1',
   rarity: 'mythic',
-  icon: GiFrozenBlock,
+  icon: RaFrozenHeart,
   stats: {
     defense: 120,
     maxHp: 150,

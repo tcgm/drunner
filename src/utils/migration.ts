@@ -6,6 +6,7 @@ import type { Dungeon, Run, GameState, Hero, Item } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { migrateHeroArray } from './heroMigration'
 import { migrateItemArray, migrateHeroArrayItems } from './itemMigration'
+import { ALL_SET_ITEMS } from '@/data/items/sets'
 
 /**
  * Converts depth-based dungeon to floor-based system
@@ -170,6 +171,70 @@ export function migrateGameState(state: GameState): GameState {
 
   console.log(`[Migration] Output state - bankGold: ${result.bankGold}, alkahest: ${result.alkahest}`)
   return result
+}
+
+/**
+ * Check if a game state needs migration
+ * Returns true if any migration would be applied
+ */
+export function needsMigration(state: GameState): boolean {
+  // Check if dungeon needs floor migration
+  if (state.dungeon.floor === undefined || state.dungeon.eventsThisFloor === undefined) {
+    return true
+  }
+
+  // Check if any hero has old equipment format
+  const hasOldEquipmentFormat = [...state.party, ...state.heroRoster].some(hero => {
+    if (!hero) return false
+    // If hero has equipment but not slots, it needs migration
+    return hero.equipment && !hero.slots
+  })
+
+  if (hasOldEquipmentFormat) {
+    return true
+  }
+
+  // Check if any items need stat migration
+  const allItems: Item[] = [
+    ...state.bankInventory,
+    ...state.overflowInventory,
+    ...(state.dungeon.inventory || []),
+  ]
+
+  // Add equipped items from heroes
+  ;[...state.party, ...state.heroRoster].forEach(hero => {
+    if (!hero) return
+    if (hero.slots) {
+      Object.values(hero.slots).forEach(item => {
+        if (item && 'stats' in item) {
+          allItems.push(item as Item)
+        }
+      })
+    }
+    if (hero.equipment) {
+      Object.values(hero.equipment).forEach(item => {
+        if (item && 'stats' in item) {
+          allItems.push(item as Item)
+        }
+      })
+    }
+  })
+
+  // Check if any item would be migrated
+  const hasOldItems = allItems.some(item => {
+    // Items without statVersion need migration
+    if (!item.statVersion || item.statVersion < 2) {
+      return true
+    }
+    // Set items without setId need migration
+    const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
+    if (setTemplate && !item.setId) {
+      return true
+    }
+    return false
+  })
+
+  return hasOldItems
 }
 
 /**
