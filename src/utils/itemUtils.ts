@@ -10,8 +10,11 @@ import { ALL_CONSUMABLE_BASES, getConsumableBaseById } from '@/data/consumables/
  * so we need to look them up from the templates
  */
 export function restoreItemIcon(item: Item): Item {
-  // Skip if item already has an icon
-  if (item.icon !== undefined) return item
+  // Always restore for procedural items without baseTemplateId or with baseNames (old V2 items need fixing)
+  const shouldForceRestore = !item.isUnique && !item.setId && (!item.baseTemplateId || item.icon === undefined)
+  
+  // Skip if item already has an icon (unless it's a procedural item that needs restoration)
+  if (item.icon !== undefined && !shouldForceRestore) return item
 
   // Check if it's a consumable item
   if (item.type === 'consumable' && 'baseId' in item) {
@@ -50,8 +53,6 @@ export function restoreItemIcon(item: Item): Item {
       if (template.baseNameIcons && template.baseNames) {
         // Try to find which baseName this item uses by checking the item name
         for (const baseName of template.baseNames) {
-          // Check if item name contains this baseName (case-insensitive)
-          // e.g., "Iron Guitar" contains "Guitar"
           if (item.name.toLowerCase().includes(baseName.toLowerCase())) {
             const specificIcon = template.baseNameIcons[baseName]
             if (specificIcon) {
@@ -62,6 +63,31 @@ export function restoreItemIcon(item: Item): Item {
       }
       // Fall back to default icon
       if (template.icon) {
+        return { ...item, icon: template.icon }
+      }
+    }
+  } else {
+    // V2 items without baseTemplateId - try to match by name for items with baseNames
+    for (const template of allBases) {
+      if (template.baseNameIcons && template.baseNames) {
+        for (const baseName of template.baseNames) {
+          // Check if item name ends with this baseName (to match "Adamantine Pipe" with "Pipe")
+          const namePattern = new RegExp(`\\b${baseName}$`, 'i')
+          if (namePattern.test(item.name)) {
+            const specificIcon = template.baseNameIcons[baseName]
+            if (specificIcon) {
+              return { ...item, icon: specificIcon }
+            }
+          }
+        }
+      }
+    }
+    
+    // Last resort: try to match by materialId if present
+    if (item.materialId && item.type) {
+      // Find template by type that matches
+      const template = allBases.find(b => b.type === item.type)
+      if (template?.icon) {
         return { ...item, icon: template.icon }
       }
     }
