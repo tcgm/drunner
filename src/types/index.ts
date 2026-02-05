@@ -200,7 +200,7 @@ export interface EventChoice {
 export interface EventOutcome {
   text: string | Array<{ weight: number; text: string }> // Single text or weighted variations
   effects: {
-    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'consumable' | 'status' | 'revive' | 'upgradeItem'
+    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'consumable' | 'status' | 'revive' | 'upgradeItem' | 'killRandomParty'
     target?: 'random' | 'all' | 'weakest' | 'strongest'
     consumableId?: string // ID of consumable to give (for type: 'consumable')
     value?: number
@@ -208,6 +208,7 @@ export interface EventOutcome {
     upgradeType?: 'material' | 'rarity' | 'auto' // For upgradeItem: specify material, rarity, or auto (material first, then rarity)
     // Item generation specifications (only one should be used)
     itemType?: 'random' | ItemSlot // Generate random item of specific type or any type
+    setId?: string // Generate item from specific set (e.g., 'draconic', 'arcane')
     uniqueItem?: string | Omit<Item, 'id'> // Generate specific unique item by ID or literal import
     material?: string | Material // Material by ID or literal import
     baseTemplate?: string | BaseTemplate // Base template by ID or literal import
@@ -220,6 +221,7 @@ export interface EventOutcome {
     itemChoices?: Array<{
       weight: number
       itemType?: 'random' | ItemSlot
+      setId?: string // Generate item from specific set
       uniqueItem?: string | Omit<Item, 'id'>
       material?: string | Material
       baseTemplate?: string | BaseTemplate

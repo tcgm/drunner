@@ -2,7 +2,7 @@ import type { Item, Hero } from '@/types'
 import { getMaterialById } from '@/data/items/materials'
 import { getCompatibleBase } from '@/data/items/bases'
 import { getRarityConfig } from '@/systems/rarity/raritySystem'
-import { ALL_SET_ITEMS } from '@/data/items/sets'
+import { ALL_SET_ITEMS, getSetIdFromItemName } from '@/data/items/sets'
 
 /**
  * Current stat calculation version
@@ -123,10 +123,11 @@ export function migrateItemStats(item: Item): Item {
       console.log(`Detected set item ${item.name} without setId, adding it and forcing stat recalculation`)
       loggedSetFixes.add(item.name)
     }
+    const setId = getSetIdFromItemName(setTemplate.name) || 'unknown'
     item = {
       ...item,
       rarity: setTemplate.rarity,
-      setId: 'kitsune', // Ensure setId is set
+      setId, // Ensure setId is set
     }
     setIdWasAdded = true // Force stat recalculation even if statVersion matches
   }
@@ -139,10 +140,11 @@ export function migrateItemStats(item: Item): Item {
         console.log(`Fixing set item ${item.name} rarity from 'set' to '${setTemplate.rarity}'`)
         loggedSetFixes.add(item.name)
       }
+      const setId = getSetIdFromItemName(setTemplate.name) || 'unknown'
       item = {
         ...item,
         rarity: setTemplate.rarity,
-        setId: 'kitsune', // Ensure setId is set
+        setId, // Ensure setId is set
       }
       setIdWasAdded = true
     }

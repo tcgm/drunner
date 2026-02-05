@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
 import { getRandomUnique, ALL_UNIQUE_ITEMS } from '@data/items/uniques'
-import { getRandomSetItem, ALL_SET_ITEMS } from '@data/items/sets'
+import { getRandomSetItem, ALL_SET_ITEMS, getSetIdFromItemName } from '@data/items/sets'
 import { applyModifiers, getModifierById } from '@data/items/mods'
 import { GiCrystalShine } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -309,11 +309,14 @@ export function generateItem(
             }, {} as Record<string, number>)
           : baseStats
         
+        // Get the appropriate setId from the item name
+        const setId = getSetIdFromItemName(setTemplate.name) || 'unknown'
+        
         return {
           ...setTemplate,
           id: uuidv4(),
           type: forceType || setTemplate.type, // Use forced type for specific accessory slots
-          setId: 'kitsune', // Mark as set item
+          setId, // Mark as set item with correct set ID
           isUnique: rollAsUnique, // Mark if this rolled as unique
           stats,
           value: rollAsUnique 
@@ -666,10 +669,11 @@ export function repairItemIcon(item: Item): Item {
   
   const setMatch = ALL_SET_ITEMS.find(s => s.name === item.name)
   if (setMatch?.icon) {
+    const setId = getSetIdFromItemName(setMatch.name) || 'unknown'
     return {
       ...item,
       icon: setMatch.icon,
-      setId: 'kitsune', // Fix the flag while we're at it
+      setId, // Fix the flag while we're at it
     }
   }
   

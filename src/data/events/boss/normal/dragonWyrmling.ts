@@ -61,12 +61,43 @@ export const DRAGON_WYRMLING: DungeonEvent = {
     },
     {
       text: 'Attempt to hug the dragon',
-      outcome: {
-        text: 'The dragon is confused by your affection, but accepts the hug awkwardly. It lets you pass unharmed.',
-        effects: [
-          { type: 'xp', value: 200 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 85,
+          outcome: {
+            text: 'The dragon is confused by your affection, but accepts the hug awkwardly. It lets you pass unharmed.',
+            effects: [
+              { type: 'xp', value: 200 },
+            ],
+          },
+        },
+        {
+          weight: 12,
+          outcome: {
+            text: 'The dragon is so surprised and delighted by the hug that it rumbles happily! It insists you take something from its hoard as thanks.',
+            effects: [
+              { type: 'xp', value: 250 },
+              { 
+                type: 'item', 
+                itemChoices: [
+                  { weight: 80, rarity: 'legendary' },
+                  { weight: 20, setId: 'draconic' }
+                ]
+              },
+            ],
+          },
+        },
+        {
+          weight: 3,
+          outcome: {
+            text: 'The dragon licks you... then decides you taste delicious. A party member is devoured before you can escape!',
+            effects: [
+              { type: 'killRandomParty' },
+              { type: 'xp', value: 50 },
+            ],
+          },
+        },
+      ],
     },
   ],
   depth: 7,

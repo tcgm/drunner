@@ -2,7 +2,7 @@ import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, Ite
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem } from '@/systems/loot/itemUpgrader'
-import { ALL_SET_ITEMS } from '@/data/items/sets'
+import { ALL_SET_ITEMS, getRandomSetItemBySetId, getSetIdFromItemName } from '@/data/items/sets'
 import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
@@ -132,6 +132,7 @@ export function resolveChoiceOutcome(
  */
 function generateItemFromSpec(spec: {
   itemType?: 'random' | ItemSlot
+  setId?: string
   uniqueItem?: string | Omit<Item, 'id'>
   material?: string | Material
   baseTemplate?: string | BaseTemplate
@@ -145,6 +146,21 @@ function generateItemFromSpec(spec: {
   if ('itemChoices' in spec && Array.isArray(spec.itemChoices)) {
     const choice = selectWeightedChoice(spec.itemChoices)
     return generateItemFromSpec(choice, depth)
+  }
+
+  // Handle set item generation
+  if (spec.setId) {
+    const setItemTemplate = getRandomSetItemBySetId(spec.setId)
+    if (setItemTemplate) {
+      const setId = getSetIdFromItemName(setItemTemplate.name) || spec.setId.toLowerCase()
+      return {
+        ...setItemTemplate,
+        id: uuidv4(),
+        setId,
+      }
+    }
+    // If set not found, log warning and fall through to random generation
+    console.warn(`[Item Generation] setId "${spec.setId}" not found. Generating random item instead.`)
   }
 
   // Handle literal unique item import
@@ -793,6 +809,27 @@ export function resolveEventOutcome(
           target: [hero.id],
           item: upgradedItem,
           description: upgradeDescription
+        })
+        break
+      }
+      
+      case 'killRandomParty': {
+        // Kill a random alive party member
+        const aliveHeroes = updatedParty.filter((h): h is Hero => h !== null && h.isAlive)
+        
+        if (aliveHeroes.length === 0) {
+          break
+        }
+        
+        const victim = aliveHeroes[Math.floor(Math.random() * aliveHeroes.length)]
+        victim.isAlive = false
+        victim.stats.hp = 0
+        
+        resolvedEffects.push({
+          type: 'damage',
+          target: [victim.id],
+          value: victim.stats.maxHp,
+          description: `${victim.name} was killed!`
         })
         break
       }

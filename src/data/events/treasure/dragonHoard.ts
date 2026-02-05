@@ -11,19 +11,41 @@ export const DRAGON_HOARD: DungeonEvent = {
       text: 'Steal carefully (Speed check)',
       successChance: 0.35,
       statModifier: 'speed',
-      successOutcome: {
-        text: 'Your nimble hands secure legendary treasure without waking the beast!',
-        effects: [
-          { type: 'gold', value: 500 },
-          { 
-            type: 'item', 
-            itemType: 'random',
-            minRarity: 'epic', // Dragon hoards are valuable
-            rarityBoost: 20 // Best quality items
+      possibleOutcomes: [
+        {
+          weight: 92,
+          outcome: {
+            text: 'Your nimble hands secure legendary treasure without waking the beast!',
+            effects: [
+              { type: 'gold', value: 500 },
+              { 
+                type: 'item', 
+                itemType: 'random',
+                minRarity: 'epic',
+                rarityBoost: 20
+              },
+              { type: 'xp', value: 200 },
+            ],
           },
-          { type: 'xp', value: 200 },
-        ],
-      },
+        },
+        {
+          weight: 8,
+          outcome: {
+            text: 'Your nimble hands secure legendary treasure without waking the beast! You also find an ancient relic imbued with draconic power!',
+            effects: [
+              { type: 'gold', value: 500 },
+              { 
+                type: 'item', 
+                itemChoices: [
+                  { weight: 80, itemType: 'random', minRarity: 'epic', rarityBoost: 20 },
+                  { weight: 20, setId: 'draconic' }
+                ]
+              },
+              { type: 'xp', value: 200 },
+            ],
+          },
+        },
+      ],
       failureOutcome: {
         text: 'The dragon wakes! You grab what you can and run!',
         effects: [
@@ -42,7 +64,7 @@ export const DRAGON_HOARD: DungeonEvent = {
       text: 'Take just one item (safer)',
       possibleOutcomes: [
         {
-          weight: 70,
+          weight: 65,
           outcome: {
             text: 'You grab a single treasure and escape undetected.',
             effects: [
@@ -52,6 +74,16 @@ export const DRAGON_HOARD: DungeonEvent = {
                 minRarity: 'rare',
                 rarityBoost: 10
               },
+              { type: 'xp', value: 100 },
+            ],
+          },
+        },
+        {
+          weight: 5,
+          outcome: {
+            text: 'You grab a treasure forged by dragonfire and escape undetected!',
+            effects: [
+              { type: 'item', setId: 'draconic' },
               { type: 'xp', value: 100 },
             ],
           },
@@ -75,20 +107,43 @@ export const DRAGON_HOARD: DungeonEvent = {
     },
     {
       text: 'Challenge the dragon',
-      outcome: {
-        text: 'The dragon wakes and fights! You barely survive but claim the hoard.',
-        effects: [
-          { type: 'damage', target: 'all', value: 80 },
-          { type: 'gold', value: 600 },
-          { 
-            type: 'item', 
-            itemType: 'random',
-            minRarity: 'legendary', // If you survive, legendary reward
-            rarityBoost: 25
+      possibleOutcomes: [
+        {
+          weight: 90,
+          outcome: {
+            text: 'The dragon wakes and fights! You barely survive but claim the hoard.',
+            effects: [
+              { type: 'damage', target: 'all', value: 80 },
+              { type: 'gold', value: 600 },
+              { 
+                type: 'item', 
+                itemType: 'random',
+                minRarity: 'legendary',
+                rarityBoost: 25
+              },
+              { type: 'xp', value: 300 },
+            ],
           },
-          { type: 'xp', value: 300 },
-        ],
-      },
+        },
+        {
+          weight: 10,
+          outcome: {
+            text: 'The dragon wakes and fights! You barely survive but claim the hoard. Among the treasures, you find something forged by dragonfire itself!',
+            effects: [
+              { type: 'damage', target: 'all', value: 80 },
+              { type: 'gold', value: 600 },
+              { 
+                type: 'item', 
+                itemChoices: [
+                  { weight: 80, itemType: 'random', minRarity: 'legendary', rarityBoost: 25 },
+                  { weight: 20, setId: 'draconic' }
+                ]
+              },
+              { type: 'xp', value: 300 },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Don\'t risk it',

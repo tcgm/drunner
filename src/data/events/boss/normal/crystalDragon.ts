@@ -9,30 +9,76 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
   choices: [
     {
       text: 'Face the dragon',
-      outcome: {
-        text: 'Its crystal breath and razor-sharp claws tear through your defenses!',
-        effects: [
-          { type: 'damage', target: 'all', value: 150 },
-          { type: 'xp', value: 515 },
-          { type: 'gold', value: 680 },
-          { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 21 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 90,
+          outcome: {
+            text: 'Its crystal breath and razor-sharp claws tear through your defenses!',
+            effects: [
+              { type: 'damage', target: 'all', value: 150 },
+              { type: 'xp', value: 515 },
+              { type: 'gold', value: 680 },
+              { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 21 },
+            ],
+          },
+        },
+        {
+          weight: 10,
+          outcome: {
+            text: 'Its crystal breath and razor-sharp claws tear through your defenses! A shard of draconic essence falls from its body!',
+            effects: [
+              { type: 'damage', target: 'all', value: 150 },
+              { type: 'xp', value: 515 },
+              { type: 'gold', value: 680 },
+              { 
+                type: 'item', 
+                itemChoices: [
+                  { weight: 90, itemType: 'random', minRarity: 'rare', rarityBoost: 21 },
+                  { weight: 10, setId: 'draconic' }
+                ]
+              },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Shatter with resonance (Bard bonus)',
       requirements: {
         class: 'Bard',
       },
-      outcome: {
-        text: 'Your sonic magic finds its resonant frequency! The dragon explodes into gems!',
-        effects: [
-          { type: 'damage', target: 'all', value: 108 },
-          { type: 'xp', value: 555 },
-          { type: 'gold', value: 730 },
-          { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 25 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 85,
+          outcome: {
+            text: 'Your sonic magic finds its resonant frequency! The dragon explodes into gems!',
+            effects: [
+              { type: 'damage', target: 'all', value: 108 },
+              { type: 'xp', value: 555 },
+              { type: 'gold', value: 730 },
+              { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 25 },
+            ],
+          },
+        },
+        {
+          weight: 15,
+          outcome: {
+            text: 'Your sonic magic finds its resonant frequency! The dragon explodes into gems and draconic artifacts!',
+            effects: [
+              { type: 'damage', target: 'all', value: 108 },
+              { type: 'xp', value: 555 },
+              { type: 'gold', value: 730 },
+              { 
+                type: 'item', 
+                itemChoices: [
+                  { weight: 85, itemType: 'weapon', minRarity: 'epic', rarityBoost: 25 },
+                  { weight: 15, setId: 'draconic' }
+                ]
+              },
+            ],
+          },
+        },
+      ],
     },
     {
       text: 'Strike vital facets (High Attack)',
@@ -40,15 +86,38 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
         stat: 'attack',
         minValue: 34,
       },
-      outcome: {
-        text: 'You identify structural weak points! Precision strikes crack it apart!',
-        effects: [
-          { type: 'damage', target: 'strongest', value: 118 },
-          { type: 'xp', value: 548 },
-          { type: 'gold', value: 718 },
-          { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 24 },
-        ],
-      },
+      possibleOutcomes: [
+        {
+          weight: 85,
+          outcome: {
+            text: 'You identify structural weak points! Precision strikes crack it apart!',
+            effects: [
+              { type: 'damage', target: 'strongest', value: 118 },
+              { type: 'xp', value: 548 },
+              { type: 'gold', value: 718 },
+              { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 24 },
+            ],
+          },
+        },
+        {
+          weight: 15,
+          outcome: {
+            text: 'You identify structural weak points! Precision strikes crack it apart, revealing ancient draconic treasures within!',
+            effects: [
+              { type: 'damage', target: 'strongest', value: 118 },
+              { type: 'xp', value: 548 },
+              { type: 'gold', value: 718 },
+              { 
+                type: 'item', 
+                itemChoices: [
+                  { weight: 85, itemType: 'armor', minRarity: 'epic', rarityBoost: 24 },
+                  { weight: 15, setId: 'draconic' }
+                ]
+              },
+            ],
+          },
+        },
+      ],
     },
   ],
   depth: 29,
