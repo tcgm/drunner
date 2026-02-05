@@ -325,10 +325,16 @@ function upgradeItem(
       }
     }
     
+    // Generate proper description combining base and material
+    const description = nextMaterial.description
+      ? `${baseTemplate.description} - ${nextMaterial.description}`
+      : baseTemplate.description
+    
     return {
       ...item,
       id: uuidv4(),
       name: `${nextMaterial.prefix} ${baseName}`,
+      description,
       icon,
       materialId: nextMaterial.id,
       stats: upgradedStats,
@@ -364,11 +370,17 @@ function upgradeItem(
         icon = specificIcon
       }
     }
+    
+    // Generate proper description combining base and material
+    const description = currentMaterial && currentMaterial.description
+      ? `${baseTemplate.description} - ${currentMaterial.description}`
+      : baseTemplate.description
 
     return {
       ...item,
       id: uuidv4(),
       name: upgradedName,
+      description,
       icon,
       rarity: nextRarity,
       stats: upgradedStats,
