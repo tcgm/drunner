@@ -316,10 +316,20 @@ function upgradeItem(
     }
     
     // Construct name from found data: nextMaterial.prefix + baseName (from bases data)
+    // Get the appropriate icon for this baseName if available
+    let icon = baseTemplate.icon
+    if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && baseName) {
+      const specificIcon = baseTemplate.baseNameIcons[baseName]
+      if (specificIcon) {
+        icon = specificIcon
+      }
+    }
+    
     return {
       ...item,
       id: uuidv4(),
       name: `${nextMaterial.prefix} ${baseName}`,
+      icon,
       materialId: nextMaterial.id,
       stats: upgradedStats,
       value: Math.floor(item.value * (nextMaterial.valueMultiplier / currentMaterial.valueMultiplier))
@@ -345,11 +355,21 @@ function upgradeItem(
 
     // Construct name from found data: currentMaterial.prefix (if exists) + baseName (from bases data)
     const upgradedName = currentMaterial ? `${currentMaterial.prefix} ${baseName}` : baseName
+    
+    // Get the appropriate icon for this baseName if available
+    let icon = baseTemplate.icon
+    if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && baseName) {
+      const specificIcon = baseTemplate.baseNameIcons[baseName]
+      if (specificIcon) {
+        icon = specificIcon
+      }
+    }
 
     return {
       ...item,
       id: uuidv4(),
       name: upgradedName,
+      icon,
       rarity: nextRarity,
       stats: upgradedStats,
       value: Math.floor(item.value * statMultiplier)

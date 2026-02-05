@@ -45,8 +45,25 @@ export function restoreItemIcon(item: Item): Item {
       b.description.toLowerCase().includes(keyword?.toLowerCase() || '') ||
       b.baseNames?.some(name => name.toLowerCase().includes(keyword?.toLowerCase() || ''))
     )
-    if (template?.icon) {
-      return { ...item, icon: template.icon }
+    if (template) {
+      // Check if the template has specific icons for baseNames
+      if (template.baseNameIcons && template.baseNames) {
+        // Try to find which baseName this item uses by checking the item name
+        for (const baseName of template.baseNames) {
+          // Check if item name contains this baseName (case-insensitive)
+          // e.g., "Iron Guitar" contains "Guitar"
+          if (item.name.toLowerCase().includes(baseName.toLowerCase())) {
+            const specificIcon = template.baseNameIcons[baseName]
+            if (specificIcon) {
+              return { ...item, icon: specificIcon }
+            }
+          }
+        }
+      }
+      // Fall back to default icon
+      if (template.icon) {
+        return { ...item, icon: template.icon }
+      }
     }
   }
 

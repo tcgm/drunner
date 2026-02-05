@@ -222,6 +222,14 @@ function generateItemFromSpec(spec: {
           if ('baseNames' in baseTemplate && baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
             const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
             item.name = `${materialPrefix} ${randomName}`
+            
+            // Check if there's a specific icon for this baseName
+            if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons) {
+              const specificIcon = baseTemplate.baseNameIcons[randomName]
+              if (specificIcon) {
+                item.icon = specificIcon
+              }
+            }
           } else {
             // Fallback to description parsing or type name
             const description = (baseTemplate.description || '').toLowerCase()

@@ -1,5 +1,6 @@
 // Master index for all base item templates
 import type { Item, ItemSlot } from '@/types'
+import type { IconType } from 'react-icons'
 
 /**
  * Base item template with optional material blacklist
@@ -7,6 +8,7 @@ import type { Item, ItemSlot } from '@/types'
 export interface BaseItemTemplate extends Omit<Item, 'id' | 'name' | 'rarity' | 'value'> {
   materialBlacklist?: string[] // Material IDs this base can't use
   baseNames?: string[] // Possible base names for variety (e.g., ["Staff", "Stave"])
+  baseNameIcons?: Record<string, IconType> // Optional icon mapping for specific baseNames
 }
 
 export * from './weapon'

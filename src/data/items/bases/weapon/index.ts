@@ -6,6 +6,8 @@ import { STAFF_BASE } from './staff'
 import { WAND_BASE } from './wand'
 import { BOW_BASE } from './bow'
 import { MACE_BASE } from './mace'
+import { BOOK_BASE } from './book'
+import { INSTRUMENT_BASE } from './instrument'
 
 export * from './sword'
 export * from './axe'
@@ -14,6 +16,8 @@ export * from './staff'
 export * from './wand'
 export * from './bow'
 export * from './mace'
+export * from './book'
+export * from './instrument'
 
 export const ALL_WEAPON_BASES = [
   SWORD_BASE,
@@ -23,4 +27,6 @@ export const ALL_WEAPON_BASES = [
   WAND_BASE,
   BOW_BASE,
   MACE_BASE,
+  BOOK_BASE,
+  INSTRUMENT_BASE,
 ]

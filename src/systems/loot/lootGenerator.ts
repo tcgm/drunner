@@ -1,4 +1,5 @@
 import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
+import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
@@ -191,12 +192,24 @@ function applyMaterialToStats(
 
 /**
  * Generate item name from material and base template
+ * Returns both the name and the appropriate icon for that specific baseName
  */
-function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): string {
+function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): { name: string; icon?: IconType } {
   // If base template has explicit baseNames, randomly pick one
   if ('baseNames' in baseTemplate && Array.isArray(baseTemplate.baseNames) && baseTemplate.baseNames.length > 0) {
     const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
-    return `${materialPrefix} ${randomName}`
+    const name = `${materialPrefix} ${randomName}`
+    
+    // Check if there's a specific icon for this baseName
+    let icon = baseTemplate.icon
+    if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && typeof baseTemplate.baseNameIcons === 'object') {
+      const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType>)[randomName]
+      if (specificIcon) {
+        icon = specificIcon
+      }
+    }
+    
+    return { name, icon }
   }
   
   // Extract base name from description or use type mapping
@@ -212,43 +225,43 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
       accessory1: 'Ring',
       accessory2: 'Amulet',
     }
-    return `${materialPrefix} ${typeNames[baseTemplate.type] || 'Item'}`
+    return { name: `${materialPrefix} ${typeNames[baseTemplate.type] || 'Item'}`, icon: baseTemplate.icon }
   }
   
   // Map keywords to base names - check more specific terms first
   // Check for compound/specific terms before generic ones to avoid false matches
   
   // Armor - check before accessories since "metal rings" contains "ring"
-  if (description.includes('plate') || description.includes('plating')) return `${materialPrefix} Plate Armor`
-  if (description.includes('chainmail') || description.includes('chain mail') || description.includes('interlocking') || description.includes('metal rings')) return `${materialPrefix} Chainmail`
-  if (description.includes('robe') || description.includes('vestment')) return `${materialPrefix} Robe`
-  if (description.includes('vest') || description.includes('garment')) return `${materialPrefix} Vest`
+  if (description.includes('plate') || description.includes('plating')) return { name: `${materialPrefix} Plate Armor`, icon: baseTemplate.icon }
+  if (description.includes('chainmail') || description.includes('chain mail') || description.includes('interlocking') || description.includes('metal rings')) return { name: `${materialPrefix} Chainmail`, icon: baseTemplate.icon }
+  if (description.includes('robe') || description.includes('vestment')) return { name: `${materialPrefix} Robe`, icon: baseTemplate.icon }
+  if (description.includes('vest') || description.includes('garment')) return { name: `${materialPrefix} Vest`, icon: baseTemplate.icon }
   
   // Weapons
-  if (description.includes('sword') || description.includes('blade')) return `${materialPrefix} Sword`
-  if (description.includes('axe') || description.includes('chopping')) return `${materialPrefix} Axe`
-  if (description.includes('dagger') || description.includes('stabbing') || description.includes('quick')) return `${materialPrefix} Dagger`
-  if (description.includes('bow') || description.includes('ranged') || description.includes('distance')) return `${materialPrefix} Bow`
-  if (description.includes('mace') || description.includes('bludgeon') || description.includes('crushing')) return `${materialPrefix} Mace`
+  if (description.includes('sword') || description.includes('blade')) return { name: `${materialPrefix} Sword`, icon: baseTemplate.icon }
+  if (description.includes('axe') || description.includes('chopping')) return { name: `${materialPrefix} Axe`, icon: baseTemplate.icon }
+  if (description.includes('dagger') || description.includes('stabbing') || description.includes('quick')) return { name: `${materialPrefix} Dagger`, icon: baseTemplate.icon }
+  if (description.includes('bow') || description.includes('ranged') || description.includes('distance')) return { name: `${materialPrefix} Bow`, icon: baseTemplate.icon }
+  if (description.includes('mace') || description.includes('bludgeon') || description.includes('crushing')) return { name: `${materialPrefix} Mace`, icon: baseTemplate.icon }
   
   // Helmets
-  if (description.includes('crown') || description.includes('regal')) return `${materialPrefix} Crown`
-  if (description.includes('hood') && !description.includes('helmet')) return `${materialPrefix} Hood`
-  if (description.includes('helmet') || description.includes('headgear') || description.includes('head')) return `${materialPrefix} Helmet`
+  if (description.includes('crown') || description.includes('regal')) return { name: `${materialPrefix} Crown`, icon: baseTemplate.icon }
+  if (description.includes('hood') && !description.includes('helmet')) return { name: `${materialPrefix} Hood`, icon: baseTemplate.icon }
+  if (description.includes('helmet') || description.includes('headgear') || description.includes('head')) return { name: `${materialPrefix} Helmet`, icon: baseTemplate.icon }
   
   // Boots
-  if (description.includes('greaves') || description.includes('leg protection') || description.includes('leg armor')) return `${materialPrefix} Greaves`
-  if (description.includes('sandals') || description.includes('open footwear')) return `${materialPrefix} Sandals`
-  if (description.includes('boots') || description.includes('footwear')) return `${materialPrefix} Boots`
+  if (description.includes('greaves') || description.includes('leg protection') || description.includes('leg armor')) return { name: `${materialPrefix} Greaves`, icon: baseTemplate.icon }
+  if (description.includes('sandals') || description.includes('open footwear')) return { name: `${materialPrefix} Sandals`, icon: baseTemplate.icon }
+  if (description.includes('boots') || description.includes('footwear')) return { name: `${materialPrefix} Boots`, icon: baseTemplate.icon }
   
   // Accessories - check before weapons since "mystical" appears in both talisman and staff
-  if (description.includes('ring') && !description.includes('rings')) return `${materialPrefix} Ring` // Avoid matching "metal rings"
-  if (description.includes('amulet') || description.includes('necklace')) return `${materialPrefix} Amulet`
-  if (description.includes('charm')) return `${materialPrefix} Charm`
-  if (description.includes('talisman')) return `${materialPrefix} Talisman`
+  if (description.includes('ring') && !description.includes('rings')) return { name: `${materialPrefix} Ring`, icon: baseTemplate.icon } // Avoid matching "metal rings"
+  if (description.includes('amulet') || description.includes('necklace')) return { name: `${materialPrefix} Amulet`, icon: baseTemplate.icon }
+  if (description.includes('charm')) return { name: `${materialPrefix} Charm`, icon: baseTemplate.icon }
+  if (description.includes('talisman')) return { name: `${materialPrefix} Talisman`, icon: baseTemplate.icon }
   
   // Staff weapon - check after talisman to avoid matching "mystical talisman"
-  if (description.includes('staff') || (description.includes('channeling') && description.includes('weapon'))) return `${materialPrefix} Staff`
+  if (description.includes('staff') || (description.includes('channeling') && description.includes('weapon'))) return { name: `${materialPrefix} Staff`, icon: baseTemplate.icon }
   
   // Fallback: use type
   const typeNames: Record<string, string> = {
@@ -260,7 +273,7 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
     accessory2: 'Amulet',
   }
   
-  return `${materialPrefix} ${typeNames[baseTemplate.type] || 'Item'}`
+  return { name: `${materialPrefix} ${typeNames[baseTemplate.type] || 'Item'}`, icon: baseTemplate.icon }
 }
 
 /**
@@ -425,8 +438,9 @@ export function generateItem(
     ? `${base.description} - ${material.description}`
     : base.description
   
-  // Generate item name - if we can't generate a proper name, try to repair it first
-  const name = generateItemName(material.prefix, base)
+  // Generate item name and icon - if we can't generate a proper name, try to repair it first
+  const { name, icon: generatedIcon } = generateItemName(material.prefix, base)
+  const itemIcon = generatedIcon || base.icon
   
   // Check if name generation failed (returned generic fallback - material + single type word only)
   // Only "Weapon", "Armor", and "Item" are pure fallbacks; others like "Helmet"/"Boots" are valid keyword matches
@@ -448,7 +462,7 @@ export function generateItem(
       rarity,
       stats: applyMaterialToStats(base.stats, material.statMultiplier, rarityMultiplier),
       value: Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier * rarityMultiplier),
-      icon: base.icon,
+      icon: itemIcon,
       materialId: material.id,
       baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
       isUnique: false,
@@ -489,7 +503,7 @@ export function generateItem(
     rarity,
     stats: modifiedStats,
     value,
-    icon: base.icon,
+    icon: itemIcon,
     materialId: material.id,
     baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
     isUnique: false, // Procedurally generated item
@@ -611,13 +625,13 @@ export function repairItemName(item: Item): Item {
     return item
   }
   
-  // Generate proper name
-  const newName = generateItemName(material.prefix, matchingBase)
+  // Generate proper name and icon
+  const { name: newName, icon: newIcon } = generateItemName(material.prefix, matchingBase)
   
   return {
     ...item,
     name: newName,
-    icon: matchingBase.icon, // Restore proper icon
+    icon: newIcon || matchingBase.icon, // Use specific icon or fallback to base icon
     materialId: material.id, // Save metadata for future
   }
 }

@@ -251,8 +251,8 @@ export const ItemSlot = memo(function ItemSlot({
             ])
 
             return Array.from(allStats).map((stat) => {
-              const value = (item.stats as any)?.[stat] || 0
-              const compValue = (comparisonItem?.stats as any)?.[stat] || 0
+              const value = (item.stats as Record<string, number>)?.[stat] || 0
+              const compValue = (comparisonItem?.stats as Record<string, number>)?.[stat] || 0
               const diff = comparisonItem ? value - compValue : null
 
               return (
@@ -292,7 +292,7 @@ export const ItemSlot = memo(function ItemSlot({
                 ])
 
                 return Array.from(allStats).map((stat) => {
-                  const value = (comparisonItem.stats as any)?.[stat] || 0
+                  const value = (comparisonItem.stats as Record<string, number>)?.[stat] || 0
                   return (
                     <Text key={stat}>
                       {stat.toUpperCase()}: {value >= 0 ? '+' : ''}{value}
@@ -308,7 +308,7 @@ export const ItemSlot = memo(function ItemSlot({
         Value: {item.value} gold
       </Text>
     </VStack>
-  ), [item, setName, comparisonItem, displayName])
+  ), [item, setName, comparisonItem, displayName, isCursed])
 
   return (
     <>
