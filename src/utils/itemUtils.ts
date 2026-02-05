@@ -3,6 +3,7 @@ import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { allBases } from '@/data/items/bases'
 import { ALL_CONSUMABLE_BASES, getConsumableBaseById } from '@/data/consumables/bases'
+import { ALL_MATERIALS } from '@/data/items/materials'
 
 /**
  * Restore icon for unique/set items after deserialization
@@ -10,11 +11,14 @@ import { ALL_CONSUMABLE_BASES, getConsumableBaseById } from '@/data/consumables/
  * so we need to look them up from the templates
  */
 export function restoreItemIcon(item: Item): Item {
-  // Always restore for procedural items without baseTemplateId or with baseNames (old V2 items need fixing)
-  const shouldForceRestore = !item.isUnique && !item.setId && (!item.baseTemplateId || item.icon === undefined)
+  // For procedural items (items with materialId), always restore icons
+  // This fixes both old V2 items and items with wrong icons stored
+  const isProceduralItem = !item.isUnique && !item.setId && item.materialId
   
-  // Skip if item already has an icon (unless it's a procedural item that needs restoration)
-  if (item.icon !== undefined && !shouldForceRestore) return item
+  // For non-procedural items, skip if icon already exists
+  if (item.icon !== undefined && !isProceduralItem) {
+    return item
+  }
 
   // Check if it's a consumable item
   if (item.type === 'consumable' && 'baseId' in item) {
@@ -43,31 +47,101 @@ export function restoreItemIcon(item: Item): Item {
   // Check if it's a procedural item with base template
   if (item.baseTemplateId) {
     // baseTemplateId format: "type_keyword" (e.g., "weapon_sword")
-    const [_, keyword] = item.baseTemplateId.split('_')
-    const template = allBases.find(b => 
-      b.description.toLowerCase().includes(keyword?.toLowerCase() || '') ||
-      b.baseNames?.some(name => name.toLowerCase().includes(keyword?.toLowerCase() || ''))
-    )
-    if (template) {
-      // Check if the template has specific icons for baseNames
-      if (template.baseNameIcons && template.baseNames) {
-        // Try to find which baseName this item uses by checking the item name
-        for (const baseName of template.baseNames) {
-          if (item.name.toLowerCase().includes(baseName.toLowerCase())) {
-            const specificIcon = template.baseNameIcons[baseName]
-            if (specificIcon) {
-              return { ...item, icon: specificIcon }
+    const [type, keyword] = item.baseTemplateId.split('_')
+    
+    // Ignore useless keywords like "a", "an", "the"
+    const isUselessKeyword = !keyword || keyword.length <= 2 || ['a', 'an', 'the'].includes(keyword)
+    
+    if (isUselessKeyword) {
+      // Bad keyword - parse item name to extract material and base name
+      
+      // Try to find material prefix in item name
+      const material = ALL_MATERIALS.find(m => 
+        item.name.toLowerCase().startsWith(m.prefix.toLowerCase() + ' ')
+      )
+      
+      if (material) {
+        // Extract base name (everything after material prefix)
+        const baseName = item.name.substring(material.prefix.length + 1).trim()
+        
+        // Find template by type and baseName match
+        const template = allBases.find(b => {
+          if (b.type !== type) return false
+          
+          // Check baseNames variants (case insensitive)
+          if (b.baseNames) {
+            if (b.baseNames.some(name => name.toLowerCase() === baseName.toLowerCase())) {
+              return true
             }
+          }
+          
+          // Check regular name match (first word of description)
+          const templateName = b.description.split(' ')[0]
+          if (templateName.toLowerCase() === baseName.toLowerCase()) {
+            return true
+          }
+          
+          return false
+        })
+        
+        if (template) {
+          // Fix the baseTemplateId for future loads
+          const fixedKeyword = baseName.toLowerCase().replace(/\s+/g, '_')
+          const fixedItem = { ...item, baseTemplateId: `${type}_${fixedKeyword}` }
+          
+          // Check for specific baseName icon
+          if (template.baseNameIcons && template.baseNames) {
+            const matchingBaseName = template.baseNames.find(name => 
+              name.toLowerCase() === baseName.toLowerCase()
+            )
+            if (matchingBaseName) {
+              const specificIcon = template.baseNameIcons[matchingBaseName]
+              if (specificIcon) {
+                return { ...fixedItem, icon: specificIcon }
+              }
+            }
+          }
+          
+          // Use template default icon
+          if (template.icon) {
+            return { ...fixedItem, icon: template.icon }
           }
         }
       }
-      // Fall back to default icon
-      if (template.icon) {
+      
+      // Fallback: match by type only
+      const template = allBases.find(b => b.type === type)
+      if (template?.icon) {
         return { ...item, icon: template.icon }
       }
+    } else {
+      // Good keyword - match by description/baseNames
+      const template = allBases.find(b => 
+        b.type === type &&
+        (b.description.toLowerCase().includes(keyword.toLowerCase()) ||
+         b.baseNames?.some(name => name.toLowerCase().includes(keyword.toLowerCase())))
+      )
+      if (template) {
+        // Check if the template has specific icons for baseNames
+        if (template.baseNameIcons && template.baseNames) {
+          // Try to find which baseName this item uses by checking the item name
+          for (const baseName of template.baseNames) {
+            if (item.name.toLowerCase().includes(baseName.toLowerCase())) {
+              const specificIcon = template.baseNameIcons[baseName]
+              if (specificIcon) {
+                return { ...item, icon: specificIcon }
+              }
+            }
+          }
+        }
+        // Fall back to default icon
+        if (template.icon) {
+          return { ...item, icon: template.icon }
+        }
+      }
     }
-  } else {
-    // V2 items without baseTemplateId - try to match by name for items with baseNames
+  } else if (isProceduralItem) {
+    // V2 procedural items without baseTemplateId - try to match by name for items with baseNames
     for (const template of allBases) {
       if (template.baseNameIcons && template.baseNames) {
         for (const baseName of template.baseNames) {
@@ -91,6 +165,8 @@ export function restoreItemIcon(item: Item): Item {
         return { ...item, icon: template.icon }
       }
     }
+    
+    console.warn(`[Icon] Failed to restore V2 item: ${item.name} (type: ${item.type})`)
   }
 
   return item

@@ -51,17 +51,27 @@ function createBackup(name: string, force = false): void {
     const current = localStorage.getItem(name)
     if (current) {
       const timestamp = Date.now()
+      
+      // Check throttling (skip if recent backup exists)
+      if (!force) {
+        const lastBackup = getLastBackupTime()
+        const timeSinceLastBackup = timestamp - lastBackup
+        if (timeSinceLastBackup < BACKUP_CONFIG.minIntervalMs) {
+          console.log(`[Backup] Skipping backup (last backup ${Math.floor(timeSinceLastBackup / 1000)}s ago, minimum ${BACKUP_CONFIG.minIntervalMs / 1000}s)`)
+          return
+        }
+      }
 
       // Check localStorage size before attempting backup
       const currentSize = new Blob([current]).size
       console.log(`[Backup] Current save size: ${(currentSize / 1024).toFixed(2)} KB`)
 
-      // Keep only the last 3 backups (reduced from 5 to save space)
+      // Keep only the configured number of backups
       const backupKeys = Object.keys(localStorage)
         .filter(key => key.startsWith(`${name}-backup-`))
         .sort()
 
-      while (backupKeys.length > 2) {
+      while (backupKeys.length >= BACKUP_CONFIG.maxBackups) {
         const oldestKey = backupKeys.shift()
         if (oldestKey) {
           localStorage.removeItem(oldestKey)
@@ -2008,6 +2018,18 @@ export const useGameStore = create<GameStore>()(
               // Clear from main state
               migratedState.runHistory = []
             }
+
+            // Save the state immediately after hydration to persist any icon/baseTemplateId fixes
+            // Do this silently without going through setItem to avoid triggering backups on every load
+            const replacer = (key: string, val: unknown) => {
+              if (key === 'icon' && typeof val === 'function') {
+                return undefined
+              }
+              return val
+            }
+            const json = JSON.stringify(state, replacer)
+            const compressed = LZString.compressToUTF16(json)
+            localStorage.setItem(name, compressed)
 
             return state
           } catch (error) {
