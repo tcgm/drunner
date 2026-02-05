@@ -2,7 +2,7 @@ import { HStack, Input, Select, Spacer } from '@chakra-ui/react'
 import { memo } from 'react'
 
 export type SortOption = 'name' | 'rarity' | 'type' | 'value'
-export type FilterOption = 'all' | 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2'
+export type FilterOption = 'all' | 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2' | 'consumable'
 
 interface InventoryControlsProps {
   searchQuery: string
@@ -70,6 +70,7 @@ export const InventoryControls = memo(function InventoryControls({
           <option value="helmet">Helmets</option>
           <option value="boots">Boots</option>
           <option value="accessory1">Accessories</option>
+          <option value="consumable">Consumables</option>
         </Select>
       )}
 

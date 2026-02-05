@@ -18,7 +18,7 @@ import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
-import { DualModeIcon } from '@/components/ui/DualModeIcon'
+import { MultIcon } from '@/components/ui/MultIcon'
 
 const MotionBox = motion.create(Box)
 
@@ -294,7 +294,7 @@ export const ItemSlot = memo(function ItemSlot({
         >
           {/* Inner rarity border for set items */}
           {setName && (
-            <div className="item-slot__inner-border" />
+            <div className={`item-slot__inner-border item-slot__inner-border--${item.rarity}`} />
           )}
 
           {/* Selection Checkbox */}
@@ -497,7 +497,7 @@ export const ItemSlot = memo(function ItemSlot({
               rotate: { duration: 0.5, ease: "easeInOut" }
             }}
           >
-            <DualModeIcon
+            <MultIcon
               icon={ItemIcon}
               boxSize={iconOnly 
                 ? '100%'

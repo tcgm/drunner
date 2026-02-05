@@ -15,8 +15,13 @@ export function restoreItemIcon(item: Item): Item {
   // This fixes both old V2 items and items with wrong icons stored
   const isProceduralItem = !item.isUnique && !item.setId && item.materialId
   
-  // For non-procedural items, skip if icon already exists
-  if (item.icon !== undefined && !isProceduralItem) {
+  // Check if icon is valid (not undefined, not null, not empty object)
+  const hasValidIcon = item.icon && 
+    typeof item.icon === 'function' && 
+    !(typeof item.icon === 'object' && Object.keys(item.icon).length === 0)
+  
+  // For non-procedural items, skip if icon already exists and is valid
+  if (hasValidIcon && !isProceduralItem) {
     return item
   }
 

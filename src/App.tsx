@@ -8,6 +8,7 @@ import RunHistoryScreen from '@components/screens/RunHistoryScreen'
 import DevTools from '@components/ui/DevTools'
 import { MusicControls } from '@components/ui/MusicControls'
 import { MusicManager } from '@components/ui/MusicManager'
+import { MigrationWarningDialog } from '@components/ui/MigrationWarningDialog'
 import { useGameStore } from '@store/gameStore'
 import type { Hero } from '@/types'
 
@@ -38,7 +39,7 @@ const screenVariants = {
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
-  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest } = useGameStore()
+  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   
   const handleStartDungeon = (startingFloor: number = 0) => {
@@ -177,6 +178,9 @@ function App() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+      
+      {/* Migration Warning Dialog */}
+      <MigrationWarningDialog isOpen={pendingMigration} />
       
       {/* Global Music Controls */}
       <MusicControls />

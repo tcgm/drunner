@@ -11,7 +11,7 @@ import { calculateMaxHp, createHero } from '@/utils/heroUtils'
 import { equipItem, unequipItem, sellItem, calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
-import { migrateGameState } from '@/utils/migration'
+import { migrateGameState, needsMigration } from '@/utils/migration'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { useAbility as applyAbility } from '@/systems/abilities/abilityManager'
 import { getClassById } from '@/data/classes'
@@ -314,12 +314,16 @@ interface GameStore extends GameState {
   listBackups: () => string[]
   createManualBackup: () => boolean
   restoreFromBackup: (backupKey: string) => boolean
+  downloadBackup: (backupKey: string) => boolean
   exportSave: () => void
   importSave: (jsonString: string) => boolean
   // Music actions
   setMusicVolume: (volume: number) => void
   setMusicEnabled: (enabled: boolean) => void
   changeMusicContext: (context: MusicContext) => void
+  // Migration actions
+  approveMigration: () => void
+  cancelMigration: () => void
 }
 
 /**
@@ -383,6 +387,8 @@ const initialState: GameState = {
   musicVolume: 0.7,
   musicEnabled: true,
   currentMusicContext: null,
+  pendingMigration: false,
+  pendingMigrationData: null,
 }
 
 export const useGameStore = create<GameStore>()(
@@ -780,6 +786,35 @@ export const useGameStore = create<GameStore>()(
                 }
               }
             })
+
+            // Process unique item effects (e.g., Heart of the Phoenix on boss defeat)
+            if (currentEvent.type === 'boss') {
+              const uniqueEffectResult = processUniqueEffects(updatedParty, 'onBossDefeat', {
+                eventType: currentEvent.type,
+                resolvedOutcome,
+                floor: state.dungeon.floor
+              })
+              
+              if (uniqueEffectResult) {
+                updatedParty = uniqueEffectResult.party
+                
+                // Add effects to the resolved outcome
+                if (uniqueEffectResult.additionalEffects) {
+                  uniqueEffectResult.additionalEffects.forEach(effect => {
+                    resolvedOutcome.effects.push(effect)
+                    
+                    // Track statistics
+                    if (effect.type === 'revive') {
+                      revivals += effect.target.length
+                      effect.target.forEach(heroId => {
+                        const hero = updatedParty.find(h => h?.id === heroId)
+                        if (hero) heroesAffected.add(hero.name)
+                      })
+                    }
+                  })
+                }
+              }
+            }
 
             // Create event log entry
             const eventLogEntry: import('@/types').EventLogEntry = {
@@ -1708,6 +1743,64 @@ export const useGameStore = create<GameStore>()(
           return success
         },
 
+        downloadBackup: (backupKey: string) => {
+          try {
+            const compressed = localStorage.getItem(backupKey)
+            if (!compressed) {
+              console.error('[Backup] Backup not found:', backupKey)
+              return false
+            }
+
+            // Decompress the backup data
+            let str: string
+            try {
+              str = LZString.decompressFromUTF16(compressed) || compressed
+            } catch {
+              str = compressed
+            }
+
+            // Parse the state
+            const state = JSON.parse(str)
+
+            // Format as a save file export
+            const saveData = {
+              version: 1,
+              timestamp: Date.now(),
+              backupKey: backupKey,
+              data: state.state || state
+            }
+
+            // Use custom replacer to strip out icon functions
+            const replacer = (key: string, val: unknown) => {
+              if (key === 'icon' && typeof val === 'function') {
+                return undefined
+              }
+              return val
+            }
+
+            const json = JSON.stringify(saveData, replacer, 2)
+            const blob = new Blob([json], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            
+            // Extract timestamp from backup key for filename
+            const timestamp = backupKey.split('-').pop() || Date.now()
+            link.download = `dungeon-runner-backup-${timestamp}.json`
+            
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+            
+            console.log('[Backup] Downloaded backup:', backupKey)
+            return true
+          } catch (error) {
+            console.error('[Backup] Failed to download backup:', error)
+            return false
+          }
+        },
+
         exportSave: () => {
           try {
             const state = useGameStore.getState()
@@ -1793,6 +1886,75 @@ export const useGameStore = create<GameStore>()(
           console.log('[GameStore] Got playlist:', playlist);
           set({ currentMusicContext: context });
           audioManager.changeContext(playlist)
+        },
+
+        // Migration actions
+        approveMigration: () => {
+          const { pendingMigrationData } = get()
+          if (!pendingMigrationData) {
+            console.error('[Migration] No pending migration data')
+            return
+          }
+
+          try {
+            // Decompress and parse the pending data
+            let str: string
+            try {
+              str = LZString.decompressFromUTF16(pendingMigrationData) || pendingMigrationData
+            } catch {
+              str = pendingMigrationData
+            }
+
+            const state = JSON.parse(str)
+            const actualState = state?.state
+
+            if (!actualState) {
+              console.error('[Migration] Invalid pending migration data')
+              set({ pendingMigration: false, pendingMigrationData: null })
+              return
+            }
+
+            // Apply the migration
+            console.log('[Migration] User approved migration, applying changes...')
+            const migratedState = migrateGameState(actualState)
+            
+            // Migrate run history to separate storage if it exists
+            if (migratedState.runHistory && migratedState.runHistory.length > 0) {
+              console.log(`[RunHistory Migration] Found ${migratedState.runHistory.length} runs in old save, migrating to separate storage`)
+              const existingHistory = loadRunHistory()
+
+              // Merge old and new, deduplicate by run ID
+              const allRuns = [...migratedState.runHistory, ...existingHistory]
+              const uniqueRuns = allRuns.filter((run, index, self) =>
+                index === self.findIndex(r => r.id === run.id)
+              )
+
+              saveRunHistory(uniqueRuns)
+              console.log(`[RunHistory Migration] Saved ${uniqueRuns.length} total runs`)
+
+              // Clear from main state
+              migratedState.runHistory = []
+            }
+
+            // Apply the migrated state and clear pending flags
+            set({ 
+              ...migratedState,
+              pendingMigration: false,
+              pendingMigrationData: null 
+            })
+            
+            console.log('[Migration] Migration completed successfully')
+          } catch (error) {
+            console.error('[Migration] Failed to apply migration:', error)
+            set({ pendingMigration: false, pendingMigrationData: null })
+          }
+        },
+
+        cancelMigration: () => {
+          console.log('[Migration] User cancelled migration')
+          set({ pendingMigration: false, pendingMigrationData: null })
+          // Reset to initial state
+          set(initialState)
         },
       })
     ),
@@ -1997,6 +2159,21 @@ export const useGameStore = create<GameStore>()(
               })
             }
 
+            // Check if migration is needed BEFORE applying it
+            const migrationNeeded = needsMigration(actualState)
+            
+            if (migrationNeeded) {
+              console.log('[Migration] Save file needs migration, setting pending state and prompting user')
+              // Return a state that shows the migration dialog
+              return {
+                state: {
+                  ...initialState,
+                  pendingMigration: true,
+                  pendingMigrationData: compressed, // Store the compressed data for later
+                }
+              }
+            }
+
             // Migrate to new floor-based system
             const migratedState = migrateGameState(actualState)
             state.state = migratedState
@@ -2028,8 +2205,8 @@ export const useGameStore = create<GameStore>()(
               return val
             }
             const json = JSON.stringify(state, replacer)
-            const compressed = LZString.compressToUTF16(json)
-            localStorage.setItem(name, compressed)
+            const compressedOutput = LZString.compressToUTF16(json)
+            localStorage.setItem(name, compressedOutput)
 
             return state
           } catch (error) {

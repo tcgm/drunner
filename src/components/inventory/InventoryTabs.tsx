@@ -1,6 +1,6 @@
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Icon } from '@chakra-ui/react'
 import { memo } from 'react'
-import { GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
+import { GiCrossedSwords, GiCheckedShield, GiHealthPotion } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 interface InventoryTabsProps {
@@ -39,6 +39,10 @@ export const InventoryTabs = memo(function InventoryTabs({
         <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
           Accessories ({itemsByType.accessories?.length || 0})
         </Tab>
+        <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
+          <Icon as={GiHealthPotion} mr={2} />
+          Consumables ({itemsByType.consumables?.length || 0})
+        </Tab>
       </TabList>
 
       <TabPanels>
@@ -59,6 +63,9 @@ export const InventoryTabs = memo(function InventoryTabs({
         </TabPanel>
         <TabPanel px={0} py={1}>
           {renderContent(itemsByType.accessories || [])}
+        </TabPanel>
+        <TabPanel px={0} py={1}>
+          {renderContent(itemsByType.consumables || [])}
         </TabPanel>
       </TabPanels>
     </Tabs>

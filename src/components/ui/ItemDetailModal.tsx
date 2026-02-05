@@ -21,7 +21,8 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
 import { getModifierById } from '@/data/items/mods'
 import { getItemSetName, ALL_SETS } from '@/data/items/sets'
-import { DualModeIcon } from '@/components/ui/DualModeIcon'
+import { MultIcon } from '@/components/ui/MultIcon'
+import { restoreItemIcon } from '@/utils/itemUtils'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -276,9 +277,11 @@ interface ItemDetailModalProps {
 }
 
 export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
-  const rarityTheme = RARITY_COLORS[item.rarity] || RARITY_COLORS.common
-  const IconComponent = item.icon || GameIcons.GiSwordman
-  const GemIcon = RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond
+  // Restore icon if missing (handles deserialization issues)
+  const restoredItem = useMemo(() => restoreItemIcon(item), [item])
+  const rarityTheme = RARITY_COLORS[restoredItem.rarity] || RARITY_COLORS.common
+  const IconComponent = restoredItem.icon || GameIcons.GiSwordman
+  const GemIcon = RARITY_GEM_ICONS[restoredItem.rarity] || GameIcons.GiCutDiamond
   
   // Sanitize item name in case it got corrupted with icon function
   const displayName = useMemo(() => {
@@ -413,7 +416,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     <div className="item-detail-modal__shimmer" />
                     
                     {/* Icon */}
-                    <DualModeIcon
+                    <MultIcon
                       icon={IconComponent}
                       boxSize="65px"
                       fontSize="65px"
@@ -428,6 +431,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                         position: 'relative',
                         zIndex: 1,
                       }}
+                      className={`itemDetailModalIcon ${item.name}`}
                     />
                   </div>
                 </Box>

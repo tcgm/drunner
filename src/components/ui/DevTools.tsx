@@ -51,7 +51,7 @@ type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
 
 export default function DevTools() {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { party, dungeon, resetGame, applyPenalty, listBackups, restoreFromBackup, activeRun } = useGameStore()
+  const { party, dungeon, resetGame, applyPenalty, listBackups, restoreFromBackup, downloadBackup, activeRun } = useGameStore()
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
   const [backups, setBackups] = useState<string[]>([])
   const cancelRef = useRef<HTMLButtonElement>(null)
@@ -61,8 +61,8 @@ export default function DevTools() {
   const [itemType, setItemType] = useState<ItemSlot>('weapon')
   const [itemRarity, setItemRarity] = useState<ItemRarity>('common')
   const [itemDepth, setItemDepth] = useState(1)
-  const [selectedMaterial, setSelectedMaterial] = useState(allMaterials[0]?.id || '')
-  const [selectedBase, setSelectedBase] = useState(allBases[0]?.id || '')
+  const [selectedMaterial, setSelectedMaterial] = useState(allMaterials[0]?.id ?? '')
+  const [selectedBase, setSelectedBase] = useState('')
   const [selectedUnique, setSelectedUnique] = useState(ALL_UNIQUE_ITEMS[0]?.name || '')
   const [selectedSet, setSelectedSet] = useState(ALL_SET_ITEMS[0]?.name || '')
 
@@ -87,16 +87,16 @@ export default function DevTools() {
         bases = bases.filter(b => b.type === itemType)
       }
     }
-    return bases.filter(b => b.name?.toLowerCase().includes(baseSearch.toLowerCase()))
+    return bases.filter(b => b.description?.toLowerCase().includes(baseSearch.toLowerCase()))
   }, [baseSearch, itemGenType, selectedMaterial, itemType])
 
   const filteredUniques = useMemo(() =>
-    ALL_UNIQUE_ITEMS.filter(u => u.name?.toLowerCase().includes(uniqueSearch.toLowerCase())),
+    ALL_UNIQUE_ITEMS.filter(u => u.name.toLowerCase().includes(uniqueSearch.toLowerCase())),
     [uniqueSearch]
   )
 
   const filteredSets = useMemo(() =>
-    ALL_SET_ITEMS.filter(s => s.name?.toLowerCase().includes(setSearch.toLowerCase())),
+    ALL_SET_ITEMS.filter(s => s.name.toLowerCase().includes(setSearch.toLowerCase())),
     [setSearch]
   )
 
@@ -119,6 +119,8 @@ export default function DevTools() {
         defense: hero.class.baseStats.defense,
         speed: hero.class.baseStats.speed,
         luck: hero.class.baseStats.luck,
+        wisdom: hero.class.baseStats.wisdom,
+        charisma: hero.class.baseStats.charisma,
         magicPower: hero.class.baseStats.magicPower,
       },
       isAlive: true,
@@ -354,6 +356,10 @@ export default function DevTools() {
     }
   }
 
+  const handleDownloadBackup = (backupKey: string) => {
+    downloadBackup(backupKey)
+  }
+
   const formatBackupName = (key: string) => {
     const timestamp = parseInt(key.split('-').pop() || '0')
     return new Date(timestamp).toLocaleString()
@@ -363,12 +369,13 @@ export default function DevTools() {
     let item: Item | undefined
 
     switch (itemGenType) {
-      case 'procedural':
+      case 'procedural': {
         // Standard procedural generation
         item = generateItem(itemDepth, itemType, itemRarity, itemRarity, 0)
         break
+      }
 
-      case 'material':
+      case 'material': {
         // Generate using specific material
         const material = allMaterials.find(m => m.id === selectedMaterial)
         if (material) {
@@ -377,19 +384,20 @@ export default function DevTools() {
           item.name = `${material.prefix} ${item.name.split(' ').slice(1).join(' ')}`
         }
         break
+      }
 
-      case 'base':
+      case 'base': {
         // Generate using specific base
-        const base = allBases.find(b => b.id === selectedBase)
-        if (base) {
-          item = generateItem(itemDepth, base.type, itemRarity, itemRarity, 0)
-          // Override with base properties
-          const material = allMaterials.find(m => m.id === selectedMaterial)
-          item.name = material ? `${material.prefix} ${base.name}` : base.name
+        const selectedMat = allMaterials.find(m => m.id === selectedMaterial)
+        if (selectedBase && selectedMat) {
+          item = generateItem(itemDepth, itemType, itemRarity, itemRarity, 0)
+          // Override name with material + base description
+          item.name = `${selectedMat.prefix} ${item.name.split(' ').slice(1).join(' ')}`
         }
         break
+      }
 
-      case 'unique':
+      case 'unique': {
         // Generate specific unique item
         const unique = ALL_UNIQUE_ITEMS.find(u => u.name === selectedUnique)
         if (unique) {
@@ -400,8 +408,9 @@ export default function DevTools() {
           } as Item
         }
         break
+      }
 
-      case 'set':
+      case 'set': {
         // Generate specific set item
         const setItem = ALL_SET_ITEMS.find(s => s.name === selectedSet)
         if (setItem) {
@@ -411,6 +420,7 @@ export default function DevTools() {
           } as Item
         }
         break
+      }
     }
 
     if (item) {
@@ -509,7 +519,7 @@ export default function DevTools() {
                     <Select
                       size="sm"
                       value={itemGenType}
-                      onChange={(e) => setItemGenType(e.target.value as any)}
+                      onChange={(e) => setItemGenType(e.target.value as typeof itemGenType)}
                       bg="gray.900"
                     >
                       <option value="procedural">Procedural (Random)</option>
@@ -570,7 +580,7 @@ export default function DevTools() {
                             maxH="200px"
                           >
                             {filteredMaterials.map(mat => (
-                              <option key={mat.id} value={mat.id}>{mat.prefix} ({mat.minRarity}+)</option>
+                              <option key={mat.id} value={mat.id}>{mat.prefix} ({mat.rarity}+)</option>
                             ))}
                           </Select>
                         </Box>
@@ -604,8 +614,8 @@ export default function DevTools() {
                             mb={1}
                           />
                           <Select size="sm" value={selectedBase} onChange={(e) => setSelectedBase(e.target.value)} bg="gray.900">
-                            {filteredBases.map(base => (
-                              <option key={base.id} value={base.id}>{base.name} - {base.type}</option>
+                            {filteredBases.map((base, idx) => (
+                              <option key={idx} value={idx}>{base.type} - {base.description?.substring(0, 30)}</option>
                             ))}
                           </Select>
                         </Box>
@@ -734,8 +744,8 @@ export default function DevTools() {
                       colorScheme="cyan" 
                       onClick={() => {
                         console.log('Total boss events loaded:', BOSS_EVENTS.length)
-                        console.log('Zone bosses:', BOSS_EVENTS.filter(e => (e as any).isZoneBoss).map(e => `${e.title} (floor ${(e as any).zoneBossFloor})`))
-                        console.log('Final boss:', BOSS_EVENTS.find(e => (e as any).isFinalBoss))
+                        console.log('Zone bosses:', BOSS_EVENTS.filter(e => 'isZoneBoss' in e && e.isZoneBoss).map(e => `${e.title} (floor ${'zoneBossFloor' in e ? e.zoneBossFloor : 'N/A'})`))
+                        console.log('Final boss:', BOSS_EVENTS.find(e => 'isFinalBoss' in e && e.isFinalBoss))
                         alert(`Boss events loaded: ${BOSS_EVENTS.length}\nCheck console for details`)
                       }}
                     >
@@ -754,17 +764,27 @@ export default function DevTools() {
                       Load Backup List ({backups.length})
                     </Button>
                     {backups.length > 0 && (
-                      <VStack align="stretch" spacing={1} maxH="200px" overflowY="auto" bg="gray.900" p={2} borderRadius="md">
+                      <VStack align="stretch" spacing={2} maxH="300px" overflowY="auto" bg="gray.900" p={2} borderRadius="md">
                         {backups.map(backup => (
-                          <Button
-                            key={backup}
-                            size="xs"
-                            colorScheme="blue"
-                            variant="outline"
-                            onClick={() => handleRestoreBackup(backup)}
-                          >
-                            Restore: {formatBackupName(backup)}
-                          </Button>
+                          <HStack key={backup} spacing={2}>
+                            <Button
+                              flex={1}
+                              size="xs"
+                              colorScheme="blue"
+                              variant="outline"
+                              onClick={() => handleRestoreBackup(backup)}
+                            >
+                              Restore: {formatBackupName(backup)}
+                            </Button>
+                            <Button
+                              size="xs"
+                              colorScheme="green"
+                              onClick={() => handleDownloadBackup(backup)}
+                              title="Download this backup as JSON"
+                            >
+                              💾
+                            </Button>
+                          </HStack>
                         ))}
                       </VStack>
                     )}

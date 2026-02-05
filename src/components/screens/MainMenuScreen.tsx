@@ -10,7 +10,7 @@ interface MainMenuScreenProps {
 }
 
 export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: MainMenuScreenProps) {
-  const { activeRun, listBackups, createManualBackup, restoreFromBackup, exportSave, importSave } = useGameStore()
+  const { activeRun, listBackups, createManualBackup, restoreFromBackup, downloadBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [backups, setBackups] = useState<string[]>([])
   const toast = useToast()
@@ -54,6 +54,27 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     const date = new Date(timestamp).toLocaleString()
     if (confirm(`Restore save from ${date}?\n\nThis will reload the page and restore your game state. Current unsaved progress will be lost.`)) {
       restoreFromBackup(backupKey)
+    }
+  }
+
+  const handleDownloadBackup = (backupKey: string) => {
+    const success = downloadBackup(backupKey)
+    if (success) {
+      toast({
+        title: 'Backup Downloaded',
+        description: 'Backup has been downloaded as a JSON file.',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
+    } else {
+      toast({
+        title: 'Download Failed',
+        description: 'Failed to download backup.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
     }
   }
 
@@ -569,16 +590,28 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
                                 📅 {date} ⏰ {time}
                               </Text>
                             </VStack>
-                            <Button
-                              className="btn-restore-backup"
-                              size="md"
-                              colorScheme={index === 0 ? 'orange' : 'blue'}
-                              variant={index === 0 ? 'solid' : 'outline'}
-                              onClick={() => handleRestoreBackup(backup)}
-                              minW="100px"
-                            >
-                              Restore
-                            </Button>
+                            <HStack spacing={2}>
+                              <Button
+                                className="btn-download-backup"
+                                size="md"
+                                colorScheme="green"
+                                variant="outline"
+                                onClick={() => handleDownloadBackup(backup)}
+                                title="Download this backup"
+                              >
+                                💾
+                              </Button>
+                              <Button
+                                className="btn-restore-backup"
+                                size="md"
+                                colorScheme={index === 0 ? 'orange' : 'blue'}
+                                variant={index === 0 ? 'solid' : 'outline'}
+                                onClick={() => handleRestoreBackup(backup)}
+                                minW="100px"
+                              >
+                                Restore
+                              </Button>
+                            </HStack>
                           </HStack>
                         </Box>
                       )

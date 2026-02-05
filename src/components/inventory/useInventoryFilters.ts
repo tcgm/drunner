@@ -38,7 +38,12 @@ export function useInventoryFilters({
       // Use proper slot compatibility check for accessories and other special slots
       filteredItems = filteredItems.filter(item => slotAcceptsItemType(pendingSlot, item.type))
     } else if (filterBy && filterBy !== 'all') {
-      filteredItems = filteredItems.filter(item => item.type === filterBy)
+      // Special handling for consumables (check for consumableType property)
+      if (filterBy === 'consumable') {
+        filteredItems = filteredItems.filter(item => item.type === 'consumable' || 'consumableType' in item)
+      } else {
+        filteredItems = filteredItems.filter(item => item.type === filterBy)
+      }
     }
 
     // Apply search

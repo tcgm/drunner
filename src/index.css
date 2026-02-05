@@ -312,6 +312,39 @@ button:focus-visible {
   border-color: #EAB308;
 }
 
+/* Inner border rarity classes (for set items showing rarity border) */
+.item-slot__inner-border--junk {
+  border-color: #4A5568;
+}
+
+.item-slot__inner-border--common {
+  border-color: #22C55E;
+}
+
+.item-slot__inner-border--uncommon {
+  border-color: #3B82F6;
+}
+
+.item-slot__inner-border--rare {
+  border-color: #A855F7;
+}
+
+.item-slot__inner-border--epic {
+  border-color: #EC4899;
+}
+
+.item-slot__inner-border--legendary {
+  border-color: #F97316;
+}
+
+.item-slot__inner-border--mythic {
+  border-color: #EF4444;
+}
+
+.item-slot__inner-border--artifact {
+  border-color: #EAB308;
+}
+
 /* ============================================================================
    ITEM DETAIL MODAL OPTIMIZED STYLES - Performance Critical
    ============================================================================ */
