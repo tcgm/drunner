@@ -21,6 +21,7 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
 import { getModifierById } from '@/data/items/mods'
 import { getItemSetName, ALL_SETS } from '@/data/items/sets'
+import { DualModeIcon } from '@/components/ui/DualModeIcon'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -277,7 +278,6 @@ interface ItemDetailModalProps {
 export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
   const rarityTheme = RARITY_COLORS[item.rarity] || RARITY_COLORS.common
   const IconComponent = item.icon || GameIcons.GiSwordman
-  const isRpgAwesomeIcon = IconComponent.displayName?.startsWith('RpgIcon')
   const GemIcon = RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond
   
   // Sanitize item name in case it got corrupted with icon function
@@ -413,36 +413,22 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     <div className="item-detail-modal__shimmer" />
                     
                     {/* Icon */}
-                    {isRpgAwesomeIcon ? (
-                      <IconComponent
-                        style={{
-                          fontSize: '65px',
-                          color: (() => {
-                            if (item.modifiers && item.modifiers.length > 0) {
-                              const mod = getModifierById(item.modifiers[0]);
-                              return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
-                            }
-                            return item.isUnique ? '#FFD700' : rarityTheme.text;
-                          })(),
-                          position: 'relative',
-                          zIndex: 1,
-                        }}
-                      />
-                    ) : (
-                      <ChakraIcon 
-                        as={IconComponent} 
-                        boxSize="65px" 
-                        color={(() => {
-                          if (item.modifiers && item.modifiers.length > 0) {
-                            const mod = getModifierById(item.modifiers[0]);
-                            return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
-                          }
-                          return item.isUnique ? '#FFD700' : rarityTheme.text;
-                        })()}
-                        position="relative"
-                        zIndex={1}
-                      />
-                    )}
+                    <DualModeIcon
+                      icon={IconComponent}
+                      boxSize="65px"
+                      fontSize="65px"
+                      color={(() => {
+                        if (item.modifiers && item.modifiers.length > 0) {
+                          const mod = getModifierById(item.modifiers[0]);
+                          return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
+                        }
+                        return item.isUnique ? '#FFD700' : rarityTheme.text;
+                      })()}
+                      style={{
+                        position: 'relative',
+                        zIndex: 1,
+                      }}
+                    />
                   </div>
                 </Box>
 

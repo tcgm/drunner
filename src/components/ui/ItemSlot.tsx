@@ -18,6 +18,7 @@ import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
+import { DualModeIcon } from '@/components/ui/DualModeIcon'
 
 const MotionBox = motion.create(Box)
 
@@ -80,9 +81,6 @@ export const ItemSlot = memo(function ItemSlot({
   // Restore icon if missing (handles deserialization issues without needing to call restoreItemIcon everywhere)
   const restoredItem = useMemo(() => restoreItemIcon(item), [item])
   const ItemIcon = restoredItem.icon || GiTreasure
-
-  // Check if this is an RPG Awesome icon (function name starts with 'RpgIcon')
-  const isRpgAwesomeIcon = (ItemIcon as { displayName?: string }).displayName?.startsWith('RpgIcon')
 
   // Check if item is cursed
   const isCursed = useMemo(() =>
@@ -499,25 +497,16 @@ export const ItemSlot = memo(function ItemSlot({
               rotate: { duration: 0.5, ease: "easeInOut" }
             }}
           >
-            {isRpgAwesomeIcon ? (
-              <ItemIcon
-                style={{
-                  fontSize: iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px'),
-                  color: 'white',
-                  marginBottom: iconOnly ? 0 : '0.125rem',
-                }}
-              />
-            ) : (
-              <Icon
-                as={ItemIcon}
-                boxSize={iconOnly 
-                  ? '100%'
-                  : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
-                }
-                color="white"
-                mb={iconOnly ? 0 : 0.5}
-              />
-            )}
+            <DualModeIcon
+              icon={ItemIcon}
+              boxSize={iconOnly 
+                ? '100%'
+                : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
+              }
+              fontSize={iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')}
+              color="white"
+              mb={iconOnly ? 0 : 0.5}
+            />
           </motion.div>
           
           {/* Item Name */}
