@@ -1,4 +1,4 @@
-import { GiCat } from 'react-icons/gi'
+import { GiBookCover, GiCat } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -9,7 +9,7 @@ export const NEKONOMICON: Omit<Item, 'id'> = {
   description: 'The Sacred Book of Cats. Contains ancient secrets of charm, grace, and overwhelming cuteness. Reading it grants the bearer irresistible charisma and the power to befriend anyone... or anything.',
   type: 'weapon',
   rarity: 'mythicc',
-  icon: GiCat,
+  icon: GiBookCover,
   stats: {
     attack: 30,
     magicPower: 120,
