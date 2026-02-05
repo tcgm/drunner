@@ -20,10 +20,33 @@ import LZString from 'lz-string'
 import { audioManager } from '@/systems/audio/audioManager'
 import { getPlaylistForContext } from '@/config/musicConfig'
 
+// Backup configuration
+const BACKUP_CONFIG = {
+  maxBackups: 10,
+  minIntervalMs: 5 * 60 * 1000, // 5 minutes between backups
+  storageKey: 'dungeon-runner-last-backup'
+}
+
+/**
+ * Get the timestamp of the last backup
+ */
+function getLastBackupTime(): number {
+  const lastBackup = localStorage.getItem(BACKUP_CONFIG.storageKey)
+  return lastBackup ? parseInt(lastBackup) : 0
+}
+
+/**
+ * Set the timestamp of the last backup
+ */
+function setLastBackupTime(timestamp: number): void {
+  localStorage.setItem(BACKUP_CONFIG.storageKey, timestamp.toString())
+}
+
 /**
  * Create a backup of the current state
+ * Throttled to prevent excessive backups
  */
-function createBackup(name: string): void {
+function createBackup(name: string, force = false): void {
   try {
     const current = localStorage.getItem(name)
     if (current) {
@@ -48,6 +71,7 @@ function createBackup(name: string): void {
 
       // Try to create backup
       localStorage.setItem(`${name}-backup-${timestamp}`, current)
+      setLastBackupTime(timestamp)
       console.log(`[Backup] Created backup: ${name}-backup-${timestamp}`)
     }
   } catch (error) {
@@ -278,6 +302,7 @@ interface GameStore extends GameState {
   clearOverflow: () => void
   // Backup/Recovery actions
   listBackups: () => string[]
+  createManualBackup: () => boolean
   restoreFromBackup: (backupKey: string) => boolean
   exportSave: () => void
   importSave: (jsonString: string) => boolean
@@ -1648,6 +1673,20 @@ export const useGameStore = create<GameStore>()(
         // Backup/Recovery functions
         listBackups: () => {
           return listBackups('dungeon-runner-storage')
+        },
+
+        createManualBackup: () => {
+          try {
+            const current = localStorage.getItem('dungeon-runner-storage')
+            if (current) {
+              createBackup('dungeon-runner-storage', true) // Force=true bypasses throttling
+              return true
+            }
+            return false
+          } catch (error) {
+            console.error('[Backup] Failed to create manual backup:', error)
+            return false
+          }
         },
 
         restoreFromBackup: (backupKey: string) => {
