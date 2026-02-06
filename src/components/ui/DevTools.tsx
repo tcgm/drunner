@@ -46,6 +46,7 @@ import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { levelUpHero } from '@/utils/heroUtils'
 import { BOSS_EVENTS } from '@/data/events/boss/normal'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
 
@@ -136,14 +137,17 @@ export default function DevTools() {
 
   const handleReviveAll = () => {
     const state = useGameStore.getState()
-    const revivedParty = party.filter((hero): hero is Hero => hero !== null).map(hero => ({
-      ...hero,
-      isAlive: true,
-      stats: {
-        ...hero.stats,
-        hp: hero.stats.maxHp,
-      },
-    }))
+    const revivedParty = party.filter((hero): hero is Hero => hero !== null).map(hero => {
+      const effectiveMaxHp = calculateTotalStats(hero).maxHp
+      return {
+        ...hero,
+        isAlive: true,
+        stats: {
+          ...hero.stats,
+          hp: effectiveMaxHp,
+        },
+      }
+    })
     // Update roster as well
     const revivedRoster = state.heroRoster.map(rosterHero => {
       const revivedVersion = revivedParty.find(h => h.id === rosterHero.id)
@@ -154,13 +158,16 @@ export default function DevTools() {
 
   const handleHealAll = () => {
     const state = useGameStore.getState()
-    const healedParty = party.filter((hero): hero is Hero => hero !== null).map(hero => ({
-      ...hero,
-      stats: {
-        ...hero.stats,
-        hp: hero.stats.maxHp,
-      },
-    }))
+    const healedParty = party.filter((hero): hero is Hero => hero !== null).map(hero => {
+      const effectiveMaxHp = calculateTotalStats(hero).maxHp
+      return {
+        ...hero,
+        stats: {
+          ...hero.stats,
+          hp: effectiveMaxHp,
+        },
+      }
+    })
     // Update roster as well
     const healedRoster = state.heroRoster.map(rosterHero => {
       const healedVersion = healedParty.find(h => h.id === rosterHero.id)
@@ -325,14 +332,17 @@ export default function DevTools() {
 
   const handleHealAllFull = () => {
     const state = useGameStore.getState()
-    const healedParty = state.party.filter((hero): hero is Hero => hero !== null).map(hero => ({
-      ...hero,
-      isAlive: true,
-      stats: {
-        ...hero.stats,
-        hp: hero.stats.maxHp,
-      },
-    }))
+    const healedParty = state.party.filter((hero): hero is Hero => hero !== null).map(hero => {
+      const effectiveMaxHp = calculateTotalStats(hero).maxHp
+      return {
+        ...hero,
+        isAlive: true,
+        stats: {
+          ...hero.stats,
+          hp: effectiveMaxHp,
+        },
+      }
+    })
     
     const healedRoster = state.heroRoster.map(rosterHero => {
       const healedVersion = healedParty.find(h => h.id === rosterHero.id)

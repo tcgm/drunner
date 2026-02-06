@@ -28,8 +28,10 @@ export const createHeroActions: StateCreator<
       if (targetIndex === -1 || targetIndex >= state.party.length) return state // Party full or invalid slot
       if (state.party[targetIndex] !== null) return state // Slot occupied
 
-      // Heal hero to full HP
-      const healedHero = { ...hero, stats: { ...hero.stats, hp: hero.stats.maxHp } }
+      // Heal hero to full HP (using effective max HP with equipment)
+      const { calculateTotalStats } = require('@/utils/statCalculator')
+      const effectiveMaxHp = calculateTotalStats(hero).maxHp
+      const healedHero = { ...hero, stats: { ...hero.stats, hp: effectiveMaxHp } }
 
       // Add to roster if not already there
       const existingInRoster = state.heroRoster.find(h => h.id === hero.id)
@@ -62,8 +64,10 @@ export const createHeroActions: StateCreator<
       const newParty = [...state.party]
 
       if (existingHero) {
-        // Reuse existing hero and heal to full HP
-        const healedHero = { ...existingHero, stats: { ...existingHero.stats, hp: existingHero.stats.maxHp } }
+        // Reuse existing hero and heal to full HP (using effective max HP with equipment)
+        const { calculateTotalStats } = require('@/utils/statCalculator')
+        const effectiveMaxHp = calculateTotalStats(existingHero).maxHp
+        const healedHero = { ...existingHero, stats: { ...existingHero.stats, hp: effectiveMaxHp } }
         newParty[targetIndex] = healedHero
 
         // Also update in roster

@@ -446,7 +446,8 @@ export function resolveEventOutcome(
         const scaledHealing = scaleValue(baseHealing, floor, GAME_CONFIG.scaling.healing)
         const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
         targets.forEach(hero => {
-          hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healing)
+          const effectiveMaxHp = calculateTotalStats(hero).maxHp
+          hero.stats.hp = Math.min(effectiveMaxHp, hero.stats.hp + healing)
         })
         resolvedEffects.push({
           type: 'heal',
@@ -694,7 +695,8 @@ export function resolveEventOutcome(
         toRevive.forEach(hero => {
           if (hero) {
             hero.isAlive = true
-            hero.stats.hp = scaledHeal > 0 ? Math.min(hero.stats.maxHp, scaledHeal) : Math.floor(hero.stats.maxHp * GAME_CONFIG.combat.defaultHealPercent) // Default heal if no value specified
+            const effectiveMaxHp = calculateTotalStats(hero).maxHp
+            hero.stats.hp = scaledHeal > 0 ? Math.min(effectiveMaxHp, scaledHeal) : Math.floor(effectiveMaxHp * GAME_CONFIG.combat.defaultHealPercent) // Default heal if no value specified
           }
         })
         

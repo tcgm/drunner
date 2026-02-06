@@ -2,6 +2,7 @@ import type { Hero, Consumable, GameState } from '@/types'
 import { applyEffect } from '../effects/effectManager'
 import { GiHealthPotion, GiStrong, GiShield, GiRun, GiClover } from 'react-icons/gi'
 import { getConsumableSlotIds } from '@/config/slotConfig'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 /**
  * Use a consumable from a hero's slot by slot ID
@@ -30,10 +31,11 @@ export function useConsumable(
   switch (consumable.effect.type) {
     case 'heal':
       if (consumable.effect.value) {
-        const healAmount = Math.min(consumable.effect.value, hero.stats.maxHp - hero.stats.hp)
+        const effectiveMaxHp = calculateTotalStats(hero).maxHp
+        const healAmount = Math.min(consumable.effect.value, effectiveMaxHp - hero.stats.hp)
         updatedHero.stats = {
           ...updatedHero.stats,
-          hp: Math.min(hero.stats.hp + consumable.effect.value, hero.stats.maxHp),
+          hp: Math.min(hero.stats.hp + consumable.effect.value, effectiveMaxHp),
         }
         message = `${hero.name} used ${consumable.name} and recovered ${healAmount} HP!`
       }
@@ -43,9 +45,10 @@ export function useConsumable(
       if (!hero.isAlive && consumable.effect.value) {
         // Revive the hero with the specified HP amount
         updatedHero.isAlive = true
+        const effectiveMaxHp = calculateTotalStats(hero).maxHp
         updatedHero.stats = {
           ...updatedHero.stats,
-          hp: Math.min(consumable.effect.value, hero.stats.maxHp),
+          hp: Math.min(consumable.effect.value, effectiveMaxHp),
         }
         message = `${hero.name} was revived with ${consumable.effect.value} HP!`
       } else if (hero.isAlive) {

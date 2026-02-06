@@ -15,6 +15,7 @@ import { getAbilityStatus } from '@/systems/abilities/abilityManager'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { ItemSlot } from '@components/ui/ItemSlot'
 import { EquipmentPips } from './EquipmentPips'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 const MotionBox = motion.create(Box)
 
@@ -133,7 +134,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               <StatBar 
                 label="HP"
                 current={hero.stats.hp}
-                max={hero.stats.maxHp}
+                max={calculateTotalStats(hero).maxHp}
                 colorScheme="green"
               />
               

@@ -107,11 +107,14 @@ export function addExperience(hero: Hero, xp: number): Hero {
  * Heal a hero
  */
 export function healHero(hero: Hero, amount: number): Hero {
+  // Import at top of function to avoid circular dependency issues
+  const { calculateTotalStats } = require('@/utils/statCalculator')
+  const effectiveMaxHp = calculateTotalStats(hero).maxHp
   return {
     ...hero,
     stats: {
       ...hero.stats,
-      hp: Math.min(hero.stats.hp + amount, hero.stats.maxHp),
+      hp: Math.min(hero.stats.hp + amount, effectiveMaxHp),
     },
   }
 }

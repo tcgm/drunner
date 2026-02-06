@@ -37,12 +37,13 @@ export const createDungeonActions: StateCreator<
 
       // Penalty should already be applied by endGame
       // Revive all party members and full heal at dungeon start
+      const { calculateTotalStats } = require('@/utils/statCalculator')
       const healedParty = state.party.map(hero => hero ? ({
         ...hero,
         isAlive: true,
         stats: {
           ...hero.stats,
-          hp: hero.stats.maxHp
+          hp: calculateTotalStats(hero).maxHp
         }
       }) : null)
 
@@ -154,8 +155,9 @@ export const createDungeonActions: StateCreator<
             // Remove the amulet (it shatters)
             delete newSlots[amuletSlot]
             
-            // Revive the hero with 50% HP
-            const maxHp = hero.stats.maxHp
+            // Revive the hero with 50% HP (using effective max HP with equipment)
+            const { calculateTotalStats } = require('@/utils/statCalculator')
+            const maxHp = calculateTotalStats(hero).maxHp
             resurrectedHeroes.push(hero.name)
             
             return {

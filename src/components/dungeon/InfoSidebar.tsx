@@ -4,6 +4,7 @@ import FloorStats from './FloorStats'
 import PartyStatusStats from './PartyStatusStats'
 import QuickStats from './QuickStats'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 interface InfoSidebarProps {
   party: Hero[]
@@ -16,23 +17,23 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
     ? Math.floor(party.reduce((sum, h) => sum + h.level, 0) / party.length) 
     : 0
   const totalHp = party.reduce((sum, h) => sum + h.stats.hp, 0)
-  const totalMaxHp = party.reduce((sum, h) => sum + h.stats.maxHp, 0)
-  const totalAttack = party.reduce((sum, h) => sum + h.stats.attack, 0)
-  const totalDefense = party.reduce((sum, h) => sum + h.stats.defense, 0)
-  const totalSpeed = party.reduce((sum, h) => sum + h.stats.speed, 0)
-  const totalLuck = party.reduce((sum, h) => sum + h.stats.luck, 0)
-  const totalMagic = party.reduce((sum, h) => sum + (h.stats.magicPower ?? 0), 0)
-  const totalWisdom = party.reduce((sum, h) => sum + (h.stats.wisdom ?? 0), 0)
-  const totalCharisma = party.reduce((sum, h) => sum + (h.stats.charisma ?? 0), 0)
+  const totalMaxHp = party.reduce((sum, h) => sum + calculateTotalStats(h).maxHp, 0)
+  const totalAttack = party.reduce((sum, h) => sum + calculateTotalStats(h).attack, 0)
+  const totalDefense = party.reduce((sum, h) => sum + calculateTotalStats(h).defense, 0)
+  const totalSpeed = party.reduce((sum, h) => sum + calculateTotalStats(h).speed, 0)
+  const totalLuck = party.reduce((sum, h) => sum + calculateTotalStats(h).luck, 0)
+  const totalMagic = party.reduce((sum, h) => sum + (calculateTotalStats(h).magicPower ?? 0), 0)
+  const totalWisdom = party.reduce((sum, h) => sum + (calculateTotalStats(h).wisdom ?? 0), 0)
+  const totalCharisma = party.reduce((sum, h) => sum + (calculateTotalStats(h).charisma ?? 0), 0)
   
-  // Calculate max values
-  const maxAttack = party.length > 0 ? Math.max(...party.map(h => h.stats.attack)) : 0
-  const maxDefense = party.length > 0 ? Math.max(...party.map(h => h.stats.defense)) : 0
-  const maxSpeed = party.length > 0 ? Math.max(...party.map(h => h.stats.speed)) : 0
-  const maxLuck = party.length > 0 ? Math.max(...party.map(h => h.stats.luck)) : 0
-  const maxMagic = party.length > 0 ? Math.max(...party.map(h => h.stats.magicPower ?? 0)) : 0
-  const maxWisdom = party.length > 0 ? Math.max(...party.map(h => h.stats.wisdom ?? 0)) : 0
-  const maxCharisma = party.length > 0 ? Math.max(...party.map(h => h.stats.charisma ?? 0)) : 0
+  // Calculate max values using fully calculated stats
+  const maxAttack = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).attack)) : 0
+  const maxDefense = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).defense)) : 0
+  const maxSpeed = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).speed)) : 0
+  const maxLuck = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).luck)) : 0
+  const maxMagic = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).magicPower ?? 0)) : 0
+  const maxWisdom = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).wisdom ?? 0)) : 0
+  const maxCharisma = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).charisma ?? 0)) : 0
 
   return (
     <Box className="info-sidebar" w="250px" bg="gray.800" borderRadius="lg" p={4} overflowY="auto" maxH="100%">
