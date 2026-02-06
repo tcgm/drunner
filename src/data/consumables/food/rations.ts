@@ -1,4 +1,4 @@
-import { GiOpenedFoodCan } from 'react-icons/gi'
+import { GiPaperBagFolded } from 'react-icons/gi'
 import type { ConsumableBase } from '../bases/types'
 
 // Rations - preserved food for adventurers, moderate healing
@@ -7,7 +7,7 @@ export const RATIONS_BASE: ConsumableBase = {
   name: 'Rations',
   description: 'Restores HP',
   effectType: 'heal',
-  icon: GiOpenedFoodCan,
+  icon: GiPaperBagFolded,
   baseValue: 45,
   baseGoldValue: 14,
   target: 'self',

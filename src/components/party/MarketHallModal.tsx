@@ -20,24 +20,18 @@ import {
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import type { Consumable, Hero, Item } from '@/types'
-import { generateConsumable } from '@/systems/consumables/consumableGenerator'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { 
-  GiCampCookingPot, 
   GiCycle, 
-  GiVikingLonghouse, 
   GiBread, 
-  GiMeat, 
   GiBandageRoll,
   GiCoinsPile,
-  GiShoppingBag
+  GiShoppingBag,
+  GiVikingLonghouse
 } from 'react-icons/gi'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
-import { getRandomFoodBase, ALL_FOOD_BASES } from '@/data/consumables/food'
-import { getRandomSupplyBase, ALL_SUPPLY_BASES } from '@/data/consumables/supplies'
-import { getRandomSize } from '@/data/consumables/sizes'
-import { getRandomPotency } from '@/data/consumables/potencies'
+import { generateMarketInventory } from '@/systems/market/marketGenerator'
 import type { IconType } from 'react-icons'
 
 interface MarketHallModalProps {
@@ -69,79 +63,30 @@ export function MarketHallModal({
   const [hasInitialized, setHasInitialized] = useState(false)
   const [purchasedItemIds, setPurchasedItemIds] = useState<Set<string>>(new Set())
 
-  // Calculate effective floor based on party's average level
-  const getEffectiveFloor = () => {
-    const activeHeroes = party.filter((h): h is Hero => h !== null)
-    if (activeHeroes.length === 0) return 1
-    
-    const avgLevel = activeHeroes.reduce((sum, h) => sum + h.level, 0) / activeHeroes.length
-    return Math.max(1, Math.floor(avgLevel * GAME_CONFIG.market.floorScaling))
-  }
-
-  // Generate stall inventory
+  // Generate stall inventory using market generator
   const generateStalls = () => {
-    const floor = getEffectiveFloor()
-    
-    // Food Stall - generates food items
-    const foodItems: Consumable[] = []
-    for (let i = 0; i < GAME_CONFIG.market.stallSize; i++) {
-      const base = getRandomFoodBase()
-      const size = getRandomSize()
-      const potency = getRandomPotency()
-      const rarityRoll = Math.random()
-      const rarity = rarityRoll < GAME_CONFIG.market.rarityChances.food.rare ? 'rare' :
-                     rarityRoll < GAME_CONFIG.market.rarityChances.food.uncommon ? 'uncommon' : 'common'
-      const foodItem = generateConsumable(base.id, size.id, potency.id, rarity, floor + GAME_CONFIG.market.floorBonuses.food)
-      foodItems.push(foodItem)
-    }
-
-    // Supply Stall - generates supply items
-    const supplyItems: Consumable[] = []
-    for (let i = 0; i < GAME_CONFIG.market.stallSize; i++) {
-      const base = getRandomSupplyBase()
-      const size = getRandomSize()
-      const potency = getRandomPotency()
-      const rarityRoll = Math.random()
-      const rarity = rarityRoll < GAME_CONFIG.market.rarityChances.supplies.rare ? 'rare' :
-                     rarityRoll < GAME_CONFIG.market.rarityChances.supplies.uncommon ? 'uncommon' : 'common'
-      const supplyItem = generateConsumable(base.id, size.id, potency.id, rarity, floor + GAME_CONFIG.market.floorBonuses.supplies)
-      supplyItems.push(supplyItem)
-    }
-
-    // Premium Stall - mixed items with better quality
-    const premiumItems: Consumable[] = []
-    for (let i = 0; i < GAME_CONFIG.market.stallSize; i++) {
-      const isFood = Math.random() < 0.5
-      const base = isFood ? getRandomFoodBase() : getRandomSupplyBase()
-      const size = getRandomSize()
-      const potency = getRandomPotency()
-      const rarityRoll = Math.random()
-      const rarity = rarityRoll < GAME_CONFIG.market.rarityChances.premium.rare ? 'rare' : 
-                     rarityRoll < GAME_CONFIG.market.rarityChances.premium.uncommon ? 'uncommon' : 'common'
-      const premiumItem = generateConsumable(base.id, size.id, potency.id, rarity, floor + GAME_CONFIG.market.floorBonuses.premium)
-      premiumItems.push(premiumItem)
-    }
+    const marketStalls = generateMarketInventory(party)
 
     setStalls([
       {
         id: 'food',
         name: "Baker's Stall",
         icon: GiBread,
-        items: foodItems,
+        items: marketStalls[0].items,
         color: 'orange',
       },
       {
         id: 'supplies',
         name: "General Goods",
         icon: GiBandageRoll,
-        items: supplyItems,
+        items: marketStalls[1].items,
         color: 'teal',
       },
       {
         id: 'premium',
         name: "Premium Provisions",
         icon: GiShoppingBag,
-        items: premiumItems,
+        items: marketStalls[2].items,
         color: 'yellow',
       },
     ])
@@ -279,7 +224,7 @@ export function MarketHallModal({
                 </HStack>
 
                 {/* Stall Items */}
-                <SimpleGrid columns={4} spacing={2}>
+                <SimpleGrid columns={7} spacing={2}>
                   {stall.items.map((item) => {
                     const isPurchased = purchasedItemIds.has(item.id)
                     const affordable = canAfford(item, stall.id) && !isPurchased

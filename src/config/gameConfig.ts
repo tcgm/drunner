@@ -215,7 +215,7 @@ export const GAME_CONFIG = {
     priceMultipliers: {
       food: 1.3,          // Baker's Stall - cheapest (food items)
       supplies: 1.5,      // General Goods - mid-range (supplies)
-      premium: 1.8,       // Premium Provisions - most expensive (mixed high quality)
+      premium: 5,       // Premium Provisions - most expensive (mixed high quality)
     },
     rarityChances: {
       food: {
@@ -239,9 +239,9 @@ export const GAME_CONFIG = {
       supplies: 2,        // +2 floor bonus for supplies stall
       premium: 5,         // +5 floor bonus for premium stall
     },
-    refreshBaseCost: 75, // Base cost to refresh market inventory (more stalls = higher cost)
-    refreshCostMultiplier: 0.2, // Multiplier of remaining unpurchased items value for refresh cost
-    stallSize: 4, // Number of items per stall
+    refreshBaseCost: 50, // Base cost to refresh market inventory (more stalls = higher cost)
+    refreshCostMultiplier: 0.05, // Multiplier of remaining unpurchased items value for refresh cost
+    stallSize: 7, // Number of items per stall
     stallCount: 3, // Number of stalls in the market
     floorScaling: 3, // Multiplier for converting party level to effective floor for item quality
   },
