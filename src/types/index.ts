@@ -329,6 +329,7 @@ export interface GameState {
   bankInventory: Item[] // Items stored outside runs
   bankStorageSlots: number // Maximum bank storage capacity
   overflowInventory: Item[] // Items from last run that exceed bank capacity
+  corruptedItems: Item[] // Items that failed to load properly and need user resolution
   metaXp: number // Account-wide XP for meta-progression unlocks
   isGameOver: boolean
   isPaused: boolean

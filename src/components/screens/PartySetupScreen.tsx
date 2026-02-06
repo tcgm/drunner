@@ -11,6 +11,7 @@ import { EquipmentPanel } from '../party/EquipmentPanel'
 import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import { ConfirmStartWithOverflowModal } from '../party/ConfirmStartWithOverflowModal'
+import { CorruptedItemsModal } from '../party/CorruptedItemsModal'
 import { PotionShopModal } from '../party/PotionShopModal'
 import { MarketHallModal } from '../party/MarketHallModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
@@ -41,6 +42,11 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     keepOverflowItem,
     discardOverflowItem,
     clearOverflow,
+    corruptedItems,
+    rerollCorruptedItem,
+    sellCorruptedForGold,
+    sellCorruptedForAlkahest,
+    deleteCorruptedItem,
     metaXp,
     healParty,
     purchasePotion,
@@ -83,6 +89,16 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Buy bank slots modal
   const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
+
+  // Corrupted items modal
+  const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
+
+  // Auto-open corrupted items modal if there are corrupted items (highest priority)
+  useEffect(() => {
+    if (corruptedItems.length > 0) {
+      onCorruptedOpen()
+    }
+  }, [corruptedItems.length, onCorruptedOpen])
 
   // Auto-open overflow modal if there are overflow items
   useState(() => {
@@ -310,6 +326,17 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onClearAll={clearOverflow}
       />
       
+      {/* Corrupted Items Modal */}
+      <CorruptedItemsModal
+        isOpen={isCorruptedOpen}
+        onClose={onCorruptedClose}
+        corruptedItems={corruptedItems}
+        onRerollItem={rerollCorruptedItem}
+        onSellForGold={sellCorruptedForGold}
+        onSellForAlkahest={sellCorruptedForAlkahest}
+        onDeleteItem={deleteCorruptedItem}
+      />
+
       {/* Confirm Start with Overflow */}
       <ConfirmStartWithOverflowModal
         isOpen={isConfirmStartOpen}

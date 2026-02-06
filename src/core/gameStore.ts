@@ -4,7 +4,7 @@ import type { GameState, Hero, Run, Item, ItemStorage, Equipment } from '@/types
 import { MusicContext } from '@/types/audio'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { needsMigration, CURRENT_SAVE_VERSION } from '@/utils/migration'
-import { hydrateItem, hydrateItems } from '@/utils/itemHydration'
+import { hydrateItem, hydrateItems, hydrateItemsWithCorrupted, dehydrateItem, dehydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
 import { calculateMaxHp } from '@/utils/heroUtils'
 import { loadSave, applyMigratedState } from '@/core/saveManager'
@@ -61,6 +61,7 @@ const initialState: GameState = {
   bankInventory: [],
   bankStorageSlots: GAME_CONFIG.bank.startingSlots,
   overflowInventory: [],
+  corruptedItems: [],
   metaXp: 0,
   isGameOver: false,
   isPaused: false,
@@ -73,6 +74,38 @@ const initialState: GameState = {
   currentMusicContext: null,
   pendingMigration: false,
   pendingMigrationData: null,
+}
+
+/**
+ * Dehydrate game state for storage
+ * Converts all Item objects to minimal V3 format
+ */
+function dehydrateGameState(state: GameState): GameState {
+  const dehydrateHeroItems = (hero: Hero | null): Hero | null => {
+    if (!hero || !hero.equipment) return hero
+
+    const dehydratedEquipment: Equipment = {
+      weapon: hero.equipment.weapon ? dehydrateItem(hero.equipment.weapon) as any : null,
+      armor: hero.equipment.armor ? dehydrateItem(hero.equipment.armor) as any : null,
+      helmet: hero.equipment.helmet ? dehydrateItem(hero.equipment.helmet) as any : null,
+      boots: hero.equipment.boots ? dehydrateItem(hero.equipment.boots) as any : null,
+      accessory1: hero.equipment.accessory1 ? dehydrateItem(hero.equipment.accessory1) as any : null,
+      accessory2: hero.equipment.accessory2 ? dehydrateItem(hero.equipment.accessory2) as any : null,
+    }
+
+    return {
+      ...hero,
+      equipment: dehydratedEquipment,
+    }
+  }
+
+  return {
+    ...state,
+    party: state.party.map(dehydrateHeroItems) as (Hero | null)[],
+    heroRoster: state.heroRoster.map(dehydrateHeroItems) as Hero[],
+    bankInventory: dehydrateItems(state.bankInventory) as any,
+    overflowInventory: dehydrateItems(state.overflowInventory) as any,
+  }
 }
 
 export const useGameStore = create<GameStore>()(
@@ -157,14 +190,23 @@ export const useGameStore = create<GameStore>()(
             }
 
             // Hydrate and repair item names/icons in inventories
+            // Collect corrupted items that need user resolution
+            const allCorrupted: Item[] = []
+
             if (actualState.bankInventory?.length > 0) {
-              actualState.bankInventory = hydrateItems(actualState.bankInventory as ItemStorage[])
+              const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.bankInventory as ItemStorage[])
+              actualState.bankInventory = valid
+              allCorrupted.push(...corrupted)
             }
             if (actualState.dungeon?.inventory?.length > 0) {
-              actualState.dungeon.inventory = hydrateItems(actualState.dungeon.inventory as ItemStorage[])
+              const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.dungeon.inventory as ItemStorage[])
+              actualState.dungeon.inventory = valid
+              allCorrupted.push(...corrupted)
             }
             if (actualState.overflowInventory?.length > 0) {
-              actualState.overflowInventory = hydrateItems(actualState.overflowInventory as ItemStorage[])
+              const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.overflowInventory as ItemStorage[])
+              actualState.overflowInventory = valid
+              allCorrupted.push(...corrupted)
             }
 
             // Hydrate equipped items on heroes in party
@@ -177,7 +219,9 @@ export const useGameStore = create<GameStore>()(
                   const newSlots = { ...hero.slots }
                   for (const slotId in newSlots) {
                     if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                      newSlots[slotId] = hydrateItem(newSlots[slotId] as ItemStorage)
+                      const { valid, corrupted } = hydrateItemsWithCorrupted([newSlots[slotId] as ItemStorage])
+                      newSlots[slotId] = valid[0] || null
+                      allCorrupted.push(...corrupted)
                     }
                   }
                   return { ...hero, slots: newSlots }
@@ -186,13 +230,14 @@ export const useGameStore = create<GameStore>()(
                 // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
-                  const hydratedItems = hydrateItems(equippedItems as ItemStorage[])
+                  const { valid, corrupted } = hydrateItemsWithCorrupted(equippedItems as ItemStorage[])
+                  allCorrupted.push(...corrupted)
                   const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
                   Object.keys(newEquipment).forEach((slot) => {
                     const key = slot as keyof Equipment
                     if (newEquipment[key] !== null) {
-                      newEquipment[key] = hydratedItems[itemIndex]
+                      newEquipment[key] = valid[itemIndex] || null
                       itemIndex++
                     }
                   })
@@ -265,7 +310,9 @@ export const useGameStore = create<GameStore>()(
                   const newSlots = { ...hero.slots }
                   for (const slotId in newSlots) {
                     if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                      newSlots[slotId] = hydrateItem(newSlots[slotId] as ItemStorage)
+                      const { valid, corrupted } = hydrateItemsWithCorrupted([newSlots[slotId] as ItemStorage])
+                      newSlots[slotId] = valid[0] || null
+                      allCorrupted.push(...corrupted)
                     }
                   }
                   return { ...hero, slots: newSlots }
@@ -274,19 +321,36 @@ export const useGameStore = create<GameStore>()(
                 // Handle old equipment format (for backwards compatibility)
                 const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
                 if (equippedItems.length > 0) {
-                  const hydratedItems = hydrateItems(equippedItems as ItemStorage[])
+                  const { valid, corrupted } = hydrateItemsWithCorrupted(equippedItems as ItemStorage[])
+                  allCorrupted.push(...corrupted)
+                  const hydratedItems = valid
                   const newEquipment = { ...hero.equipment } as Equipment
                   let itemIndex = 0
                   Object.keys(newEquipment).forEach((slot) => {
                     const key = slot as keyof Equipment
                     if (newEquipment[key] !== null) {
-                      newEquipment[key] = hydratedItems[itemIndex]
+                      newEquipment[key] = hydratedItems[itemIndex] || null
                       itemIndex++
                     }
                   })
                   return { ...hero, equipment: newEquipment }
                 }
                 return hero
+              })
+            }
+
+            // Update corrupted items with all collected corrupted items
+            actualState.corruptedItems = allCorrupted
+            if (allCorrupted.length > 0) {
+              console.warn(`[GameStore] Found ${allCorrupted.length} corrupted items`)
+              allCorrupted.forEach((item, index) => {
+                console.log(`[Corrupted ${index + 1}]`, {
+                  id: item.id,
+                  name: item.name,
+                  type: item.type,
+                  rarity: item.rarity,
+                  hasStats: Object.keys(item.stats || {}).length > 0
+                })
               })
             }
 
@@ -358,6 +422,12 @@ export const useGameStore = create<GameStore>()(
             return
           }
 
+          // Dehydrate the state to strip computed item data
+          const dehydratedValue = {
+            ...value,
+            state: value.state ? dehydrateGameState(value.state) : value.state
+          }
+
           // Custom replacer to strip out icon functions that shouldn't be serialized
           const replacer = (key: string, val: unknown) => {
             // Skip icon functions
@@ -366,7 +436,7 @@ export const useGameStore = create<GameStore>()(
             }
             return val
           }
-          const json = JSON.stringify(value, replacer)
+          const json = JSON.stringify(dehydratedValue, replacer)
 
           // Compress the JSON before saving
           const compressed = LZString.compressToUTF16(json)

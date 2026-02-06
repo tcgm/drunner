@@ -7,6 +7,7 @@ import type { StateCreator } from 'zustand'
 import type { GameState, Hero, Item, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
+import { generateItem } from '@/systems/loot/lootGenerator'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { deduplicateItems } from '@/utils/itemDeduplication'
 
@@ -27,6 +28,11 @@ export interface InventoryActionsSlice {
   discardOverflowItem: (itemId: string) => void
   discardItems: (itemIds: string[]) => void
   clearOverflow: () => void
+  // Corrupted item resolution
+  rerollCorruptedItem: (itemId: string) => void
+  sellCorruptedForGold: (itemId: string) => void
+  sellCorruptedForAlkahest: (itemId: string) => void
+  deleteCorruptedItem: (itemId: string) => void
 }
 
 export const createInventoryActions: StateCreator<
@@ -452,4 +458,49 @@ export const createInventoryActions: StateCreator<
         ...(state.activeRun ? { activeRun: { ...state.activeRun, ...runUpdate } } : {})
       }
     }),
+
+  // Corrupted item resolution actions
+  rerollCorruptedItem: (itemId) =>
+    set((state) => {
+      const corruptedItem = state.corruptedItems.find(item => item.id === itemId)
+      if (!corruptedItem) return {}
+
+      // Generate a new random item of the same rarity
+      // Use floor 1 as base, rarity system will handle the appropriate stats
+      const newItem = generateItem(1, corruptedItem.rarity, corruptedItem.type)
+
+      return {
+        corruptedItems: state.corruptedItems.filter(item => item.id !== itemId),
+        bankInventory: [...state.bankInventory, newItem]
+      }
+    }),
+
+  sellCorruptedForGold: (itemId) =>
+    set((state) => {
+      const corruptedItem = state.corruptedItems.find(item => item.id === itemId)
+      if (!corruptedItem) return {}
+
+      return {
+        corruptedItems: state.corruptedItems.filter(item => item.id !== itemId),
+        bankGold: state.bankGold + corruptedItem.value
+      }
+    }),
+
+  sellCorruptedForAlkahest: (itemId) =>
+    set((state) => {
+      const corruptedItem = state.corruptedItems.find(item => item.id === itemId)
+      if (!corruptedItem) return {}
+
+      const alkahestAmount = Math.floor(corruptedItem.value * GAME_CONFIG.items.alkahestConversionRate)
+
+      return {
+        corruptedItems: state.corruptedItems.filter(item => item.id !== itemId),
+        alkahest: state.alkahest + alkahestAmount
+      }
+    }),
+
+  deleteCorruptedItem: (itemId) =>
+    set((state) => ({
+      corruptedItems: state.corruptedItems.filter(item => item.id !== itemId)
+    })),
 })

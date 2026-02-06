@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -11,6 +11,9 @@ import {
   Box,
   Tooltip,
   Icon,
+  Collapse,
+  Button,
+  Code,
 } from '@chakra-ui/react'
 import { Icon as ChakraIcon } from '@chakra-ui/react'
 import { keyframes } from '@emotion/react'
@@ -277,12 +280,22 @@ interface ItemDetailModalProps {
 }
 
 export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
+  // Dev mode JSON viewer state
+  const [showJson, setShowJson] = useState(false)
+  const isDev = import.meta.env.DEV
+
   // Restore icon if missing (handles deserialization issues)
   const restoredItem = useMemo(() => restoreItemIcon(item), [item])
   const rarityTheme = RARITY_COLORS[restoredItem.rarity] || RARITY_COLORS.common
   const IconComponent = restoredItem.icon || GameIcons.GiSwordman
   const GemIcon = RARITY_GEM_ICONS[restoredItem.rarity] || GameIcons.GiCutDiamond
   
+  // Prepare JSON for display (exclude icon function)
+  const itemJson = useMemo(() => {
+    const { icon, ...rest } = restoredItem
+    return JSON.stringify(rest, null, 2)
+  }, [restoredItem])
+
   // Sanitize item name in case it got corrupted with icon function
   const displayName = useMemo(() => {
     if (typeof item.name === 'string' && item.name.includes('function ')) {
@@ -571,6 +584,45 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 </Text>
               </HStack>
             </HStack>
+
+            {/* Dev Mode: JSON Viewer */}
+            {isDev && (
+              <VStack w="full" spacing={2} pt={2} borderTopWidth="1px" borderColor="whiteAlpha.200">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  colorScheme="cyan"
+                  onClick={() => setShowJson(!showJson)}
+                  rightIcon={<Icon as={showJson ? GameIcons.GiPlainCircle : GameIcons.GiCircle} />}
+                  w="full"
+                >
+                  {showJson ? 'Hide' : 'Show'} Item JSON (Dev)
+                </Button>
+                <Collapse in={showJson} animateOpacity style={{ width: '100%' }}>
+                  <Box
+                    bg="blackAlpha.600"
+                    p={3}
+                    borderRadius="md"
+                    borderWidth="1px"
+                    borderColor="cyan.600"
+                    maxH="300px"
+                    overflowY="auto"
+                    w="full"
+                  >
+                    <Code
+                      display="block"
+                      whiteSpace="pre"
+                      fontSize="xs"
+                      bg="transparent"
+                      color="cyan.300"
+                      w="full"
+                    >
+                      {itemJson}
+                    </Code>
+                  </Box>
+                </Collapse>
+              </VStack>
+            )}
           </VStack>
         </ModalBody>
       </ModalContent>
