@@ -31,6 +31,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     addHeroByClass,
     bankInventory,
     bankGold,
+    alkahest,
     bankStorageSlots,
     expandBankStorage,
     equipItemFromBank,
@@ -232,6 +233,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
       <PartySetupHeader
         bankGold={bankGold}
         metaXp={metaXp}
+        alkahest={alkahest}
         bankInventory={bankInventory.length}
         bankStorageSlots={bankStorageSlots}
         canStart={canStart}
