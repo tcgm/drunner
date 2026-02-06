@@ -150,6 +150,12 @@ export const useGameStore = create<GameStore>()(
             const actualState = parsedData?.state
             if (!actualState) return parsedData
 
+            // Recovery: Fix negative alkahest by converting to positive
+            if (actualState.alkahest !== undefined && actualState.alkahest < 0) {
+              console.warn(`[GameStore] Detected negative alkahest: ${actualState.alkahest}, converting to positive`)
+              actualState.alkahest = Math.abs(actualState.alkahest)
+            }
+
             // Repair party array size if it doesn't match config
             if (actualState.party) {
               const expectedSize = GAME_CONFIG.party.maxSize
