@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import type { GameState, Hero, Run, Item, ItemStorage, Equipment } from '@/types'
 import { MusicContext } from '@/types/audio'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { needsMigration } from '@/utils/migration'
+import { needsMigration, CURRENT_SAVE_VERSION } from '@/utils/migration'
 import { hydrateItem, hydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
 import { calculateMaxHp } from '@/utils/heroUtils'
@@ -40,6 +40,7 @@ interface GameStore extends GameState,
   UtilityActionsSlice {}
 
 const initialState: GameState = {
+  saveVersion: CURRENT_SAVE_VERSION,
   party: Array(GAME_CONFIG.party.maxSize).fill(null),
   heroRoster: [],
   dungeon: {

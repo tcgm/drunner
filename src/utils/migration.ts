@@ -8,6 +8,9 @@ import { migrateHeroArray } from './heroMigration'
 import { migrateItemArray, migrateHeroArrayItems } from './itemMigration'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 
+// Current save version - increment when breaking changes require migration
+export const CURRENT_SAVE_VERSION = 1
+
 /**
  * Converts depth-based dungeon to floor-based system
  * Old: 1 event = 1 depth
@@ -145,6 +148,7 @@ export function migrateGameState(state: GameState): GameState {
 
   const result = {
     ...state,
+    saveVersion: CURRENT_SAVE_VERSION, // Mark this save as current version
     party: migratedParty,
     heroRoster: migratedRosterFiltered,
     bankInventory: finalBankInventory,
@@ -175,66 +179,11 @@ export function migrateGameState(state: GameState): GameState {
 
 /**
  * Check if a game state needs migration
- * Returns true if any migration would be applied
+ * Returns true if save version is older than current version or missing
  */
 export function needsMigration(state: GameState): boolean {
-  // Check if dungeon needs floor migration
-  if (state.dungeon.floor === undefined || state.dungeon.eventsThisFloor === undefined) {
-    return true
-  }
-
-  // Check if any hero has old equipment format
-  const hasOldEquipmentFormat = [...state.party, ...state.heroRoster].some(hero => {
-    if (!hero) return false
-    // If hero has equipment but not slots, it needs migration
-    return hero.equipment && !hero.slots
-  })
-
-  if (hasOldEquipmentFormat) {
-    return true
-  }
-
-  // Check if any items need stat migration
-  const allItems: Item[] = [
-    ...state.bankInventory,
-    ...state.overflowInventory,
-    ...(state.dungeon.inventory || []),
-  ]
-
-  // Add equipped items from heroes
-  ;[...state.party, ...state.heroRoster].forEach(hero => {
-    if (!hero) return
-    if (hero.slots) {
-      Object.values(hero.slots).forEach(item => {
-        if (item && 'stats' in item) {
-          allItems.push(item as Item)
-        }
-      })
-    }
-    if (hero.equipment) {
-      Object.values(hero.equipment).forEach(item => {
-        if (item && 'stats' in item) {
-          allItems.push(item as Item)
-        }
-      })
-    }
-  })
-
-  // Check if any item would be migrated
-  const hasOldItems = allItems.some(item => {
-    // Items without statVersion need migration
-    if (!item.statVersion || item.statVersion < 2) {
-      return true
-    }
-    // Set items without setId need migration
-    const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
-    if (setTemplate && !item.setId) {
-      return true
-    }
-    return false
-  })
-
-  return hasOldItems
+  // No version or old version needs migration
+  return !state.saveVersion || state.saveVersion < CURRENT_SAVE_VERSION
 }
 
 /**

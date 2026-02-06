@@ -320,6 +320,7 @@ export interface Run {
 }
 
 export interface GameState {
+  saveVersion: number // Current save format version, increment when breaking changes occur
   party: (Hero | null)[]
   heroRoster: Hero[] // All heroes ever created, organized by class
   dungeon: Dungeon
