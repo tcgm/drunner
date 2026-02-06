@@ -131,7 +131,7 @@ export interface Item {
 }
 
 export interface Consumable extends Item {
-  consumableType: 'potion' | 'scroll' | 'food'
+  consumableType: 'potion' | 'scroll' | 'food' | 'supply'
   effect: ConsumableEffect
   usableInCombat: boolean
   usableOutOfCombat: boolean

@@ -1,9 +1,26 @@
 import type { Consumable, ItemRarity } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
-import { ALL_CONSUMABLE_BASES, getConsumableBaseById, getRandomConsumableBase, type ConsumableBase } from '../../data/consumables/bases'
+import { 
+  ALL_CONSUMABLE_BASES, 
+  getConsumableBaseById, 
+  getRandomConsumableBase, 
+  type ConsumableBase,
+  ALL_POTION_BASES 
+} from '../../data/consumables/bases'
+import { ALL_FOOD_BASES } from '../../data/consumables/food'
+import { ALL_SUPPLY_BASES } from '../../data/consumables/supplies'
 import { ALL_SIZES, getSizeById, getRandomSize, type ConsumableSize } from '../../data/consumables/sizes'
 import { ALL_POTENCIES, getPotencyById, getRandomPotency, type ConsumablePotency } from '../../data/consumables/potencies'
 import { getRarityConfig } from '@/systems/rarity/raritySystem'
+
+/**
+ * Determine consumable type from base
+ */
+function getConsumableType(base: ConsumableBase): 'potion' | 'food' | 'supply' {
+  if (ALL_FOOD_BASES.includes(base)) return 'food'
+  if (ALL_SUPPLY_BASES.includes(base)) return 'supply'
+  return 'potion'
+}
 
 /**
  * Generate a consumable by combining base + size + potency + rarity
@@ -48,10 +65,14 @@ export function generateConsumable(
   const effectValue = Math.floor(base.baseValue * floorMultiplier * size.multiplier * potency.multiplier * rarityMultiplier)
   const value = Math.floor(base.baseGoldValue * floorMultiplier * size.valueMultiplier * potency.valueMultiplier * rarityMultiplier)
   
+  // Determine consumable type from base
+  const consumableType = getConsumableType(base)
+  
   // Generate name (potency and size prefixes, with rarity if not common)
   const rarityPrefix = finalRarity !== 'common' ? `${rarityConfig.name} ` : ''
   const potencyPrefix = potency.prefix ? `${potency.prefix} ` : ''
-  const name = `${rarityPrefix}${potencyPrefix}${size.prefix} ${base.name} Potion`
+  const suffix = consumableType === 'potion' ? 'Potion' : ''
+  const name = `${rarityPrefix}${potencyPrefix}${size.prefix} ${base.name}${suffix ? ' ' + suffix : ''}`
   
   // Generate description
   const effectDesc = base.effectType === 'heal' 
@@ -73,7 +94,7 @@ export function generateConsumable(
     stats: {},
     value,
     icon: base.icon,
-    consumableType: 'potion',
+    consumableType,
     effect: {
       type: base.effectType,
       value: effectValue,

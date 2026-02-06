@@ -12,6 +12,7 @@ import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import { ConfirmStartWithOverflowModal } from '../party/ConfirmStartWithOverflowModal'
 import { PotionShopModal } from '../party/PotionShopModal'
+import { MarketHallModal } from '../party/MarketHallModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
@@ -75,6 +76,9 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Shop modal
   const { isOpen: isShopOpen, onOpen: onShopOpen, onClose: onShopClose } = useDisclosure()
+
+  // Market Hall modal
+  const { isOpen: isMarketOpen, onOpen: onMarketOpen, onClose: onMarketClose } = useDisclosure()
 
   // Buy bank slots modal
   const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
@@ -196,6 +200,10 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     purchasePotion(potion)
   }
 
+  const handlePurchaseConsumable = (consumable: Consumable) => {
+    purchasePotion(consumable)
+  }
+
   const handlePurchaseItem = (item: Item) => {
     // Check if bank is full
     if (bankInventory.length >= bankStorageSlots) {
@@ -230,6 +238,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onBack={onBack}
         onStart={handleStart}
         onOpenShop={onShopOpen}
+        onOpenMarket={onMarketOpen}
         onOpenBank={handleOpenBank}
       />
 
@@ -322,6 +331,16 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onSpendGold={spendBankGold}
         bankInventory={bankInventory}
         bankStorageSlots={bankStorageSlots}
+      />
+
+      {/* Market Hall Modal */}
+      <MarketHallModal
+        isOpen={isMarketOpen}
+        onClose={onMarketClose}
+        bankGold={bankGold}
+        party={party}
+        onPurchase={handlePurchaseConsumable}
+        onSpendGold={spendBankGold}
       />
 
       {/* Buy Bank Slots Modal */}

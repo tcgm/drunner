@@ -5,10 +5,11 @@ export * from './bases'
 export * from './sizes'
 export * from './potencies'
 
-// Export all consumables by category (LEGACY - kept for backwards compatibility)
+// Export all consumables by category
 export * from './potions'
+export * from './food'
+export * from './supplies'
 // export * from './scrolls' // TODO: Add scrolls
-// export * from './food' // TODO: Add food
 
 // Import arrays from each category
 import { ALL_POTIONS } from './potions'
