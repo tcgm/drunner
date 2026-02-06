@@ -13,6 +13,7 @@ import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { processUniqueEffects } from '@/systems/items/uniqueEffects'
 import { applyPenaltyToParty } from './statActions'
 import { saveRunHistory, loadRunHistory } from './runHistory'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 export interface DungeonActionsSlice {
   startDungeon: (startingFloor?: number, alkahestCost?: number) => void
@@ -37,7 +38,6 @@ export const createDungeonActions: StateCreator<
 
       // Penalty should already be applied by endGame
       // Revive all party members and full heal at dungeon start
-      const { calculateTotalStats } = require('@/utils/statCalculator')
       const healedParty = state.party.map(hero => hero ? ({
         ...hero,
         isAlive: true,
@@ -156,7 +156,6 @@ export const createDungeonActions: StateCreator<
             delete newSlots[amuletSlot]
             
             // Revive the hero with 50% HP (using effective max HP with equipment)
-            const { calculateTotalStats } = require('@/utils/statCalculator')
             const maxHp = calculateTotalStats(hero).maxHp
             resurrectedHeroes.push(hero.name)
             

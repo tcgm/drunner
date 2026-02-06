@@ -1,9 +1,10 @@
 import { Box, VStack, Text, Button, HStack, Icon, Divider, Badge } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced, GiAngelWings, GiGooExplosion, GiDodge } from 'react-icons/gi'
+import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced, GiAngelWings, GiGooExplosion, GiDodge, GiAnvilImpact } from 'react-icons/gi'
 import type { ResolvedOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { BiArrowFromBottom } from 'react-icons/bi'
 
 const MotionBox = motion.create(Box)
 const MotionHStack = motion.create(HStack)
@@ -21,6 +22,9 @@ const EFFECT_ICONS = {
   item: GiChest,
   status: GiLevelFourAdvanced,
   revive: GiAngelWings,
+  dodge: GiDodge,
+  crit: GiGooExplosion,
+  upgradeItem: GiAnvilImpact,
 }
 
 const EFFECT_COLORS = {
@@ -31,6 +35,9 @@ const EFFECT_COLORS = {
   item: 'blue.400',
   status: 'cyan.400',
   revive: 'cyan.300',
+  upgradeItem: 'blue.400',
+  dodge: 'cyan.400',
+  crit: 'red.400',
 }
 
 export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayProps) {
