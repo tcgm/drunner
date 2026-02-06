@@ -202,6 +202,11 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   }
 
   const handlePurchaseConsumable = (consumable: Consumable) => {
+    // Check if bank is full
+    if (bankInventory.length >= bankStorageSlots) {
+      onBuySlotsOpen()
+      return
+    }
     purchasePotion(consumable)
   }
 

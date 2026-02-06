@@ -41,7 +41,12 @@ export function generateConsumable(
   // Phoenix Down can only be rare or higher
   if (base.id === 'phoenix-down' && rarity && !['rare', 'epic', 'legendary', 'mythic'].includes(rarity)) {
     // Re-roll to a different base if rarity is too low
-    base = ALL_CONSUMABLE_BASES.filter(b => b.id !== 'phoenix-down')[Math.floor(Math.random() * (ALL_CONSUMABLE_BASES.length - 1))]
+    // Use ALL_POTION_BASES if the original base was a potion, otherwise use ALL_CONSUMABLE_BASES
+    const isPotionBase = ALL_POTION_BASES.some(b => b.id === base.id)
+    const alternativeBases = isPotionBase
+      ? ALL_POTION_BASES.filter(b => b.id !== 'phoenix-down')
+      : ALL_CONSUMABLE_BASES.filter(b => b.id !== 'phoenix-down')
+    base = alternativeBases[Math.floor(Math.random() * alternativeBases.length)]
   }
   
   // Select size
