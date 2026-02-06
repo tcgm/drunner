@@ -101,7 +101,7 @@ export const createDungeonActions: StateCreator<
       return {
         party: healedParty,
         heroRoster: updatedRoster,
-        alkahest: state.alkahest - alkahestCost,
+        alkahest: alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest,
         dungeon: {
           depth: startingFloor,
           floor: startingFloor,

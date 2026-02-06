@@ -51,6 +51,12 @@ export function loadSave(
       state = parsed
     }
 
+    // Recovery: Fix negative alkahest by converting to positive
+    if (state.alkahest !== undefined && state.alkahest < 0) {
+      console.warn(`[SaveManager] Detected negative alkahest: ${state.alkahest}, converting to positive`)
+      state.alkahest = Math.abs(state.alkahest)
+    }
+
     // Validate required fields
     const requiredFields = ['party', 'heroRoster', 'dungeon', 'bankGold', 'bankInventory']
     const hasRequiredFields = requiredFields.every(field => field in state)

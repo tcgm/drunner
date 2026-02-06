@@ -71,7 +71,7 @@ export default function FloorSelectionModal({
     )
   }, [selectedFloor, freeFloorThreshold])
 
-  const canAfford = alkahestCost <= alkahest
+  const canAfford = alkahestCost === 0 || alkahestCost <= alkahest
   const maxAffordableFloor = useMemo(() => {
     let floor = freeFloorThreshold + 1
     let cost = 0
