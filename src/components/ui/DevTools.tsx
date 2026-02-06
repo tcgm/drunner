@@ -33,7 +33,7 @@ import {
   TabPanel,
 } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
-import { GiWrench } from 'react-icons/gi'
+import { GiWrench, GiTwoCoins, GiSparkles, GiBarbedSun } from 'react-icons/gi'
 import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { useRef, useState, useMemo } from 'react'
@@ -47,13 +47,16 @@ import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { levelUpHero } from '@/utils/heroUtils'
 import { BOSS_EVENTS } from '@/data/events/boss/normal'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import QuantityInputModal from './QuantityInputModal'
 
 type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
+type ResourceModal = 'gold' | 'alkahest' | 'xp' | null
 
 export default function DevTools() {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { party, dungeon, resetGame, applyPenalty, listBackups, restoreFromBackup, downloadBackup, activeRun } = useGameStore()
+  const { party, dungeon, resetGame, applyPenalty, listBackups, restoreFromBackup, downloadBackup, activeRun, bankGold, metaXp, alkahest } = useGameStore()
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null)
+  const [resourceModal, setResourceModal] = useState<ResourceModal>(null)
   const [backups, setBackups] = useState<string[]>([])
   const cancelRef = useRef<HTMLButtonElement>(null)
 
@@ -191,11 +194,29 @@ export default function DevTools() {
   }
 
   const handleAddGold = (amount: number) => {
+    if (isInDungeon) {
+      useGameStore.setState({ 
+        dungeon: { 
+          ...dungeon, 
+          gold: dungeon.gold + amount 
+        } 
+      })
+    } else {
+      useGameStore.setState({ 
+        bankGold: bankGold + amount 
+      })
+    }
+  }
+
+  const handleAddAlkahest = (amount: number) => {
     useGameStore.setState({ 
-      dungeon: { 
-        ...dungeon, 
-        gold: dungeon.gold + amount 
-      } 
+      alkahest: alkahest + amount 
+    })
+  }
+
+  const handleAddXp = (amount: number) => {
+    useGameStore.setState({ 
+      metaXp: metaXp + amount 
     })
   }
 
@@ -506,11 +527,29 @@ export default function DevTools() {
                     <Text fontSize="sm" fontWeight="bold" color="gray.400">
                       Resources
                     </Text>
-                    <Button size="sm" colorScheme="yellow" onClick={() => handleAddGold(1000)}>
-                      Add 1000 Gold
+                    <Button 
+                      size="sm" 
+                      colorScheme="yellow" 
+                      leftIcon={<Icon as={GiTwoCoins} />}
+                      onClick={() => setResourceModal('gold')}
+                    >
+                      Add/Remove Gold {isInDungeon ? '(Dungeon)' : '(Bank)'}
                     </Button>
-                    <Button size="sm" colorScheme="yellow" onClick={() => handleAddGold(-500)}>
-                      Remove 500 Gold
+                    <Button 
+                      size="sm" 
+                      colorScheme="purple" 
+                      leftIcon={<Icon as={GiSparkles} />}
+                      onClick={() => setResourceModal('alkahest')}
+                    >
+                      Add/Remove Alkahest
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      colorScheme="cyan" 
+                      leftIcon={<Icon as={GiBarbedSun} />}
+                      onClick={() => setResourceModal('xp')}
+                    >
+                      Add/Remove Meta XP
                     </Button>
                   </VStack>
                 </TabPanel>
@@ -832,6 +871,46 @@ export default function DevTools() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
+      {/* Resource Modals */}
+      <QuantityInputModal
+        isOpen={resourceModal === 'gold'}
+        onClose={() => setResourceModal(null)}
+        onConfirm={handleAddGold}
+        title={isInDungeon ? "Add/Remove Dungeon Gold" : "Add/Remove Bank Gold"}
+        icon={GiTwoCoins}
+        color="yellow"
+        currentAmount={isInDungeon ? dungeon.gold : bankGold}
+        showCurrentAmount
+        defaultAmount={1000}
+        allowNegative
+      />
+
+      <QuantityInputModal
+        isOpen={resourceModal === 'alkahest'}
+        onClose={() => setResourceModal(null)}
+        onConfirm={handleAddAlkahest}
+        title="Add/Remove Alkahest"
+        icon={GiSparkles}
+        color="purple"
+        currentAmount={alkahest}
+        showCurrentAmount
+        defaultAmount={100}
+        allowNegative
+      />
+
+      <QuantityInputModal
+        isOpen={resourceModal === 'xp'}
+        onClose={() => setResourceModal(null)}
+        onConfirm={handleAddXp}
+        title="Add/Remove Meta XP"
+        icon={GiBarbedSun}
+        color="cyan"
+        currentAmount={metaXp}
+        showCurrentAmount
+        defaultAmount={1000}
+        allowNegative
+      />
     </>
   )
 }

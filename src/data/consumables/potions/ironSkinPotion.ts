@@ -11,13 +11,15 @@ export const IRON_SKIN_POTION: Consumable = {
   value: 75,
   icon: GiShield,
   consumableType: 'potion',
-  effect: {
-    type: 'buff',
-    stat: 'defense',
-    value: 8,
-    duration: 5,
-    target: 'self',
-  },
+  effects: [
+    {
+      type: 'buff',
+      stat: 'defense',
+      value: 8,
+      duration: 5,
+      target: 'self',
+    }
+  ],
   usableInCombat: false,
   usableOutOfCombat: true,
   stackable: true,

@@ -6,13 +6,17 @@ export const HASTE_BASE: ConsumableBase = {
   id: 'haste',
   name: 'Haste',
   description: 'Increases speed',
-  effectType: 'buff',
+  effects: [
+    {
+      type: 'buff',
+      value: 10,
+      stat: 'speed',
+      duration: 3,
+      target: 'self',
+    }
+  ],
   icon: GiRun,
-  baseValue: 10,
   baseGoldValue: 25,
-  stat: 'speed',
-  duration: 3,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

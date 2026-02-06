@@ -1,5 +1,6 @@
 import type { Hero, TimedEffect, Stats } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 /**
  * Apply a timed effect to a hero
@@ -96,6 +97,13 @@ export function getActiveStatusEffects(hero: Hero): TimedEffect[] {
 }
 
 /**
+ * Get all active regeneration effects on a hero
+ */
+export function getActiveRegenerationEffects(hero: Hero): TimedEffect[] {
+  return hero.activeEffects.filter((e) => e.type === 'regeneration')
+}
+
+/**
  * Check if hero has a specific effect by name
  */
 export function hasEffect(hero: Hero, effectName: string): boolean {
@@ -104,10 +112,39 @@ export function hasEffect(hero: Hero, effectName: string): boolean {
 
 /**
  * Update all heroes' effects when progressing (depth increment)
+ * Applies regeneration healing and removes expired effects
  */
 export function tickEffectsForDepthProgression(heroes: (Hero | null)[], newDepth: number): (Hero | null)[] {
   return heroes.map((hero) => {
-    if (!hero) return null
-    return removeExpiredEffects(hero, newDepth)
+    if (!hero || !hero.isAlive) return hero
+    
+    // Apply regeneration effects first (heal HP)
+    let updatedHero = { ...hero }
+    const regenerationEffects = hero.activeEffects.filter((e) => e.type === 'regeneration')
+    
+    if (regenerationEffects.length > 0) {
+      const effectiveMaxHp = calculateTotalStats(hero).maxHp
+      let totalHealing = 0
+      
+      // Sum all regeneration healing
+      for (const effect of regenerationEffects) {
+        totalHealing += effect.modifier
+      }
+      
+      // Apply healing (capped at max HP)
+      if (totalHealing > 0) {
+        const newHp = Math.min(hero.stats.hp + totalHealing, effectiveMaxHp)
+        updatedHero = {
+          ...updatedHero,
+          stats: {
+            ...updatedHero.stats,
+            hp: newHp,
+          }
+        }
+      }
+    }
+    
+    // Remove expired effects
+    return removeExpiredEffects(updatedHero, newDepth)
   })
 }

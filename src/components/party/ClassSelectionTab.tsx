@@ -1,4 +1,4 @@
-import { Box, Heading, VStack, Text } from '@chakra-ui/react'
+import { Box, Heading, VStack, Text, Grid } from '@chakra-ui/react'
 import { CORE_CLASSES } from '../../data/classes'
 import type { HeroClass } from '../../types'
 import ClassCard from './ClassCard'
@@ -21,7 +21,11 @@ export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelecti
       </Box>
       
       <Box flex={1} overflowY="auto">
-        <VStack align="stretch" spacing={2}>
+        <Grid
+          /* align="stretch" */
+          // spacing={2}
+          templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }}
+        >
           {CORE_CLASSES.map((cls) => (
             <ClassCard
               key={cls.id}
@@ -31,7 +35,7 @@ export function ClassSelectionTab({ selectedClass, onClassSelect }: ClassSelecti
               onClick={() => onClassSelect(cls.id)}
             />
           ))}
-        </VStack>
+        </Grid>
       </Box>
     </Box>
   )

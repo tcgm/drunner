@@ -106,7 +106,7 @@ export function findBaseFromItemName(itemName: string, itemType: ItemSlot): Base
   const nameLower = itemName.toLowerCase()
   const bases = getBasesByType(itemType)
 
-  // Try to match baseNames first (most specific)
+  // Only match baseNames (most reliable)
   for (const base of bases) {
     if (base.baseNames) {
       for (const baseName of base.baseNames) {
@@ -117,15 +117,6 @@ export function findBaseFromItemName(itemName: string, itemType: ItemSlot): Base
     }
   }
 
-  // Try to match description keywords
-  for (const base of bases) {
-    const descWords = base.description.toLowerCase().split(' ')
-    for (const word of descWords) {
-      if (word.length > 3 && nameLower.includes(word)) {
-        return base
-      }
-    }
-  }
-
+  // No description keyword matching - too unreliable
   return undefined
 }

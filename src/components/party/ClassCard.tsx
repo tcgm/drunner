@@ -6,6 +6,7 @@ import type { HeroClass } from '@/types'
 import { calculateMaxHp } from '@/utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
+import { useRef, useEffect, useState } from 'react'
 
 interface ClassCardProps {
   heroClass: HeroClass
@@ -22,6 +23,28 @@ export default function ClassCard({
 }: ClassCardProps) {
   const IconComponent = ((GameIcons as Record<string, IconType>)[heroClass.icon] || GameIcons.GiSwordman) as IconType
   const maxHp = calculateMaxHp(1, heroClass.baseStats.defense)
+  const textRef = useRef<HTMLDivElement>(null)
+  const [fontSize, setFontSize] = useState(16)
+
+  useEffect(() => {
+    const adjustFontSize = () => {
+      if (!textRef.current) return
+      const container = textRef.current
+      const maxWidth = container.offsetWidth
+      let size = 16
+
+      container.style.fontSize = `${size}px`
+
+      while (container.scrollWidth > maxWidth && size > 8) {
+        size -= 0.5
+        container.style.fontSize = `${size}px`
+      }
+
+      setFontSize(size)
+    }
+
+    adjustFontSize()
+  }, [heroClass.name])
   
   const tooltipLabel = (
     <VStack className="class-card-tooltip" align="start" spacing={1} p={1}>
@@ -83,37 +106,46 @@ export default function ClassCard({
         }}
       >
         {/* Icon Background */}
-        <Box className="class-card-icon-bg" position="absolute" top={-2} right={-2} opacity={0.08}>
-          <Icon as={IconComponent} boxSize={18} color="orange.400" />
+        <Box className="class-card-icon-bg" position="absolute" top={-2} right={2} opacity={0.08}>
+          <Icon as={IconComponent} boxSize={24} color="orange.400" />
         </Box>
         
-        <HStack className="class-card-content" h="full" spacing={2} p={2} position="relative" zIndex={1}>
+        <VStack className="class-card-content" h="100%" spacing="5%" p="2%" position="relative" zIndex={1} justify="center">
           <Box
             className="class-card-icon"
             bg={isSelected ? 'orange.800' : 'gray.900'}
             borderRadius="md"
-            p={2}
+            p="3%"
             borderWidth="2px"
             borderColor={isSelected ? 'orange.600' : 'gray.700'}
-            flexShrink={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            w="60%"
+            h="60%"
           >
-            <Icon as={IconComponent} boxSize={9} color="orange.300" />
+            <Icon as={IconComponent} w="100%" h="100%" color="orange.300" />
           </Box>
           
-          <VStack className="class-card-info" align="start" spacing={0} flex={1} minW={0}>
-            <Text className="class-card-name" fontWeight="bold" fontSize="sm" color="orange.200" isTruncated w="full">
-              {heroClass.name}
-            </Text>
-            <HStack className="class-card-quick-stats" spacing={1} fontSize="xs" color="gray.400" flexWrap="wrap">
-              <Text color={GAME_CONFIG.colors.hp.light}>HP:{maxHp}</Text>
-              <Text>•</Text>
-              <Text color={GAME_CONFIG.colors.stats.attack}>ATK:{heroClass.baseStats.attack}</Text>
-            </HStack>
+          <VStack className="class-card-info" spacing={1} w="100%" position="relative">
+            <Box w="100%" px={1}>
+              <Text
+                ref={textRef}
+                className="class-card-name"
+                fontWeight="bold"
+                color="orange.200"
+                textAlign="center"
+                whiteSpace="nowrap"
+                fontSize={`${fontSize}px`}
+              >
+                {heroClass.name}
+              </Text>
+            </Box>
             {partyHasClass && (
-              <Badge className="class-card-in-party-badge" colorScheme="green" fontSize="xs" mt={0.5}>In Party</Badge>
+              <Badge className="class-card-in-party-badge" colorScheme="green" fontSize="xs">In Party</Badge>
             )}
           </VStack>
-        </HStack>
+        </VStack>
         
         {isSelected && (
           <Box

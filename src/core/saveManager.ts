@@ -6,6 +6,8 @@
 import type { GameState } from '@/types'
 import { migrateGameState, needsMigration } from '../utils/migration'
 import LZString from 'lz-string'
+import { resolveItemDataBatch } from '@/utils/itemDataResolver'
+import { deduplicateGameState } from '@/utils/itemDeduplication'
 
 export interface LoadResult {
   success: boolean
@@ -78,6 +80,15 @@ export function loadSave(
     console.log('[SaveManager] Save is current, no migration needed')
     const migratedState = migrateGameState(state)
     
+    // Deduplicate any duplicate item IDs
+    const dedupeReport = deduplicateGameState(migratedState)
+    if (dedupeReport.totalDuplicatesFound > 0) {
+      console.warn(`[SaveManager] Removed ${dedupeReport.totalDuplicatesFound} duplicate items during load`)
+    }
+
+    // Resolve any missing item data (e.g., consumable effects)
+    resolveAllItemsInState(migratedState)
+
     return {
       success: true,
       state: migratedState,
@@ -98,7 +109,49 @@ export function loadSave(
  */
 export function applyMigratedState(state: GameState): GameState {
   console.log('[SaveManager] Applying migration to state')
-  return migrateGameState(state)
+  const migratedState = migrateGameState(state)
+
+  // Deduplicate any duplicate item IDs
+  const dedupeReport = deduplicateGameState(migratedState)
+  if (dedupeReport.totalDuplicatesFound > 0) {
+    console.warn(`[SaveManager] Removed ${dedupeReport.totalDuplicatesFound} duplicate items during migration`)
+  }
+
+  // Resolve any missing item data after migration
+  resolveAllItemsInState(migratedState)
+
+  return migratedState
+}
+
+/**
+ * Resolve missing data for all items in the game state
+ */
+function resolveAllItemsInState(state: GameState): void {
+  let totalResolved = 0
+
+  // Resolve bank inventory
+  totalResolved += resolveItemDataBatch(state.bankInventory)
+
+  // Resolve dungeon inventory
+  totalResolved += resolveItemDataBatch(state.dungeon.inventory)
+
+  // Resolve party member items
+  state.party.forEach(hero => {
+    if (hero) {
+      const items = Object.values(hero.slots).filter(item => item !== null)
+      totalResolved += resolveItemDataBatch(items)
+    }
+  })
+
+  // Resolve roster member items
+  state.heroRoster.forEach(hero => {
+    const items = Object.values(hero.slots).filter(item => item !== null)
+    totalResolved += resolveItemDataBatch(items)
+  })
+
+  if (totalResolved > 0) {
+    console.log(`[SaveManager] Resolved ${totalResolved} items with missing data`)
+  }
 }
 
 /**

@@ -3,6 +3,7 @@ import { applyEffect } from '../effects/effectManager'
 import { GiHealthPotion, GiStrong, GiShield, GiRun, GiClover } from 'react-icons/gi'
 import { getConsumableSlotIds } from '@/config/slotConfig'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { getConsumableEffects } from '@/utils/itemDataResolver'
 
 /**
  * Use a consumable from a hero's slot by slot ID
@@ -23,74 +24,107 @@ export function useConsumable(
     return { hero, party, message: 'No consumable in that slot.' }
   }
 
+  // Resolve effects if needed (fixes old consumables)
+  const effects = getConsumableEffects(consumable)
+
+  if (!effects || effects.length === 0) {
+    return { hero, party, message: 'Consumable has no effects.' }
+  }
+
   const updatedHero = { ...hero }
   let updatedParty = [...party]
-  let message = ''
+  const messages: string[] = []
 
-  // Apply consumable effect
-  switch (consumable.effect.type) {
-    case 'heal':
-      if (consumable.effect.value) {
-        const effectiveMaxHp = calculateTotalStats(hero).maxHp
-        const healAmount = Math.min(consumable.effect.value, effectiveMaxHp - hero.stats.hp)
-        updatedHero.stats = {
-          ...updatedHero.stats,
-          hp: Math.min(hero.stats.hp + consumable.effect.value, effectiveMaxHp),
+  // Apply all consumable effects
+  for (const effect of effects) {
+    switch (effect.type) {
+      case 'heal':
+        if (effect.value) {
+          const effectiveMaxHp = calculateTotalStats(updatedHero).maxHp
+          const healAmount = Math.min(effect.value, effectiveMaxHp - updatedHero.stats.hp)
+          updatedHero.stats = {
+            ...updatedHero.stats,
+            hp: Math.min(updatedHero.stats.hp + effect.value, effectiveMaxHp),
+          }
+          messages.push(`Recovered ${healAmount} HP`)
         }
-        message = `${hero.name} used ${consumable.name} and recovered ${healAmount} HP!`
-      }
-      break
+        break
 
-    case 'revive':
-      if (!hero.isAlive && consumable.effect.value) {
-        // Revive the hero with the specified HP amount
-        updatedHero.isAlive = true
-        const effectiveMaxHp = calculateTotalStats(hero).maxHp
-        updatedHero.stats = {
-          ...updatedHero.stats,
-          hp: Math.min(consumable.effect.value, effectiveMaxHp),
+      case 'hot':
+        // Heal over time - apply as a regeneration effect
+        if (effect.value && effect.duration) {
+          const effectToApply = {
+            name: consumable.name,
+            description: `Healing ${effect.value} HP per event`,
+            icon: consumable.icon,
+            type: 'regeneration' as const,
+            modifier: effect.value, // HP to heal per event
+            duration: effect.duration,
+            isPermanent: false,
+          }
+          
+          const heroWithEffect = applyEffect(updatedHero, effectToApply, currentDepth)
+          Object.assign(updatedHero, heroWithEffect)
+          
+          messages.push(`Will recover ${effect.value} HP per event for ${effect.duration} events`)
         }
-        message = `${hero.name} was revived with ${consumable.effect.value} HP!`
-      } else if (hero.isAlive) {
-        message = `${hero.name} is already alive!`
-      }
-      break
+        break
 
-    case 'buff':
-      if (consumable.effect.stat && consumable.effect.value && consumable.effect.duration) {
-        const effectToApply = {
-          name: consumable.name,
-          description: consumable.description,
-          icon: consumable.icon,
-          type: 'buff' as const,
-          stat: consumable.effect.stat,
-          modifier: consumable.effect.value,
-          duration: consumable.effect.duration,
-          isPermanent: consumable.effect.isPermanent || false,
+      case 'revive':
+        if (!hero.isAlive && effect.value) {
+          // Revive the hero with the specified HP amount
+          updatedHero.isAlive = true
+          const effectiveMaxHp = calculateTotalStats(updatedHero).maxHp
+          updatedHero.stats = {
+            ...updatedHero.stats,
+            hp: Math.min(effect.value, effectiveMaxHp),
+          }
+          messages.push(`Was revived with ${effect.value} HP`)
+        } else if (hero.isAlive) {
+          messages.push(`Already alive`)
         }
-        
-        const heroWithEffect = applyEffect(updatedHero, effectToApply, currentDepth)
-        Object.assign(updatedHero, heroWithEffect)
-        
-        message = `${hero.name} used ${consumable.name} and gained +${consumable.effect.value} ${consumable.effect.stat} for ${consumable.effect.duration} events!`
-      }
-      break
+        break
 
-    case 'cleanse':
-      // Remove all debuffs
-      updatedHero.activeEffects = updatedHero.activeEffects.filter((e) => e.type !== 'debuff')
-      message = `${hero.name} used ${consumable.name} and cleansed all debuffs!`
-      break
+      case 'buff':
+        if (effect.stat && effect.value && effect.duration) {
+          const effectToApply = {
+            name: consumable.name,
+            description: consumable.description,
+            icon: consumable.icon,
+            type: 'buff' as const,
+            stat: effect.stat,
+            modifier: effect.value,
+            duration: effect.duration,
+            isPermanent: effect.isPermanent || false,
+          }
+          
+          const heroWithEffect = applyEffect(updatedHero, effectToApply, currentDepth)
+          Object.assign(updatedHero, heroWithEffect)
+          
+          messages.push(`Gained +${effect.value} ${effect.stat} for ${effect.duration} events`)
+        }
+        break
 
-    case 'damage':
-      // Damage effects would need enemy targeting logic
-      message = `${hero.name} used ${consumable.name}!`
-      break
+      case 'cleanse':
+        // Remove all debuffs
+        updatedHero.activeEffects = updatedHero.activeEffects.filter((e) => e.type !== 'debuff')
+        messages.push(`Cleansed all debuffs`)
+        break
 
-    case 'special':
-      message = `${hero.name} used ${consumable.name}!`
-      break
+      case 'damage':
+        // Damage effects would need enemy targeting logic
+        messages.push(`Used ${consumable.name}`)
+        break
+
+      case 'special':
+        messages.push(`Used ${consumable.name}`)
+        break
+    }
   }
+
+  const message = messages.length > 0 
+    ? `${hero.name} used ${consumable.name}! ${messages.join(', ')}.`
+    : `${hero.name} used ${consumable.name}!`
 
   // Remove or decrement stack
   if (consumable.stackable && consumable.stackCount && consumable.stackCount > 1) {

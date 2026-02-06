@@ -12,9 +12,12 @@ import { IRON_SKIN_BASE } from './ironSkin'
 import { HASTE_BASE } from './haste'
 import { LUCK_BASE } from './luck'
 import { PHOENIX_DOWN_BASE } from './phoenixDown'
+import { ALL_FOOD_BASES } from '../food'
+import { ALL_SUPPLY_BASES } from '../supplies'
 import type { ConsumableBase } from './types'
 
-export const ALL_CONSUMABLE_BASES: ConsumableBase[] = [
+// Potion bases (alchemical consumables)
+export const ALL_POTION_BASES: ConsumableBase[] = [
   HEALTH_BASE,
   STRENGTH_BASE,
   IRON_SKIN_BASE,
@@ -23,10 +26,21 @@ export const ALL_CONSUMABLE_BASES: ConsumableBase[] = [
   PHOENIX_DOWN_BASE,
 ]
 
+// All consumable bases combined
+export const ALL_CONSUMABLE_BASES: ConsumableBase[] = [
+  ...ALL_POTION_BASES,
+  ...ALL_FOOD_BASES,
+  ...ALL_SUPPLY_BASES,
+]
+
 export function getConsumableBaseById(id: string): ConsumableBase | undefined {
   return ALL_CONSUMABLE_BASES.find(b => b.id === id)
 }
 
 export function getRandomConsumableBase(): ConsumableBase {
   return ALL_CONSUMABLE_BASES[Math.floor(Math.random() * ALL_CONSUMABLE_BASES.length)]
+}
+
+export function getRandomPotionBase(): ConsumableBase {
+  return ALL_POTION_BASES[Math.floor(Math.random() * ALL_POTION_BASES.length)]
 }

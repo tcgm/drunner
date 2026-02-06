@@ -1,4 +1,4 @@
-import { GiCrown } from 'react-icons/gi'
+import { GiCircle, GiCrown, GiTiara } from 'react-icons/gi'
 import type { BaseItemTemplate } from '../index'
 
 /**
@@ -8,7 +8,12 @@ export const CROWN_BASE: BaseItemTemplate = {
   description: 'A regal crown',
   type: 'helmet',
   icon: GiCrown,
-  baseNames: ['Crown'],
+  baseNames: ['Crown', 'Tiara', 'Circlet'],
+  baseNameIcons: {
+    'Crown': GiCrown,
+    'Tiara': GiTiara,
+    'Circlet': GiCircle
+  },
   stats: {
     defense: 4,
     luck: 3,

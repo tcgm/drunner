@@ -32,7 +32,16 @@ export interface SetItemV3 extends ItemV3Base {
   isUniqueRoll?: boolean  // If this set item rolled as unique (boosted stats)
 }
 
-export type ItemV3 = ProceduralItemV3 | UniqueItemV3 | SetItemV3
+export interface ConsumableV3 extends ItemV3Base {
+  itemType: 'consumable'
+  baseId: string          // Base effect type (healing, buff, etc)
+  sizeId: string          // Size tier (small, medium, large, etc)
+  potencyId: string       // Concentration/quality tier
+  rarity: ItemRarity
+  stackCount?: number     // For stackable consumables
+}
+
+export type ItemV3 = ProceduralItemV3 | UniqueItemV3 | SetItemV3 | ConsumableV3
 
 /**
  * V2 Item Format - Legacy, still supported
@@ -76,7 +85,10 @@ export function isItemV3(item: unknown): item is ItemV3 {
 }
 
 export function isItemV2(item: unknown): item is ItemV2 {
-  return typeof item === 'object' && item !== null && !('version' in item)
+  return typeof item === 'object' && item !== null && (
+    !('version' in item) ||
+    (item as any).version === 2
+  )
 }
 
 export function isProceduralItemV3(item: ItemV3): item is ProceduralItemV3 {
@@ -89,4 +101,8 @@ export function isUniqueItemV3(item: ItemV3): item is UniqueItemV3 {
 
 export function isSetItemV3(item: ItemV3): item is SetItemV3 {
   return item.itemType === 'set'
+}
+
+export function isConsumableV3(item: ItemV3): item is ConsumableV3 {
+  return item.itemType === 'consumable'
 }

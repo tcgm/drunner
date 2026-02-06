@@ -131,8 +131,8 @@ export interface Item {
 }
 
 export interface Consumable extends Item {
-  consumableType: 'potion' | 'scroll' | 'food'
-  effect: ConsumableEffect
+  consumableType: 'potion' | 'scroll' | 'food' | 'supply'
+  effects: ConsumableEffect[] // Array of effects to apply
   usableInCombat: boolean
   usableOutOfCombat: boolean
   stackable?: boolean // Can multiple stack in one slot
@@ -144,8 +144,8 @@ export interface Consumable extends Item {
 }
 
 export interface ConsumableEffect {
-  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special' | 'revive'
-  value?: number // Heal amount, damage, or stat modifier (or HP restored on revive)
+  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special' | 'revive' | 'hot'
+  value?: number // Heal amount, damage, or stat modifier (or HP restored on revive, or HP per tick for HOT)
   stat?: keyof Stats // For buff effects
   duration?: number // In events (depths)
   isPermanent?: boolean
@@ -157,12 +157,12 @@ export interface TimedEffect {
   name: string
   description: string
   icon: IconType
-  type: 'buff' | 'debuff' | 'status'
+  type: 'buff' | 'debuff' | 'status' | 'regeneration'
   appliedAtDepth: number
   duration: number // Number of events (depths)
   expiresAtDepth: number
   stat?: keyof Stats
-  modifier: number // Numeric modifier (+10 attack, -5 defense, etc)
+  modifier: number // Numeric modifier (+10 attack, -5 defense, etc) or HP per tick for regeneration
   isPermanent: boolean
 }
 
@@ -329,6 +329,8 @@ export interface GameState {
   bankInventory: Item[] // Items stored outside runs
   bankStorageSlots: number // Maximum bank storage capacity
   overflowInventory: Item[] // Items from last run that exceed bank capacity
+  corruptedItems: Item[] // Items that failed to load properly and need user resolution
+  v2Items: Item[] // Items using old V2 format that can be migrated to V3
   metaXp: number // Account-wide XP for meta-progression unlocks
   isGameOver: boolean
   isPaused: boolean

@@ -11,13 +11,15 @@ export const LUCK_ELIXIR: Consumable = {
   value: 100,
   icon: GiClover,
   consumableType: 'potion',
-  effect: {
-    type: 'buff',
-    stat: 'luck',
-    value: 15,
-    duration: 5,
-    target: 'self',
-  },
+  effects: [
+    {
+      type: 'buff',
+      stat: 'luck',
+      value: 15,
+      duration: 5,
+      target: 'self',
+    }
+  ],
   usableInCombat: false,
   usableOutOfCombat: true,
   stackable: true,
