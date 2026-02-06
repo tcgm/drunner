@@ -27,7 +27,9 @@ import {
   GiBandageRoll,
   GiCoinsPile,
   GiShoppingBag,
-  GiVikingLonghouse
+  GiVikingLonghouse,
+  GiCoins,
+  GiTwoCoins
 } from 'react-icons/gi'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
@@ -166,7 +168,7 @@ export function MarketHallModal({
           borderBottom="2px solid" 
           borderColor="green.700"
         >
-          <HStack justify="space-between">
+          <HStack justify="space-between" pr={6}>
             <HStack spacing={3}>
               <Icon as={GiVikingLonghouse} boxSize={7} color="green.400" />
               <VStack align="start" spacing={0}>
@@ -193,7 +195,7 @@ export function MarketHallModal({
                 </Button>
               </Tooltip>
               <HStack spacing={2} bg="green.900" px={4} py={2} borderRadius="md" borderWidth="1px" borderColor="green.700">
-                <Icon as={GiCoinsPile} color="yellow.400" />
+                <Icon as={GiTwoCoins} color="yellow.400" />
                 <Text fontSize="md" fontWeight="bold" color="yellow.300">{bankGold}</Text>
               </HStack>
             </HStack>
