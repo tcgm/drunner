@@ -12,8 +12,11 @@ import { equipItem, unequipItem, sellItem, calculateStatsWithEquipment } from '@
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { repairItemNames } from '@/systems/loot/lootGenerator'
 import { migrateGameState, needsMigration } from '@/utils/migration'
+import { loadSave, applyMigratedState } from '@/core/saveManager'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { useAbility as applyAbility } from '@/systems/abilities/abilityManager'
+import { processUniqueEffects } from '@/systems/items/uniqueEffects'
+import type { ResolvedEffect } from '@/systems/events/eventResolver'
 import { getClassById } from '@/data/classes'
 import { hydrateItem, hydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
@@ -796,23 +799,27 @@ export const useGameStore = create<GameStore>()(
               })
               
               if (uniqueEffectResult) {
-                updatedParty = uniqueEffectResult.party
+                // Use the updated party from unique effects
+                const updatedPartyFromEffects = uniqueEffectResult.party
                 
                 // Add effects to the resolved outcome
                 if (uniqueEffectResult.additionalEffects) {
-                  uniqueEffectResult.additionalEffects.forEach(effect => {
+                  uniqueEffectResult.additionalEffects.forEach((effect: ResolvedEffect) => {
                     resolvedOutcome.effects.push(effect)
                     
                     // Track statistics
                     if (effect.type === 'revive') {
                       revivals += effect.target.length
-                      effect.target.forEach(heroId => {
-                        const hero = updatedParty.find(h => h?.id === heroId)
+                      effect.target.forEach((heroId: string) => {
+                        const hero = updatedPartyFromEffects.find(h => h?.id === heroId)
                         if (hero) heroesAffected.add(hero.name)
                       })
                     }
                   })
                 }
+                
+                // Update the main party state with the modified party
+                set({ party: updatedPartyFromEffects })
               }
             }
 
@@ -1942,7 +1949,7 @@ export const useGameStore = create<GameStore>()(
               ...migratedState,
               pendingMigration: false,
               pendingMigrationData: null 
-            }, true) // Force replace mode to ensure clean save
+            })
             
             console.log('[Migration] Migration completed successfully and saved')
           } catch (error) {
@@ -1978,11 +1985,11 @@ export const useGameStore = create<GameStore>()(
           createBackup(name)
 
           try {
-            const state = JSON.parse(str)
+            const parsedData = JSON.parse(str)
 
             // Access the actual nested state
-            const actualState = state?.state
-            if (!actualState) return state
+            const actualState = parsedData?.state
+            if (!actualState) return parsedData
 
             // Repair party array size if it doesn't match config
             if (actualState.party) {
@@ -2162,7 +2169,7 @@ export const useGameStore = create<GameStore>()(
 
             // Check if migration is needed BEFORE applying it
             // But skip if we're already in pending migration state (to avoid loop)
-            if (result.needsMigration && !actualState.pendingMigration) {
+            if (needsMigration(actualState) && !actualState.pendingMigration) {
               console.log('[Migration] Save file needs migration, setting pending state and prompting user')
               // Return pending state but DON'T save to localStorage yet
               // User must approve first
