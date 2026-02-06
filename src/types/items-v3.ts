@@ -87,8 +87,7 @@ export function isItemV3(item: unknown): item is ItemV3 {
 export function isItemV2(item: unknown): item is ItemV2 {
   return typeof item === 'object' && item !== null && (
     !('version' in item) ||
-    (item as any).version === 2 ||
-    (item as any).version === undefined
+    (item as any).version === 2
   )
 }
 

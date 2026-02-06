@@ -126,6 +126,7 @@ export const useGameStore = create<GameStore>()(
       name: 'dungeon-runner-storage',
       storage: {
         getItem: (name) => {
+          console.log(`[GameStore] Loading from storage: ${name}`)
           const compressed = localStorage.getItem(name)
           if (!compressed) return null
 
@@ -193,8 +194,11 @@ export const useGameStore = create<GameStore>()(
             // Collect corrupted items that need user resolution
             const allCorrupted: Item[] = []
 
+            console.log(`[GameStore] bankInventory: ${actualState.bankInventory?.length || 0} items`)
             if (actualState.bankInventory?.length > 0) {
+              console.log(`[GameStore] Hydrating ${actualState.bankInventory.length} bank items`)
               const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.bankInventory as ItemStorage[])
+              console.log(`[GameStore] Bank result: ${valid.length} valid, ${corrupted.length} corrupted`)
               actualState.bankInventory = valid
               allCorrupted.push(...corrupted)
             }

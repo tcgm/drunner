@@ -78,6 +78,7 @@ export function hydrateItems(items: ItemStorage[]): Item[] {
  * Returns {valid: Item[], corrupted: Item[]}
  */
 export function hydrateItemsWithCorrupted(items: ItemStorage[]): { valid: Item[], corrupted: Item[] } {
+  // console.log(`[Hydrate] Starting with ${items.length} stored items`)
   const valid: Item[] = []
   const corrupted: Item[] = []
 
@@ -115,6 +116,7 @@ export function hydrateItemsWithCorrupted(items: ItemStorage[]): { valid: Item[]
     }
   })
 
+  // console.log(`[Hydrate] Result: ${valid.length} valid, ${corrupted.length} corrupted`)
   return { valid, corrupted }
 }
 
@@ -191,12 +193,12 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
     const basesByType = allBases.filter(b => b.type === item.itemSlot)
     if (basesByType.length > 0) {
       baseTemplate = basesByType[0]
-      console.warn(`Using fallback base template for item ${item.id}, baseTemplateId: ${item.baseTemplateId}`)
+      // console.warn(`Using fallback base template for item ${item.id}, baseTemplateId: ${item.baseTemplateId}`)
     }
   }
 
   if (!material || !baseTemplate) {
-    console.warn(`Cannot derive procedural item ${item.id}: material=${!!material}, base=${!!baseTemplate}, materialId=${item.materialId}, baseTemplateId=${item.baseTemplateId}, baseName=${item.baseName}`)
+    // console.warn(`Cannot derive procedural item ${item.id}: material=${!!material}, base=${!!baseTemplate}, materialId=${item.materialId}, baseTemplateId=${item.baseTemplateId}, baseName=${item.baseName}`)
     return createFallbackItem(item)
   }
   
@@ -264,7 +266,7 @@ function deriveUniqueItem(item: UniqueItemV3): Item {
   })
   
   if (!template) {
-    console.warn(`Cannot find unique template: ${item.templateId}`)
+    // console.warn(`Cannot find unique template: ${item.templateId}`)
     return createFallbackItem(item)
   }
   
@@ -297,7 +299,7 @@ function deriveSetItem(item: SetItemV3): Item {
   })
   
   if (!template) {
-    console.warn(`Cannot find set template: ${item.templateId}`)
+    // console.warn(`Cannot find set template: ${item.templateId}`)
     return createFallbackItem(item)
   }
   
@@ -353,7 +355,7 @@ function deriveConsumableItem(item: ConsumableV3): Consumable {
   const potency = getPotencyById(item.potencyId)
 
   if (!base || !size || !potency) {
-    console.warn(`Cannot derive consumable ${item.id}: base=${!!base}, size=${!!size}, potency=${!!potency}`)
+    // console.warn(`Cannot derive consumable ${item.id}: base=${!!base}, size=${!!size}, potency=${!!potency}`)
     return createFallbackItem(item) as Consumable
   }
 
@@ -478,7 +480,7 @@ export function dehydrateItem(item: Item): ItemV3 {
   if (materialId) {
     const material = getMaterialById(materialId)
     if (!material) {
-      console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid materialId "${materialId}", keeping as V2`)
+      // console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid materialId "${materialId}", keeping as V2`)
       // Explicitly mark as V2 to prevent future processing
       return { ...item, version: 2 } as any as ItemV3
     }
@@ -490,7 +492,7 @@ export function dehydrateItem(item: Item): ItemV3 {
       `${b.type}_${b.description.split(' ')[0].toLowerCase()}` === baseTemplateId
     )
     if (!base) {
-      console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid baseTemplateId "${baseTemplateId}", keeping as V2`)
+      // console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid baseTemplateId "${baseTemplateId}", keeping as V2`)
       // Explicitly mark as V2 to prevent future processing
       return { ...item, version: 2 } as any as ItemV3
     }
@@ -500,11 +502,11 @@ export function dehydrateItem(item: Item): ItemV3 {
   if (!materialId || !baseTemplateId) {
     // Check if item has a valid name to recover from
     if (!item.name || typeof item.name !== 'string') {
-      console.warn(`Item ${item.id} has invalid/missing name and metadata, keeping as V2`)
+      // console.warn(`Item ${item.id} has invalid/missing name and metadata, keeping as V2`)
       return item as any as ItemV3
     }
 
-    console.warn(`Item ${item.id} (${item.name}) missing metadata, attempting to recover from name`)
+    // console.warn(`Item ${item.id} (${item.name}) missing metadata, attempting to recover from name`)
 
     // Try to find material by checking if name starts with a material prefix
     if (!materialId) {
@@ -541,14 +543,14 @@ export function dehydrateItem(item: Item): ItemV3 {
 
   // If we still don't have both IDs, return as V2
   if (!materialId || !baseTemplateId) {
-    console.warn(`Cannot recover metadata for item ${item.id} (${item.name || 'unknown'}), keeping as V2`)
+    // console.warn(`Cannot recover metadata for item ${item.id} (${item.name || 'unknown'}), keeping as V2`)
     return item as any as ItemV3
   }
 
   // Extract base name from full item name (remove material prefix)
   // Safety check - if name is missing at this point, we can't proceed
   if (!item.name || typeof item.name !== 'string') {
-    console.warn(`Item ${item.id} has metadata but missing name, keeping as V2`)
+    // console.warn(`Item ${item.id} has metadata but missing name, keeping as V2`)
     return item as any as ItemV3
   }
 
@@ -574,5 +576,15 @@ export function dehydrateItem(item: Item): ItemV3 {
  * Dehydrate multiple items
  */
 export function dehydrateItems(items: Item[]): ItemV3[] {
-  return items.map(dehydrateItem)
+  console.log(`[Dehydrate] Starting with ${items.length} items`)
+  const dehydrated = items.map(dehydrateItem)
+  console.log(`[Dehydrate] Produced ${dehydrated.length} items`)
+
+  // Check for any undefined/null items
+  const filtered = dehydrated.filter(item => item != null)
+  if (filtered.length !== dehydrated.length) {
+    console.log(`[Dehydrate] Filtered out ${dehydrated.length - filtered.length} null/undefined items`)
+  }
+
+  return filtered
 }
