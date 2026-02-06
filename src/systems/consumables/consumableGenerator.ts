@@ -4,6 +4,7 @@ import {
   ALL_CONSUMABLE_BASES, 
   getConsumableBaseById, 
   getRandomConsumableBase, 
+  getRandomPotionBase,
   type ConsumableBase,
   ALL_POTION_BASES 
 } from '../../data/consumables/bases'
@@ -157,4 +158,53 @@ export function generateConsumableForFloor(floor: number, baseId?: string): Cons
   else if (floor >= 10 && rarityRoll < 0.5) rarity = 'uncommon'
   
   return generateConsumable(baseId, size.id, potency.id, rarity, floor)
+}
+
+/**
+ * Generate potion specifically for shop (only uses potion bases, excludes food/supplies)
+ */
+export function generatePotionForFloor(floor: number, baseId?: string): Consumable {
+  // Use the same logic as generateConsumableForFloor, but force potion base if not specified
+  let size: ConsumableSize
+  
+  if (floor >= 80) {
+    size = ALL_SIZES[Math.floor(Math.random() * 2) + 4] // greater or superior
+  } else if (floor >= 50) {
+    size = ALL_SIZES[Math.floor(Math.random() * 3) + 3] // large, greater, or superior
+  } else if (floor >= 25) {
+    size = ALL_SIZES[Math.floor(Math.random() * 3) + 2] // medium, large, or greater
+  } else if (floor >= 10) {
+    size = ALL_SIZES[Math.floor(Math.random() * 2) + 1] // small or medium
+  } else {
+    size = ALL_SIZES[Math.floor(Math.random() * 2)] // tiny or small
+  }
+  
+  // Higher floors give better potencies
+  let potency: ConsumablePotency
+  
+  if (floor >= 70) {
+    potency = ALL_POTENCIES[Math.floor(Math.random() * 3) + 4] // potent, concentrated, or pure
+  } else if (floor >= 40) {
+    potency = ALL_POTENCIES[Math.floor(Math.random() * 3) + 3] // strong, potent, or concentrated
+  } else if (floor >= 20) {
+    potency = ALL_POTENCIES[Math.floor(Math.random() * 2) + 2] // normal or strong
+  } else if (floor >= 5) {
+    potency = ALL_POTENCIES[Math.floor(Math.random() * 2) + 1] // weak or normal
+  } else {
+    potency = ALL_POTENCIES[Math.floor(Math.random() * 2)] // diluted or weak
+  }
+  
+  // Rarity chance based on floor
+  let rarity: ItemRarity = 'common'
+  const rarityRoll = Math.random()
+  
+  if (floor >= 60 && rarityRoll < 0.05) rarity = 'legendary'
+  else if (floor >= 40 && rarityRoll < 0.15) rarity = 'epic'
+  else if (floor >= 20 && rarityRoll < 0.3) rarity = 'rare'
+  else if (floor >= 10 && rarityRoll < 0.5) rarity = 'uncommon'
+  
+  // If no baseId specified, pick a random potion base (not food/supply)
+  const finalBaseId = baseId || getRandomPotionBase().id
+  
+  return generateConsumable(finalBaseId, size.id, potency.id, rarity, floor)
 }

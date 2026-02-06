@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import type { Consumable, Hero, Item } from '@/types'
-import { generateConsumableForFloor } from '@/systems/consumables/consumableGenerator'
+import { generatePotionForFloor } from '@/systems/consumables/consumableGenerator'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { GiShoppingCart, GiCycle, GiShop, GiBarbedSun, GiGoldBar } from 'react-icons/gi'
@@ -76,7 +76,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
       const floor = getEffectiveFloor()
       const newPotions: Consumable[] = []
       for (let i = 0; i < SHOP_SIZE; i++) {
-        const potion = generateConsumableForFloor(floor)
+        const potion = generatePotionForFloor(floor)
         newPotions.push(potion)
       }
       setPotions(newPotions)
@@ -97,7 +97,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
     const floor = getEffectiveFloor()
     const newPotions: Consumable[] = []
     for (let i = 0; i < SHOP_SIZE; i++) {
-      const potion = generateConsumableForFloor(floor)
+      const potion = generatePotionForFloor(floor)
       newPotions.push(potion)
     }
     setPotions(newPotions)

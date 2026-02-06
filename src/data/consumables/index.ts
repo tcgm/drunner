@@ -13,7 +13,7 @@ export * from './supplies'
 
 // Import arrays from each category
 import { ALL_POTIONS } from './potions'
-import { generateConsumable, generateConsumableForFloor } from '../../systems/consumables/consumableGenerator'
+import { generateConsumable, generateConsumableForFloor, generatePotionForFloor } from '../../systems/consumables/consumableGenerator'
 
 // Legacy pre-defined consumables (kept for backwards compatibility)
 export const LEGACY_CONSUMABLES: Consumable[] = [
@@ -28,7 +28,7 @@ export const ALL_CONSUMABLES: Consumable[] = [
 ]
 
 // Export procedural generator as primary method
-export { generateConsumable, generateConsumableForFloor }
+export { generateConsumable, generateConsumableForFloor, generatePotionForFloor }
 
 // Helper to get consumable by ID (tries procedural generation first, then legacy)
 export function getConsumableById(id: string): Consumable | undefined {
