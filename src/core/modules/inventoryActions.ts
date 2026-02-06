@@ -33,6 +33,9 @@ export interface InventoryActionsSlice {
   sellCorruptedForGold: (itemId: string) => void
   sellCorruptedForAlkahest: (itemId: string) => void
   deleteCorruptedItem: (itemId: string) => void
+  // V2 item migration
+  convertV2Item: (itemId: string, materialId: string, baseTemplateId: string) => void
+  skipV2Item: (itemId: string) => void
 }
 
 export const createInventoryActions: StateCreator<
@@ -502,5 +505,37 @@ export const createInventoryActions: StateCreator<
   deleteCorruptedItem: (itemId) =>
     set((state) => ({
       corruptedItems: state.corruptedItems.filter(item => item.id !== itemId)
+    })),
+
+  convertV2Item: (itemId, materialId, baseTemplateId) =>
+    set((state) => {
+      const v2Item = state.v2Items.find(item => item.id === itemId)
+      if (!v2Item) return {}
+
+      // Extract base name from full item name
+      const material = state.bankInventory.find(i => i.materialId === materialId)
+      // For now, keep the original item but mark it with updated metadata
+      const updatedItem = {
+        ...v2Item,
+        materialId,
+        baseTemplateId,
+        version: undefined, // Remove version field to make it a proper Item
+      }
+
+      const newState = {
+        v2Items: state.v2Items.filter(item => item.id !== itemId),
+        bankInventory: state.bankInventory.map(item =>
+          item.id === itemId ? updatedItem as Item : item
+        )
+      }
+
+      console.log(`[V2 Migration] Converted item ${v2Item.name}. Remaining: ${newState.v2Items.length}`)
+
+      return newState
+    }),
+
+  skipV2Item: (itemId) =>
+    set((state) => ({
+      v2Items: state.v2Items.filter(item => item.id !== itemId)
     })),
 })

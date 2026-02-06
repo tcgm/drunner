@@ -26,7 +26,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useCallback, useMemo } from 'react'
-import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion } from 'react-icons/gi'
+import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion, GiUpgrade } from 'react-icons/gi'
 import type { Item } from '../../types'
 import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -37,6 +37,7 @@ import { useInventoryFilters } from '@/components/inventory/useInventoryFilters'
 import { useItemsByType } from '@/components/inventory/useItemsByType'
 import { useLazyLoading } from '@/components/inventory/useLazyLoading'
 import BuyBankSlotsModal from './BuyBankSlotsModal'
+import { ReviewV2ItemsModal } from './ReviewV2ItemsModal'
 
 interface BankInventoryModalProps {
   isOpen: boolean
@@ -54,9 +55,10 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rarity')
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
-  const { alkahest, discardItems, bankStorageSlots, bankGold, expandBankStorage } = useGameStore()
+  const { alkahest, discardItems, bankStorageSlots, bankGold, expandBankStorage, v2Items } = useGameStore()
   const toast = useToast()
   const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
+  const { isOpen: isReviewV2Open, onOpen: onReviewV2Open, onClose: onReviewV2Close } = useDisclosure()
 
   // Use shared hooks
   const visibleCount = useLazyLoading({
@@ -201,6 +203,16 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               </HStack>
             </VStack>
             <Spacer />
+            {!pendingSlot && v2Items.length > 0 && (
+              <Button
+                size="sm"
+                colorScheme="cyan"
+                onClick={onReviewV2Open}
+                leftIcon={<Icon as={GiUpgrade} />}
+              >
+                Review Old Items ({v2Items.length})
+              </Button>
+            )}
             {!pendingSlot && (
               <VStack align="end" spacing={1} mr={8}>
                 <Button
@@ -364,6 +376,9 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
         bankGold={bankGold}
         currentSlots={bankStorageSlots}
       />
+
+      {/* Review V2 Items Modal */}
+      {isReviewV2Open && <ReviewV2ItemsModal onClose={onReviewV2Close} />}
     </Modal>
   )
 }

@@ -74,6 +74,48 @@ export function hydrateItems(items: ItemStorage[]): Item[] {
 }
 
 /**
+ * Hydrate multiple items and separate out corrupted ones and V2 items
+ * Returns {valid: Item[], corrupted: Item[], v2: Item[]}
+ */
+export function hydrateItemsWithDetails(items: ItemStorage[]): { valid: Item[], corrupted: Item[], v2: Item[] } {
+  const valid: Item[] = []
+  const corrupted: Item[] = []
+  const v2: Item[] = []
+
+  items.forEach(stored => {
+    try {
+      // Check if it's a V2 item before hydration
+      if (isItemV2(stored)) {
+        const item = restoreItemIcon(stored as Item)
+        v2.push(item)
+        valid.push(item) // Also add to valid so it can be used normally
+        return
+      }
+
+      const hydrated = hydrateItem(stored)
+
+      // Check if hydration resulted in a fallback/corrupted item
+      if (hydrated.name === 'Corrupted Item' && hydrated.value === 100) {
+        corrupted.push(hydrated)
+      } else {
+        valid.push(hydrated)
+      }
+    } catch (error) {
+      console.error('Failed to hydrate item:', stored, error)
+      if (isItemV2(stored)) {
+        const original = stored as Item
+        corrupted.push(restoreItemIcon(original))
+      } else {
+        const fallback = createFallbackItem(stored)
+        corrupted.push(fallback)
+      }
+    }
+  })
+
+  return { valid, corrupted, v2 }
+}
+
+/**
  * Hydrate multiple items and separate out corrupted ones
  * Returns {valid: Item[], corrupted: Item[]}
  */
@@ -488,9 +530,12 @@ export function dehydrateItem(item: Item): ItemV3 {
 
   if (baseTemplateId) {
     // Check if baseTemplateId can be found
-    const base = allBases.find(b =>
-      `${b.type}_${b.description.split(' ')[0].toLowerCase()}` === baseTemplateId
-    )
+    const base = allBases.find(b => {
+      const expectedId = b.baseNames
+        ? `${b.type}_${b.baseNames[0].toLowerCase()}`
+        : `${b.type}_${b.type}` // fallback if no baseNames
+      return expectedId === baseTemplateId
+    })
     if (!base) {
       // console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid baseTemplateId "${baseTemplateId}", keeping as V2`)
       // Explicitly mark as V2 to prevent future processing
@@ -535,7 +580,9 @@ export function dehydrateItem(item: Item): ItemV3 {
       )
 
       if (foundBase) {
-        baseTemplateId = `${foundBase.type}_${foundBase.description.split(' ')[0].toLowerCase()}`
+        baseTemplateId = foundBase.baseNames
+          ? `${foundBase.type}_${foundBase.baseNames[0].toLowerCase()}`
+          : `${foundBase.type}_${foundBase.type}` // fallback
         console.log(`Recovered baseTemplateId: ${baseTemplateId} for item ${item.name}`)
       }
     }

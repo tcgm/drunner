@@ -30,6 +30,7 @@ devscripts/
 
 .history/
 *dungeon-runner-save*
+*dungeon-runner-backup*
 Nexus of the Pumpkin Inventory.ods
 backupexample.json
 temp_*.txt

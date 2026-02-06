@@ -4,7 +4,7 @@ import type { GameState, Hero, Run, Item, ItemStorage, Equipment } from '@/types
 import { MusicContext } from '@/types/audio'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { needsMigration, CURRENT_SAVE_VERSION } from '@/utils/migration'
-import { hydrateItem, hydrateItems, hydrateItemsWithCorrupted, dehydrateItem, dehydrateItems } from '@/utils/itemHydration'
+import { hydrateItem, hydrateItems, hydrateItemsWithCorrupted, hydrateItemsWithDetails, dehydrateItem, dehydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
 import { calculateMaxHp } from '@/utils/heroUtils'
 import { loadSave, applyMigratedState } from '@/core/saveManager'
@@ -62,6 +62,7 @@ const initialState: GameState = {
   bankStorageSlots: GAME_CONFIG.bank.startingSlots,
   overflowInventory: [],
   corruptedItems: [],
+  v2Items: [],
   metaXp: 0,
   isGameOver: false,
   isPaused: false,
@@ -105,6 +106,7 @@ function dehydrateGameState(state: GameState): GameState {
     heroRoster: state.heroRoster.map(dehydrateHeroItems) as Hero[],
     bankInventory: dehydrateItems(state.bankInventory) as any,
     overflowInventory: dehydrateItems(state.overflowInventory) as any,
+    // Don't save v2Items - it's regenerated from bank scan on load
   }
 }
 
@@ -193,14 +195,16 @@ export const useGameStore = create<GameStore>()(
             // Hydrate and repair item names/icons in inventories
             // Collect corrupted items that need user resolution
             const allCorrupted: Item[] = []
+            const allV2: Item[] = []
 
             console.log(`[GameStore] bankInventory: ${actualState.bankInventory?.length || 0} items`)
             if (actualState.bankInventory?.length > 0) {
               console.log(`[GameStore] Hydrating ${actualState.bankInventory.length} bank items`)
-              const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.bankInventory as ItemStorage[])
-              console.log(`[GameStore] Bank result: ${valid.length} valid, ${corrupted.length} corrupted`)
+              const { valid, corrupted, v2 } = hydrateItemsWithDetails(actualState.bankInventory as ItemStorage[])
+              console.log(`[GameStore] Bank result: ${valid.length} valid, ${corrupted.length} corrupted, ${v2.length} V2`)
               actualState.bankInventory = valid
               allCorrupted.push(...corrupted)
+              allV2.push(...v2)
             }
             if (actualState.dungeon?.inventory?.length > 0) {
               const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.dungeon.inventory as ItemStorage[])
@@ -345,6 +349,15 @@ export const useGameStore = create<GameStore>()(
 
             // Update corrupted items with all collected corrupted items
             actualState.corruptedItems = allCorrupted
+
+            // Always regenerate v2Items from fresh scan
+            // Converted items should not appear in allV2 since they have proper metadata
+            actualState.v2Items = allV2
+
+            if (allV2.length > 0) {
+              console.log(`[GameStore] Found ${allV2.length} V2 format items that can be migrated`)
+            }
+
             if (allCorrupted.length > 0) {
               console.warn(`[GameStore] Found ${allCorrupted.length} corrupted items`)
               allCorrupted.forEach((item, index) => {
