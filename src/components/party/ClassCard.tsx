@@ -83,8 +83,8 @@ export default function ClassCard({
         }}
       >
         {/* Icon Background */}
-        <Box className="class-card-icon-bg" position="absolute" top={-2} right={-2} opacity={0.08}>
-          <Icon as={IconComponent} boxSize={18} color="orange.400" />
+        <Box className="class-card-icon-bg" position="absolute" top={-2} right={2} opacity={0.08}>
+          <Icon as={IconComponent} boxSize={24} color="orange.400" />
         </Box>
         
         <HStack className="class-card-content" h="full" spacing={2} p={2} position="relative" zIndex={1}>
