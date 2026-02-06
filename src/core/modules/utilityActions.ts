@@ -10,6 +10,7 @@ import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 import { getClassById } from '@/data/classes'
 import { sanitizeHeroStats } from './middleware'
 import { loadRunHistory } from './runHistory'
+import { deduplicateGameState } from '@/utils/itemDeduplication'
 
 export interface UtilityActionsSlice {
   repairParty: () => void
@@ -19,6 +20,7 @@ export interface UtilityActionsSlice {
   resetGame: () => void
   getRunHistory: () => import('@/types').Run[]
   clearRunHistory: () => void
+  deduplicateInventories: () => void
 }
 
 // We need the initial state from the main gameStore
@@ -149,4 +151,22 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
     localStorage.removeItem('dungeon-runner-run-history')
     console.log('[RunHistory] Cleared all run history')
   },
+
+  deduplicateInventories: () =>
+    set((state) => {
+      console.log('[UtilityActions] Running manual inventory deduplication...')
+      const dedupeReport = deduplicateGameState(state)
+
+      if (dedupeReport.totalDuplicatesFound > 0) {
+        console.warn(`[UtilityActions] Removed ${dedupeReport.totalDuplicatesFound} duplicate items:`, {
+          bank: dedupeReport.bankDuplicates,
+          dungeon: dedupeReport.dungeonDuplicates,
+          heroes: dedupeReport.heroDuplicates
+        })
+        return state // State was mutated in place by deduplicateGameState
+      } else {
+        console.log('[UtilityActions] No duplicate items found')
+        return {}
+      }
+    }),
 })

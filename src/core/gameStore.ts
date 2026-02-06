@@ -388,3 +388,5 @@ useGameStore.getState().repairParty()
 useGameStore.getState().migrateHeroStats()
 // Recalculate hero stats to ensure equipment bonuses are applied
 useGameStore.getState().recalculateHeroStats()
+// Deduplicate any duplicate items in inventories
+useGameStore.getState().deduplicateInventories()

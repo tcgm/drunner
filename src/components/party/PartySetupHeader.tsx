@@ -22,7 +22,7 @@ export function PartySetupHeader({ bankGold, metaXp, alkahest, bankInventory, ba
       <HStack className="party-setup-header-content" justify="space-between">
         <HStack className="party-setup-header-info" spacing={4}>
           <Heading size="sm" color="orange.400">Assemble Your Party</Heading>
-          <Tooltip label="Bank Gold" placement="bottom" hasArrow>
+          <Tooltip label="Gold" placement="bottom" hasArrow>
             <HStack className="party-setup-header-gold" spacing={2} bg="gray.800" px={3} py={1} borderRadius="md" cursor="help">
               <Icon as={GiTwoCoins} color={GAME_CONFIG.colors.gold.light} boxSize={4} />
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.gold.light}>{bankGold}</Text>

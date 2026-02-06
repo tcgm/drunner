@@ -1,5 +1,6 @@
 import type { Consumable } from '@/types'
 import { CONSUMABLE_AUTOFILL_PRIORITIES } from '@/config/consumableAutofillConfig'
+import { resolveItemData } from '@/utils/itemDataResolver'
 
 /**
  * Selects the best consumables from bank inventory to fill hero slots
@@ -11,6 +12,11 @@ export function selectConsumablesForAutofill(
   const slots: (Consumable | null)[] = [null, null, null]
   let filledSlots = 0
   const usedIds = new Set<string>()
+
+  // Resolve effects for all consumables (fixes old consumables with undefined effects)
+  bankConsumables.forEach(consumable => {
+    resolveItemData(consumable)
+  })
 
   // Sort consumables by value (higher value = better quality)
   const sortedConsumables = [...bankConsumables].sort((a, b) => b.value - a.value)
@@ -24,6 +30,9 @@ export function selectConsumablesForAutofill(
       // Skip if already used
       if (usedIds.has(consumable.id)) return false
       
+      // Skip if consumable has no effects (even after resolution attempt)
+      if (!consumable.effects || consumable.effects.length === 0) return false
+
       // Check if any effect matches the priority
       const hasMatchingEffect = consumable.effects.some(effect => {
         // Check effect type

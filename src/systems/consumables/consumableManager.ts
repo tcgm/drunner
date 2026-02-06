@@ -3,6 +3,7 @@ import { applyEffect } from '../effects/effectManager'
 import { GiHealthPotion, GiStrong, GiShield, GiRun, GiClover } from 'react-icons/gi'
 import { getConsumableSlotIds } from '@/config/slotConfig'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { getConsumableEffects } from '@/utils/itemDataResolver'
 
 /**
  * Use a consumable from a hero's slot by slot ID
@@ -23,12 +24,19 @@ export function useConsumable(
     return { hero, party, message: 'No consumable in that slot.' }
   }
 
+  // Resolve effects if needed (fixes old consumables)
+  const effects = getConsumableEffects(consumable)
+
+  if (!effects || effects.length === 0) {
+    return { hero, party, message: 'Consumable has no effects.' }
+  }
+
   const updatedHero = { ...hero }
   let updatedParty = [...party]
   const messages: string[] = []
 
   // Apply all consumable effects
-  for (const effect of consumable.effects) {
+  for (const effect of effects) {
     switch (effect.type) {
       case 'heal':
         if (effect.value) {

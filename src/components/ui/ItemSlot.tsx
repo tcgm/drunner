@@ -19,6 +19,7 @@ import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
 import { MultIcon } from '@/components/ui/MultIcon'
+import { resolveItemData } from '@/utils/itemDataResolver'
 
 const MotionBox = motion.create(Box)
 
@@ -78,6 +79,10 @@ export const ItemSlot = memo(function ItemSlot({
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
   
+  // Resolve any missing item data (e.g., consumable effects from metadata)
+  // This mutates the item in place if resolution is needed
+  useMemo(() => resolveItemData(item), [item])
+
   // Restore icon if missing (handles deserialization issues without needing to call restoreItemIcon everywhere)
   const restoredItem = useMemo(() => restoreItemIcon(item), [item])
   const ItemIcon = restoredItem.icon || GiTreasure

@@ -33,8 +33,7 @@ export const createDungeonActions: StateCreator<
 > = (set, get) => ({
   startDungeon: (startingFloor = 0, alkahestCost = 0) =>
     set((state) => {
-      // Deduct alkahest cost
-      const newAlkahest = Math.max(0, state.alkahest - alkahestCost)
+
 
       // Penalty should already be applied by endGame
       // Revive all party members and full heal at dungeon start

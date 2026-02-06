@@ -8,6 +8,7 @@ import type { GameState, Hero, Item, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
+import { deduplicateItems } from '@/utils/itemDeduplication'
 
 export interface InventoryActionsSlice {
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
@@ -36,8 +37,7 @@ export const createInventoryActions: StateCreator<
 > = (set, get) => ({
   equipItemToHero: (heroId, item, slotId) =>
     set((state) => {
-      let replacedItem: Item | null = null
-      
+
       const updatedParty = state.party.map(h => {
         if (h?.id === heroId) {
           const result = equipItem(h, item, slotId)
@@ -104,12 +104,30 @@ export const createInventoryActions: StateCreator<
     })),
 
   addItemToDungeonInventory: (item) =>
-    set((state) => ({
-      dungeon: {
-        ...state.dungeon,
-        inventory: [...state.dungeon.inventory, item]
+    set((state) => {
+      // Check if item already exists in dungeon inventory
+      const existingItem = state.dungeon.inventory.find(i => i.id === item.id)
+
+      if (existingItem) {
+        console.warn(`[Inventory] Duplicate item detected in dungeon inventory: ${item.id} (${item.name})`)
+        // Don't add duplicate, but handle stacking for consumables
+        if ('consumableType' in item && 'stackable' in item && item.stackable &&
+          'consumableType' in existingItem && 'stackable' in existingItem && existingItem.stackable) {
+          const consumable = existingItem as Consumable
+          const newConsumable = item as Consumable
+          consumable.stackCount = (consumable.stackCount || 1) + (newConsumable.stackCount || 1)
+          return { dungeon: { ...state.dungeon, inventory: [...state.dungeon.inventory] } }
+        }
+        return state // Skip duplicate
       }
-    })),
+
+      return {
+        dungeon: {
+          ...state.dungeon,
+          inventory: [...state.dungeon.inventory, item]
+        }
+      }
+    }),
 
   purchasePotion: (potion) =>
     set((state) => {
@@ -352,9 +370,27 @@ export const createInventoryActions: StateCreator<
     }),
 
   moveItemToBank: (item) =>
-    set((state) => ({
-      bankInventory: [...state.bankInventory, item]
-    })),
+    set((state) => {
+      // Check if item already exists in bank
+      const existingItem = state.bankInventory.find(i => i.id === item.id)
+
+      if (existingItem) {
+        console.warn(`[Inventory] Duplicate item detected in bank: ${item.id} (${item.name})`)
+        // Don't add duplicate, but handle stacking for consumables
+        if ('consumableType' in item && 'stackable' in item && item.stackable &&
+          'consumableType' in existingItem && 'stackable' in existingItem && existingItem.stackable) {
+          const consumable = existingItem as Consumable
+          const newConsumable = item as Consumable
+          consumable.stackCount = (consumable.stackCount || 1) + (newConsumable.stackCount || 1)
+          return { bankInventory: [...state.bankInventory] }
+        }
+        return state // Skip duplicate
+      }
+
+      return {
+        bankInventory: [...state.bankInventory, item]
+      }
+    }),
 
   removeItemFromBank: (itemId) =>
     set((state) => ({
