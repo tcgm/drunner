@@ -1,16 +1,21 @@
 import { GiBandageRoll } from 'react-icons/gi'
 import type { ConsumableBase } from '../bases/types'
 
-// Bandages - basic healing supply
+// Bandages - proper wound care, heals over time
 export const BANDAGES_BASE: ConsumableBase = {
   id: 'bandages',
   name: 'Bandages',
-  description: 'Restores HP',
-  effectType: 'heal',
+  description: 'Restores HP over several events',
+  effects: [
+    {
+      type: 'hot',
+      value: 12,
+      duration: 3,
+      target: 'self',
+    }
+  ],
   icon: GiBandageRoll,
-  baseValue: 35,
   baseGoldValue: 12,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

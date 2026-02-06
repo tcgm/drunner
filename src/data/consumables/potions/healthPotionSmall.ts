@@ -11,11 +11,13 @@ export const HEALTH_POTION_SMALL: Consumable = {
   value: 25,
   icon: GiHealthPotion,
   consumableType: 'potion',
-  effect: {
-    type: 'heal',
-    value: 30,
-    target: 'self',
-  },
+  effects: [
+    {
+      type: 'heal',
+      value: 30,
+      target: 'self',
+    }
+  ],
   usableInCombat: true,
   usableOutOfCombat: true,
   stackable: true,

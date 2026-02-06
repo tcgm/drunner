@@ -6,13 +6,17 @@ export const ARMOR_POLISH_BASE: ConsumableBase = {
   id: 'armor-polish',
   name: 'Armor Polish',
   description: 'Maintains armor, increases defense',
-  effectType: 'buff',
+  effects: [
+    {
+      type: 'buff',
+      value: 12,
+      stat: 'defense',
+      duration: 4,
+      target: 'self',
+    }
+  ],
   icon: GiArmorUpgrade,
-  baseValue: 12,
   baseGoldValue: 22,
-  stat: 'defense',
-  duration: 4,
-  target: 'self',
   usableInCombat: false,
   usableOutOfCombat: true,
 }

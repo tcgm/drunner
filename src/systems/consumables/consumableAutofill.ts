@@ -24,15 +24,20 @@ export function selectConsumablesForAutofill(
       // Skip if already used
       if (usedIds.has(consumable.id)) return false
       
-      // Check effect type
-      if (consumable.effect.type !== priority.effectType) return false
+      // Check if any effect matches the priority
+      const hasMatchingEffect = consumable.effects.some(effect => {
+        // Check effect type
+        if (effect.type !== priority.effectType) return false
+        
+        // For buffs, check stat match if specified
+        if (priority.effectType === 'buff' && priority.stat) {
+          if (effect.stat !== priority.stat) return false
+        }
+        
+        return true
+      })
       
-      // For buffs, check stat match if specified
-      if (priority.effectType === 'buff' && priority.stat) {
-        if (consumable.effect.stat !== priority.stat) return false
-      }
-      
-      return true
+      return hasMatchingEffect
     })
 
     // Fill up to max slots for this priority

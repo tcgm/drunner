@@ -6,13 +6,17 @@ export const TORCH_BASE: ConsumableBase = {
   id: 'torch',
   name: 'Torch',
   description: 'Increases luck',
-  effectType: 'buff',
+  effects: [
+    {
+      type: 'buff',
+      value: 5,
+      stat: 'luck',
+      duration: 4,
+      target: 'self',
+    }
+  ],
   icon: GiTorch,
-  baseValue: 5,
   baseGoldValue: 15,
-  stat: 'luck',
-  duration: 4,
-  target: 'self',
   usableInCombat: false,
   usableOutOfCombat: true,
 }

@@ -6,13 +6,17 @@ export const LUCK_BASE: ConsumableBase = {
   id: 'luck',
   name: 'Luck',
   description: 'Increases luck',
-  effectType: 'buff',
+  effects: [
+    {
+      type: 'buff',
+      value: 10,
+      stat: 'luck',
+      duration: 3,
+      target: 'self',
+    }
+  ],
   icon: GiClover,
-  baseValue: 10,
   baseGoldValue: 30,
-  stat: 'luck',
-  duration: 3,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

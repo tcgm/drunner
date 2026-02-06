@@ -6,11 +6,15 @@ export const HEALTH_BASE: ConsumableBase = {
   id: 'health',
   name: 'Health',
   description: 'Restores HP',
-  effectType: 'heal',
+  effects: [
+    {
+      type: 'heal',
+      value: 50,
+      target: 'self',
+    }
+  ],
   icon: GiHealthPotion,
-  baseValue: 50,
   baseGoldValue: 15,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

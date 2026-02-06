@@ -6,11 +6,15 @@ export const PHOENIX_DOWN_BASE: ConsumableBase = {
   id: 'phoenix-down',
   name: 'Phoenix Down',
   description: 'Resurrects a fallen hero',
-  effectType: 'revive',
+  effects: [
+    {
+      type: 'revive',
+      value: 30,
+      target: 'ally',
+    }
+  ],
   icon: LiaGripfire,
-  baseValue: 30, // Base HP restored on revive
   baseGoldValue: 100,
-  target: 'ally',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

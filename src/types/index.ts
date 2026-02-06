@@ -132,7 +132,7 @@ export interface Item {
 
 export interface Consumable extends Item {
   consumableType: 'potion' | 'scroll' | 'food' | 'supply'
-  effect: ConsumableEffect
+  effects: ConsumableEffect[] // Array of effects to apply
   usableInCombat: boolean
   usableOutOfCombat: boolean
   stackable?: boolean // Can multiple stack in one slot
@@ -144,8 +144,8 @@ export interface Consumable extends Item {
 }
 
 export interface ConsumableEffect {
-  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special' | 'revive'
-  value?: number // Heal amount, damage, or stat modifier (or HP restored on revive)
+  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special' | 'revive' | 'hot'
+  value?: number // Heal amount, damage, or stat modifier (or HP restored on revive, or HP per tick for HOT)
   stat?: keyof Stats // For buff effects
   duration?: number // In events (depths)
   isPermanent?: boolean
@@ -157,12 +157,12 @@ export interface TimedEffect {
   name: string
   description: string
   icon: IconType
-  type: 'buff' | 'debuff' | 'status'
+  type: 'buff' | 'debuff' | 'status' | 'regeneration'
   appliedAtDepth: number
   duration: number // Number of events (depths)
   expiresAtDepth: number
   stat?: keyof Stats
-  modifier: number // Numeric modifier (+10 attack, -5 defense, etc)
+  modifier: number // Numeric modifier (+10 attack, -5 defense, etc) or HP per tick for regeneration
   isPermanent: boolean
 }
 

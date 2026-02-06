@@ -6,11 +6,15 @@ export const FRUIT_BASE: ConsumableBase = {
   id: 'fruit',
   name: 'Fruit',
   description: 'Restores HP',
-  effectType: 'heal',
+  effects: [
+    {
+      type: 'heal',
+      value: 35,
+      target: 'self',
+    }
+  ],
   icon: GiPear,
-  baseValue: 35,
   baseGoldValue: 12,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

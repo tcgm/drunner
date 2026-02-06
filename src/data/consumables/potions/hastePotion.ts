@@ -11,13 +11,15 @@ export const HASTE_POTION: Consumable = {
   value: 75,
   icon: GiRun,
   consumableType: 'potion',
-  effect: {
-    type: 'buff',
-    stat: 'speed',
-    value: 12,
-    duration: 5,
-    target: 'self',
-  },
+  effects: [
+    {
+      type: 'buff',
+      stat: 'speed',
+      value: 12,
+      duration: 5,
+      target: 'self',
+    }
+  ],
   usableInCombat: false,
   usableOutOfCombat: true,
   stackable: true,

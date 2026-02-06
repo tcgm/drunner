@@ -62,8 +62,15 @@ export function generateConsumable(
   // Apply floor scaling to base value (0.5% per floor, max 3x at floor 400)
   const floorMultiplier = floor ? Math.min(1 + (floor * 0.005), 3.0) : 1.0
   
-  // Calculate final values: base × floor × size × potency × rarity
-  const effectValue = Math.floor(base.baseValue * floorMultiplier * size.multiplier * potency.multiplier * rarityMultiplier)
+  // Calculate final values for all effects
+  const scaledEffects = base.effects.map(effect => ({
+    type: effect.type,
+    value: Math.floor(effect.value * floorMultiplier * size.multiplier * potency.multiplier * rarityMultiplier),
+    stat: effect.stat,
+    duration: effect.duration,
+    target: effect.target,
+  }))
+  
   const value = Math.floor(base.baseGoldValue * floorMultiplier * size.valueMultiplier * potency.valueMultiplier * rarityMultiplier)
   
   // Determine consumable type from base
@@ -75,16 +82,22 @@ export function generateConsumable(
   const suffix = consumableType === 'potion' ? 'Potion' : ''
   const name = `${rarityPrefix}${potencyPrefix}${size.prefix} ${base.name}${suffix ? ' ' + suffix : ''}`
   
-  // Generate description
-  const effectDesc = base.effectType === 'heal' 
-    ? `Restores ${effectValue} HP`
-    : base.effectType === 'revive'
-      ? `Resurrects a fallen hero with ${effectValue} HP`
-      : base.effectType === 'buff'
-        ? `Increases ${base.stat} by ${effectValue} for ${base.duration} floors`
-        : base.description
+  // Generate description from effects
+  const effectDescriptions = scaledEffects.map(effect => {
+    if (effect.type === 'heal') {
+      return `Restores ${effect.value} HP`
+    } else if (effect.type === 'hot') {
+      return `Restores ${effect.value} HP per event for ${effect.duration || 3} events`
+    } else if (effect.type === 'revive') {
+      return `Resurrects a fallen hero with ${effect.value} HP`
+    } else if (effect.type === 'buff') {
+      return `Increases ${effect.stat} by ${effect.value} for ${effect.duration} events`
+    }
+    return ''
+  }).filter(Boolean).join(', then ')
+  
   const qualityDesc = potency.id !== 'normal' ? `, ${potency.name.toLowerCase()} concentration` : ''
-  const description = `${effectDesc}. ${size.name} size${qualityDesc}, ${finalRarity} quality.`
+  const description = `${effectDescriptions}. ${size.name} size${qualityDesc}, ${finalRarity} quality.`
   
   return {
     id: uuidv4(),
@@ -96,13 +109,7 @@ export function generateConsumable(
     value,
     icon: base.icon,
     consumableType,
-    effect: {
-      type: base.effectType,
-      value: effectValue,
-      stat: base.stat,
-      duration: base.duration,
-      target: base.target,
-    },
+    effects: scaledEffects,
     usableInCombat: base.usableInCombat,
     usableOutOfCombat: base.usableOutOfCombat,
     stackable: true,

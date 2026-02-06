@@ -1,18 +1,22 @@
 import { GiCheeseWedge } from 'react-icons/gi'
 import type { ConsumableBase } from '../bases/types'
 
-// Cheese - defense buff from hardy, fortifying food
+// Cheese - charisma buff from comfort food, boosts morale
 export const CHEESE_BASE: ConsumableBase = {
   id: 'cheese',
   name: 'Cheese',
-  description: 'Increases defense',
-  effectType: 'buff',
+  description: 'Boosts morale and charisma',
+  effects: [
+    {
+      type: 'buff',
+      value: 8,
+      stat: 'charisma',
+      duration: 3,
+      target: 'self',
+    }
+  ],
   icon: GiCheeseWedge,
-  baseValue: 8,
   baseGoldValue: 20,
-  stat: 'defense',
-  duration: 3,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

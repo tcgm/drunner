@@ -6,13 +6,17 @@ export const MEAT_BASE: ConsumableBase = {
   id: 'meat',
   name: 'Meat',
   description: 'Increases attack power',
-  effectType: 'buff',
+  effects: [
+    {
+      type: 'buff',
+      value: 8,
+      stat: 'attack',
+      duration: 3,
+      target: 'self',
+    }
+  ],
   icon: GiMeat,
-  baseValue: 8,
   baseGoldValue: 20,
-  stat: 'attack',
-  duration: 3,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

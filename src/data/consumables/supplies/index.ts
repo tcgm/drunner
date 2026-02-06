@@ -4,12 +4,16 @@ export * from './torch'
 export * from './whetstone'
 export * from './armorPolish'
 export * from './oil'
+export * from './manaStone'
+export * from './powerOrb'
 
 import { BANDAGES_BASE } from './bandages'
 import { TORCH_BASE } from './torch'
 import { WHETSTONE_BASE } from './whetstone'
 import { ARMOR_POLISH_BASE } from './armorPolish'
 import { OIL_BASE } from './oil'
+import { MANA_STONE_BASE } from './manaStone'
+import { POWER_ORB_BASE } from './powerOrb'
 import type { ConsumableBase } from '../bases/types'
 
 export const ALL_SUPPLY_BASES: ConsumableBase[] = [
@@ -18,6 +22,8 @@ export const ALL_SUPPLY_BASES: ConsumableBase[] = [
   WHETSTONE_BASE,
   ARMOR_POLISH_BASE,
   OIL_BASE,
+  MANA_STONE_BASE,
+  POWER_ORB_BASE,
 ]
 
 export function getSupplyBaseById(id: string): ConsumableBase | undefined {

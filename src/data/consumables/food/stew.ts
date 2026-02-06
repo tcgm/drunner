@@ -1,16 +1,26 @@
 import { GiCampCookingPot } from 'react-icons/gi'
 import type { ConsumableBase } from '../bases/types'
 
-// Stew - hearty, substantial healing
+// Stew - hearty meal with immediate and sustained healing
 export const STEW_BASE: ConsumableBase = {
   id: 'stew',
   name: 'Stew',
-  description: 'Restores HP substantially',
-  effectType: 'heal',
+  description: 'Restores HP instantly and over time',
+  effects: [
+    {
+      type: 'heal',
+      value: 25,
+      target: 'self',
+    },
+    {
+      type: 'hot',
+      value: 20,
+      duration: 3,
+      target: 'self',
+    }
+  ],
   icon: GiCampCookingPot,
-  baseValue: 60,
   baseGoldValue: 18,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }

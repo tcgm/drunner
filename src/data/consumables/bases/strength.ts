@@ -6,13 +6,17 @@ export const STRENGTH_BASE: ConsumableBase = {
   id: 'strength',
   name: 'Strength',
   description: 'Increases attack power',
-  effectType: 'buff',
+  effects: [
+    {
+      type: 'buff',
+      value: 10,
+      stat: 'attack',
+      duration: 3,
+      target: 'self',
+    }
+  ],
   icon: GiStrong,
-  baseValue: 10,
   baseGoldValue: 25,
-  stat: 'attack',
-  duration: 3,
-  target: 'self',
   usableInCombat: true,
   usableOutOfCombat: true,
 }
