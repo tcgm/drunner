@@ -41,7 +41,7 @@ interface HeroModalProps {
 export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: HeroModalProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables } = useGameStore()
+  const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables, addItemToDungeonInventory, moveItemToBank } = useGameStore()
   const [swapMode, setSwapMode] = useState<string | null>(null)
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
 
@@ -124,7 +124,14 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
             variant="solid"
             onClick={(e) => {
               e.stopPropagation()
-              unequipItemFromHero(hero.id, slotId)
+              const unequippedItem = unequipItemFromHero(hero.id, slotId)
+              if (unequippedItem) {
+                if (isDungeon) {
+                  addItemToDungeonInventory(unequippedItem)
+                } else {
+                  moveItemToBank(unequippedItem)
+                }
+              }
             }}
             fontSize="2xs"
             borderRadius="full"

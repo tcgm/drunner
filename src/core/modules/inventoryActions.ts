@@ -13,6 +13,7 @@ export interface InventoryActionsSlice {
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
   unequipItemFromHero: (heroId: string, slotId: string) => Item | null
   sellItemForGold: (item: Item) => void
+  addItemToDungeonInventory: (item: Item) => void
   purchasePotion: (potion: Consumable) => void
   spendBankGold: (amount: number) => boolean
   equipItemFromBank: (heroId: string, item: Item, slotId: string) => void
@@ -99,6 +100,14 @@ export const createInventoryActions: StateCreator<
       dungeon: {
         ...state.dungeon,
         gold: state.dungeon.gold + sellItem(item)
+      }
+    })),
+
+  addItemToDungeonInventory: (item) =>
+    set((state) => ({
+      dungeon: {
+        ...state.dungeon,
+        inventory: [...state.dungeon.inventory, item]
       }
     })),
 

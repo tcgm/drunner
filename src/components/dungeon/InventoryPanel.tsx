@@ -37,13 +37,13 @@ const RARITY_COLORS: Record<string, string> = {
 }
 
 export default function InventoryPanel({ hero, onSlotClick, showBankOption }: InventoryPanelProps) {
-  const { unequipItemFromHero, sellItemForGold, updateHero, party, dungeon } = useGameStore()
+  const { unequipItemFromHero, addItemToDungeonInventory, updateHero, party, dungeon } = useGameStore()
 
   const handleUnequip = (slotId: string) => {
     const item = unequipItemFromHero(hero.id, slotId)
     if (item) {
-      // For now, auto-sell unequipped items
-      sellItemForGold(item)
+      // Add unequipped item back to dungeon inventory
+      addItemToDungeonInventory(item)
     }
   }
   
@@ -180,7 +180,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
                   }}
                   fontSize="xs"
                 >
-                  Sell
+                  Unequip
                 </Button>
               )}
             </>
