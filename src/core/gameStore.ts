@@ -1834,25 +1834,32 @@ export const useGameStore = create<GameStore>()(
 
         importSave: (jsonString: string) => {
           try {
-            const saveData = JSON.parse(jsonString)
-            if (!saveData.data) {
-              console.error('[Import] Invalid save file format')
+            // Load and check for migration using centralized system
+            const result = loadSave(jsonString, 'import')
+            
+            if (!result.success) {
+              console.error('[Import] Failed to load save:', result.error)
               return false
             }
 
-            // Validate the save data has the required structure
-            const requiredKeys = ['party', 'heroRoster', 'dungeon', 'bankGold', 'bankInventory']
-            const hasRequiredKeys = requiredKeys.every(key => key in saveData.data)
-
-            if (!hasRequiredKeys) {
-              console.error('[Import] Save file missing required data')
-              return false
+            if (result.needsMigration && result.state) {
+              console.log('[Import] Save needs migration, setting pending state')
+              // Store for migration approval
+              set({
+                pendingMigration: true,
+                pendingMigrationData: jsonString
+              })
+              return true
             }
 
-            // Apply the imported state
-            set(saveData.data)
-            console.log('[Import] Save imported successfully')
-            return true
+            // No migration needed - apply directly
+            if (result.state) {
+              set(result.state)
+              console.log('[Import] Save imported successfully')
+              return true
+            }
+            
+            return false
           } catch (error) {
             console.error('[Import] Failed to import save:', error)
             return false
@@ -1897,26 +1904,19 @@ export const useGameStore = create<GameStore>()(
           }
 
           try {
-            // Decompress and parse the pending data
-            let str: string
-            try {
-              str = LZString.decompressFromUTF16(pendingMigrationData) || pendingMigrationData
-            } catch {
-              str = pendingMigrationData
-            }
-
-            const state = JSON.parse(str)
-            const actualState = state?.state
-
-            if (!actualState) {
-              console.error('[Migration] Invalid pending migration data')
+            // Load the pending save using centralized system
+            const result = loadSave(pendingMigrationData, 'import')
+            
+            if (!result.success || !result.state) {
+              console.error('[Migration] Failed to load pending migration data')
               set({ pendingMigration: false, pendingMigrationData: null })
               return
             }
 
             // Apply the migration
             console.log('[Migration] User approved migration, applying changes...')
-            const migratedState = migrateGameState(actualState)
+            const migratedState = applyMigratedState(result.state)
+            console.log('[Migration] Migration complete, state will be saved on next update')
             
             // Migrate run history to separate storage if it exists
             if (migratedState.runHistory && migratedState.runHistory.length > 0) {
@@ -1937,13 +1937,14 @@ export const useGameStore = create<GameStore>()(
             }
 
             // Apply the migrated state and clear pending flags
+            // This will trigger persist middleware to save
             set({ 
               ...migratedState,
               pendingMigration: false,
               pendingMigrationData: null 
-            })
+            }, true) // Force replace mode to ensure clean save
             
-            console.log('[Migration] Migration completed successfully')
+            console.log('[Migration] Migration completed successfully and saved')
           } catch (error) {
             console.error('[Migration] Failed to apply migration:', error)
             set({ pendingMigration: false, pendingMigrationData: null })
@@ -2161,9 +2162,7 @@ export const useGameStore = create<GameStore>()(
 
             // Check if migration is needed BEFORE applying it
             // But skip if we're already in pending migration state (to avoid loop)
-            const migrationNeeded = needsMigration(actualState)
-            
-            if (migrationNeeded && !actualState.pendingMigration) {
+            if (result.needsMigration && !actualState.pendingMigration) {
               console.log('[Migration] Save file needs migration, setting pending state and prompting user')
               // Return pending state but DON'T save to localStorage yet
               // User must approve first
@@ -2179,12 +2178,12 @@ export const useGameStore = create<GameStore>()(
             // If already in pending migration state, just return it
             if (actualState.pendingMigration) {
               console.log('[Migration] Already in pending migration state')
-              return state
+              return { state: actualState }
             }
 
-            // Migrate to new floor-based system
-            const migratedState = migrateGameState(actualState)
-            state.state = migratedState
+            // Migration already applied by loadSave
+            const migratedState = actualState
+            const state = { state: migratedState }
 
             // Migrate run history to separate storage if it exists
             if (migratedState.runHistory && migratedState.runHistory.length > 0) {

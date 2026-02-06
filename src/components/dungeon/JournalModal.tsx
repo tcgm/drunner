@@ -16,7 +16,7 @@ import {
   Icon,
 } from '@chakra-ui/react'
 import { GiTwoCoins, GiSwordWound, GiHearts, GiChest, GiLevelEndFlag } from 'react-icons/gi'
-import { useGameStore } from '@/store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 
 interface JournalModalProps {
   isOpen: boolean

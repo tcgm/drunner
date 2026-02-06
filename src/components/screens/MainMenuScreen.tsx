@@ -1,6 +1,6 @@
 import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
-import { useGameStore } from '@store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
 
 interface MainMenuScreenProps {

@@ -28,7 +28,7 @@ import {
 import { useState, useCallback, useMemo } from 'react'
 import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion } from 'react-icons/gi'
 import type { Item } from '../../types'
-import { useGameStore } from '@/store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { ItemGrid } from '@/components/inventory/ItemGrid'
 import { InventoryControls, type SortOption, type FilterOption } from '@/components/inventory/InventoryControls'

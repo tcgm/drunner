@@ -2,7 +2,7 @@ import { VStack, Box, Text, SimpleGrid, Badge, Tooltip, Flex, Button, Icon } fro
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Consumable, Item } from '@/types'
-import { useGameStore } from '@store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getEquipmentSlotIds, getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'

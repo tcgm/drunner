@@ -1,5 +1,5 @@
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
-import { useGameStore } from '../../store/gameStore'
+import { useGameStore } from '../../core/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
 import { GAME_CONFIG } from '../../config/gameConfig'
 import { useState, useEffect, useCallback } from 'react'

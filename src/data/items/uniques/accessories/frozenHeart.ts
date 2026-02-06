@@ -1,6 +1,6 @@
-import { GiFrozenBlock } from 'react-icons/gi'
+import { GiCrystalBars } from 'react-icons/gi'
 import type { Item } from '@/types'
-import { RaFrozenHeart } from '@/components/icons/RpgIcons'
+// import { RaFrozenHeart } from '@/components/icons/RpgIcons' // Icon missing from font
 
 /**
  * Frozen Heart - Mythic ice accessory
@@ -10,7 +10,7 @@ export const FROZEN_HEART: Omit<Item, 'id'> = {
   description: 'A heart encased in eternal ice. Its cold touch slows enemies and fortifies the bearer with unbreakable resolve.',
   type: 'accessory1',
   rarity: 'mythic',
-  icon: RaFrozenHeart,
+  icon: GiCrystalBars, // Using fallback icon until ice-crystal is available
   stats: {
     defense: 120,
     maxHp: 150,

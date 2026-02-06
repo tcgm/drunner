@@ -34,7 +34,7 @@ import {
 } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiWrench } from 'react-icons/gi'
-import { useGameStore } from '@store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { useRef, useState, useMemo } from 'react'
 import { HiWrench } from 'react-icons/hi2'

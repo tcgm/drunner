@@ -26,7 +26,7 @@ import {
   GiDodge,
   GiGooExplosion
 } from 'react-icons/gi'
-import { useGameStore } from '@/store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 
 const MotionBox = motion.create(Box)
 

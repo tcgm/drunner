@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { useRef } from 'react'
 import { FiAlertTriangle, FiDownload } from 'react-icons/fi'
-import { useGameStore } from '@store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import LZString from 'lz-string'
 
 interface MigrationWarningDialogProps {

@@ -1,7 +1,7 @@
 import { Button, Flex, Box, Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useEffect } from 'react'
-import { useGameStore } from '@store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { GiCastle } from 'react-icons/gi'
 import RunStatistics from './RunStatistics'
 import PartyDisplay from './PartyDisplay'

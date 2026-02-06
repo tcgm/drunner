@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useGameStore } from '@/store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { MusicContext } from '@/types/audio'
 
 /**

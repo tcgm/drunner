@@ -22,8 +22,9 @@ import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
+import { calculateTotalStats } from '@/utils/statCalculator'
 import { useState, useEffect, useCallback } from 'react'
-import { useGameStore } from '@/store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
@@ -213,7 +214,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                       <StatBar 
                         label=""
                         current={hero.stats.hp}
-                        max={hero.stats.maxHp}
+                        max={calculateTotalStats(hero).maxHp}
                         colorScheme="green"
                         size="md"
                         valueSize="sm"
@@ -294,7 +295,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Attack</Text>
                           <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>
-                            {hero.stats.attack}
+                            {calculateTotalStats(hero).attack}
                           </Text>
                         </VStack>
                       </HStack>
@@ -306,7 +307,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Defense</Text>
                           <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
-                            {hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
+                            {calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text>
                           </Text>
                         </VStack>
                       </HStack>
@@ -318,7 +319,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Speed</Text>
                           <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>
-                            {hero.stats.speed}
+                            {calculateTotalStats(hero).speed}
                           </Text>
                         </VStack>
                       </HStack>
@@ -330,7 +331,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Luck</Text>
                           <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>
-                            {hero.stats.luck}
+                            {calculateTotalStats(hero).luck}
                           </Text>
                         </VStack>
                       </HStack>
@@ -342,7 +343,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Wisdom</Text>
                           <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>
-                            {hero.stats.wisdom ?? 0}
+                            {calculateTotalStats(hero).wisdom ?? 0}
                           </Text>
                         </VStack>
                       </HStack>
@@ -354,20 +355,20 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Charisma</Text>
                           <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>
-                            {hero.stats.charisma ?? 0}
+                            {calculateTotalStats(hero).charisma ?? 0}
                           </Text>
                         </VStack>
                       </HStack>
                     </GridItem>
 
-                    {hero.stats.magicPower !== undefined && (
+                    {calculateTotalStats(hero).magicPower !== undefined && (
                       <GridItem colSpan={2}>
                         <HStack spacing={1.5}>
                           <Icon as={GameIcons.GiMagicSwirl} color="purple.400" boxSize={4} />
                           <VStack spacing={0} align="start" flex={1}>
                             <Text fontSize="2xs" color="gray.500">Magic Power</Text>
                             <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower}>
-                              {hero.stats.magicPower}
+                              {calculateTotalStats(hero).magicPower}
                             </Text>
                           </VStack>
                         </HStack>

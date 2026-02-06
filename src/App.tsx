@@ -9,7 +9,7 @@ import DevTools from '@components/ui/DevTools'
 import { MusicControls } from '@components/ui/MusicControls'
 import { MusicManager } from '@components/ui/MusicManager'
 import { MigrationWarningDialog } from '@components/ui/MigrationWarningDialog'
-import { useGameStore } from '@store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import type { Hero } from '@/types'
 
 const MotionBox = motion.create(Box)

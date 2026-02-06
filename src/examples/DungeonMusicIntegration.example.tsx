@@ -10,7 +10,7 @@
 import { useMemo } from 'react';
 import { useMusicContext } from '@/utils/useMusicContext';
 import { MusicContext } from '@/types/audio';
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore } from '@/core/gameStore';
 
 export function DungeonScreenMusicExample() {
   const currentEvent = useGameStore(state => state.dungeon.currentEvent);

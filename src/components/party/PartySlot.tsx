@@ -4,6 +4,7 @@ import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
+import { calculateTotalStats } from '@/utils/statCalculator'
 import { EquipmentPips } from './EquipmentPips'
 
 interface PartySlotProps {
@@ -101,29 +102,29 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
               <SimpleGrid columns={2} spacing={1} w="full" pt={1} fontSize="xs">
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">HP</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{hero.stats.maxHp}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{calculateTotalStats(hero).maxHp}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">ATK</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">DEF</Text>
                   <Text fontWeight="bold" textAlign="center" color={GAME_CONFIG.colors.stats.defense}>
-                    {hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
+                    {calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text>
                   </Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">SPD</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">WIS</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{hero.stats.wisdom ?? 0}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">CHA</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{hero.stats.charisma ?? 0}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{calculateTotalStats(hero).charisma ?? 0}</Text>
                 </VStack>
               </SimpleGrid>
             </VStack>

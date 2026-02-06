@@ -1,6 +1,6 @@
 import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from '@chakra-ui/react'
 import { useRef, useState, useEffect } from 'react'
-import { useGameStore } from '@store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import PartySidebar from '@components/dungeon/PartySidebar'
 import DungeonHeader from '@components/dungeon/DungeonHeader'

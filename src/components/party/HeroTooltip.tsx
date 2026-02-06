@@ -12,6 +12,7 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 interface HeroTooltipProps {
   hero: Hero
@@ -48,7 +49,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
           <StatBar 
             label="HP"
             current={hero.stats.hp}
-            max={hero.stats.maxHp}
+            max={calculateTotalStats(hero).maxHp}
             colorScheme="green"
             size="sm"
             valueSize="xs"
@@ -70,43 +71,43 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
               <Icon as={GameIcons.GiSwordman} color={GAME_CONFIG.colors.stats.attack} boxSize={4} />
               <Text fontSize="xs" color="gray.400">ATK</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>
-                {hero.stats.attack}
+                {calculateTotalStats(hero).attack}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--defense" spacing={0}>
               <Icon as={GameIcons.GiShield} color={GAME_CONFIG.colors.stats.defense} boxSize={4} />
               <Text fontSize="xs" color="gray.400">DEF</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
-                {hero.stats.defense}
+                {calculateTotalStats(hero).defense}
               </Text>
-              <Text fontSize="2xs" color="gray.500">{formatDefenseReduction(hero.stats.defense)}</Text>
+              <Text fontSize="2xs" color="gray.500">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--speed" spacing={0}>
               <Icon as={GameIcons.GiRun} color={GAME_CONFIG.colors.stats.speed} boxSize={4} />
               <Text fontSize="xs" color="gray.400">SPD</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>
-                {hero.stats.speed}
+                {calculateTotalStats(hero).speed}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--luck" spacing={0}>
               <Icon as={GameIcons.GiClover} color={GAME_CONFIG.colors.stats.luck} boxSize={4} />
               <Text fontSize="xs" color="gray.400">LCK</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>
-                {hero.stats.luck}
+                {calculateTotalStats(hero).luck}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--wisdom" spacing={0}>
               <Icon as={GameIcons.GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom} boxSize={4} />
               <Text fontSize="xs" color="gray.400">WIS</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>
-                {hero.stats.wisdom ?? 0}
+                {calculateTotalStats(hero).wisdom ?? 0}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--charisma" spacing={0}>
               <Icon as={GameIcons.GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma} boxSize={4} />
               <Text fontSize="xs" color="gray.400">CHA</Text>
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>
-                {hero.stats.charisma ?? 0}
+                {calculateTotalStats(hero).charisma ?? 0}
               </Text>
             </VStack>
           </HStack>

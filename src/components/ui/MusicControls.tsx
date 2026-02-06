@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useState, useRef, useEffect } from 'react'
-import { useGameStore } from '@/store/gameStore'
+import { useGameStore } from '@/core/gameStore'
 import { GiSpeaker, GiSpeakerOff } from 'react-icons/gi'
 import { audioManager } from '@/systems/audio/audioManager'
 

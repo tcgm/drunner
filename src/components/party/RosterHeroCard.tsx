@@ -4,6 +4,7 @@ import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
+import { calculateTotalStats } from '@/utils/statCalculator'
 import { EquipmentPips } from './EquipmentPips'
 import { getRarityColors } from '@/systems/rarity/rarities'
 
@@ -22,12 +23,12 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
       <Text fontWeight="bold" fontSize="sm">{hero.name}</Text>
       <Text fontSize="xs" color="gray.300">{hero.class.name}</Text>
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
-        <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{hero.stats.maxHp}</Text></Text>
-        <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text></Text>
-        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(hero.stats.defense)}</Text></Text></Text>
-        <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text></Text>
-        <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{hero.stats.wisdom ?? 0}</Text></Text>
-        <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{hero.stats.charisma ?? 0}</Text></Text>
+        <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{calculateTotalStats(hero).maxHp}</Text></Text>
+        <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text></Text>
+        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text></Text></Text>
+        <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text></Text>
+        <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{calculateTotalStats(hero).wisdom ?? 0}</Text></Text>
+        <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{calculateTotalStats(hero).charisma ?? 0}</Text></Text>
       </SimpleGrid>
       {equippedItems.length > 0 && (
         <VStack align="start" spacing={0.5} pt={2} w="full">
@@ -110,19 +111,19 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
             <HStack className="roster-hero-card-stats" spacing={3} fontSize="xs" color="gray.500" pt={1}>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.hp.base}>❤</Text>
-                <Text color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{hero.stats.maxHp}</Text>
+                <Text color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{calculateTotalStats(hero).maxHp}</Text>
               </HStack>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.stats.attack}>⚔</Text>
-                <Text color={GAME_CONFIG.colors.stats.attack}>{hero.stats.attack}</Text>
+                <Text color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text>
               </HStack>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.stats.defense}>🛡</Text>
-                <Text color={GAME_CONFIG.colors.stats.defense}>{hero.stats.defense}</Text>
+                <Text color={GAME_CONFIG.colors.stats.defense}>{calculateTotalStats(hero).defense}</Text>
               </HStack>
               <HStack spacing={1}>
                 <Text color={GAME_CONFIG.colors.stats.speed}>⚡</Text>
-                <Text color={GAME_CONFIG.colors.stats.speed}>{hero.stats.speed}</Text>
+                <Text color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text>
               </HStack>
             </HStack>
           </VStack>
