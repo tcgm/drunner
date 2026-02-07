@@ -46,6 +46,7 @@ export const createInventoryActions: StateCreator<
 > = (set, get) => ({
   equipItemToHero: (heroId, item, slotId) =>
     set((state) => {
+      let replacedItem: Item | null = null
 
       const updatedParty = state.party.map(h => {
         if (h?.id === heroId) {

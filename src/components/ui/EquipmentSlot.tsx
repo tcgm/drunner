@@ -48,6 +48,11 @@ export function EquipmentSlot({
   const canSwap = hasCompatibleItems(slot, availableItems, currentEquipment)
   const slotSize = size === 'lg' ? '80px' : size === 'sm' ? '60px' : '80px'
 
+  // Debug logging
+  if (showSwapButton) {
+    console.log('[EquipmentSlot]', slot, '- canSwap:', canSwap, 'availableItems:', availableItems.length, 'showSwapButton:', showSwapButton, 'onSwapClick:', !!onSwapClick)
+  }
+
   if (isEmpty) {
     return (
       <Box position="relative" w={slotSize} h={slotSize}>
@@ -91,8 +96,12 @@ export function EquipmentSlot({
             left="0"
             colorScheme={isSwapActive ? "orange" : "gray"}
             variant="solid"
-            onClick={onSwapClick}
-            zIndex={1}
+            onClick={(e) => {
+              console.log('[EquipmentSlot] Swap button clicked for slot:', slot)
+              e.stopPropagation()
+              onSwapClick()
+            }}
+            zIndex={3}
             minW="28px"
             h="28px"
             p={0}
@@ -137,8 +146,12 @@ export function EquipmentSlot({
           left="0"
           colorScheme={isSwapActive ? "orange" : "gray"}
           variant="solid"
-          onClick={onSwapClick}
-          zIndex={1}
+          onClick={(e) => {
+            console.log('[EquipmentSlot] Swap button clicked for slot:', slot)
+            e.stopPropagation()
+            onSwapClick()
+          }}
+          zIndex={3}
           minW="28px"
           h="28px"
           p={0}

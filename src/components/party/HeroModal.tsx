@@ -56,22 +56,34 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
   // Listen for clicks on inventory items when in swap mode
   const handleInventoryItemClick = useCallback((item: Item) => {
+    console.log('[HeroModal] handleInventoryItemClick called for item:', item.name, 'swapMode:', swapMode)
     if (swapMode !== null) {
       // Check if item is compatible with the slot
       const isCompatible = isItemCompatibleWithSlot(item, swapMode)
+      console.log('[HeroModal] Item compatibility check:', isCompatible)
       
       if (isCompatible) {
-        equipItemToHero(hero.id, item, swapMode)
+        console.log('[HeroModal] Equipping item:', item.name, 'to slot:', swapMode)
+        const targetSlot = swapMode
+        // Close inventory first to prevent re-render during swap
+        onInventoryClose()
         setSwapMode(null)
+        // Perform swap after state updates
+        equipItemToHero(hero.id, item, targetSlot)
+      } else {
+        console.log('[HeroModal] Item not compatible with slot')
       }
     }
-  }, [swapMode, equipItemToHero, hero.id])
+  }, [swapMode, equipItemToHero, hero.id, onInventoryClose])
 
   // Open inventory when entering swap mode
   useEffect(() => {
+    console.log('[HeroModal] swapMode changed to:', swapMode)
     if (swapMode !== null) {
+      console.log('[HeroModal] Opening inventory modal')
       onInventoryOpen()
     } else {
+      console.log('[HeroModal] Closing inventory modal')
       onInventoryClose()
     }
   }, [swapMode, onInventoryOpen, onInventoryClose])
@@ -81,22 +93,27 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
     if (typeof window !== 'undefined') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).__heroModalSwapHandler = swapMode !== null ? handleInventoryItemClick : null
+      console.log('[HeroModal] Global swap handler set:', swapMode !== null ? 'ACTIVE' : 'INACTIVE')
     }
     return () => {
       if (typeof window !== 'undefined') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).__heroModalSwapHandler = null
+        console.log('[HeroModal] Global swap handler cleaned up')
       }
     }
   }, [swapMode, handleInventoryItemClick])
 
   const handleSwap = (slotId: string) => {
+    console.log('[HeroModal] handleSwap called for slot:', slotId, 'current swapMode:', swapMode)
     if (swapMode === null) {
       // Enter swap mode - selecting which slot to swap
       setSwapMode(slotId)
+      console.log('[HeroModal] Entering swap mode for slot:', slotId)
     } else {
       // Exit swap mode
       setSwapMode(null)
+      console.log('[HeroModal] Exiting swap mode')
     }
   }
 

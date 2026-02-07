@@ -93,17 +93,22 @@ export const ItemSlot = memo(function ItemSlot({
     , [item.modifiers])
 
   const handleClick = () => {
+    console.log('[ItemSlot] Item clicked:', item.name)
     // Check if there's a global swap handler active (from HeroModal)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).__heroModalSwapHandler) {
+      console.log('[ItemSlot] Global swap handler found, calling it');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).__heroModalSwapHandler(item)
       return
     }
     
+    console.log('[ItemSlot] No global handler, checking onClick or isClickable')
     if (onClick) {
+      console.log('[ItemSlot] Calling onClick handler')
       onClick()
     } else if (isClickable) {
+      console.log('[ItemSlot] Opening item detail modal')
       onOpen()
     }
   }
