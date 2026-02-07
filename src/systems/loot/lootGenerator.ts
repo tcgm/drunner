@@ -1,5 +1,5 @@
 import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
-import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3 } from '@/types/items-v3'
+import type { ItemStorage, UniqueItemV3, SetItemV3 } from '@/types/items-v3'
 import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
@@ -190,6 +190,65 @@ function applyMaterialToStats(
   }
   
   return modifiedStats
+}
+
+/**
+ * Generate a meaningful baseTemplateId from a base template
+ * Format: "type_keyword" (e.g., "weapon_sword", "weapon_instrument")
+ */
+function generateBaseTemplateId(base: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): string {
+  const description = base.description.toLowerCase()
+  
+  // Define keywords to search for in descriptions (order matters - more specific first)
+  const keywords: Record<string, string[]> = {
+    // Weapons
+    'sword': ['sword', 'blade'],
+    'axe': ['axe', 'chopping'],
+    'dagger': ['dagger', 'stabbing'],
+    'bow': ['bow', 'ranged'],
+    'mace': ['mace', 'bludgeon'],
+    'staff': ['staff', 'channeling'],
+    'instrument': ['instrument', 'melodious', 'music'],
+    // Armor
+    'plate': ['plate', 'plating'],
+    'chainmail': ['chainmail', 'chain mail', 'interlocking'],
+    'robe': ['robe', 'vestment'],
+    'vest': ['vest', 'garment'],
+    // Helmets
+    'crown': ['crown', 'regal'],
+    'hood': ['hood'],
+    'helmet': ['helmet', 'headgear'],
+    // Boots
+    'greaves': ['greaves', 'leg protection'],
+    'sandals': ['sandals'],
+    'boots': ['boots', 'footwear'],
+    // Accessories
+    'ring': ['ring'],
+    'amulet': ['amulet', 'necklace'],
+    'charm': ['charm'],
+    'talisman': ['talisman'],
+  }
+  
+  // Try to find a matching keyword in the description
+  for (const [keyword, patterns] of Object.entries(keywords)) {
+    for (const pattern of patterns) {
+      if (description.includes(pattern)) {
+        return `${base.type}_${keyword}`
+      }
+    }
+  }
+  
+  // If we have baseNames, use the first one
+  if ('baseNames' in base && Array.isArray(base.baseNames) && base.baseNames.length > 0) {
+    return `${base.type}_${base.baseNames[0].toLowerCase()}`
+  }
+  
+  // Fallback: extract first meaningful word (skip articles)
+  const words = description.split(' ')
+  const articles = ['a', 'an', 'the']
+  const meaningfulWord = words.find(w => !articles.includes(w.toLowerCase())) || words[0]
+  
+  return `${base.type}_${meaningfulWord.toLowerCase()}`
 }
 
 /**
@@ -454,7 +513,7 @@ export function generateItem(
       value: Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier * rarityMultiplier),
       icon: itemIcon,
       materialId: material.id,
-      baseTemplateId: baseTemplate ? `${base.type}_${base.description.split(' ')[0].toLowerCase()}` : undefined,
+      baseTemplateId: baseTemplate ? generateBaseTemplateId(base) : undefined,
       isUnique: false,
     }
     
@@ -484,37 +543,29 @@ export function generateItem(
     }
   }
   
-  // Extract just the baseName from the generated name (remove material prefix)
-  const baseName = name.replace(`${material.prefix} `, '')
-  
-  // Create V3 procedural item
-  const baseTemplateId = `${base.type}_${base.description.split(' ')[0].toLowerCase()}`
-  
-  const v3Item: ProceduralItemV3 = {
-    version: 3,
+  // Create the item directly - we already have everything we need!
+  let item: Item = {
     id: uuidv4(),
-    itemType: 'procedural',
-    materialId: material.id,
-    baseTemplateId,
-    baseName,
+    name,
+    description,
+    type: forceType || base.type,
     rarity,
-    itemSlot: forceType || base.type,
-    modifiers: modifiers.length > 0 ? modifiers : undefined
+    stats: modifiedStats,
+    value,
+    icon: itemIcon,
+    materialId: material.id,
+    baseTemplateId: generateBaseTemplateId(base),
+    isUnique: false,
   }
-  
-  // Hydrate to get full Item
-  const item = hydrateItem(v3Item)
   
   // Apply modifiers if any
   if (modifiers.length > 0) {
     const modifierObjects = modifiers.map(id => getModifierById(id)).filter((m): m is NonNullable<typeof m> => m !== null && m !== undefined)
-    const modifiedItem = applyModifiers(item, modifierObjects)
+    item = applyModifiers(item, modifierObjects)
     
     // Update description with modifier info
     const modifierNames = modifierObjects.map(m => m.name).join(', ')
-    modifiedItem.description = `${modifierNames}! ${modifiedItem.description}`
-    
-    return modifiedItem
+    item.description = `${modifierNames}! ${item.description}`
   }
   
   return item

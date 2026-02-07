@@ -9,13 +9,72 @@ import type { Item, ItemStorage, ItemV2, ItemV3, ProceduralItemV3, UniqueItemV3,
 import { isItemV2, isItemV3, isProceduralItemV3, isUniqueItemV3, isSetItemV3, isConsumableV3 } from '@/types/items-v3'
 import { restoreItemIcon } from './itemUtils'
 import { getMaterialById, ALL_MATERIALS } from '@/data/items/materials'
-import { allBases } from '@/data/items/bases'
+import { allBases, type BaseItemTemplate } from '@/data/items/bases'
 import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { getRarityConfig } from '@/systems/rarity/raritySystem'
 import { getConsumableBaseById } from '@/data/consumables/bases'
 import { getSizeById } from '@/data/consumables/sizes'
 import { getPotencyById } from '@/data/consumables/potencies'
+
+/**
+ * Generate a meaningful baseTemplateId from a base template
+ * This matches the logic in lootGenerator.ts
+ */
+function generateBaseTemplateIdForBase(base: BaseItemTemplate): string {
+  const description = base.description.toLowerCase()
+  
+  // Define keywords to search for in descriptions (order matters - more specific first)
+  const keywords: Record<string, string[]> = {
+    // Weapons
+    'sword': ['sword', 'blade'],
+    'axe': ['axe', 'chopping'],
+    'dagger': ['dagger', 'stabbing'],
+    'bow': ['bow', 'ranged'],
+    'mace': ['mace', 'bludgeon'],
+    'staff': ['staff', 'channeling'],
+    'instrument': ['instrument', 'melodious', 'music'],
+    // Armor
+    'plate': ['plate', 'plating'],
+    'chainmail': ['chainmail', 'chain mail', 'interlocking'],
+    'robe': ['robe', 'vestment'],
+    'vest': ['vest', 'garment'],
+    // Helmets
+    'crown': ['crown', 'regal'],
+    'hood': ['hood'],
+    'helmet': ['helmet', 'headgear'],
+    // Boots
+    'greaves': ['greaves', 'leg protection'],
+    'sandals': ['sandals'],
+    'boots': ['boots', 'footwear'],
+    // Accessories
+    'ring': ['ring'],
+    'amulet': ['amulet', 'necklace'],
+    'charm': ['charm'],
+    'talisman': ['talisman'],
+  }
+  
+  // Try to find a matching keyword in the description
+  for (const [keyword, patterns] of Object.entries(keywords)) {
+    for (const pattern of patterns) {
+      if (description.includes(pattern)) {
+        return `${base.type}_${keyword}`
+      }
+    }
+  }
+  
+  // If we have baseNames, use the first one
+  if (base.baseNames && Array.isArray(base.baseNames) && base.baseNames.length > 0) {
+    return `${base.type}_${base.baseNames[0].toLowerCase()}`
+  }
+  
+  // Fallback: extract first meaningful word (skip articles)
+  const words = description.split(' ')
+  const articles = ['a', 'an', 'the']
+  const meaningfulWord = words.find(w => !articles.includes(w.toLowerCase())) || words[0]
+  
+  return `${base.type}_${meaningfulWord.toLowerCase()}`
+}
 
 /**
  * Runtime cache for hydrated items
@@ -204,7 +263,7 @@ function deriveItemFromV3(item: ItemV3): Item {
   }
 
   // Cache the result (excluding id, modifiers, and stackCount which are instance-specific)
-  const { id, modifiers, stackCount, ...cacheableData } = derived as any
+  const { id, modifiers, stackCount, ...cacheableData } = derived as Item & { stackCount?: number }
   itemCache.set(cacheKey, cacheableData)
 
   return derived
@@ -217,11 +276,13 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
   const material = getMaterialById(item.materialId)
 
   // Try multiple methods to find the base template
-  let baseTemplate = allBases.find(b => 
-    `${b.type}_${b.description.split(' ')[0].toLowerCase()}` === item.baseTemplateId
-  )
+  // Method 1: Direct match on stored baseTemplateId
+  let baseTemplate = allBases.find(b => {
+    const baseId = generateBaseTemplateIdForBase(b)
+    return baseId === item.baseTemplateId
+  })
   
-  // If not found, try matching by type and baseName
+  // Method 2: Try matching by type and baseName
   if (!baseTemplate && item.baseName) {
     baseTemplate = allBases.find(b =>
       b.type === item.itemSlot &&
@@ -230,7 +291,14 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
     )
   }
 
-  // If still not found, try just by item type as last resort
+  // Method 3: Try legacy format (for old items)
+  if (!baseTemplate) {
+    baseTemplate = allBases.find(b => 
+      `${b.type}_${b.description.split(' ')[0].toLowerCase()}` === item.baseTemplateId
+    )
+  }
+
+  // Method 4: Try just by item type as last resort
   if (!baseTemplate) {
     const basesByType = allBases.filter(b => b.type === item.itemSlot)
     if (basesByType.length > 0) {
@@ -524,7 +592,7 @@ export function dehydrateItem(item: Item): ItemV3 {
     if (!material) {
       // console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid materialId "${materialId}", keeping as V2`)
       // Explicitly mark as V2 to prevent future processing
-      return { ...item, version: 2 } as any as ItemV3
+      return { ...item, version: 2 } as unknown as ItemV3
     }
   }
 
@@ -539,7 +607,7 @@ export function dehydrateItem(item: Item): ItemV3 {
     if (!base) {
       // console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid baseTemplateId "${baseTemplateId}", keeping as V2`)
       // Explicitly mark as V2 to prevent future processing
-      return { ...item, version: 2 } as any as ItemV3
+      return { ...item, version: 2 } as unknown as ItemV3
     }
   }
 
@@ -548,7 +616,7 @@ export function dehydrateItem(item: Item): ItemV3 {
     // Check if item has a valid name to recover from
     if (!item.name || typeof item.name !== 'string') {
       // console.warn(`Item ${item.id} has invalid/missing name and metadata, keeping as V2`)
-      return item as any as ItemV3
+      return item as unknown as ItemV3
     }
 
     // console.warn(`Item ${item.id} (${item.name}) missing metadata, attempting to recover from name`)
@@ -591,14 +659,14 @@ export function dehydrateItem(item: Item): ItemV3 {
   // If we still don't have both IDs, return as V2
   if (!materialId || !baseTemplateId) {
     // console.warn(`Cannot recover metadata for item ${item.id} (${item.name || 'unknown'}), keeping as V2`)
-    return item as any as ItemV3
+    return item as unknown as ItemV3
   }
 
   // Extract base name from full item name (remove material prefix)
   // Safety check - if name is missing at this point, we can't proceed
   if (!item.name || typeof item.name !== 'string') {
     // console.warn(`Item ${item.id} has metadata but missing name, keeping as V2`)
-    return item as any as ItemV3
+    return item as unknown as ItemV3
   }
 
   const material = getMaterialById(materialId)
