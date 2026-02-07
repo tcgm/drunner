@@ -134,13 +134,14 @@ export function hydrateItem(
   if (isItemV2(stored)) {
     // V2 items work as-is, just restore icon if needed
     // Cast to Item since V2 and Item are compatible (icon will be restored)
-    const restored = restoreItemIcon(stored as Item)
+    const restored = restoreItemIcon({ ...(stored as Item), version: 2 })
     return restored
   }
   
   if (isItemV3(stored)) {
     // V3 items: derive all properties from IDs and restore icon
-    return restoreItemIcon(deriveItemFromV3(stored))
+    const derived = deriveItemFromV3(stored)
+    return restoreItemIcon({ ...derived, version: 3 } as Item)
   }
   
   // Fallback for corrupted data
@@ -168,7 +169,8 @@ export function hydrateItemWithConversion(
 
       if (v3Item) {
         // Conversion succeeded - hydrate V3 item
-        const hydratedItem = deriveItemFromV3(v3Item)
+        const derived = deriveItemFromV3(v3Item)
+        const hydratedItem = { ...derived, version: 3 } as Item
         return {
           hydratedItem,
           converted: true,
@@ -180,7 +182,7 @@ export function hydrateItemWithConversion(
 
     // Conversion already attempted and failed, or just failed now
     // Hydrate V2 as-is
-    const restored = restoreItemIcon(stored as Item)
+    const restored = restoreItemIcon({ ...(stored as Item), version: 2 })
     return {
       hydratedItem: restored,
       converted: false
@@ -189,7 +191,7 @@ export function hydrateItemWithConversion(
 
   if (isItemV2(stored)) {
     // No auto-convert - just hydrate V2
-    const restored = restoreItemIcon(stored as Item)
+    const restored = restoreItemIcon({ ...(stored as Item), version: 2 })
     return {
       hydratedItem: restored,
       converted: false
@@ -198,7 +200,8 @@ export function hydrateItemWithConversion(
 
   if (isItemV3(stored)) {
     // Already V3 - hydrate and restore icon
-    const hydratedItem = restoreItemIcon(deriveItemFromV3(stored))
+    const derived = deriveItemFromV3(stored)
+    const hydratedItem = restoreItemIcon({ ...derived, version: 3 } as Item)
     return {
       hydratedItem,
       converted: false
@@ -233,7 +236,7 @@ export function hydrateItemsWithDetails(items: ItemStorage[]): { valid: Item[], 
     try {
       // Check if it's a V2 item before hydration
       if (isItemV2(stored)) {
-        const item = restoreItemIcon(stored as Item)
+        const item = restoreItemIcon({ ...(stored as Item), version: 2 })
         v2.push(item)
         valid.push(item) // Also add to valid so it can be used normally
         return

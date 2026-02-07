@@ -63,7 +63,8 @@ export interface ItemV2 {
   baseTemplateId?: string
   isUnique?: boolean
   statVersion?: number
-  // Note: No version field = V2
+  version?: number  // Optional version field for runtime tracking (2 for V2, 3 for V3-derived)
+  // Note: No version field in storage = V2 or V1
 }
 
 /**

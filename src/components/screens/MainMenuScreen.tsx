@@ -1,7 +1,9 @@
-import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon } from '@chakra-ui/react'
+import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon, Collapse, IconButton } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import LZString from 'lz-string'
 
 interface MainMenuScreenProps {
   onNewRun: () => void
@@ -13,6 +15,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
   const { activeRun, listBackups, createManualBackup, restoreFromBackup, downloadBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [backups, setBackups] = useState<string[]>([])
+  const [expandedBackups, setExpandedBackups] = useState<Set<string>>(new Set())
   const toast = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -23,6 +26,45 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     const availableBackups = listBackups()
     setBackups(availableBackups)
     onOpen()
+  }
+
+  const toggleBackupExpanded = (backupKey: string) => {
+    setExpandedBackups(prev => {
+      const next = new Set(prev)
+      if (next.has(backupKey)) {
+        next.delete(backupKey)
+      } else {
+        next.add(backupKey)
+      }
+      return next
+    })
+  }
+
+  const getBackupStats = (backupKey: string) => {
+    try {
+      const compressed = localStorage.getItem(backupKey)
+      if (!compressed) return { itemCount: 0, heroCount: 0 }
+
+      // Decompress the backup data
+      let str: string
+      try {
+        str = LZString.decompressFromUTF16(compressed) || compressed
+      } catch {
+        str = compressed
+      }
+
+      // Parse the state
+      const state = JSON.parse(str)
+      const gameState = state.state || state
+
+      return {
+        itemCount: gameState.bankInventory?.length || 0,
+        heroCount: gameState.heroRoster?.length || 0,
+      }
+    } catch (error) {
+      console.error('[Backup] Failed to load backup stats:', error)
+      return { itemCount: 0, heroCount: 0 }
+    }
   }
 
   const handleCreateBackup = () => {
@@ -551,6 +593,9 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
                   <VStack className="backups-list" spacing={2} align="stretch" maxH="450px" overflowY="auto" pr={2}>
                     {backups.map((backup, index) => {
                       const { date, time, relative } = formatBackupDate(backup)
+                      const { itemCount, heroCount } = getBackupStats(backup)
+                      const isExpanded = expandedBackups.has(backup)
+
                       return (
                         <Box
                           key={backup}
@@ -576,43 +621,72 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
                               LATEST
                             </Badge>
                           )}
-                          <HStack className="backup-item-content" justify="space-between" align="center">
-                            <VStack className="backup-item-info" align="start" spacing={1} flex={1}>
-                              <HStack className="backup-item-header" spacing={3}>
-                                <Text className="backup-item-number" fontSize="lg" fontWeight="bold" color={index === 0 ? 'orange.300' : 'gray.200'}>
-                                  #{backups.length - index}
-                                </Text>
-                                <Badge className="backup-item-relative-time" colorScheme={index === 0 ? 'orange' : 'blue'} fontSize="sm" px={2}>
-                                  {relative}
-                                </Badge>
+                          <VStack spacing={2} align="stretch">
+                            <HStack className="backup-item-content" justify="space-between" align="center">
+                              <HStack spacing={2} flex={1}>
+                                <IconButton
+                                  aria-label={isExpanded ? "Collapse details" : "Expand details"}
+                                  icon={isExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                                  size="sm"
+                                  variant="ghost"
+                                  colorScheme={index === 0 ? 'orange' : 'blue'}
+                                  onClick={() => toggleBackupExpanded(backup)}
+                                />
+                                <VStack className="backup-item-info" align="start" spacing={1} flex={1}>
+                                  <HStack className="backup-item-header" spacing={3}>
+                                    <Text className="backup-item-number" fontSize="lg" fontWeight="bold" color={index === 0 ? 'orange.300' : 'gray.200'}>
+                                      #{backups.length - index}
+                                    </Text>
+                                    <Badge className="backup-item-relative-time" colorScheme={index === 0 ? 'orange' : 'blue'} fontSize="sm" px={2}>
+                                      {relative}
+                                    </Badge>
+                                  </HStack>
+                                  <HStack className="backup-item-stats" spacing={3}>
+                                    <Badge colorScheme="purple" fontSize="xs">
+                                      👥 {heroCount} {heroCount === 1 ? 'Hero' : 'Heroes'}
+                                    </Badge>
+                                    <Badge colorScheme="cyan" fontSize="xs">
+                                      🎒 {itemCount} {itemCount === 1 ? 'Item' : 'Items'}
+                                    </Badge>
+                                  </HStack>
+                                </VStack>
                               </HStack>
-                              <Text className="backup-item-timestamp" fontSize="sm" color="gray.400" fontWeight="medium">
-                                📅 {date} ⏰ {time}
-                              </Text>
-                            </VStack>
-                            <HStack spacing={2}>
-                              <Button
-                                className="btn-download-backup"
-                                size="md"
-                                colorScheme="green"
-                                variant="outline"
-                                onClick={() => handleDownloadBackup(backup)}
-                                title="Download this backup"
-                              >
-                                💾
-                              </Button>
-                              <Button
-                                className="btn-restore-backup"
-                                size="md"
-                                colorScheme={index === 0 ? 'orange' : 'blue'}
-                                variant={index === 0 ? 'solid' : 'outline'}
-                                onClick={() => handleRestoreBackup(backup)}
-                                minW="100px"
-                              >
-                                Restore
-                              </Button>
+                              <HStack spacing={2}>
+                                <Button
+                                  className="btn-download-backup"
+                                  size="md"
+                                  colorScheme="green"
+                                  variant="outline"
+                                  onClick={() => handleDownloadBackup(backup)}
+                                  title="Download this backup"
+                                >
+                                  💾
+                                </Button>
+                                <Button
+                                  className="btn-restore-backup"
+                                  size="md"
+                                  colorScheme={index === 0 ? 'orange' : 'blue'}
+                                  variant={index === 0 ? 'solid' : 'outline'}
+                                  onClick={() => handleRestoreBackup(backup)}
+                                  minW="100px"
+                                >
+                                  Restore
+                                </Button>
+                              </HStack>
                             </HStack>
-                          </HStack>
+                            <Collapse in={isExpanded} animateOpacity>
+                              <Box
+                                pt={2}
+                                pl={10}
+                                borderTopWidth="1px"
+                                borderColor="gray.700"
+                              >
+                                <Text className="backup-item-timestamp" fontSize="sm" color="gray.400" fontWeight="medium">
+                                  📅 {date} ⏰ {time}
+                                </Text>
+                              </Box>
+                            </Collapse>
+                          </VStack>
                         </Box>
                       )
                     })}

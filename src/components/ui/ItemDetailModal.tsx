@@ -620,7 +620,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                         onClick={() => setShowStorageFormat(false)}
                         flex={1}
                       >
-                        Runtime (V2)
+                        Runtime (V{(item as { version?: number }).version || 1})
                       </Button>
                       <Button
                         size="xs"
@@ -629,7 +629,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                         onClick={() => setShowStorageFormat(true)}
                         flex={1}
                       >
-                        Storage (V3)
+                        Storage (V{(item as { version?: number }).version || 1})
                       </Button>
                     </HStack>
                     <Box

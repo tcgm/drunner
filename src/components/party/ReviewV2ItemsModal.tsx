@@ -4,7 +4,7 @@ import { ItemSlot } from '../ui/ItemSlot'
 import type { Item } from '@/types'
 import { ALL_MATERIALS } from '@/data/items/materials'
 import { getBasesByType } from '@/data/items/bases'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
     const v2Items = useGameStore((state) => state.v2Items)
@@ -97,6 +97,7 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
         }
 
         const guessed = guessItemProperties(currentItem)
+        console.log(`[ReviewV2ItemsModal] Setting selections - materialId: "${guessed.materialId}", baseTemplateId: "${guessed.baseTemplateId}"`)
         setSelectedMaterialId(guessed.materialId)
         setSelectedBaseTemplateId(guessed.baseTemplateId)
     }, [currentItem?.id])
@@ -109,13 +110,50 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
     const totalItems = v2Items.length
 
     const handleConvert = () => {
-        if (!selectedMaterialId || !selectedBaseTemplateId) return
+        if (!selectedMaterialId || !selectedBaseTemplateId ||
+            selectedMaterialId === '' || selectedBaseTemplateId === '') {
+            console.warn('[ReviewV2ItemsModal] Cannot convert: Missing material or base template')
+            return
+        }
         convertV2Item(currentItem.id, selectedMaterialId, selectedBaseTemplateId)
     }
 
     const handleSkip = () => {
         skipV2Item(currentItem.id)
     }
+
+    // Validate that selected values actually exist in the available options
+    const isValidMaterial = useMemo(() => {
+        if (!selectedMaterialId || selectedMaterialId.trim() === '') return false
+        return ALL_MATERIALS.some(m => m.id === selectedMaterialId)
+    }, [selectedMaterialId])
+
+    const isValidBase = useMemo(() => {
+        if (!selectedBaseTemplateId || selectedBaseTemplateId.trim() === '') return false
+        return availableBases.some(b => {
+            const baseId = b.baseNames
+                ? `${b.type}_${b.baseNames[0].toLowerCase()}`
+                : `${b.type}_${b.type}`
+            return baseId === selectedBaseTemplateId
+        })
+    }, [selectedBaseTemplateId, availableBases])
+
+    // Button is disabled if either selection is invalid/empty
+    const isConvertDisabled = useMemo(() => {
+        return !isValidMaterial || !isValidBase
+    }, [isValidMaterial, isValidBase])
+
+    // Log state changes
+    useEffect(() => {
+        console.log('[ReviewV2ItemsModal] Button state updated:', {
+            currentItemId: currentItem?.id,
+            selectedMaterialId,
+            selectedBaseTemplateId,
+            isValidMaterial,
+            isValidBase,
+            isConvertDisabled
+        })
+    }, [currentItem?.id, selectedMaterialId, selectedBaseTemplateId, isValidMaterial, isValidBase, isConvertDisabled])
 
     return (
         <Modal isOpen={true} onClose={onClose} closeOnOverlayClick={false} size="xl" blockScrollOnMount={true} preserveScrollBarGap={false}>
@@ -246,7 +284,7 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
                         <Button
                             onClick={handleConvert}
                             colorScheme="blue"
-                            isDisabled={!selectedMaterialId || !selectedBaseTemplateId}
+                            isDisabled={isConvertDisabled}
                         >
                             Convert to New Format
                         </Button>

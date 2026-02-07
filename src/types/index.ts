@@ -128,6 +128,7 @@ export interface Item {
   baseTemplateId?: string // Base template used for this item
   isUnique?: boolean // True if this is a unique/set item (not crafted)
   statVersion?: number // Version of stat calculation formula (for migrations)
+  version?: number // Runtime version tracking (2 for V2, 3 for V3-derived, undefined for V1)
 }
 
 export interface Consumable extends Item {
