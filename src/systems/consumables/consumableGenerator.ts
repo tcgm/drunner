@@ -1,5 +1,7 @@
 import type { Consumable, ItemRarity } from '@/types'
+import type { ConsumableV3 } from '@/types/items-v3'
 import { v4 as uuidv4 } from 'uuid'
+import { hydrateItem } from '@/utils/itemHydration'
 import { 
   ALL_CONSUMABLE_BASES, 
   getConsumableBaseById, 
@@ -25,6 +27,7 @@ function getConsumableType(base: ConsumableBase): 'potion' | 'food' | 'supply' {
 
 /**
  * Generate a consumable by combining base + size + potency + rarity
+ * Returns V3 format - stores only IDs, derives everything at hydration
  */
 export function generateConsumable(
   baseId?: string,
@@ -61,69 +64,21 @@ export function generateConsumable(
   
   // Select rarity (default to common if not specified)
   const finalRarity: ItemRarity = rarity || 'common'
-  const rarityConfig = getRarityConfig(finalRarity)
-  const rarityMultiplier = rarityConfig.statMultiplierBase
   
-  // Apply floor scaling to base value (0.5% per floor, max 3x at floor 400)
-  const floorMultiplier = floor ? Math.min(1 + (floor * 0.005), 3.0) : 1.0
-  
-  // Calculate final values for all effects
-  const scaledEffects = base.effects.map(effect => ({
-    type: effect.type,
-    value: Math.floor(effect.value * floorMultiplier * size.multiplier * potency.multiplier * rarityMultiplier),
-    stat: effect.stat,
-    duration: effect.duration,
-    target: effect.target,
-  }))
-  
-  const value = Math.floor(base.baseGoldValue * floorMultiplier * size.valueMultiplier * potency.valueMultiplier * rarityMultiplier)
-  
-  // Determine consumable type from base
-  const consumableType = getConsumableType(base)
-  
-  // Generate name (potency and size prefixes, with rarity if not common)
-  const rarityPrefix = finalRarity !== 'common' ? `${rarityConfig.name} ` : ''
-  const potencyPrefix = potency.prefix ? `${potency.prefix} ` : ''
-  const suffix = consumableType === 'potion' ? 'Potion' : ''
-  const name = `${rarityPrefix}${potencyPrefix}${size.prefix} ${base.name}${suffix ? ' ' + suffix : ''}`
-  
-  // Generate description from effects
-  const effectDescriptions = scaledEffects.map(effect => {
-    if (effect.type === 'heal') {
-      return `Restores ${effect.value} HP`
-    } else if (effect.type === 'hot') {
-      return `Restores ${effect.value} HP per event for ${effect.duration || 3} events`
-    } else if (effect.type === 'revive') {
-      return `Resurrects a fallen hero with ${effect.value} HP`
-    } else if (effect.type === 'buff') {
-      return `Increases ${effect.stat} by ${effect.value} for ${effect.duration} events`
-    }
-    return ''
-  }).filter(Boolean).join(', then ')
-  
-  const qualityDesc = potency.id !== 'normal' ? `, ${potency.name.toLowerCase()} concentration` : ''
-  const description = `${effectDescriptions}. ${size.name} size${qualityDesc}, ${finalRarity} quality.`
-  
-  return {
+  // Create V3 consumable - store only IDs
+  const v3Item: ConsumableV3 = {
+    version: 3,
     id: uuidv4(),
-    name,
-    description,
-    type: 'consumable',
-    rarity: finalRarity,
-    stats: {},
-    value,
-    icon: base.icon,
-    consumableType,
-    effects: scaledEffects,
-    usableInCombat: base.usableInCombat,
-    usableOutOfCombat: base.usableOutOfCombat,
-    stackable: true,
-    stackCount: 1,
-    // Store generation metadata
+    itemType: 'consumable',
     baseId: base.id,
     sizeId: size.id,
     potencyId: potency.id,
+    rarity: finalRarity,
+    stackCount: 1
   }
+
+  // Hydrate and return as Consumable
+  return hydrateItem(v3Item) as Consumable
 }
 
 /**

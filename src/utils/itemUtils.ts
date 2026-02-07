@@ -51,8 +51,9 @@ export function restoreItemIcon(item: Item): Item {
 
   // Check if it's a procedural item with base template
   if (item.baseTemplateId) {
-    // baseTemplateId format: "type_keyword" (e.g., "weapon_sword")
-    const [type, keyword] = item.baseTemplateId.split('_')
+    // baseTemplateId format: "type.id" (V3) or "type_keyword" (V2)
+    const separator = item.baseTemplateId.includes('.') ? '.' : '_'
+    const [type, keyword] = item.baseTemplateId.split(separator)
     
     // Ignore useless keywords like "a", "an", "the"
     const isUselessKeyword = !keyword || keyword.length <= 2 || ['a', 'an', 'the'].includes(keyword)

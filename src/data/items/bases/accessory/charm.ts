@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base charm template
  */
 export const CHARM_BASE: BaseItemTemplate = {
+  id: 'charm',
   description: 'A lucky charm',
   type: 'accessory1',
   icon: GiCharm,

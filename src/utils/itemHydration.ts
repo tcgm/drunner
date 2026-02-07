@@ -5,7 +5,7 @@
  */
 
 import type { IconType } from 'react-icons'
-import type { Item, ItemStorage, ItemV2, ItemV3, ProceduralItemV3, UniqueItemV3, SetItemV3, ConsumableV3, Consumable, ConsumableEffect } from '@/types'
+import type { Item, ItemStorage, ItemV2, ItemV3, ProceduralItemV3, UniqueItemV3, SetItemV3, ConsumableV3, Consumable, ConsumableEffect, ItemSlot } from '@/types'
 import { isItemV2, isItemV3, isProceduralItemV3, isUniqueItemV3, isSetItemV3, isConsumableV3 } from '@/types/items-v3'
 import { restoreItemIcon } from './itemUtils'
 import { getMaterialById, ALL_MATERIALS } from '@/data/items/materials'
@@ -16,6 +16,15 @@ import { getRarityConfig } from '@/systems/rarity/raritySystem'
 import { getConsumableBaseById } from '@/data/consumables/bases'
 import { getSizeById } from '@/data/consumables/sizes'
 import { getPotencyById } from '@/data/consumables/potencies'
+import { convertToV3, wasAttempted } from './itemConverter'
+import {
+  calculateProceduralStats,
+  calculateUniqueStats,
+  calculateSetStats,
+  calculateItemValue,
+  calculateConsumableValue,
+  calculateConsumableEffectValues
+} from './itemStatCalculation'
 
 /**
  * Generate a meaningful baseTemplateId from a base template
@@ -78,20 +87,27 @@ function generateBaseTemplateIdForBase(base: BaseItemTemplate): string {
 
 /**
  * Runtime cache for hydrated items
- * Key format: "procedural:{materialId}:{baseTemplateId}:{baseName}:{rarity}" or "unique:{templateId}" or "set:{templateId}:{isUnique}"
+ * Key format includes modifiers for proper caching across variations
+ * Format examples:
+ * - Procedural: "procedural:{materialId}:{baseTemplateId}:{variantName}:{rarity}:{modifiers}"
+ * - Consumable: "consumable:{baseId}:{sizeId}:{potencyId}:{rarity}:{modifiers}"
+ * - Unique: "unique:{templateId}:{isUniqueRoll}:{modifiers}"
+ * - Set: "set:{templateId}:{isUniqueRoll}:{modifiers}"
  * This cache is NOT persisted - it's regenerated each session
  */
 const itemCache = new Map<string, Omit<Item, 'id' | 'modifiers'>>()
 
 function getCacheKey(item: ItemV3): string {
+  const modifiersKey = item.modifiers ? item.modifiers.sort().join(',') : ''
+
   if (isProceduralItemV3(item)) {
-    return `procedural:${item.materialId}:${item.baseTemplateId}:${item.baseName}:${item.rarity}`
+    return `procedural:${item.materialId}:${item.baseTemplateId}:${item.variantName}:${item.rarity}:${modifiersKey}`
   } else if (isUniqueItemV3(item)) {
-    return `unique:${item.templateId}`
+    return `unique:${item.templateId}:false:${modifiersKey}`
   } else if (isSetItemV3(item)) {
-    return `set:${item.templateId}:${item.isUniqueRoll || false}`
+    return `set:${item.templateId}:${item.isUniqueRoll || false}:${modifiersKey}`
   } else if (isConsumableV3(item)) {
-    return `consumable:${item.baseId}:${item.sizeId}:${item.potencyId}:${item.rarity}`
+    return `consumable:${item.baseId}:${item.sizeId}:${item.potencyId}:${item.rarity}:${modifiersKey}`
   }
   return ''
 }
@@ -106,8 +122,15 @@ export function clearItemCache() {
 /**
  * Main hydration function
  * Takes any stored item format and returns runtime Item
+ * 
+ * @param stored - The stored item (V2 or V3 format)
+ * @param autoConvert - If true, attempts to convert V2 items to V3 automatically
+ * @returns Object with hydrated item, conversion status, and V3 item if converted
  */
-export function hydrateItem(stored: ItemStorage): Item {
+export function hydrateItem(
+  stored: ItemStorage,
+  autoConvert: boolean = false
+): Item {
   if (isItemV2(stored)) {
     // V2 items work as-is, just restore icon if needed
     // Cast to Item since V2 and Item are compatible (icon will be restored)
@@ -116,8 +139,8 @@ export function hydrateItem(stored: ItemStorage): Item {
   }
   
   if (isItemV3(stored)) {
-    // V3 items: derive all properties from IDs
-    return deriveItemFromV3(stored)
+    // V3 items: derive all properties from IDs and restore icon
+    return restoreItemIcon(deriveItemFromV3(stored))
   }
   
   // Fallback for corrupted data
@@ -126,10 +149,75 @@ export function hydrateItem(stored: ItemStorage): Item {
 }
 
 /**
+ * Enhanced hydration with conversion support
+ * Returns additional metadata about conversion status
+ */
+export function hydrateItemWithConversion(
+  stored: ItemStorage,
+  autoConvert: boolean = false
+): {
+  hydratedItem: Item
+  converted: boolean
+  v3Item?: ItemV3
+} {
+  if (isItemV2(stored) && autoConvert) {
+    // Check if already attempted conversion this session
+    if (!wasAttempted(stored.id)) {
+      // Attempt conversion
+      const v3Item = convertToV3(stored)
+
+      if (v3Item) {
+        // Conversion succeeded - hydrate V3 item
+        const hydratedItem = deriveItemFromV3(v3Item)
+        return {
+          hydratedItem,
+          converted: true,
+          v3Item
+        }
+      }
+      // Conversion failed - will be tracked in converter
+    }
+
+    // Conversion already attempted and failed, or just failed now
+    // Hydrate V2 as-is
+    const restored = restoreItemIcon(stored as Item)
+    return {
+      hydratedItem: restored,
+      converted: false
+    }
+  }
+
+  if (isItemV2(stored)) {
+    // No auto-convert - just hydrate V2
+    const restored = restoreItemIcon(stored as Item)
+    return {
+      hydratedItem: restored,
+      converted: false
+    }
+  }
+
+  if (isItemV3(stored)) {
+    // Already V3 - hydrate and restore icon
+    const hydratedItem = restoreItemIcon(deriveItemFromV3(stored))
+    return {
+      hydratedItem,
+      converted: false
+    }
+  }
+
+  // Fallback for corrupted data
+  console.error('Unknown item format:', stored)
+  return {
+    hydratedItem: createFallbackItem(stored),
+    converted: false
+  }
+}
+
+/**
  * Hydrate multiple items (for inventories, equipment, etc)
  */
 export function hydrateItems(items: ItemStorage[]): Item[] {
-  return items.map(hydrateItem)
+  return items.map(item => hydrateItem(item))
 }
 
 /**
@@ -165,7 +253,7 @@ export function hydrateItemsWithDetails(items: ItemStorage[]): { valid: Item[], 
         const original = stored as Item
         corrupted.push(restoreItemIcon(original))
       } else {
-        const fallback = createFallbackItem(stored)
+        const fallback = createFallbackItem(stored as Partial<Item>)
         corrupted.push(fallback)
       }
     }
@@ -211,7 +299,7 @@ export function hydrateItemsWithCorrupted(items: ItemStorage[]): { valid: Item[]
         const original = stored as Item
         corrupted.push(restoreItemIcon(original))
       } else {
-        const fallback = createFallbackItem(stored)
+        const fallback = createFallbackItem(stored as Partial<Item>)
         corrupted.push(fallback)
       }
     }
@@ -276,31 +364,45 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
   const material = getMaterialById(item.materialId)
 
   // Try multiple methods to find the base template
-  // Method 1: Direct match on stored baseTemplateId
-  let baseTemplate = allBases.find(b => {
-    const baseId = generateBaseTemplateIdForBase(b)
-    return baseId === item.baseTemplateId
-  })
+  // Method 1: New dot format - "type.id" (e.g., "weapon.sword")
+  let baseTemplate = allBases.find(b =>
+    `${b.type}.${b.id}` === item.baseTemplateId
+  )
+
+  // Method 2: Legacy underscore format (for backward compatibility)
+  if (!baseTemplate) {
+    baseTemplate = allBases.find(b => {
+      const baseId = generateBaseTemplateIdForBase(b)
+      return baseId === item.baseTemplateId
+    })
+  }
   
-  // Method 2: Try matching by type and baseName
-  if (!baseTemplate && item.baseName) {
+  // Method 3: Try matching by type and variantName in baseNames array
+  if (!baseTemplate && item.variantName) {
+    // Support both dot and underscore formats for type extraction
+    const extractedType = item.baseTemplateId.includes('.')
+      ? item.baseTemplateId.split('.')[0]
+      : item.baseTemplateId.split('_')[0]
     baseTemplate = allBases.find(b =>
-      b.type === item.itemSlot &&
+      b.type === extractedType &&
       b.baseNames &&
-      b.baseNames.some(name => name.toLowerCase() === item.baseName.toLowerCase())
+      b.baseNames.some(name => name.toLowerCase() === item.variantName.toLowerCase())
     )
   }
 
-  // Method 3: Try legacy format (for old items)
+  // Method 4: Try legacy description-based format (for very old items)
   if (!baseTemplate) {
     baseTemplate = allBases.find(b => 
       `${b.type}_${b.description.split(' ')[0].toLowerCase()}` === item.baseTemplateId
     )
   }
 
-  // Method 4: Try just by item type as last resort
+  // Method 5: Try just by item type as last resort
   if (!baseTemplate) {
-    const basesByType = allBases.filter(b => b.type === item.itemSlot)
+    const extractedType = item.baseTemplateId.includes('.')
+      ? item.baseTemplateId.split('.')[0]
+      : item.baseTemplateId.split('_')[0]
+    const basesByType = allBases.filter(b => b.type === extractedType)
     if (basesByType.length > 0) {
       baseTemplate = basesByType[0]
       // console.warn(`Using fallback base template for item ${item.id}, baseTemplateId: ${item.baseTemplateId}`)
@@ -308,41 +410,43 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
   }
 
   if (!material || !baseTemplate) {
-    // console.warn(`Cannot derive procedural item ${item.id}: material=${!!material}, base=${!!baseTemplate}, materialId=${item.materialId}, baseTemplateId=${item.baseTemplateId}, baseName=${item.baseName}`)
-    return createFallbackItem(item)
+    // console.warn(`Cannot derive procedural item ${item.id}: material=${!!material}, base=${!!baseTemplate}, materialId=${item.materialId}, baseTemplateId=${item.baseTemplateId}, variantName=${item.variantName}`)
+    return createFallbackItem(item as Partial<Item>)
   }
   
-  const rarityConfig = getRarityConfig(item.rarity)
-  const rarityMultiplier = rarityConfig.statMultiplierBase
-  const materialMultiplier = material.statMultiplier
+  // Derive itemSlot from base.type
+  // The type field directly maps to ItemSlot for all base templates
+  const itemSlot: ItemSlot = baseTemplate.type as ItemSlot
+
+  // Calculate stats using centralized stat calculation
+  const stats = calculateProceduralStats(baseTemplate, material, item.rarity, item.modifiers)
   
-  // Calculate stats: base × material × rarity
-  const stats: Item['stats'] = {}
-  for (const [key, baseValue] of Object.entries(baseTemplate.stats)) {
-    if (typeof baseValue === 'number') {
-      stats[key as keyof typeof stats] = Math.floor(baseValue * materialMultiplier * rarityMultiplier)
-    }
+  // Select variant name from baseNames array
+  let selectedVariant = item.variantName
+  if (baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+    // Try to find exact match (case-insensitive)
+    const matchingVariant = baseTemplate.baseNames.find(
+      name => name.toLowerCase() === item.variantName.toLowerCase()
+    )
+    selectedVariant = matchingVariant || baseTemplate.baseNames[0] // Fallback to first variant
   }
-  
-  // Apply modifiers if present
-  // TODO: Apply modifier stats once modifier system is updated
-  
-  // Generate name
-  const name = `${material.prefix} ${item.baseName}`
+
+  // Generate name using material prefix + variant name
+  const name = `${material.prefix} ${selectedVariant}`
   
   // Generate description
   const description = material.description
     ? `${baseTemplate.description} - ${material.description}`
     : baseTemplate.description
   
-  // Calculate value
+  // Calculate value using centralized calculation
   const baseValue = 50
-  const value = Math.floor(baseValue * material.valueMultiplier * rarityMultiplier)
+  const value = calculateItemValue(baseValue, material, item.rarity, item.modifiers)
   
-  // Get icon (check for baseName-specific icon)
+  // Get icon (check for variantName-specific icon)
   let icon = baseTemplate.icon
-  if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && item.baseName) {
-    const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType>)[item.baseName]
+  if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && selectedVariant) {
+    const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType>)[selectedVariant]
     if (specificIcon) {
       icon = specificIcon
     }
@@ -352,7 +456,7 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
     id: item.id,
     name,
     description,
-    type: item.itemSlot,
+    type: itemSlot,
     rarity: item.rarity,
     stats,
     value,
@@ -380,9 +484,8 @@ function deriveUniqueItem(item: UniqueItemV3): Item {
     return createFallbackItem(item)
   }
   
-  // Apply modifiers if present
-  const stats = { ...template.stats }
-  // TODO: Apply modifier stats
+  // Calculate stats using centralized calculation (includes unique 30% boost)
+  const stats = calculateUniqueStats(template.stats, item.modifiers)
   
   return {
     id: item.id,
@@ -413,30 +516,13 @@ function deriveSetItem(item: SetItemV3): Item {
     return createFallbackItem(item)
   }
   
-  const rarityConfig = getRarityConfig(template.rarity)
-  const rarityMultiplier = rarityConfig.statMultiplierBase
+  // Calculate stats using centralized calculation (handles unique roll boost if applicable)
+  const stats = calculateSetStats(template.stats, item.isUniqueRoll || false, item.modifiers)
   
-  // Apply rarity multiplier to template stats
-  const stats: Item['stats'] = {}
-  for (const [key, baseValue] of Object.entries(template.stats)) {
-    if (typeof baseValue === 'number') {
-      stats[key as keyof typeof stats] = Math.floor(baseValue * rarityMultiplier)
-    }
-  }
-  
-  // If unique roll, apply boost
+  // Calculate value
   const uniqueBoost = item.isUniqueRoll ? 1.3 : 1.0
-  if (item.isUniqueRoll) {
-    for (const [key, value] of Object.entries(stats)) {
-      if (typeof value === 'number') {
-        stats[key as keyof typeof stats] = Math.floor(value * uniqueBoost)
-      }
-    }
-  }
-  
-  const value = item.isUniqueRoll
-    ? Math.floor(template.value * rarityMultiplier * uniqueBoost)
-    : Math.floor(template.value * rarityMultiplier)
+  const rarityConfig = getRarityConfig(template.rarity)
+  const value = Math.floor(template.value * rarityConfig.statMultiplierBase * uniqueBoost)
   
   // Get setId from template name
   const setId = template.name.split("'")[0] // "Titan's Guard" -> "Titan"
@@ -469,15 +555,15 @@ function deriveConsumableItem(item: ConsumableV3): Consumable {
     return createFallbackItem(item) as Consumable
   }
 
-  const rarityConfig = getRarityConfig(item.rarity)
-
-  // Calculate effects
+  // Calculate effects using centralized calculation
   const effects: ConsumableEffect[] = base.effects.map(effect => {
     if (effect.value !== undefined) {
-      // Apply size and potency multipliers
-      const baseValue = effect.value * size.multiplier * potency.multiplier
-      // Apply rarity bonus
-      const finalValue = Math.floor(baseValue * rarityConfig.statMultiplierBase)
+      const finalValue = calculateConsumableEffectValues(
+        effect.value,
+        size.multiplier,
+        potency.multiplier,
+        item.rarity
+      )
       return {
         ...effect,
         value: finalValue
@@ -492,8 +578,13 @@ function deriveConsumableItem(item: ConsumableV3): Consumable {
   // Generate description from base
   const description = base.description
 
-  // Calculate value
-  const value = Math.floor(base.baseGoldValue * size.valueMultiplier * potency.valueMultiplier * rarityConfig.statMultiplierBase)
+  // Calculate value using centralized calculation
+  const value = calculateConsumableValue(
+    base.baseGoldValue,
+    size.valueMultiplier,
+    potency.valueMultiplier,
+    item.rarity
+  )
 
   return {
     id: item.id,
@@ -599,10 +690,15 @@ export function dehydrateItem(item: Item): ItemV3 {
   if (baseTemplateId) {
     // Check if baseTemplateId can be found
     const base = allBases.find(b => {
-      const expectedId = b.baseNames
+      // Check new format first (armor.vest)
+      const newFormatId = b.id ? `${b.type}.${b.id}` : null
+      if (newFormatId === baseTemplateId) return true
+
+      // Fall back to old format (armor_vest) for backward compatibility
+      const oldFormatId = b.baseNames
         ? `${b.type}_${b.baseNames[0].toLowerCase()}`
-        : `${b.type}_${b.type}` // fallback if no baseNames
-      return expectedId === baseTemplateId
+        : `${b.type}_${b.type}`
+      return oldFormatId === baseTemplateId
     })
     if (!base) {
       // console.warn(`Item ${item.id} (${item.name || 'unknown'}) has invalid baseTemplateId "${baseTemplateId}", keeping as V2`)
@@ -662,7 +758,7 @@ export function dehydrateItem(item: Item): ItemV3 {
     return item as unknown as ItemV3
   }
 
-  // Extract base name from full item name (remove material prefix)
+  // Extract variant name from full item name (remove material prefix)
   // Safety check - if name is missing at this point, we can't proceed
   if (!item.name || typeof item.name !== 'string') {
     // console.warn(`Item ${item.id} has metadata but missing name, keeping as V2`)
@@ -670,7 +766,7 @@ export function dehydrateItem(item: Item): ItemV3 {
   }
 
   const material = getMaterialById(materialId)
-  const baseName = material
+  const variantName = material
     ? item.name.substring(material.prefix.length + 1).trim()
     : item.name
 
@@ -678,11 +774,11 @@ export function dehydrateItem(item: Item): ItemV3 {
     version: 3,
     id: item.id,
     itemType: 'procedural',
+    type: item.type as 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory',
     materialId,
     baseTemplateId,
-    baseName,
+    variantName,
     rarity: item.rarity,
-    itemSlot: item.type,
     modifiers: item.modifiers,
   }
 }

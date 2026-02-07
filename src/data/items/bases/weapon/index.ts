@@ -1,4 +1,6 @@
 // Auto-generated index for weapon bases
+export const WEAPON_TYPE = 'weapon'
+
 import { SWORD_BASE } from './sword'
 import { AXE_BASE } from './axe'
 import { DAGGER_BASE } from './dagger'

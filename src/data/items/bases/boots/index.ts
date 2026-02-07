@@ -1,4 +1,6 @@
 // Auto-generated index for boots bases
+export const BOOTS_TYPE = 'boots'
+
 import { BOOTS_BASE } from './boots'
 import { GREAVES_BASE } from './greaves'
 import { SANDALS_BASE } from './sandals'

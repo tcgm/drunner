@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base helmet template
  */
 export const HELMET_BASE: BaseItemTemplate = {
+  id: 'helmet',
   description: 'Protective headgear',
   type: 'helmet',
   icon: GiLightHelm,

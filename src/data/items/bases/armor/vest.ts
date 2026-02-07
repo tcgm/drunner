@@ -5,6 +5,7 @@ import type { BaseItemTemplate} from '../index'
  * Base vest template - light armor
  */
 export const VEST_BASE: BaseItemTemplate = {
+  id: 'vest',
   description: 'Lightweight protective garment',
   type: 'armor',
   icon: GiChestArmor,

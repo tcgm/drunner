@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base hood template - lighter headgear
  */
 export const HOOD_BASE: BaseItemTemplate = {
+  id: 'hood',
   description: 'Cloth head covering',
   type: 'helmet',
   icon: GiHood,

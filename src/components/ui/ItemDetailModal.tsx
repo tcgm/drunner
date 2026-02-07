@@ -26,6 +26,7 @@ import { getModifierById } from '@/data/items/mods'
 import { getItemSetName, ALL_SETS } from '@/data/items/sets'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { dehydrateItem } from '@/utils/itemHydration'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -282,6 +283,7 @@ interface ItemDetailModalProps {
 export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onClose }: ItemDetailModalProps) {
   // Dev mode JSON viewer state
   const [showJson, setShowJson] = useState(false)
+  const [showStorageFormat, setShowStorageFormat] = useState(false)
   const isDev = import.meta.env.DEV
 
   // Restore icon if missing (handles deserialization issues)
@@ -294,6 +296,16 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
   const itemJson = useMemo(() => {
     const { icon, ...rest } = restoredItem
     return JSON.stringify(rest, null, 2)
+  }, [restoredItem])
+
+  // Prepare storage format JSON (V3 dehydrated)
+  const storageJson = useMemo(() => {
+    try {
+      const dehydrated = dehydrateItem(restoredItem)
+      return JSON.stringify(dehydrated, null, 2)
+    } catch (error) {
+      return `Error dehydrating item: ${error}`
+    }
   }, [restoredItem])
 
   // Sanitize item name in case it got corrupted with icon function
@@ -599,27 +611,49 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                   {showJson ? 'Hide' : 'Show'} Item JSON (Dev)
                 </Button>
                 <Collapse in={showJson} animateOpacity style={{ width: '100%' }}>
-                  <Box
-                    bg="blackAlpha.600"
-                    p={3}
-                    borderRadius="md"
-                    borderWidth="1px"
-                    borderColor="cyan.600"
-                    maxH="300px"
-                    overflowY="auto"
-                    w="full"
-                  >
-                    <Code
-                      display="block"
-                      whiteSpace="pre"
-                      fontSize="xs"
-                      bg="transparent"
-                      color="cyan.300"
+                  <VStack w="full" spacing={2}>
+                    <HStack w="full" spacing={2}>
+                      <Button
+                        size="xs"
+                        variant={!showStorageFormat ? "solid" : "ghost"}
+                        colorScheme="cyan"
+                        onClick={() => setShowStorageFormat(false)}
+                        flex={1}
+                      >
+                        Runtime (V2)
+                      </Button>
+                      <Button
+                        size="xs"
+                        variant={showStorageFormat ? "solid" : "ghost"}
+                        colorScheme="purple"
+                        onClick={() => setShowStorageFormat(true)}
+                        flex={1}
+                      >
+                        Storage (V3)
+                      </Button>
+                    </HStack>
+                    <Box
+                      bg="blackAlpha.600"
+                      p={3}
+                      borderRadius="md"
+                      borderWidth="1px"
+                      borderColor={showStorageFormat ? "purple.600" : "cyan.600"}
+                      maxH="300px"
+                      overflowY="auto"
                       w="full"
                     >
-                      {itemJson}
-                    </Code>
-                  </Box>
+                      <Code
+                        display="block"
+                        whiteSpace="pre"
+                        fontSize="xs"
+                        bg="transparent"
+                        color={showStorageFormat ? "purple.300" : "cyan.300"}
+                        w="full"
+                      >
+                        {showStorageFormat ? storageJson : itemJson}
+                      </Code>
+                    </Box>
+                  </VStack>
                 </Collapse>
               </VStack>
             )}

@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base mace template - blunt weapon
  */
 export const MACE_BASE: BaseItemTemplate = {
+  id: 'mace',
   description: 'A crushing bludgeoning weapon',
   type: 'weapon',
   icon: GiMaceHead,

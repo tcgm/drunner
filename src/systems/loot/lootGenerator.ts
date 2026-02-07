@@ -1,5 +1,5 @@
 import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
-import type { ItemStorage, UniqueItemV3, SetItemV3 } from '@/types/items-v3'
+import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3 } from '@/types/items-v3'
 import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
@@ -465,110 +465,37 @@ export function generateItem(
   }
   
   // At this point, both baseTemplate and material are guaranteed to be defined
-  // Generate the item from the base and material
-  const base: Omit<Item, 'id' | 'name' | 'rarity' | 'value'> = {
-    ...baseTemplate,
-    icon: baseTemplate.icon || GiCrystalShine,
+  // Generate V3 procedural item - store only IDs, derive everything at hydration
+
+  // Select random variant from baseNames array if available
+  let variantName: string
+  if (baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+    const randomIndex = Math.floor(Math.random() * baseTemplate.baseNames.length)
+    variantName = baseTemplate.baseNames[randomIndex]
+  } else {
+    // Fallback: use first word of description capitalized
+    variantName = baseTemplate.description.split(' ')[0]
+    variantName = variantName.charAt(0).toUpperCase() + variantName.slice(1)
   }
   
-  // Get rarity multiplier
-  const rarityConfig = getRarityConfig(rarity)
-  const rarityMultiplier = rarityConfig.statMultiplierBase
+  // Construct baseTemplateId in new dot format: "type.id"
+  const baseTemplateId = `${baseTemplate.type}.${baseTemplate.id}`
   
-  // Apply material and rarity multipliers to base stats: base × material × rarity
-  const modifiedStats = applyMaterialToStats(base.stats, material.statMultiplier, rarityMultiplier)
-  
-  // Calculate value with both material and rarity multipliers
-  const baseValue = 50
-  const value = Math.floor(baseValue * material.valueMultiplier * rarityMultiplier)
-  
-  // Combine descriptions
-  const description = material.description 
-    ? `${base.description} - ${material.description}`
-    : base.description
-  
-  // Generate item name and icon
-  const { name, icon: generatedIcon } = generateItemName(material.prefix, base)
-  const itemIcon = generatedIcon || base.icon
-  
-  // Check if name generation failed (returned generic fallback - material + single type word only)
-  // Only "Weapon", "Armor", and "Item" are pure fallbacks; others like "Helmet"/"Boots" are valid keyword matches
-  const nameParts = name.split(' ')
-  const isGeneric = nameParts.length === 2 && 
-    (name.endsWith(' Item') || name.endsWith(' Weapon') || name.endsWith(' Armor'))
-  
-  if (isGeneric) {
-    console.warn(`Generated generic name "${name}" for ${material.prefix} + ${base.description} - attempting repair`)
-    
-    // Create a temporary item to attempt repair
-    const tempItem: Item = {
-      id: uuidv4(),
-      name,
-      description: material.description 
-        ? `${base.description} - ${material.description}`
-        : base.description,
-      type: forceType || base.type,
-      rarity,
-      stats: applyMaterialToStats(base.stats, material.statMultiplier, rarityMultiplier),
-      value: Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier * rarityMultiplier),
-      icon: itemIcon,
-      materialId: material.id,
-      baseTemplateId: baseTemplate ? generateBaseTemplateId(base) : undefined,
-      isUnique: false,
-    }
-    
-    // Try to repair the item (name and icon)
-    let repairedItem = repairItemName(tempItem)
-    repairedItem = repairItemIcon(repairedItem)
-    
-    // If repair succeeded (name changed), return the repaired item
-    if (repairedItem.name !== name) {
-      console.log(`Successfully repaired: "${name}" -> "${repairedItem.name}"`)
-      return repairedItem
-    }
-    
-    // Repair failed - give alkahest instead
-    console.warn(`Repair failed for "${name}" - giving alkahest`)
-    const alkahestValue = Math.floor(GAME_CONFIG.loot.baseItemValue * material.valueMultiplier)
-    return {
-      id: uuidv4(),
-      name: 'Alkahest Shard',
-      description: 'A crystallized essence that failed to form properly. Can be used for crafting.',
-      type: forceType || base.type,
-      rarity,
-      stats: {},
-      value: alkahestValue,
-      icon: GiCrystalShine,
-      isUnique: false,
-    }
-  }
-  
-  // Create the item directly - we already have everything we need!
-  let item: Item = {
+  // Create V3 procedural item
+  const v3Item: ProceduralItemV3 = {
+    version: 3,
     id: uuidv4(),
-    name,
-    description,
-    type: forceType || base.type,
-    rarity,
-    stats: modifiedStats,
-    value,
-    icon: itemIcon,
+    itemType: 'procedural',
+    type: baseTemplate.type as 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory',
     materialId: material.id,
-    baseTemplateId: generateBaseTemplateId(base),
-    isUnique: false,
+    baseTemplateId,
+    variantName,
+    rarity,
+    modifiers: modifiers.length > 0 ? modifiers : undefined
   }
   
-  // Apply modifiers if any
-  if (modifiers.length > 0) {
-    const modifierObjects = modifiers.map(id => getModifierById(id)).filter((m): m is NonNullable<typeof m> => m !== null && m !== undefined)
-    item = applyModifiers(item, modifierObjects)
-    
-    // Update description with modifier info
-    const modifierNames = modifierObjects.map(m => m.name).join(', ')
-    item.description = `${modifierNames}! ${item.description}`
-  }
-  
-  return item
+  // Hydrate and return
+  return hydrateItem(v3Item)
 }
 
 /**

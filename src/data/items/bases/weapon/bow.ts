@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base bow template - ranged weapon
  */
 export const BOW_BASE: BaseItemTemplate = {
+  id: 'bow',
   description: 'A ranged weapon for distance attacks',
   type: 'weapon',
   icon: GiBowArrow,

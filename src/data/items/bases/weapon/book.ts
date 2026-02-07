@@ -11,6 +11,7 @@ import type { BaseItemTemplate } from '../index'
  * Base book template - wisdom and magic power weapon
  */
 export const BOOK_BASE: BaseItemTemplate = {
+  id: 'book',
   description: 'A tome of ancient knowledge and power',
   type: 'weapon',
   icon: GiSpellBook,

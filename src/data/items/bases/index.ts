@@ -6,6 +6,7 @@ import type { IconType } from 'react-icons'
  * Base item template with optional material blacklist
  */
 export interface BaseItemTemplate extends Omit<Item, 'id' | 'name' | 'rarity' | 'value'> {
+  id: string // Base identifier (e.g., "sword", "crown") - combined with type to form full baseTemplateId
   materialBlacklist?: string[] // Material IDs this base can't use
   baseNames?: string[] // Possible base names for variety (e.g., ["Staff", "Stave"])
   baseNameIcons?: Record<string, IconType> // Optional icon mapping for specific baseNames

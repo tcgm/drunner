@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base greaves template - armored boots
  */
 export const GREAVES_BASE: BaseItemTemplate = {
+  id: 'greaves',
   description: 'Heavy armored leg protection',
   type: 'boots',
   icon: GiLegArmor,

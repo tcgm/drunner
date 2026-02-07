@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base dagger template - low attack, high speed
  */
 export const DAGGER_BASE: BaseItemTemplate = {
+  id: 'dagger',
   description: 'A quick stabbing weapon',
   type: 'weapon',
   icon: GiStiletto,

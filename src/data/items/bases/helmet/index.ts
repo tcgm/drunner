@@ -1,4 +1,6 @@
 // Auto-generated index for helmet bases
+export const HELMET_TYPE = 'helmet'
+
 import { HELMET_BASE } from './helmet'
 import { HOOD_BASE } from './hood'
 import { CROWN_BASE } from './crown'

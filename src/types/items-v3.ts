@@ -14,11 +14,12 @@ export interface ItemV3Base {
 
 export interface ProceduralItemV3 extends ItemV3Base {
   itemType: 'procedural'
+  type: 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory'
   materialId: string
   baseTemplateId: string
-  baseName: string        // Which variant was selected: "Axe", "Guitar", etc
+  variantName: string     // Which variant was selected: "Axe", "Guitar", "Blade", "Staff", etc
   rarity: ItemRarity
-  itemSlot: ItemSlot      // Store this for quick filtering
+  // itemSlot is derived from base.type at hydration, not stored
 }
 
 export interface UniqueItemV3 extends ItemV3Base {

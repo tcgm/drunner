@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base chainmail template - medium armor
  */
 export const CHAINMAIL_BASE: BaseItemTemplate = {
+  id: 'chainmail',
   description: 'Interlocking metal rings',
   type: 'armor',
   icon: GiChestArmor,

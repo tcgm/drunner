@@ -1,4 +1,6 @@
 // Auto-generated index for armor bases
+export const ARMOR_TYPE = 'armor'
+
 import { PLATE_ARMOR_BASE } from './plate'
 import { CHAINMAIL_BASE } from './chainmail'
 import { VEST_BASE } from './vest'

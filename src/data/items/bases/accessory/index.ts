@@ -1,4 +1,6 @@
 // Auto-generated index for accessory bases
+export const ACCESSORY_TYPE = 'accessory'
+
 import { RING_BASE } from './ring'
 import { AMULET_BASE } from './amulet'
 import { CHARM_BASE } from './charm'

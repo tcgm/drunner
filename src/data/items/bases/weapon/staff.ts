@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base staff template - magical weapon
  */
 export const STAFF_BASE: BaseItemTemplate = {
+  id: 'staff',
   description: 'A mystical channeling weapon',
   type: 'weapon',
   icon: GiWizardStaff,

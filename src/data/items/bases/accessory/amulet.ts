@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base amulet template
  */
 export const AMULET_BASE: BaseItemTemplate = {
+  id: 'amulet',
   description: 'A protective amulet',
   type: 'accessory2',
   icon: GiGemNecklace,

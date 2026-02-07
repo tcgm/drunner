@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base talisman template
  */
 export const TALISMAN_BASE: BaseItemTemplate = {
+  id: 'talisman',
   description: 'A mystical talisman',
   type: 'accessory2',
   icon: GiMagicSwirl,

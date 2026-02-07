@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base plate armor template - heavy armor
  */
 export const PLATE_ARMOR_BASE: BaseItemTemplate = {
+  id: 'plate',
   description: 'Heavy protective plating',
   type: 'armor',
   icon: GiLayeredArmor,

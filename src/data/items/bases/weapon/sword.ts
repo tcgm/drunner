@@ -6,6 +6,7 @@ import { RaSword } from '@/components/icons/RpgIcons'
  * Base sword template - will be combined with materials
  */
 export const SWORD_BASE: BaseItemTemplate = {
+  id: 'sword',
   description: 'A balanced blade for close combat',
   type: 'weapon',
   icon: RaSword,

@@ -15,6 +15,7 @@ import type { BaseItemTemplate } from '../index'
  * Base instrument template - magic power and charisma weapon
  */
 export const INSTRUMENT_BASE: BaseItemTemplate = {
+  id: 'instrument',
   description: 'A melodious instrument that channels magic through music',
   type: 'weapon',
   icon: GiLyre,

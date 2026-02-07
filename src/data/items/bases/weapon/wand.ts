@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base wand/rod template - lighter magical weapon
  */
 export const WAND_BASE: BaseItemTemplate = {
+  id: 'wand',
   description: 'A compact magical focus',
   type: 'weapon',
   icon: GiFairyWand,

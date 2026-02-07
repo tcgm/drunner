@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base robe template - magical armor
  */
 export const ROBE_BASE: BaseItemTemplate = {
+  id: 'robe',
   description: 'Flowing magical vestments',
   type: 'armor',
   icon: GiRobe,

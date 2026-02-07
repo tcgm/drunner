@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base sandals template - light footwear
  */
 export const SANDALS_BASE: BaseItemTemplate = {
+  id: 'sandals',
   description: 'Light open footwear',
   type: 'boots',
   icon: GiSandal,

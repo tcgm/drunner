@@ -5,6 +5,7 @@ import type { BaseItemTemplate } from '../index'
  * Base crown template - regal headpiece
  */
 export const CROWN_BASE: BaseItemTemplate = {
+  id: 'crown',
   description: 'A regal crown',
   type: 'helmet',
   icon: GiCrown,
