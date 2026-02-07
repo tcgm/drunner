@@ -205,7 +205,7 @@ export interface EventOutcome {
     consumableId?: string // ID of consumable to give (for type: 'consumable')
     value?: number
     isTrueDamage?: boolean // For damage effects: ignore defense (true damage)
-    upgradeType?: 'material' | 'rarity' | 'auto' // For upgradeItem: specify material, rarity, or auto (material first, then rarity)
+    upgradeType?: 'material' | 'rarity' | 'auto' | 'random' // For upgradeItem: specify material, rarity, auto (material first, then rarity), or random (picks material or rarity randomly)
     // Item generation specifications (only one should be used)
     itemType?: 'random' | ItemSlot // Generate random item of specific type or any type
     setId?: string // Generate item from specific set (e.g., 'draconic', 'arcane')

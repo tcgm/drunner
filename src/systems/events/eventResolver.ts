@@ -1,7 +1,7 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem } from '@/systems/loot/lootGenerator'
-import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem } from '@/systems/loot/itemUpgrader'
+import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem, canUpgradeMaterial, canUpgradeRarity } from '@/systems/loot/itemUpgrader'
 import { ALL_SET_ITEMS, getRandomSetItemBySetId, getSetIdFromItemName } from '@/data/items/sets'
 import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
@@ -784,7 +784,7 @@ export function resolveEventOutcome(
             ? 'maximum material'
             : upgradeType === 'rarity'
             ? 'maximum rarity'
-            : 'maximum rarity and material'
+            : 'maximum rarity and material' // For 'auto' and 'random', both must be maxed
           resolvedEffects.push({
             type: 'upgradeItem',
             target: [hero.id],
@@ -800,6 +800,22 @@ export function resolveEventOutcome(
           upgradedItem = upgradeItemMaterial(item, floor)
         } else if (upgradeType === 'rarity') {
           upgradedItem = upgradeItemRarityOnly(item, floor, rarityBoost)
+        } else if (upgradeType === 'random') {
+          // random: Randomly choose between material and rarity
+          const canMaterial = canUpgradeMaterial(item)
+          const canRarity = canUpgradeRarity(item)
+          
+          if (canMaterial && canRarity) {
+            // Both possible, pick randomly
+            const pickMaterial = Math.random() < 0.5
+            upgradedItem = pickMaterial 
+              ? upgradeItemMaterial(item, floor)
+              : upgradeItemRarityOnly(item, floor, rarityBoost)
+          } else if (canMaterial) {
+            upgradedItem = upgradeItemMaterial(item, floor)
+          } else if (canRarity) {
+            upgradedItem = upgradeItemRarityOnly(item, floor, rarityBoost)
+          }
         } else {
           // auto: Try material first, then rarity
           upgradedItem = upgradeItemRarity(item, floor, rarityBoost)
@@ -820,7 +836,7 @@ export function resolveEventOutcome(
             ? 'maximum material'
             : upgradeType === 'rarity'
             ? 'maximum rarity'
-            : 'maximum rarity and material'
+            : 'maximum rarity and material' // For 'auto' and 'random', both must be maxed
           resolvedEffects.push({
             type: 'upgradeItem',
             target: [hero.id],

@@ -222,13 +222,13 @@ export function canUpgradeRarity(item: Item): boolean {
 /**
  * Check if an item can be upgraded (material or rarity)
  */
-export function canUpgradeItem(item: Item, upgradeType: 'material' | 'rarity' | 'auto'): boolean {
+export function canUpgradeItem(item: Item, upgradeType: 'material' | 'rarity' | 'auto' | 'random'): boolean {
   if (upgradeType === 'material') {
     return canUpgradeMaterial(item)
   } else if (upgradeType === 'rarity') {
     return canUpgradeRarity(item)
   } else {
-    // auto: can upgrade if either material or rarity can be upgraded
+    // auto or random: can upgrade if either material or rarity can be upgraded
     return canUpgradeMaterial(item) || canUpgradeRarity(item)
   }
 }
