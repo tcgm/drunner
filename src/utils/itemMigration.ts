@@ -94,6 +94,11 @@ function generateExpectedStats(item: Item): { stats: typeof item.stats; value: n
  * Check if an item's stats match what they should be with current formula
  */
 function itemStatsAreCorrect(item: Item, expected: { stats: typeof item.stats; value: number }): boolean {
+  // If item.stats is undefined, stats are definitely not correct
+  if (!item.stats) {
+    return false
+  }
+
   // Compare each stat
   for (const [key, expectedValue] of Object.entries(expected.stats)) {
     const actualValue = item.stats[key as keyof typeof item.stats]

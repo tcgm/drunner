@@ -587,12 +587,12 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
               borderColor="whiteAlpha.200"
             >
               <Text fontSize="sm" color="gray.500">
-                {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+                {item.type ? item.type.charAt(0).toUpperCase() + item.type.slice(1) : 'Unknown'}
               </Text>
               <HStack spacing={1}>
                 <Icon as={GameIcons.GiTwoCoins} color="yellow.400" />
                 <Text fontSize="md" fontWeight="bold" color="yellow.400">
-                  {item.value}
+                  {item.value ?? 0}
                 </Text>
               </HStack>
             </HStack>

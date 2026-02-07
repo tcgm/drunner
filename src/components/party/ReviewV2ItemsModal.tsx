@@ -13,88 +13,89 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
 
     const [selectedMaterialId, setSelectedMaterialId] = useState('')
     const [selectedBaseTemplateId, setSelectedBaseTemplateId] = useState('')
+    const [isAutoConverting, setIsAutoConverting] = useState(false)
 
     const currentItem = v2Items.length > 0 ? v2Items[0] : null
+
+    // Function to guess material and base from item properties
+    const guessItemProperties = (item: Item) => {
+        console.log(`[Guess] Starting guess for item "${item.name}", existing materialId: ${item.materialId}, baseTemplateId: ${item.baseTemplateId}`)
+
+        // Get available bases for this item type (handles accessory1/accessory2 normalization)
+        const availableBases = getBasesByType(item.type)
+
+        // 1. Validate existing baseTemplateId - if it's in the old format, we need to re-guess
+        let validatedBaseTemplateId = ''
+        if (item.baseTemplateId) {
+            // Check if any base matches this ID
+            const matchingBase = availableBases.find(b => {
+                const expectedId = b.baseNames
+                    ? `${b.type}_${b.baseNames[0].toLowerCase()}`
+                    : `${b.type}_${b.type}`
+                return expectedId === item.baseTemplateId
+            })
+            if (matchingBase) {
+                validatedBaseTemplateId = item.baseTemplateId
+            } else {
+                console.log(`[Guess] Existing baseTemplateId "${item.baseTemplateId}" is invalid/old format, will re-guess`)
+            }
+        }
+
+        // If item already has valid IDs, use them
+        if (item.materialId && validatedBaseTemplateId) {
+            return { materialId: item.materialId, baseTemplateId: validatedBaseTemplateId }
+        }
+
+        // 2. Try to guess from name/description
+        const searchText = `${item.name} ${item.description}`.toLowerCase()
+
+        // Guess material by looking for material keywords
+        let guessedMaterialId = item.materialId || ''
+        if (!guessedMaterialId) {
+            for (const material of ALL_MATERIALS) {
+                const materialKeywords = [material.prefix.toLowerCase(), material.id.toLowerCase()]
+                if (materialKeywords.some(keyword => searchText.includes(keyword))) {
+                    guessedMaterialId = material.id
+                    break
+                }
+            }
+        }
+
+        // Guess base by looking for base name keywords (use validated ID, not raw item.baseTemplateId)
+        let guessedBaseTemplateId = validatedBaseTemplateId || ''
+        if (!guessedBaseTemplateId) {
+            for (const base of availableBases) {
+                // Check if any of the base names appear in the item text
+                const baseKeywords = base.baseNames || []
+                // Try full keyword match first, then individual words
+                const matched = baseKeywords.some(keyword => {
+                    const keywordLower = keyword.toLowerCase()
+                    // Try exact phrase match
+                    if (searchText.includes(keywordLower)) return true
+                    // Try matching all individual words (e.g., "plate" and "armor" separately)
+                    const words = keywordLower.split(' ')
+                    return words.length > 1 && words.every(word => searchText.includes(word))
+                })
+                if (matched) {
+                    // Use baseNames[0] format - NEVER description
+                    guessedBaseTemplateId = base.baseNames
+                        ? `${base.type}_${base.baseNames[0].toLowerCase()}`
+                        : `${base.type}_${base.type}` // fallback
+                    console.log(`[Guess] Item "${item.name}" matched base "${base.baseNames?.[0]}" (${guessedBaseTemplateId})`)
+                    break
+                }
+            }
+            if (!guessedBaseTemplateId) {
+                console.log(`[Guess] Item "${item.name}" (${item.type}) - no base match found. Available: ${availableBases.map(b => b.baseNames?.[0]).join(', ')}`)
+            }
+        }
+
+        return { materialId: guessedMaterialId, baseTemplateId: guessedBaseTemplateId }
+    }
 
     // Reset selections and apply guesses when item changes
     useEffect(() => {
         if (!currentItem) return
-
-        // Function to guess material and base from item properties
-        const guessItemProperties = (item: Item) => {
-            console.log(`[Guess] Starting guess for item "${item.name}", existing materialId: ${item.materialId}, baseTemplateId: ${item.baseTemplateId}`)
-
-            // Get available bases for this item type (handles accessory1/accessory2 normalization)
-            const availableBases = getBasesByType(item.type)
-
-            // 1. Validate existing baseTemplateId - if it's in the old format, we need to re-guess
-            let validatedBaseTemplateId = ''
-            if (item.baseTemplateId) {
-                // Check if any base matches this ID
-                const matchingBase = availableBases.find(b => {
-                    const expectedId = b.baseNames
-                        ? `${b.type}_${b.baseNames[0].toLowerCase()}`
-                        : `${b.type}_${b.type}`
-                    return expectedId === item.baseTemplateId
-                })
-                if (matchingBase) {
-                    validatedBaseTemplateId = item.baseTemplateId
-                } else {
-                    console.log(`[Guess] Existing baseTemplateId "${item.baseTemplateId}" is invalid/old format, will re-guess`)
-                }
-            }
-
-            // If item already has valid IDs, use them
-            if (item.materialId && validatedBaseTemplateId) {
-                return { materialId: item.materialId, baseTemplateId: validatedBaseTemplateId }
-            }
-
-            // 2. Try to guess from name/description
-            const searchText = `${item.name} ${item.description}`.toLowerCase()
-
-            // Guess material by looking for material keywords
-            let guessedMaterialId = item.materialId || ''
-            if (!guessedMaterialId) {
-                for (const material of ALL_MATERIALS) {
-                    const materialKeywords = [material.prefix.toLowerCase(), material.id.toLowerCase()]
-                    if (materialKeywords.some(keyword => searchText.includes(keyword))) {
-                        guessedMaterialId = material.id
-                        break
-                    }
-                }
-            }
-
-            // Guess base by looking for base name keywords (use validated ID, not raw item.baseTemplateId)
-            let guessedBaseTemplateId = validatedBaseTemplateId || ''
-            if (!guessedBaseTemplateId) {
-                for (const base of availableBases) {
-                    // Check if any of the base names appear in the item text
-                    const baseKeywords = base.baseNames || []
-                    // Try full keyword match first, then individual words
-                    const matched = baseKeywords.some(keyword => {
-                        const keywordLower = keyword.toLowerCase()
-                        // Try exact phrase match
-                        if (searchText.includes(keywordLower)) return true
-                        // Try matching all individual words (e.g., "plate" and "armor" separately)
-                        const words = keywordLower.split(' ')
-                        return words.length > 1 && words.every(word => searchText.includes(word))
-                    })
-                    if (matched) {
-                        // Use baseNames[0] format - NEVER description
-                        guessedBaseTemplateId = base.baseNames
-                            ? `${base.type}_${base.baseNames[0].toLowerCase()}`
-                            : `${base.type}_${base.type}` // fallback
-                        console.log(`[Guess] Item "${item.name}" matched base "${base.baseNames?.[0]}" (${guessedBaseTemplateId})`)
-                        break
-                    }
-                }
-                if (!guessedBaseTemplateId) {
-                    console.log(`[Guess] Item "${item.name}" (${item.type}) - no base match found. Available: ${availableBases.map(b => b.baseNames?.[0]).join(', ')}`)
-                }
-            }
-
-            return { materialId: guessedMaterialId, baseTemplateId: guessedBaseTemplateId }
-        }
 
         const guessed = guessItemProperties(currentItem)
         console.log(`[ReviewV2ItemsModal] Setting selections - materialId: "${guessed.materialId}", baseTemplateId: "${guessed.baseTemplateId}"`)
@@ -158,6 +159,60 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
 
     const handleSkip = () => {
         skipV2Item(currentItem.id)
+    }
+
+    const handleAutoConvert = () => {
+        setIsAutoConverting(true)
+        console.log(`[Auto Convert] Starting batch conversion of ${v2Items.length} items`)
+
+        let converted = 0
+        let skipped = 0
+
+        // Process all items
+        for (const item of v2Items) {
+            // Check if this is a consumable, unique, or set that can be auto-converted
+            const isConsumable = item.type === 'consumable' || 'consumableType' in item
+            const isUnique = item.isUnique && !item.setId
+            const isSet = !!item.setId
+            const canAutoConvert = isConsumable || isUnique || isSet
+
+            if (canAutoConvert) {
+                // Auto-convertible items
+                convertV2Item(item.id, '', '')
+                converted++
+                console.log(`[Auto Convert] Converted ${item.name} (auto-convertible)`)
+            } else {
+                // Try to guess material and base for procedural items
+                const guessed = guessItemProperties(item)
+
+                if (guessed.materialId && guessed.baseTemplateId) {
+                    // Can convert with guessed values
+                    convertV2Item(item.id, guessed.materialId, guessed.baseTemplateId)
+                    converted++
+                    console.log(`[Auto Convert] Converted ${item.name} (guessed: ${guessed.materialId}, ${guessed.baseTemplateId})`)
+                } else {
+                    // Can't guess - skip this item
+                    skipped++
+                    console.log(`[Auto Convert] Skipped ${item.name} (couldn't guess properties)`)
+                }
+            }
+        }
+
+        console.log(`[Auto Convert] Complete - Converted: ${converted}, Skipped: ${skipped}`)
+
+        // Use setTimeout to allow state updates to propagate before checking/closing
+        setTimeout(() => {
+            setIsAutoConverting(false)
+
+            // Check if all items have been processed and close if done
+            const remainingItems = useGameStore.getState().v2Items
+            if (remainingItems.length === 0) {
+                console.log('[Auto Convert] All items processed, closing modal')
+                onClose()
+            } else {
+                console.log(`[Auto Convert] ${remainingItems.length} items remaining for manual review`)
+            }
+        }, 100)
     }
 
     return (
@@ -290,16 +345,28 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
 
                 <ModalFooter>
                     <HStack spacing={3} width="100%" justify="space-between">
-                        <Button
-                            onClick={handleSkip}
-                            variant="ghost"
-                        >
-                            Skip (Keep as V2)
-                        </Button>
+                        <HStack spacing={2}>
+                            <Button
+                                onClick={handleSkip}
+                                variant="ghost"
+                                isDisabled={isAutoConverting}
+                            >
+                                Skip (Keep as V2)
+                            </Button>
+                            <Button
+                                onClick={handleAutoConvert}
+                                colorScheme="green"
+                                variant="outline"
+                                isLoading={isAutoConverting}
+                                loadingText="Converting..."
+                            >
+                                Auto Convert All
+                            </Button>
+                        </HStack>
                         <Button
                             onClick={handleConvert}
                             colorScheme="blue"
-                            isDisabled={isConvertDisabled}
+                            isDisabled={isConvertDisabled || isAutoConverting}
                         >
                             Convert to New Format
                         </Button>
