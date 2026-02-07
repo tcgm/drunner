@@ -535,35 +535,27 @@ export const ItemSlot = memo(function ItemSlot({
             </Text>
           )}
 
-          {/* Version indicator - barely visible */}
-          <Badge
-            position="absolute"
-            top="2px"
-            left="0px"
-            zIndex={20}
-            pointerEvents="none"
-            fontSize="3xs"
-            background={'transparent'}
-            color={(() => {
-              const version = (item as { version?: number }).version
-              if (version === 3) return 'yellow.300'
-              if (version === 2) return 'white.300'
-              return 'white'
-            })()}
-            opacity={(() => {
-              const version = (item as { version?: number }).version
-              return version === 3 ? 1 : 0.5
-            })()}
-            textShadow={(() => {
-              const version = (item as { version?: number }).version
-              return version === 3 ? '0 0 6px rgba(255, 215, 0, 0.9)' : undefined
-            })()}
-          >
-            {(() => {
-              const version = (item as { version?: number }).version
-              return version === 3 ? 'v3' : version === 2 ? 'v2' : 'v1'
-            })()}
-          </Badge>
+          {/* Version indicator - barely visible - only show for v1 and v2 */}
+          {(() => {
+            const version = (item as { version?: number }).version
+            if (version === 3) return null
+
+            return (
+              <Badge
+                position="absolute"
+                top="2px"
+                left="0px"
+                zIndex={20}
+                pointerEvents="none"
+                fontSize="3xs"
+                background={'transparent'}
+                color={version === 2 ? 'white.300' : 'white'}
+                opacity={0.5}
+              >
+                {version === 2 ? 'v2' : 'v1'}
+              </Badge>
+            )
+          })()}
 
           {/* Rarity indicator dot */}
           {/*<motion.div

@@ -102,25 +102,11 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
         setSelectedBaseTemplateId(guessed.baseTemplateId)
     }, [currentItem?.id])
 
-    if (v2Items.length === 0 || !currentItem) return null
-
     // Get available bases for this item type (handles accessory1/accessory2 normalization)
-    const availableBases = getBasesByType(currentItem.type)
-    const currentIndex = 0
-    const totalItems = v2Items.length
-
-    const handleConvert = () => {
-        if (!selectedMaterialId || !selectedBaseTemplateId ||
-            selectedMaterialId === '' || selectedBaseTemplateId === '') {
-            console.warn('[ReviewV2ItemsModal] Cannot convert: Missing material or base template')
-            return
-        }
-        convertV2Item(currentItem.id, selectedMaterialId, selectedBaseTemplateId)
-    }
-
-    const handleSkip = () => {
-        skipV2Item(currentItem.id)
-    }
+    // Must be called before any early returns to maintain hook order
+    const availableBases = useMemo(() =>
+        currentItem ? getBasesByType(currentItem.type) : []
+        , [currentItem?.type])
 
     // Validate that selected values actually exist in the available options
     const isValidMaterial = useMemo(() => {
@@ -154,6 +140,25 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
             isConvertDisabled
         })
     }, [currentItem?.id, selectedMaterialId, selectedBaseTemplateId, isValidMaterial, isValidBase, isConvertDisabled])
+
+    // Early return AFTER all hooks have been called
+    if (v2Items.length === 0 || !currentItem) return null
+
+    const currentIndex = 0
+    const totalItems = v2Items.length
+
+    const handleConvert = () => {
+        if (!selectedMaterialId || !selectedBaseTemplateId ||
+            selectedMaterialId === '' || selectedBaseTemplateId === '') {
+            console.warn('[ReviewV2ItemsModal] Cannot convert: Missing material or base template')
+            return
+        }
+        convertV2Item(currentItem.id, selectedMaterialId, selectedBaseTemplateId)
+    }
+
+    const handleSkip = () => {
+        skipV2Item(currentItem.id)
+    }
 
     return (
         <Modal isOpen={true} onClose={onClose} closeOnOverlayClick={false} size="xl" blockScrollOnMount={true} preserveScrollBarGap={false}>
