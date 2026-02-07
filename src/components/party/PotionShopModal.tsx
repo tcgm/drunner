@@ -244,7 +244,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                     <VStack spacing={0.5}>
                       <ItemSlot
                         item={potionWithIcon}
-                        isClickable={false}
+                        isClickable={true}
                         size="sm"
                       />
                       <Button
@@ -288,7 +288,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                     </Text>
                     <ItemSlot
                       item={featuredItem}
-                      isClickable={false}
+                      isClickable={true}
                       size="xl"
                     />
                     <Tooltip 
@@ -351,7 +351,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                     <VStack spacing={0.5}>
                       <ItemSlot
                         item={potionWithIcon}
-                        isClickable={false}
+                        isClickable={true}
                         size="sm"
                       />
                       <Button

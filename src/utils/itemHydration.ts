@@ -632,8 +632,15 @@ function createFallbackItem(data: Partial<Item> & { id?: string }): Item {
  * Strips all computed data (description, stats, icon) and keeps only IDs
  */
 export function dehydrateItem(item: Item): ItemV3 {
+  // Check if item has explicit V3 version marker (already converted)
+  // Only V3-native items should be dehydrated to V3 format
+  const hasV3Marker = 'version' in item && (item as Item & { version: number }).version === 3
+
+  // Only auto-convert items that are already marked as V3
+  // This prevents auto-converting V2 consumables and uniques during save
+
   // Check if it's a consumable
-  if ('consumableType' in item && 'baseId' in item && 'sizeId' in item && 'potencyId' in item) {
+  if (hasV3Marker && 'consumableType' in item && 'baseId' in item && 'sizeId' in item && 'potencyId' in item) {
     const consumable = item as Consumable
     if (consumable.baseId && consumable.sizeId && consumable.potencyId) {
       return {
@@ -651,7 +658,7 @@ export function dehydrateItem(item: Item): ItemV3 {
   }
 
   // Check if it's a unique item
-  if (item.isUnique && !item.setId) {
+  if (hasV3Marker && item.isUnique && !item.setId) {
     // Unique item
     const templateId = item.name.toUpperCase().replace(/['\s]/g, '_')
     return {
@@ -664,7 +671,7 @@ export function dehydrateItem(item: Item): ItemV3 {
   }
 
   // Check if it's a set item
-  if (item.setId) {
+  if (hasV3Marker && item.setId) {
     const templateId = item.name.toUpperCase().replace(/['\s]/g, '_')
     return {
       version: 3,

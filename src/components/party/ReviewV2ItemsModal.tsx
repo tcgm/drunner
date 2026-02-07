@@ -124,30 +124,30 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
         })
     }, [selectedBaseTemplateId, availableBases])
 
-    // Button is disabled if either selection is invalid/empty
-    const isConvertDisabled = useMemo(() => {
-        return !isValidMaterial || !isValidBase
-    }, [isValidMaterial, isValidBase])
-
-    // Log state changes
-    useEffect(() => {
-        console.log('[ReviewV2ItemsModal] Button state updated:', {
-            currentItemId: currentItem?.id,
-            selectedMaterialId,
-            selectedBaseTemplateId,
-            isValidMaterial,
-            isValidBase,
-            isConvertDisabled
-        })
-    }, [currentItem?.id, selectedMaterialId, selectedBaseTemplateId, isValidMaterial, isValidBase, isConvertDisabled])
-
     // Early return AFTER all hooks have been called
     if (v2Items.length === 0 || !currentItem) return null
 
     const currentIndex = 0
     const totalItems = v2Items.length
 
+    // Check if this is a consumable or unique that can be auto-converted
+    const isConsumable = currentItem.type === 'consumable' || 'consumableType' in currentItem
+    const isUnique = currentItem.isUnique && !currentItem.setId
+    const isSet = !!currentItem.setId
+    const canAutoConvert = isConsumable || isUnique || isSet
+
+    // Button is disabled only for procedural items without valid selections
+    const isConvertDisabled = !canAutoConvert && (!isValidMaterial || !isValidBase)
+
     const handleConvert = () => {
+        // For consumables, uniques, and sets, we don't need manual material/base selection
+        // The convertV2Item function will auto-convert them
+        if (canAutoConvert) {
+            convertV2Item(currentItem.id, '', '')
+            return
+        }
+
+        // For procedural items, we need material and base template
         if (!selectedMaterialId || !selectedBaseTemplateId ||
             selectedMaterialId === '' || selectedBaseTemplateId === '') {
             console.warn('[ReviewV2ItemsModal] Cannot convert: Missing material or base template')
@@ -190,7 +190,10 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
                     <VStack align="stretch" spacing={3}>
                         <Box>
                             <Text fontSize="sm" color="gray.400" mb={1}>
-                                This item uses the old storage format. Help us migrate it by confirming its properties:
+                                This item uses the old storage format.
+                                {canAutoConvert
+                                    ? ' Click Convert to migrate it to the new format.'
+                                    : ' Help us migrate it by confirming its properties:'}
                             </Text>
                         </Box>
 
@@ -203,17 +206,23 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
                                     <Text fontSize="sm" color="gray.400">{currentItem.description}</Text>
                                     <Text fontSize="xs" color="gray.500">
                                         {currentItem.type} • {currentItem.rarity}
+                                        {isConsumable && ' • Consumable'}
+                                        {isUnique && ' • Unique'}
+                                        {isSet && ' • Set Item'}
                                     </Text>
                                 </VStack>
                             </HStack>
                         </Box>
 
-                        {/* Material selection */}
-                        <Box>
-                            <Text fontSize="sm" fontWeight="bold" mb={1}>
-                                Material:
-                            </Text>
-                            <Select
+                        {/* Only show material/base selection for procedural items */}
+                        {!canAutoConvert && (
+                            <>
+                                {/* Material selection */}
+                                <Box>
+                                    <Text fontSize="sm" fontWeight="bold" mb={1}>
+                                        Material:
+                                    </Text>
+                                    <Select
                                 placeholder="Select material"
                                 value={selectedMaterialId}
                                 onChange={(e) => setSelectedMaterialId(e.target.value)}
@@ -265,16 +274,17 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
                                 </Text>
                             )}
                         </Box>
-
-                        {/* Warning if selections don't match current values */}
-                        {(selectedMaterialId || selectedBaseTemplateId) && (
-                            <Box p={3} bg="blue.900" borderRadius="md" borderWidth={1} borderColor="blue.500">
-                                <Text fontSize="sm">
-                                    The item will be converted to use the new storage format with your selected values.
-                                    This makes saves smaller and loading faster.
-                                </Text>
-                            </Box>
+                            </>
                         )}
+
+                        {/* Info/Warning box */}
+                        <Box p={3} bg="blue.900" borderRadius="md" borderWidth={1} borderColor="blue.500">
+                            <Text fontSize="sm">
+                                {canAutoConvert
+                                    ? 'This item will be automatically converted to the new storage format. This makes saves smaller and loading faster.'
+                                    : 'The item will be converted to use the new storage format with your selected values. This makes saves smaller and loading faster.'}
+                            </Text>
+                        </Box>
                     </VStack>
                 </ModalBody>
 

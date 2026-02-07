@@ -11,9 +11,9 @@ export const HERMES_SANDALS: Omit<Item, 'id'> = {
   rarity: 'legendary',
   icon: GiWingfoot,
   stats: {
-    speed: 50,
+    speed: 100,
     defense: 20,
-    luck: 15,
+    luck: 55,
   },
   value: 9000,
 }

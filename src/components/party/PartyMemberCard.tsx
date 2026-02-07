@@ -68,7 +68,6 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
           borderRadius="md"
           borderWidth="2px"
           borderColor={hero.isAlive ? 'orange.600' : 'red.900'}
-          opacity={hero.isAlive ? 1 : 0.6}
           cursor="pointer"
           onClick={onOpen}
           onMouseEnter={() => setIsHovered(true)}
@@ -97,7 +96,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
           </AnimatePresence>
 
           <HStack className="party-member-card-content" spacing={2} p={2}>
-            <HStack className="party-member-card-icon-section" spacing={1}>
+            <HStack className="party-member-card-icon-section" spacing={1} opacity={hero.isAlive ? 1 : 0.6}>
               <motion.div
                 animate={isHovered ? {
                   rotate: [0, -5, 5, 0],
@@ -121,7 +120,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               </VStack>
             </HStack>
             
-            <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0}>
+            <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0} opacity={hero.isAlive ? 1 : 0.6}>
               <HStack className="party-member-card-header" spacing={2}>
                 <Text className="party-member-card-name" fontWeight="bold" fontSize="xs" noOfLines={1} flex={1}>
                   {hero.name}
@@ -214,7 +213,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               {consumableSlots.map(slotId => {
                 const item = hero.slots[slotId] ? restoreItemIcon(hero.slots[slotId]) : null
                 const consumable = item && 'consumableType' in item ? item as Consumable : null
-                const isRevive = consumable?.effect?.type === 'revive'
+                const isRevive = consumable?.effects?.some(effect => effect.type === 'revive') ?? false
                 const canUse = isRevive ? !hero.isAlive : hero.isAlive
                 
                 if (!consumable) {
@@ -241,18 +240,22 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
                 return (
                   <Box
                     key={slotId}
-                    onClick={(e) => {
-                      if (canUse) {
-                        e.stopPropagation()
-                        handleUseConsumable(slotId)
-                      }
-                    }}
                     w="24px"
                     h="24px"
                     cursor={canUse ? 'pointer' : 'not-allowed'}
                     opacity={canUse ? 1 : 0.5}
+                    borderRadius="lg"
+                    boxShadow={isRevive && canUse ? '0 0 8px 2px rgba(255, 215, 0, 0.6)' : undefined}
+                    transition="box-shadow 0.3s ease"
+                    _hover={isRevive && canUse ? { boxShadow: '0 0 12px 3px rgba(255, 215, 0, 0.8)' } : undefined}
                   >
-                    <ItemSlot item={consumable} size="sm" isClickable={canUse || false} iconOnly={true} />
+                    <ItemSlot
+                      item={consumable}
+                      size="sm"
+                      isClickable={canUse || false}
+                      iconOnly={true}
+                      onClick={canUse ? () => handleUseConsumable(slotId) : undefined}
+                    />
                   </Box>
                 )
               })}

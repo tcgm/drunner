@@ -6,6 +6,7 @@
 import type { StateCreator } from 'zustand'
 import type { GameState, Hero } from '@/types'
 import { createHero } from '@/utils/heroUtils'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 export interface HeroActionsSlice {
   addHero: (hero: Hero, slotIndex?: number) => void
@@ -29,7 +30,6 @@ export const createHeroActions: StateCreator<
       if (state.party[targetIndex] !== null) return state // Slot occupied
 
       // Heal hero to full HP (using effective max HP with equipment)
-      const { calculateTotalStats } = require('@/utils/statCalculator')
       const effectiveMaxHp = calculateTotalStats(hero).maxHp
       const healedHero = { ...hero, stats: { ...hero.stats, hp: effectiveMaxHp } }
 
@@ -65,7 +65,6 @@ export const createHeroActions: StateCreator<
 
       if (existingHero) {
         // Reuse existing hero and heal to full HP (using effective max HP with equipment)
-        const { calculateTotalStats } = require('@/utils/statCalculator')
         const effectiveMaxHp = calculateTotalStats(existingHero).maxHp
         const healedHero = { ...existingHero, stats: { ...existingHero.stats, hp: effectiveMaxHp } }
         newParty[targetIndex] = healedHero

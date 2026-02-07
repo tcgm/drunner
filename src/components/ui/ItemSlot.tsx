@@ -33,6 +33,7 @@ interface ItemSlotProps {
   onCheckboxChange?: () => void
   comparisonItem?: Item | null // Item to compare against (equipped item)
   iconOnly?: boolean // Only show icon, no text
+  stopPropagation?: boolean // Whether to stop event propagation (default: true)
 }
 
 // Keep rarity colors for dynamic effects that need JavaScript
@@ -74,7 +75,8 @@ export const ItemSlot = memo(function ItemSlot({
   isSelected = false,
   onCheckboxChange,
   comparisonItem,
-  iconOnly = false
+  iconOnly = false,
+  stopPropagation = true
 }: ItemSlotProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isHovered, setIsHovered] = useState(false)
@@ -92,8 +94,14 @@ export const ItemSlot = memo(function ItemSlot({
     item.modifiers?.includes('cursed') ?? false
     , [item.modifiers])
 
-  const handleClick = () => {
+  const handleClick = (e?: React.MouseEvent) => {
     console.log('[ItemSlot] Item clicked:', item.name)
+
+    // Stop propagation to prevent parent click handlers (if enabled)
+    if (e && stopPropagation) {
+      e.stopPropagation()
+    }
+
     // Check if there's a global swap handler active (from HeroModal)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).__heroModalSwapHandler) {
@@ -597,5 +605,6 @@ export const ItemSlot = memo(function ItemSlot({
     prevProps.onClick === nextProps.onClick &&
     prevProps.showCheckbox === nextProps.showCheckbox &&
     prevProps.isSelected === nextProps.isSelected &&
-    prevProps.onCheckboxChange === nextProps.onCheckboxChange
+    prevProps.onCheckboxChange === nextProps.onCheckboxChange &&
+    prevProps.stopPropagation === nextProps.stopPropagation
 })

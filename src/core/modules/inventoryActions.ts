@@ -10,6 +10,8 @@ import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManage
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { deduplicateItems } from '@/utils/itemDeduplication'
+import { convertToV3 } from '@/utils/itemConverter'
+import { hydrateItem } from '@/utils/itemHydration'
 
 export interface InventoryActionsSlice {
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
@@ -513,14 +515,26 @@ export const createInventoryActions: StateCreator<
       const v2Item = state.v2Items.find(item => item.id === itemId)
       if (!v2Item) return {}
 
-      // Extract base name from full item name
-      const material = state.bankInventory.find(i => i.materialId === materialId)
-      // For now, keep the original item but mark it with updated metadata
-      const updatedItem = {
-        ...v2Item,
-        materialId,
-        baseTemplateId,
-        version: undefined, // Remove version field to make it a proper Item
+      // Try to convert using the automatic converter first
+      const v3Item = convertToV3(v2Item)
+
+      let updatedItem: Item
+
+      if (v3Item) {
+        // Conversion succeeded - hydrate the V3 item and mark it as V3
+        updatedItem = hydrateItem(v3Item)
+        updatedItem = { ...updatedItem, version: 3 } as Item & { version: 3 }
+        console.log(`[V2 Migration] Auto-converted ${v2Item.name} (${v2Item.type}) to V3`)
+      } else {
+        // Conversion failed - this is a procedural item that needs manual metadata
+        // Use the provided materialId and baseTemplateId
+        updatedItem = {
+          ...v2Item,
+          materialId,
+          baseTemplateId,
+          version: 3, // Mark as V3 so it gets saved in V3 format
+        } as Item & { version: 3 }
+        console.log(`[V2 Migration] Manually converted procedural item ${v2Item.name}`)
       }
 
       const newState = {
@@ -530,7 +544,7 @@ export const createInventoryActions: StateCreator<
         )
       }
 
-      console.log(`[V2 Migration] Converted item ${v2Item.name}. Remaining: ${newState.v2Items.length}`)
+      console.log(`[V2 Migration] Conversion complete. Remaining: ${newState.v2Items.length}`)
 
       return newState
     }),
