@@ -39,8 +39,26 @@ const screenVariants = {
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
+  const [hmrCounter, setHmrCounter] = useState(0)
   const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  // HMR: Force component remount on module reload to restore item icons
+  useEffect(() => {
+    if (import.meta.hot) {
+      const dispose = import.meta.hot.dispose(() => {
+        console.log('[App] HMR: Module disposed - items will be restored on next render')
+      })
+
+      // Listen for HMR updates
+      import.meta.hot.on('vite:beforeUpdate', () => {
+        console.log('[App] HMR: Forcing remount to restore item icons')
+        setHmrCounter(prev => prev + 1)
+      })
+
+      return dispose
+    }
+  }, [])
 
   // Remove HTML loading screen once React is ready
   useEffect(() => {
@@ -94,7 +112,7 @@ function App() {
   }
 
   return (
-    <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden">
+    <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden" key={hmrCounter}>
       {/* Centralized Music Manager */}
       <MusicManager currentScreen={currentScreen} />
       

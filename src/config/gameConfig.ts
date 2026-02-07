@@ -1,5 +1,6 @@
 /**
  * Game configuration and balance settings
+ * HMR Test - checking item restoration
  */
 
 import { legend } from "framer-motion/client";

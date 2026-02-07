@@ -483,3 +483,19 @@ useGameStore.getState().migrateHeroStats()
 useGameStore.getState().recalculateHeroStats()
 // Deduplicate any duplicate items in inventories
 useGameStore.getState().deduplicateInventories()
+
+// HMR cleanup for development
+if (import.meta.hot) {
+  console.log('[GameStore] HMR handler registered')
+  import.meta.hot.dispose(async () => {
+    console.log('[GameStore] HMR: Disposing - clearing item hydration cache to prevent corruption')
+    // Clear the item hydration cache to force icon restoration on next render
+    try {
+      const { clearItemCache } = await import('@/utils/itemHydration')
+      clearItemCache()
+      console.log('[GameStore] HMR: Item cache cleared successfully')
+    } catch (e) {
+      console.error('[GameStore] HMR: Failed to clear cache:', e)
+    }
+  })
+}
