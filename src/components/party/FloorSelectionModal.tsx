@@ -19,7 +19,7 @@ import {
   Icon,
   Divider,
 } from '@chakra-ui/react'
-import { Gi3dStairs, GiCrystalShine } from 'react-icons/gi'
+import { Gi3dStairs, GiPowder } from 'react-icons/gi'
 import { useState, useMemo, useEffect } from 'react'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { Hero } from '@/types'
@@ -195,7 +195,7 @@ export default function FloorSelectionModal({
             <Box bg="gray.900" p={3} borderRadius="md">
               <HStack justify="space-between" mb={2}>
                 <HStack>
-                  <Icon as={GiCrystalShine} color="cyan.400" />
+                  <Icon as={GiPowder} color={GAME_CONFIG.colors.alkahest.light} boxSize={4} />
                   <Text fontSize="sm" color="gray.400">
                     Alkahest Cost:
                   </Text>
@@ -203,7 +203,7 @@ export default function FloorSelectionModal({
                 <Text
                   fontSize="lg"
                   fontWeight="bold"
-                  color={alkahestCost === 0 ? 'green.400' : canAfford ? 'cyan.400' : 'red.400'}
+                  color={alkahestCost === 0 ? 'green.400' : canAfford ? GAME_CONFIG.colors.alkahest.light : 'red.400'}
                 >
                   {alkahestCost === 0 ? 'FREE' : alkahestCost.toLocaleString()}
                 </Text>
