@@ -4,8 +4,8 @@ import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
-import { getRandomUnique, ALL_UNIQUE_ITEMS } from '@data/items/uniques'
-import { getRandomSetItem, ALL_SET_ITEMS, getSetIdFromItemName } from '@data/items/sets'
+import { getRandomUnique, ALL_UNIQUE_ITEMS, getUniqueItemRarityConstraints } from '@data/items/uniques'
+import { getRandomSetItem, ALL_SET_ITEMS, getSetIdFromItemName, getSetItemRarityConstraints } from '@data/items/sets'
 import { applyModifiers, getModifierById } from '@data/items/mods'
 import { hydrateItem } from '@/utils/itemHydration'
 import { GiCrystalShine } from 'react-icons/gi'
@@ -362,6 +362,12 @@ export function generateItem(
           setTemplate.type === forceType || 
           ((forceType === 'accessory1' || forceType === 'accessory2') && (setTemplate.type === 'accessory1' || setTemplate.type === 'accessory2'))) {
         
+        // Get rarity constraints for this set item (item > set > template)
+        const { minRarity: setMinRarity, maxRarity: setMaxRarity } = getSetItemRarityConstraints(setTemplate)
+
+        // Roll rarity within the item's allowed range
+        const itemRarity = selectRarity(adjustedDepth, setMinRarity, setMaxRarity)
+
         // Generate V3 set item
         const templateId = setTemplate.name.toUpperCase().replace(/['\s]/g, '_')
         const rollAsUnique = Math.random() < LOOT_CONFIG.setUniqueChance
@@ -371,6 +377,7 @@ export function generateItem(
           id: uuidv4(),
           itemType: 'set',
           templateId,
+          rarity: itemRarity,  // Store rolled rarity to scale stats
           isUniqueRoll: rollAsUnique,
           modifiers: modifiers.length > 0 ? modifiers : undefined
         }
@@ -391,6 +398,12 @@ export function generateItem(
           uniqueTemplate.type === forceType ||
           ((forceType === 'accessory1' || forceType === 'accessory2') && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
         
+        // Get rarity constraints for this unique item
+        const { minRarity: uniqueMinRarity, maxRarity: uniqueMaxRarity } = getUniqueItemRarityConstraints(uniqueTemplate)
+
+        // Roll rarity within the item's allowed range
+        const itemRarity = selectRarity(adjustedDepth, uniqueMinRarity, uniqueMaxRarity)
+
         // Generate V3 unique item
         const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
         
@@ -399,6 +412,7 @@ export function generateItem(
           id: uuidv4(),
           itemType: 'unique',
           templateId,
+          rarity: itemRarity,  // Store rolled rarity to scale stats
           modifiers: modifiers.length > 0 ? modifiers : undefined
         }
         

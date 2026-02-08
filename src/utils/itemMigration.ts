@@ -3,6 +3,7 @@ import { getMaterialById } from '@/data/items/materials'
 import { getCompatibleBase } from '@/data/items/bases'
 import { getRarityConfig } from '@/systems/rarity/raritySystem'
 import { ALL_SET_ITEMS, getSetIdFromItemName } from '@/data/items/sets'
+import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 
 /**
  * Current stat calculation version
@@ -23,7 +24,8 @@ function generateExpectedStats(item: Item): { stats: typeof item.stats; value: n
   if (item.setId) {
     const setTemplate = ALL_SET_ITEMS.find(s => s.name === item.name)
     if (setTemplate) {
-      const rarityConfig = getRarityConfig(setTemplate.rarity)
+      // Use item's actual rarity (may differ from template for variable-rarity sets)
+      const rarityConfig = getRarityConfig(item.rarity)
       const rarityMultiplier = rarityConfig.statMultiplierBase
 
       // Apply rarity multiplier to template stats
@@ -52,8 +54,31 @@ function generateExpectedStats(item: Item): { stats: typeof item.stats; value: n
     }
   }
 
-  // Skip unique items (they have fixed stats) and items without material metadata
-  if (item.isUnique || !item.materialId) {
+  // Handle unique items - use item's actual rarity for variable-rarity uniques
+  if (item.isUnique && !item.setId) {
+    const uniqueTemplate = ALL_UNIQUE_ITEMS.find(u => u.name === item.name)
+    if (uniqueTemplate) {
+      // Use item's actual rarity (may differ from template for variable-rarity uniques)
+      const rarityConfig = getRarityConfig(item.rarity)
+      const rarityMultiplier = rarityConfig.statMultiplierBase
+      const UNIQUE_BOOST = 1.3
+
+      // Apply rarity multiplier and unique boost to template stats
+      const expectedStats: typeof item.stats = {}
+      for (const [key, baseValue] of Object.entries(uniqueTemplate.stats)) {
+        if (baseValue !== undefined && typeof baseValue === 'number') {
+          expectedStats[key as keyof typeof item.stats] = Math.floor(baseValue * rarityMultiplier * UNIQUE_BOOST)
+        }
+      }
+
+      const expectedValue = Math.floor(uniqueTemplate.value * rarityMultiplier * UNIQUE_BOOST)
+
+      return { stats: expectedStats, value: expectedValue }
+    }
+  }
+
+  // Skip items without material metadata
+  if (!item.materialId) {
     return null
   }
   

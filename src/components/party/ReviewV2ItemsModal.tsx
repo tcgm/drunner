@@ -24,7 +24,19 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
         // Get available bases for this item type (handles accessory1/accessory2 normalization)
         const availableBases = getBasesByType(item.type)
 
-        // 1. Validate existing baseTemplateId - if it's in the old format, we need to re-guess
+        // 1. Validate existing materialId - if it's invalid, we need to re-guess
+        let validatedMaterialId = ''
+        if (item.materialId) {
+            // Check if this material ID actually exists
+            const matchingMaterial = ALL_MATERIALS.find(m => m.id === item.materialId)
+            if (matchingMaterial) {
+                validatedMaterialId = item.materialId
+            } else {
+                console.log(`[Guess] Existing materialId "${item.materialId}" is invalid, will re-guess`)
+            }
+        }
+
+        // 2. Validate existing baseTemplateId - if it's in the old format, we need to re-guess
         let validatedBaseTemplateId = ''
         if (item.baseTemplateId) {
             // Check if any base matches this ID
@@ -42,19 +54,35 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
         }
 
         // If item already has valid IDs, use them
-        if (item.materialId && validatedBaseTemplateId) {
-            return { materialId: item.materialId, baseTemplateId: validatedBaseTemplateId }
+        if (validatedMaterialId && validatedBaseTemplateId) {
+            return { materialId: validatedMaterialId, baseTemplateId: validatedBaseTemplateId }
         }
 
-        // 2. Try to guess from name/description
+        // 3. Try to guess from name/description
         const searchText = `${item.name} ${item.description}`.toLowerCase()
 
-        // Guess material by looking for material keywords
-        let guessedMaterialId = item.materialId || ''
+        // Guess material by looking for material keywords (use validated ID if available)
+        let guessedMaterialId = validatedMaterialId
         if (!guessedMaterialId) {
             for (const material of ALL_MATERIALS) {
-                const materialKeywords = [material.prefix.toLowerCase(), material.id.toLowerCase()]
-                if (materialKeywords.some(keyword => searchText.includes(keyword))) {
+                const materialName = material.prefix.toLowerCase()
+                const materialId = material.id.toLowerCase()
+
+                // Check bidirectionally:
+                // 1. Does the item name contain the material name/id?
+                if (searchText.includes(materialName) || searchText.includes(materialId)) {
+                    guessedMaterialId = material.id
+                    break
+                }
+
+                // 2. Do any words from the item name appear in the material name?
+                // Extract words from item name (split on spaces/punctuation)
+                const itemWords = searchText.split(/[\s\-_]+/).filter(w => w.length > 2)
+                const matched = itemWords.some(word =>
+                    materialName.includes(word) || materialId.includes(word)
+                )
+
+                if (matched) {
                     guessedMaterialId = material.id
                     break
                 }

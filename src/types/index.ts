@@ -129,6 +129,9 @@ export interface Item {
   isUnique?: boolean // True if this is a unique/set item (not crafted)
   statVersion?: number // Version of stat calculation formula (for migrations)
   version?: number // Runtime version tracking (2 for V2, 3 for V3-derived, undefined for V1)
+  // Template-only fields for rarity constraints (not stored on actual items)
+  minRarity?: ItemRarity  // Minimum rarity this item can roll at
+  maxRarity?: ItemRarity  // Maximum rarity this item can roll at
 }
 
 export interface Consumable extends Item {

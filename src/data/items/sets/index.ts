@@ -1,5 +1,5 @@
 // Master index for set items
-import type { Item } from '@/types'
+import type { Item, ItemRarity } from '@/types'
 
 export * from './kitsune'
 export * from './draconic'
@@ -32,6 +32,8 @@ export interface SetDefinition {
   name: string
   items: Array<Omit<Item, 'id'>>
   bonuses: Record<number, SetBonus>
+  minRarity?: ItemRarity  // Minimum rarity for all items in this set (can be overridden per-item)
+  maxRarity?: ItemRarity  // Maximum rarity for all items in this set (can be overridden per-item)
 }
 
 export const ALL_SETS: SetDefinition[] = [
@@ -126,4 +128,45 @@ export function getSetBonuses(setName: string, pieceCount: number): SetBonus | n
   
   if (applicableBonuses.length === 0) return null
   return applicableBonuses[0][1]
+}
+
+/**
+ * Get the set definition that contains the given item
+ */
+export function getSetDefinitionForItem(item: Omit<Item, 'id'>): SetDefinition | null {
+  for (const set of ALL_SETS) {
+    if (set.items.some(i => i.name === item.name)) {
+      return set
+    }
+  }
+  return null
+}
+
+/**
+ * Get effective min/max rarity for a set item
+ * Priority: item-specific > set-wide > template rarity
+ */
+export function getSetItemRarityConstraints(item: Omit<Item, 'id'>): { minRarity: ItemRarity; maxRarity: ItemRarity } {
+  // Check for item-specific constraints
+  if (item.minRarity || item.maxRarity) {
+    return {
+      minRarity: item.minRarity || item.rarity,
+      maxRarity: item.maxRarity || item.rarity
+    }
+  }
+
+  // Check for set-wide constraints
+  const setDef = getSetDefinitionForItem(item)
+  if (setDef && (setDef.minRarity || setDef.maxRarity)) {
+    return {
+      minRarity: setDef.minRarity || item.rarity,
+      maxRarity: setDef.maxRarity || item.rarity
+    }
+  }
+
+  // Fall back to template rarity (no variable rarity)
+  return {
+    minRarity: item.rarity,
+    maxRarity: item.rarity
+  }
 }

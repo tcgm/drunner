@@ -468,6 +468,7 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
     baseTemplateId: item.baseTemplateId,
     isUnique: false,
     modifiers: item.modifiers,
+    version: 3,
   }
 }
 
@@ -487,20 +488,28 @@ function deriveUniqueItem(item: UniqueItemV3): Item {
     return createFallbackItem(item)
   }
   
-  // Calculate stats using centralized calculation (includes unique 30% boost)
-  const stats = calculateUniqueStats(template.stats, item.modifiers)
+  // Determine effective rarity (use stored rarity if present, else template rarity)
+  const effectiveRarity = item.rarity || template.rarity
+
+  // Calculate stats using centralized calculation (includes rarity multiplier + unique 30% boost)
+  const stats = calculateUniqueStats(template.stats, template.rarity, item.rarity, item.modifiers)
+
+  // Calculate value: base value × rarity multiplier × unique boost (1.3)
+  const rarityConfig = getRarityConfig(effectiveRarity)
+  const value = Math.floor(template.value * rarityConfig.statMultiplierBase * 1.3)
   
   return {
     id: item.id,
     name: template.name,
     description: template.description,
     type: template.type,
-    rarity: template.rarity,
+    rarity: effectiveRarity,
     stats,
-    value: template.value,
+    value,
     icon: template.icon,
     isUnique: true,
     modifiers: item.modifiers,
+    version: 3,
   }
 }
 
@@ -519,12 +528,21 @@ function deriveSetItem(item: SetItemV3): Item {
     return createFallbackItem(item)
   }
   
-  // Calculate stats using centralized calculation (handles unique roll boost if applicable)
-  const stats = calculateSetStats(template.stats, item.isUniqueRoll || false, item.modifiers)
+  // Determine effective rarity (use stored rarity if present, else template rarity)
+  const effectiveRarity = item.rarity || template.rarity
+
+  // Calculate stats using centralized calculation (handles rarity multiplier + unique roll boost if applicable)
+  const stats = calculateSetStats(
+    template.stats,
+    template.rarity,
+    item.rarity,
+    item.isUniqueRoll || false,
+    item.modifiers
+  )
   
-  // Calculate value
+  // Calculate value: base value × rarity multiplier × [unique boost if applicable]
   const uniqueBoost = item.isUniqueRoll ? 1.3 : 1.0
-  const rarityConfig = getRarityConfig(template.rarity)
+  const rarityConfig = getRarityConfig(effectiveRarity)
   const value = Math.floor(template.value * rarityConfig.statMultiplierBase * uniqueBoost)
   
   // Get setId from template name
@@ -535,13 +553,14 @@ function deriveSetItem(item: SetItemV3): Item {
     name: template.name,
     description: template.description,
     type: template.type,
-    rarity: template.rarity,
+    rarity: effectiveRarity,
     stats,
     value,
     icon: template.icon,
     setId,
     isUnique: item.isUniqueRoll,
     modifiers: item.modifiers,
+    version: 3,
   }
 }
 
@@ -608,6 +627,7 @@ function deriveConsumableItem(item: ConsumableV3): Consumable {
     sizeId: item.sizeId,
     potencyId: item.potencyId,
     modifiers: item.modifiers,
+    version: 3,
   }
 }
 
@@ -666,6 +686,7 @@ export function dehydrateItem(item: Item): ItemV3 {
       id: item.id,
       itemType: 'unique',
       templateId,
+      rarity: item.rarity,  // Store rarity for variable-rarity uniques
       modifiers: item.modifiers,
     }
   }
@@ -678,6 +699,7 @@ export function dehydrateItem(item: Item): ItemV3 {
       id: item.id,
       itemType: 'set',
       templateId,
+      rarity: item.rarity,  // Store rarity for variable-rarity sets
       isUniqueRoll: item.isUnique,
       modifiers: item.modifiers,
     }

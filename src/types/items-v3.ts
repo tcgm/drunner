@@ -25,11 +25,13 @@ export interface ProceduralItemV3 extends ItemV3Base {
 export interface UniqueItemV3 extends ItemV3Base {
   itemType: 'unique'
   templateId: string      // "EXCALIBUR", "SHADOWFANG", etc
+  rarity?: ItemRarity     // Optional: override template rarity for variable-rarity uniques
 }
 
 export interface SetItemV3 extends ItemV3Base {
   itemType: 'set'
   templateId: string      // "TITANS_GUARD", "SHADOWS_EDGE", etc
+  rarity?: ItemRarity     // Optional: override template rarity for variable-rarity sets
   isUniqueRoll?: boolean  // If this set item rolled as unique (boosted stats)
 }
 

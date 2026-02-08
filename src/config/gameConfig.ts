@@ -103,12 +103,12 @@ export const GAME_CONFIG = {
     allowRestBeforeBoss: true, // Can rest appear before boss
     floorUnlockFraction: 0.75, // Floors at or below (party avg level * this) are free to enter
     floorSkipBaseCost: 33, // Base alkahest cost to skip to a floor
-    floorSkipCostMultiplier: 1.1, // Cost multiplier per floor skipped beyond free floors
+    floorSkipCostMultiplier: 1.25, // Cost multiplier per floor skipped beyond free floors
   },
 
   // Item Management
   items: {
-    alkahestConversionRate: 0.35, // 25% of item value converted to alkahest when discarded
+    alkahestConversionRate: 0.35, // 35% of item value converted to alkahest when discarded
   },
 
   // Bank

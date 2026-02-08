@@ -221,6 +221,7 @@ function convertUniqueToV3(item: ItemV2): UniqueItemV3 | null {
         id: item.id,
         itemType: 'unique',
         templateId,
+        rarity: item.rarity, // Store the actual rolled rarity
         modifiers: item.modifiers
     }
 
@@ -262,6 +263,7 @@ function convertSetToV3(item: ItemV2): SetItemV3 | null {
         id: item.id,
         itemType: 'set',
         templateId,
+        rarity: item.rarity, // Store the actual rolled rarity
         isUniqueRoll,
         modifiers: item.modifiers
     }

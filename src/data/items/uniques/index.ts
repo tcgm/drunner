@@ -25,15 +25,28 @@ export const ALL_UNIQUE_ITEMS: Array<Omit<Item, 'id'>> = [
 // Unique items by rarity
 export const UNIQUE_ITEMS_BY_RARITY: Record<ItemRarity, Array<Omit<Item, 'id'>>> = {
   junk: [],
+  abundant: [],
   common: [],
   uncommon: [],
   rare: [],
+  veryRare: [],
+  magical: [],
+  elite: [],
   epic: ALL_UNIQUE_ITEMS.filter(item => item.rarity === 'epic'),
   legendary: ALL_UNIQUE_ITEMS.filter(item => item.rarity === 'legendary'),
   mythic: ALL_UNIQUE_ITEMS.filter(item => item.rarity === 'mythic'),
-  artifact: [], // Stretch goal
-  cursed: [],   // Stretch goal
-  set: [],      // Stretch goal
+  mythicc: [],
+  artifact: [],
+  divine: [],
+  celestial: [],
+  realityAnchor: [],
+  structural: [],
+  singularity: [],
+  void: [],
+  elder: [],
+  layer: [],
+  plane: [],
+  author: [],
 }
 
 // Unique items by type
@@ -78,4 +91,24 @@ export function getRandomUnique(rarity: ItemRarity): Omit<Item, 'id'> | undefine
   const uniques = getUniquesByRarity(rarity)
   if (uniques.length === 0) return undefined
   return uniques[Math.floor(Math.random() * uniques.length)]
+}
+
+/**
+ * Get effective min/max rarity for a unique item
+ * Priority: item-specific > template rarity
+ */
+export function getUniqueItemRarityConstraints(item: Omit<Item, 'id'>): { minRarity: ItemRarity; maxRarity: ItemRarity } {
+  // Check for item-specific constraints
+  if (item.minRarity || item.maxRarity) {
+    return {
+      minRarity: item.minRarity || item.rarity,
+      maxRarity: item.maxRarity || item.rarity
+    }
+  }
+
+  // Fall back to template rarity (no variable rarity)
+  return {
+    minRarity: item.rarity,
+    maxRarity: item.rarity
+  }
 }

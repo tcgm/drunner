@@ -42,18 +42,25 @@ export function calculateProceduralStats(
 
 /**
  * Calculate stats for unique items
- * Formula: template stats × unique boost (30%) × modifiers
+ * Formula: template stats × rarity multiplier × unique boost (30%) × modifiers
  */
 export function calculateUniqueStats(
     baseStats: Partial<Stats>,
+    templateRarity: ItemRarity,
+    actualRarity?: ItemRarity,
     modifierIds?: string[]
 ): Partial<Stats> {
     const UNIQUE_BOOST = 1.3 // 30% boost for unique items
 
+    // Use actualRarity if provided, otherwise use template rarity
+    const effectiveRarity = actualRarity || templateRarity
+    const rarityConfig = getRarityConfig(effectiveRarity)
+    const rarityMultiplier = rarityConfig.statMultiplierBase
+
     const stats: Partial<Stats> = {}
     for (const [key, value] of Object.entries(baseStats)) {
         if (typeof value === 'number') {
-            stats[key as keyof Stats] = Math.floor(value * UNIQUE_BOOST)
+            stats[key as keyof Stats] = Math.floor(value * rarityMultiplier * UNIQUE_BOOST)
         }
     }
 
@@ -67,19 +74,26 @@ export function calculateUniqueStats(
 
 /**
  * Calculate stats for set items
- * Formula: template stats × [unique boost if rolled as unique] × modifiers
+ * Formula: template stats × rarity multiplier × [unique boost if rolled as unique] × modifiers
  */
 export function calculateSetStats(
     baseStats: Partial<Stats>,
+    templateRarity: ItemRarity,
+    actualRarity: ItemRarity | undefined,
     isUniqueRoll: boolean,
     modifierIds?: string[]
 ): Partial<Stats> {
     const UNIQUE_BOOST = 1.3 // 30% boost if rolled as unique
 
+    // Use actualRarity if provided, otherwise use template rarity
+    const effectiveRarity = actualRarity || templateRarity
+    const rarityConfig = getRarityConfig(effectiveRarity)
+    const rarityMultiplier = rarityConfig.statMultiplierBase
+
     const stats: Partial<Stats> = {}
     for (const [key, value] of Object.entries(baseStats)) {
         if (typeof value === 'number') {
-            const boostedValue = isUniqueRoll ? value * UNIQUE_BOOST : value
+            const boostedValue = isUniqueRoll ? value * rarityMultiplier * UNIQUE_BOOST : value * rarityMultiplier
             stats[key as keyof Stats] = Math.floor(boostedValue)
         }
     }
