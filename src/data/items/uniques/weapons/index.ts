@@ -8,6 +8,7 @@ export * from './soulreaper'
 export * from './infinityEdge'
 export * from './necronomicon'
 export * from './nekonomicon'
+export * from './demonCoreflail'
 
 import { EXCALIBUR } from './excalibur'
 import { SHADOWFANG } from './shadowfang'
@@ -18,6 +19,7 @@ import { SOULREAPER } from './soulreaper'
 import { INFINITY_EDGE } from './infinityEdge'
 import { NECRONOMICON } from './necronomicon'
 import { NEKONOMICON } from './nekonomicon'
+import { DEMON_COREFLAIL } from './demonCoreflail'
 
 export const UNIQUE_WEAPONS = [
   EXCALIBUR,
@@ -29,4 +31,5 @@ export const UNIQUE_WEAPONS = [
   INFINITY_EDGE,
   NECRONOMICON,
   NEKONOMICON,
+  DEMON_COREFLAIL,
 ]
