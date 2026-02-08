@@ -7,9 +7,9 @@ interface IconProps {
   className?: string
 }
 
-interface DualModeIconProps {
-  // The icon component (could be from react-icons or rpgawesome)
-  icon: IconType | React.ComponentType<IconProps>
+interface MultIconProps {
+  // The icon component (could be from react-icons, rpgawesome, or a local SVG string)
+  icon: IconType | React.ComponentType<IconProps> | string
   // Chakra UI boxSize prop (for Chakra icons)
   boxSize?: string | number
   // Color for the icon
@@ -44,11 +44,29 @@ export function MultIcon({
   ml,
   mt,
   className,
-}: DualModeIconProps) {
+}: MultIconProps) {
   // Safety check: ensure IconComponent exists and is valid
   if (!IconComponent) {
     console.warn('MultIcon: No icon component provided')
     return null
+  }
+
+  // Check if icon is a string (SVG path from import)
+  if (typeof IconComponent === 'string') {
+    // Render as an image (local SVG)
+    const imgStyle: CSSProperties = {
+      width: typeof boxSize === 'string' ? boxSize : `${boxSize || 24}px`,
+      height: typeof boxSize === 'string' ? boxSize : `${boxSize || 24}px`,
+      display: 'inline-block',
+      verticalAlign: 'middle',
+      marginBottom: mb !== undefined ? (typeof mb === 'number' ? `${mb * 0.25}rem` : mb) : undefined,
+      marginRight: mr !== undefined ? (typeof mr === 'number' ? `${mr * 0.25}rem` : mr) : undefined,
+      marginLeft: ml !== undefined ? (typeof ml === 'number' ? `${ml * 0.25}rem` : ml) : undefined,
+      marginTop: mt !== undefined ? (typeof mt === 'number' ? `${mt * 0.25}rem` : mt) : undefined,
+      ...style,
+    }
+    
+    return <img src={IconComponent} alt="" style={imgStyle} className={className} />
   }
 
   // Check if icon is an empty object (failed restoration)
@@ -65,7 +83,7 @@ export function MultIcon({
     componentAny.render
 
   if (!isReactComponent) {
-    console.warn(`DualModeIcon: Invalid icon type, not a React component`)
+    console.warn(`MultIcon: Invalid icon type, not a React component`)
     return null
   }
 

@@ -1,6 +1,6 @@
-import { GiChainedHeart } from 'react-icons/gi'
 import type { Item } from '@/types'
-import type { UniqueEffectDefinition } from '@/systems/items/uniqueEffects'
+import type { UniqueEffectDefinition, UniqueEffectResult } from '@/systems/items/uniqueEffects'
+import demonCoreflailLight from '@/assets/icons/items/demonCoreflailLight.svg'
 
 /**
  * Demon Coreflail - Legendary cursed weapon of mass destruction
@@ -10,7 +10,7 @@ export const DEMON_COREFLAIL: Omit<Item, 'id'> & { uniqueEffect: UniqueEffectDef
   description: 'Some absolute madman mounted a subcritical sphere of pure destructive energy to a chain. It emits an eerie blue glow and makes your teeth ache. Horrifyingly effective. Probably lethal to wield.',
   type: 'weapon',
   rarity: 'legendary',
-  icon: GiChainedHeart,
+  icon: demonCoreflailLight,
   stats: {
     attack: 165, // Incredibly powerful
     magicPower: 45, // Radiates energy
@@ -26,7 +26,7 @@ export const DEMON_COREFLAIL: Omit<Item, 'id'> & { uniqueEffect: UniqueEffectDef
       const { party } = context
       const radiationDamage = 8
       const messages: string[] = []
-      const effects: any[] = []
+      const effects: NonNullable<UniqueEffectResult['additionalEffects']> = []
       
       // Damage all alive heroes
       party.forEach(hero => {
