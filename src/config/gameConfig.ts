@@ -16,6 +16,13 @@ export const GAME_CONFIG = {
       glow: 'rgba(72, 187, 120, 0.8)', // #48bb78
       hex: '#48bb78',
     },
+    gold: {
+      base: 'yellow.400',
+      light: 'yellow.300',
+      dark: 'yellow.500',
+      glow: 'rgba(246, 224, 94, 0.8)', // #f6e05e
+      hex: '#f6e05e',
+    },
     xp: {
       base: 'cyan.400',
       light: 'cyan.300',
@@ -23,12 +30,12 @@ export const GAME_CONFIG = {
       glow: 'rgba(56, 189, 248, 0.8)', // #38bdf8
       hex: '#38bdf8',
     },
-    gold: {
-      base: 'yellow.400',
-      light: 'yellow.300',
-      dark: 'yellow.500',
-      glow: 'rgba(246, 224, 94, 0.8)', // #f6e05e
-      hex: '#f6e05e',
+    alkahest: {
+      base: 'purple.400',
+      light: 'purple.300',
+      dark: 'purple.500',
+      glow: 'rgba(191, 90, 242, 0.8)', // #bf5af2
+      hex: '#bf5af2',
     },
     damage: {
       base: 'red.400',

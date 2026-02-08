@@ -28,16 +28,16 @@ export function PartySetupHeader({ bankGold, metaXp, alkahest, bankInventory, ba
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.gold.light}>{bankGold}</Text>
             </HStack>
           </Tooltip>
+          <Tooltip label="Alkahest" placement="bottom" hasArrow>
+            <HStack className="party-setup-header-alkahest" spacing={2} bg="gray.800" px={3} py={1} borderRadius="md" cursor="help">
+              <Icon as={GiPowder} color={GAME_CONFIG.colors.alkahest.light} boxSize={4} />
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.alkahest.light}>{alkahest}</Text>
+            </HStack>
+          </Tooltip>
           <Tooltip label="Meta XP" placement="bottom" hasArrow>
             <HStack className="party-setup-header-metaxp" spacing={2} bg="gray.800" px={3} py={1} borderRadius="md" cursor="help">
               <Icon as={GiStarsStack} color={GAME_CONFIG.colors.xp.light} boxSize={4} />
               <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.xp.light}>{metaXp}</Text>
-            </HStack>
-          </Tooltip>
-          <Tooltip label="Alkahest" placement="bottom" hasArrow>
-            <HStack className="party-setup-header-alkahest" spacing={2} bg="gray.800" px={3} py={1} borderRadius="md" cursor="help">
-              <Icon as={GiPowder} color="purple.400" boxSize={4} />
-              <Text fontSize="sm" fontWeight="bold" color="purple.400">{alkahest}</Text>
             </HStack>
           </Tooltip>
         </HStack>
