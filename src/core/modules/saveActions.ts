@@ -166,7 +166,9 @@ export const createSaveActions: StateCreator<
       // No migration needed - apply directly
       if (result.state) {
         set(result.state)
-        console.log('[Import] Save imported successfully')
+        console.log('[Import] Save imported successfully, reloading page...')
+        // Reload the page to apply imported state, just like restoreFromBackup
+        window.location.reload()
         return true
       }
       

@@ -9,7 +9,7 @@ import type { Item, ItemStorage, ItemV2, ItemV3, ProceduralItemV3, UniqueItemV3,
 import { isItemV2, isItemV3, isProceduralItemV3, isUniqueItemV3, isSetItemV3, isConsumableV3 } from '@/types/items-v3'
 import { restoreItemIcon } from './itemUtils'
 import { getMaterialById, ALL_MATERIALS } from '@/data/items/materials'
-import { allBases, type BaseItemTemplate } from '@/data/items/bases'
+import { allBases, type BaseItemTemplate, getBasesByType } from '@/data/items/bases'
 import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 import { getRarityConfig } from '@/systems/rarity/raritySystem'
@@ -25,65 +25,6 @@ import {
   calculateConsumableValue,
   calculateConsumableEffectValues
 } from './itemStatCalculation'
-
-/**
- * Generate a meaningful baseTemplateId from a base template
- * This matches the logic in lootGenerator.ts
- */
-function generateBaseTemplateIdForBase(base: BaseItemTemplate): string {
-  const description = base.description.toLowerCase()
-  
-  // Define keywords to search for in descriptions (order matters - more specific first)
-  const keywords: Record<string, string[]> = {
-    // Weapons
-    'sword': ['sword', 'blade'],
-    'axe': ['axe', 'chopping'],
-    'dagger': ['dagger', 'stabbing'],
-    'bow': ['bow', 'ranged'],
-    'mace': ['mace', 'bludgeon'],
-    'staff': ['staff', 'channeling'],
-    'instrument': ['instrument', 'melodious', 'music'],
-    // Armor
-    'plate': ['plate', 'plating'],
-    'chainmail': ['chainmail', 'chain mail', 'interlocking'],
-    'robe': ['robe', 'vestment'],
-    'vest': ['vest', 'garment'],
-    // Helmets
-    'crown': ['crown', 'regal'],
-    'hood': ['hood'],
-    'helmet': ['helmet', 'headgear'],
-    // Boots
-    'greaves': ['greaves', 'leg protection'],
-    'sandals': ['sandals'],
-    'boots': ['boots', 'footwear'],
-    // Accessories
-    'ring': ['ring'],
-    'amulet': ['amulet', 'necklace'],
-    'charm': ['charm'],
-    'talisman': ['talisman'],
-  }
-  
-  // Try to find a matching keyword in the description
-  for (const [keyword, patterns] of Object.entries(keywords)) {
-    for (const pattern of patterns) {
-      if (description.includes(pattern)) {
-        return `${base.type}_${keyword}`
-      }
-    }
-  }
-  
-  // If we have baseNames, use the first one
-  if (base.baseNames && Array.isArray(base.baseNames) && base.baseNames.length > 0) {
-    return `${base.type}_${base.baseNames[0].toLowerCase()}`
-  }
-  
-  // Fallback: extract first meaningful word (skip articles)
-  const words = description.split(' ')
-  const articles = ['a', 'an', 'the']
-  const meaningfulWord = words.find(w => !articles.includes(w.toLowerCase())) || words[0]
-  
-  return `${base.type}_${meaningfulWord.toLowerCase()}`
-}
 
 /**
  * Runtime cache for hydrated items
@@ -144,9 +85,9 @@ export function hydrateItem(
     return restoreItemIcon({ ...derived, version: 3 } as Item)
   }
   
-  // Fallback for corrupted data
-  console.error('Unknown item format:', stored)
-  return createFallbackItem(stored)
+  // Fallback for unknown format - return as-is
+  console.error('Unknown item format, returning as-is:', stored)
+  return restoreItemIcon(stored as Item)
 }
 
 /**
@@ -208,10 +149,10 @@ export function hydrateItemWithConversion(
     }
   }
 
-  // Fallback for corrupted data
-  console.error('Unknown item format:', stored)
+  // Fallback for unknown format - return as-is
+  console.error('Unknown item format, returning as-is:', stored)
   return {
-    hydratedItem: createFallbackItem(stored),
+    hydratedItem: restoreItemIcon(stored as Item),
     converted: false
   }
 }
@@ -252,13 +193,9 @@ export function hydrateItemsWithDetails(items: ItemStorage[]): { valid: Item[], 
       }
     } catch (error) {
       console.error('Failed to hydrate item:', stored, error)
-      if (isItemV2(stored)) {
-        const original = stored as Item
-        corrupted.push(restoreItemIcon(original))
-      } else {
-        const fallback = createFallbackItem(stored as Partial<Item>)
-        corrupted.push(fallback)
-      }
+      // Return item as-is
+      const original = stored as Item
+      corrupted.push(restoreItemIcon(original))
     }
   })
 
@@ -277,34 +214,12 @@ export function hydrateItemsWithCorrupted(items: ItemStorage[]): { valid: Item[]
   items.forEach(stored => {
     try {
       const hydrated = hydrateItem(stored)
-
-      // Check if hydration resulted in a fallback/corrupted item
-      // Fallback items have the name "Corrupted Item" and value of 100
-      if (hydrated.name === 'Corrupted Item' && hydrated.value === 100) {
-        // This is a fallback item - it failed to hydrate properly
-        // Try to preserve original data if it exists
-        if (isItemV2(stored)) {
-          const original = stored as Item
-          // If the original has better data, use it
-          if (original.name && original.name !== 'Corrupted Item') {
-            corrupted.push(restoreItemIcon(original))
-            return
-          }
-        }
-        corrupted.push(hydrated)
-      } else {
-        valid.push(hydrated)
-      }
+      valid.push(hydrated)
     } catch (error) {
       console.error('Failed to hydrate item:', stored, error)
-      // Try to preserve original if it's V2
-      if (isItemV2(stored)) {
-        const original = stored as Item
-        corrupted.push(restoreItemIcon(original))
-      } else {
-        const fallback = createFallbackItem(stored as Partial<Item>)
-        corrupted.push(fallback)
-      }
+      // Return item as-is
+      const original = stored as Item
+      corrupted.push(restoreItemIcon(original))
     }
   })
 
@@ -349,8 +264,8 @@ function deriveItemFromV3(item: ItemV3): Item {
   } else if (isConsumableV3(item)) {
     derived = deriveConsumableItem(item)
   } else {
-    console.error('Unknown V3 item type:', item)
-    return createFallbackItem(item)
+    console.error('Unknown V3 item type, returning as Item:', item)
+    return item as unknown as Item
   }
 
   // Cache the result (excluding id, modifiers, and stackCount which are instance-specific)
@@ -366,55 +281,73 @@ function deriveItemFromV3(item: ItemV3): Item {
 function deriveProceduralItem(item: ProceduralItemV3): Item {
   const material = getMaterialById(item.materialId)
 
-  // Try multiple methods to find the base template
-  // Method 1: New dot format - "type.id" (e.g., "weapon.sword")
-  let baseTemplate = allBases.find(b =>
-    `${b.type}.${b.id}` === item.baseTemplateId
-  )
+  // Support both variantName (current) and baseName (legacy) field names
+  const storedVariantName = item.variantName || (item as any).baseName || ''
 
-  // Method 2: Legacy underscore format (for backward compatibility)
-  if (!baseTemplate) {
-    baseTemplate = allBases.find(b => {
-      const baseId = generateBaseTemplateIdForBase(b)
-      return baseId === item.baseTemplateId
-    })
-  }
-  
-  // Method 3: Try matching by type and variantName in baseNames array
-  if (!baseTemplate && item.variantName) {
-    // Support both dot and underscore formats for type extraction
-    const extractedType = item.baseTemplateId.includes('.')
-      ? item.baseTemplateId.split('.')[0]
-      : item.baseTemplateId.split('_')[0]
-    baseTemplate = allBases.find(b =>
-      b.type === extractedType &&
-      b.baseNames &&
-      b.baseNames.some(name => name.toLowerCase() === item.variantName.toLowerCase())
+  // Extract item type from baseTemplateId for getBasesByType
+  // Handle both dot format (weapon.sword) and underscore format (weapon_sword)
+  const extractedType = item.baseTemplateId.includes('.')
+    ? item.baseTemplateId.split('.')[0]
+    : item.baseTemplateId.split('_')[0]
+
+  // Use getBasesByType which handles accessory1/accessory2 normalization
+  const availableBases = getBasesByType(extractedType as ItemSlot)
+
+  let baseTemplate: BaseItemTemplate | undefined
+
+  // Method 1: Try matching by variantName/baseName against baseNames array
+  if (storedVariantName && storedVariantName.trim()) {
+    baseTemplate = availableBases.find((b: BaseItemTemplate) =>
+      b.baseNames?.some((name: string) => name && name.toLowerCase() === storedVariantName.toLowerCase())
     )
-  }
-
-  // Method 4: Try legacy description-based format (for very old items)
-  if (!baseTemplate) {
-    baseTemplate = allBases.find(b => 
-      `${b.type}_${b.description.split(' ')[0].toLowerCase()}` === item.baseTemplateId
-    )
-  }
-
-  // Method 5: Try just by item type as last resort
-  if (!baseTemplate) {
-    const extractedType = item.baseTemplateId.includes('.')
-      ? item.baseTemplateId.split('.')[0]
-      : item.baseTemplateId.split('_')[0]
-    const basesByType = allBases.filter(b => b.type === extractedType)
-    if (basesByType.length > 0) {
-      baseTemplate = basesByType[0]
-      // console.warn(`Using fallback base template for item ${item.id}, baseTemplateId: ${item.baseTemplateId}`)
+    if (baseTemplate) {
+      // console.log(`[ItemHydration] Matched by variantName "${storedVariantName}" to base "${baseTemplate.id}"`)
     }
   }
 
+  // Method 2: Try new dot format - "type.id" (e.g., "weapon.sword")
+  if (!baseTemplate) {
+    baseTemplate = availableBases.find((b: BaseItemTemplate) =>
+      `${b.type}.${b.id}` === item.baseTemplateId
+    )
+  }
+
+  // Method 3: Try matching baseTemplateId keyword against baseNames
+  if (!baseTemplate) {
+    const idPart = item.baseTemplateId.includes('.')
+      ? item.baseTemplateId.split('.')[1]
+      : item.baseTemplateId.split('_').slice(1).join('_').trim()
+
+    if (idPart) {
+      // Try exact match on ID part
+      baseTemplate = availableBases.find((b: BaseItemTemplate) =>
+        b.id.toLowerCase() === idPart.toLowerCase() ||
+        b.baseNames?.some((name: string) => name && name.toLowerCase() === idPart.toLowerCase())
+      )
+
+      // Try partial match (for truncated IDs like "accessory2_a")
+      if (!baseTemplate) {
+        baseTemplate = availableBases.find((b: BaseItemTemplate) =>
+          b.id.toLowerCase().includes(idPart.toLowerCase()) ||
+          b.baseNames?.some((name: string) => name && name.toLowerCase().includes(idPart.toLowerCase()))
+        )
+        if (baseTemplate) {
+          console.warn(`[ItemHydration] Matched partial baseTemplateId "${item.baseTemplateId}" to base "${baseTemplate.id}"`)
+        }
+      }
+    }
+  }
+
+  // Method 4: Fallback to first base of this type
+  if (!baseTemplate && availableBases.length > 0) {
+    baseTemplate = availableBases[0]
+    console.warn(`[ItemHydration] Using fallback base "${baseTemplate!.id}" for baseTemplateId "${item.baseTemplateId}"`)
+  }
+
   if (!material || !baseTemplate) {
-    // console.warn(`Cannot derive procedural item ${item.id}: material=${!!material}, base=${!!baseTemplate}, materialId=${item.materialId}, baseTemplateId=${item.baseTemplateId}, variantName=${item.variantName}`)
-    return createFallbackItem(item as Partial<Item>)
+    console.warn(`[ItemHydration] Cannot derive procedural item ${item.id}: material=${!!material}, base=${!!baseTemplate}, materialId=${item.materialId}, baseTemplateId=${item.baseTemplateId}, variantName=${storedVariantName}`)
+    console.warn(`[ItemHydration] Returning item as-is without modification`)
+    return item as unknown as Item
   }
   
   // Derive itemSlot from base.type
@@ -425,13 +358,16 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
   const stats = calculateProceduralStats(baseTemplate, material, item.rarity, item.modifiers)
   
   // Select variant name from baseNames array
-  let selectedVariant = item.variantName
-  if (baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+  let selectedVariant = storedVariantName
+  if (baseTemplate.baseNames && baseTemplate.baseNames.length > 0 && storedVariantName) {
     // Try to find exact match (case-insensitive)
     const matchingVariant = baseTemplate.baseNames.find(
-      name => name.toLowerCase() === item.variantName.toLowerCase()
+      name => name.toLowerCase() === storedVariantName.toLowerCase()
     )
     selectedVariant = matchingVariant || baseTemplate.baseNames[0] // Fallback to first variant
+  } else if (baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+    // No stored variant name, use first from template
+    selectedVariant = baseTemplate.baseNames[0]
   }
 
   // Generate name using material prefix + variant name
@@ -484,8 +420,8 @@ function deriveUniqueItem(item: UniqueItemV3): Item {
   })
   
   if (!template) {
-    // console.warn(`Cannot find unique template: ${item.templateId}`)
-    return createFallbackItem(item)
+    console.warn(`[ItemHydration] Cannot find unique template: ${item.templateId}, returning as-is`)
+    return item as unknown as Item
   }
   
   // Determine effective rarity (use stored rarity if present, else template rarity)
@@ -524,8 +460,8 @@ function deriveSetItem(item: SetItemV3): Item {
   })
   
   if (!template) {
-    // console.warn(`Cannot find set template: ${item.templateId}`)
-    return createFallbackItem(item)
+    console.warn(`[ItemHydration] Cannot find set template: ${item.templateId}, returning as-is`)
+    return item as unknown as Item
   }
   
   // Determine effective rarity (use stored rarity if present, else template rarity)
@@ -573,8 +509,8 @@ function deriveConsumableItem(item: ConsumableV3): Consumable {
   const potency = getPotencyById(item.potencyId)
 
   if (!base || !size || !potency) {
-    // console.warn(`Cannot derive consumable ${item.id}: base=${!!base}, size=${!!size}, potency=${!!potency}`)
-    return createFallbackItem(item) as Consumable
+    console.error(`[ItemHydration] Cannot derive consumable: base=${!!base}, size=${!!size}, potency=${!!potency}, returning as-is`)
+    return item as unknown as Consumable
   }
 
   // Calculate effects using centralized calculation
