@@ -13,6 +13,8 @@ import {
 import { useState, memo, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GiGoldBar as GiTreasure, GiSparkles, GiCursedStar } from 'react-icons/gi'
+import * as GameIcons from 'react-icons/gi'
+import type { IconType } from 'react-icons'
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 import { getItemSetName } from '@/data/items/sets'
@@ -23,6 +25,33 @@ import { resolveItemData } from '@/utils/itemDataResolver'
 import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
 
 const MotionBox = motion.create(Box)
+
+// Gem icons for each rarity - matching ItemDetailModal
+const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
+  junk: GameIcons.GiStoneBlock,
+  abundant: GameIcons.GiRock,
+  common: GameIcons.GiGems,
+  uncommon: GameIcons.GiCutDiamond,
+  rare: GameIcons.GiDiamondTrophy,
+  veryRare: GameIcons.GiCrystalShine,
+  magical: GameIcons.GiSparkles,
+  elite: GameIcons.GiDiamonds,
+  epic: GameIcons.GiCrystalCluster,
+  legendary: GameIcons.GiCrystalShine,
+  mythic: GameIcons.GiBatwingEmblem,
+  mythicc: GameIcons.GiCrystalEye,
+  artifact: GameIcons.GiCrystalEye,
+  divine: GameIcons.GiAngelWings,
+  celestial: GameIcons.GiStarFormation,
+  realityAnchor: GameIcons.GiChainedHeart,
+  structural: GameIcons.GiCubeforce,
+  singularity: GameIcons.GiBlackHoleBolas,
+  void: GameIcons.GiVortex,
+  elder: GameIcons.GiEvilBook,
+  layer: GameIcons.GiPerspectiveDiceSixFacesRandom,
+  plane: GameIcons.GiCardRandom,
+  author: GameIcons.GiQuillInk,
+}
 
 interface ItemSlotProps {
   item: Item
@@ -53,18 +82,18 @@ const RARITY_GLOW_COLORS: Record<string, string> = {
 }
 
 // Keep text and bg colors for tooltips and dynamic content
-const RARITY_COLORS: Record<string, { text: string; bg: string }> = {
-  junk: { text: '#9CA3AF', bg: '#2D3748' },
-  common: { text: '#4ADE80', bg: '#065F46' },
-  uncommon: { text: '#60A5FA', bg: '#1E3A8A' },
-  rare: { text: '#C084FC', bg: '#581C87' },
-  epic: { text: '#F472B6', bg: '#831843' },
-  legendary: { text: '#FB923C', bg: '#9A3412' },
-  mythic: { text: '#F87171', bg: '#991B1B' },
-  artifact: { text: '#FACC15', bg: '#92400E' },
-  cursed: { text: '#6B7280', bg: '#111827' },
-  abundant: { text: '#34D399', bg: '#064E3B' },
-  set: { text: '#5EEAD4', bg: '#134E4A' },
+const RARITY_COLORS: Record<string, { text: string; bg: string; gem: string }> = {
+  junk: { text: '#9CA3AF', bg: '#2D3748', gem: '#6B7280' },
+  common: { text: '#4ADE80', bg: '#065F46', gem: '#22C55E' },
+  uncommon: { text: '#60A5FA', bg: '#1E3A8A', gem: '#3B82F6' },
+  rare: { text: '#C084FC', bg: '#581C87', gem: '#A855F7' },
+  epic: { text: '#F472B6', bg: '#831843', gem: '#EC4899' },
+  legendary: { text: '#FB923C', bg: '#9A3412', gem: '#F97316' },
+  mythic: { text: '#F87171', bg: '#991B1B', gem: '#EF4444' },
+  artifact: { text: '#FACC15', bg: '#92400E', gem: '#EAB308' },
+  cursed: { text: '#6B7280', bg: '#111827', gem: '#4B5563' },
+  abundant: { text: '#34D399', bg: '#064E3B', gem: '#10B981' },
+  set: { text: '#5EEAD4', bg: '#134E4A', gem: '#14B8A6' },
 }
 
 export const ItemSlot = memo(function ItemSlot({
@@ -142,6 +171,10 @@ export const ItemSlot = memo(function ItemSlot({
   // Get unique effect if this item has one
   const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
 
+  // Get rarity gem icon
+  const GemIcon = useMemo(() => RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond, [item.rarity])
+  // const gemColor = useMemo(() => item.isUnique ? '#FFD700' : (RARITY_COLORS[item.rarity]?.gem || '#6B7280'), [item.rarity, item.isUnique])
+ const gemColor = useMemo(() => (RARITY_COLORS[item.rarity]?.gem || '#6B7280'), [item.rarity])
   // Memoize tooltip content to avoid recreation on every render
   const tooltipContent = useMemo(() => (
     <VStack align="start" spacing={1} maxW="300px">
@@ -320,7 +353,7 @@ export const ItemSlot = memo(function ItemSlot({
           height={iconOnly ? '100%' : undefined}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
-          data-item-icon={item.icon?.name || 'unknown'}
+          data-item-icon={item.icon?.length || 'unknown'}
           onClick={handleClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
@@ -612,6 +645,36 @@ export const ItemSlot = memo(function ItemSlot({
               ease: "easeInOut"
             }}
           />*/}
+
+          {/* Rarity Gem Icon - Bottom Center (Card Game style) */}
+          {!iconOnly && (
+            <MotionBox
+              position="absolute"
+              bottom="-25%"
+              left="50%"
+              marginLeft={size === 'sm' ? '-10px' : size === 'md' ? '-14px' : size === 'xl' ? '-18px' : '-16px'}
+              zIndex={20}
+              pointerEvents="none"
+              animate={{
+                scale: isHovered ? [1, 1.15, 1] : 1,
+              }}
+              transition={{
+                scale: {
+                  duration: 0.6,
+                  repeat: isHovered ? Infinity : 0,
+                  ease: "easeInOut"
+                }
+              }}
+            >
+              <Icon
+                as={GemIcon}
+                boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '36px' : '32px'}
+                size={"xs"}
+                color={gemColor}
+                filter={`drop-shadow(0 0 4px ${gemColor}) drop-shadow(0 0 8px ${gemColor}80)`}
+              />
+            </MotionBox>
+          )}
         </MotionBox>
       </Tooltip>
 
