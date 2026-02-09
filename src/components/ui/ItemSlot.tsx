@@ -650,9 +650,9 @@ export const ItemSlot = memo(function ItemSlot({
           {!iconOnly && (
             <MotionBox
               position="absolute"
-              bottom="-25%"
+              bottom="-20%"
               left="50%"
-              marginLeft={size === 'sm' ? '-10px' : size === 'md' ? '-14px' : size === 'xl' ? '-18px' : '-16px'}
+              marginLeft={size === 'sm' ? '-6px' : size === 'md' ? '-9px' : size === 'xl' ? '-12px' : '-10px'}
               zIndex={20}
               pointerEvents="none"
               animate={{
@@ -668,7 +668,7 @@ export const ItemSlot = memo(function ItemSlot({
             >
               <Icon
                 as={GemIcon}
-                boxSize={size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '36px' : '32px'}
+                boxSize={size === 'sm' ? '12px' : size === 'md' ? '18px' : size === 'xl' ? '24px' : '20px'}
                 size={"xs"}
                 color={gemColor}
                 filter={`drop-shadow(0 0 4px ${gemColor}) drop-shadow(0 0 8px ${gemColor}80)`}
