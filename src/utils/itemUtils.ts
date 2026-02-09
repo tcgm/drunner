@@ -11,49 +11,59 @@ import { ALL_MATERIALS } from '@/data/items/materials'
  * so we need to look them up from the templates
  */
 export function restoreItemIcon(item: Item): Item {
+  // Clean up corrupted uniqueEffect from old saves (functions don't serialize)
+  const itemWithCleanup = { ...item }
+  if ('uniqueEffect' in itemWithCleanup) {
+    const uniqueEffect = (itemWithCleanup as any).uniqueEffect
+    // If uniqueEffect exists but handler is not a function, remove it
+    if (!uniqueEffect || typeof uniqueEffect.handler !== 'function') {
+      delete (itemWithCleanup as any).uniqueEffect
+    }
+  }
+  
   // For procedural items (items with materialId), always restore icons
   // This fixes both old V2 items and items with wrong icons stored
-  const isProceduralItem = !item.isUnique && !item.setId && item.materialId
+  const isProceduralItem = !itemWithCleanup.isUnique && !itemWithCleanup.setId && itemWithCleanup.materialId
   
   // Check if icon is valid (not undefined, not null, not empty object)
-  const hasValidIcon = item.icon && 
-    typeof item.icon === 'function' && 
-    !(typeof item.icon === 'object' && Object.keys(item.icon).length === 0)
+  const hasValidIcon = itemWithCleanup.icon && 
+    typeof itemWithCleanup.icon === 'function' && 
+    !(typeof itemWithCleanup.icon === 'object' && Object.keys(itemWithCleanup.icon).length === 0)
   
   // For non-procedural items, skip if icon already exists and is valid
   if (hasValidIcon && !isProceduralItem) {
-    return item
+    return itemWithCleanup
   }
 
   // Check if it's a consumable item
-  if (item.type === 'consumable' && 'baseId' in item) {
-    const base = getConsumableBaseById(item.baseId as string)
+  if (itemWithCleanup.type === 'consumable' && 'baseId' in itemWithCleanup) {
+    const base = getConsumableBaseById(itemWithCleanup.baseId as string)
     if (base?.icon) {
-      return { ...item, icon: base.icon }
+      return { ...itemWithCleanup, icon: base.icon }
     }
   }
 
   // Check if it's a unique item
-  if (item.isUnique) {
-    const template = ALL_UNIQUE_ITEMS.find(t => t.name === item.name)
+  if (itemWithCleanup.isUnique) {
+    const template = ALL_UNIQUE_ITEMS.find(t => t.name === itemWithCleanup.name)
     if (template?.icon) {
-      return { ...item, icon: template.icon }
+      return { ...itemWithCleanup, icon: template.icon }
     }
   }
 
   // Check if it's a set item
-  if (item.setId) {
-    const template = ALL_SET_ITEMS.find(t => t.name === item.name)
+  if (itemWithCleanup.setId) {
+    const template = ALL_SET_ITEMS.find(t => t.name === itemWithCleanup.name)
     if (template?.icon) {
-      return { ...item, icon: template.icon }
+      return { ...itemWithCleanup, icon: template.icon }
     }
   }
 
   // Check if it's a procedural item with base template
-  if (item.baseTemplateId) {
+  if (itemWithCleanup.baseTemplateId) {
     // baseTemplateId format: "type.id" (V3) or "type_keyword" (V2)
-    const separator = item.baseTemplateId.includes('.') ? '.' : '_'
-    const [type, keyword] = item.baseTemplateId.split(separator)
+    const separator = itemWithCleanup.baseTemplateId.includes('.') ? '.' : '_'
+    const [type, keyword] = itemWithCleanup.baseTemplateId.split(separator)
     
     // Ignore useless keywords like "a", "an", "the"
     const isUselessKeyword = !keyword || keyword.length <= 2 || ['a', 'an', 'the'].includes(keyword)
@@ -63,12 +73,12 @@ export function restoreItemIcon(item: Item): Item {
       
       // Try to find material prefix in item name
       const material = ALL_MATERIALS.find(m => 
-        item.name.toLowerCase().startsWith(m.prefix.toLowerCase() + ' ')
+        itemWithCleanup.name.toLowerCase().startsWith(m.prefix.toLowerCase() + ' ')
       )
       
       if (material) {
         // Extract base name (everything after material prefix)
-        const baseName = item.name.substring(material.prefix.length + 1).trim()
+        const baseName = itemWithCleanup.name.substring(material.prefix.length + 1).trim()
         
         // Find template by type and baseName match
         const template = allBases.find(b => {
@@ -93,7 +103,7 @@ export function restoreItemIcon(item: Item): Item {
         if (template) {
           // Fix the baseTemplateId for future loads
           const fixedKeyword = baseName.toLowerCase().replace(/\s+/g, '_')
-          const fixedItem = { ...item, baseTemplateId: `${type}_${fixedKeyword}` }
+          const fixedItem = { ...itemWithCleanup, baseTemplateId: `${type}_${fixedKeyword}` }
           
           // Check for specific baseName icon
           if (template.baseNameIcons && template.baseNames) {
@@ -118,7 +128,7 @@ export function restoreItemIcon(item: Item): Item {
       // Fallback: match by type only
       const template = allBases.find(b => b.type === type)
       if (template?.icon) {
-        return { ...item, icon: template.icon }
+        return { ...itemWithCleanup, icon: template.icon }
       }
     } else {
       // Good keyword - match by description/baseNames
@@ -132,17 +142,17 @@ export function restoreItemIcon(item: Item): Item {
         if (template.baseNameIcons && template.baseNames) {
           // Try to find which baseName this item uses by checking the item name
           for (const baseName of template.baseNames) {
-            if (item.name.toLowerCase().includes(baseName.toLowerCase())) {
+            if (itemWithCleanup.name.toLowerCase().includes(baseName.toLowerCase())) {
               const specificIcon = template.baseNameIcons[baseName]
               if (specificIcon) {
-                return { ...item, icon: specificIcon }
+                return { ...itemWithCleanup, icon: specificIcon }
               }
             }
           }
         }
         // Fall back to default icon
         if (template.icon) {
-          return { ...item, icon: template.icon }
+          return { ...itemWithCleanup, icon: template.icon }
         }
       }
     }
@@ -153,10 +163,10 @@ export function restoreItemIcon(item: Item): Item {
         for (const baseName of template.baseNames) {
           // Check if item name ends with this baseName (to match "Adamantine Pipe" with "Pipe")
           const namePattern = new RegExp(`\\b${baseName}$`, 'i')
-          if (namePattern.test(item.name)) {
+          if (namePattern.test(itemWithCleanup.name)) {
             const specificIcon = template.baseNameIcons[baseName]
             if (specificIcon) {
-              return { ...item, icon: specificIcon }
+              return { ...itemWithCleanup, icon: specificIcon }
             }
           }
         }
@@ -164,18 +174,18 @@ export function restoreItemIcon(item: Item): Item {
     }
     
     // Last resort: try to match by materialId if present
-    if (item.materialId && item.type) {
+    if (itemWithCleanup.materialId && itemWithCleanup.type) {
       // Find template by type that matches
-      const template = allBases.find(b => b.type === item.type)
+      const template = allBases.find(b => b.type === itemWithCleanup.type)
       if (template?.icon) {
-        return { ...item, icon: template.icon }
+        return { ...itemWithCleanup, icon: template.icon }
       }
     }
     
-    console.warn(`[Icon] Failed to restore V2 item: ${item.name} (type: ${item.type})`)
+    console.warn(`[Icon] Failed to restore V2 item: ${itemWithCleanup.name} (type: ${itemWithCleanup.type})`)
   }
 
-  return item
+  return itemWithCleanup
 }
 
 /**

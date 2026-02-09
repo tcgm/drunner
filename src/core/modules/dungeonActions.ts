@@ -135,6 +135,17 @@ export const createDungeonActions: StateCreator<
       // Tick effects for all heroes on every depth increment
       let updatedParty = tickEffectsForDepthProgression(state.party, newDepth)
 
+      // Process unique item effects for depth advancement (every event)
+      if (updatedParty.some(h => h !== null && h.isAlive)) {
+        const uniqueEffectResult = processUniqueEffects(updatedParty, 'onDepthAdvance', {
+          floor: newFloor
+        })
+        
+        if (uniqueEffectResult) {
+          updatedParty = uniqueEffectResult.party
+        }
+      }
+
       // Handle pending resurrections from Amulet of Resurrection
       const resurrectedHeroes: string[] = []
       updatedParty = updatedParty.map(hero => {
@@ -226,14 +237,57 @@ export const createDungeonActions: StateCreator<
         }
       }
 
+      // Process unique item effects for floor advancement
+      let floorAdvanceEffectMessage: string | null = null
+      let floorAdvanceEffects: import('@/systems/events/eventResolver').ResolvedEffect[] = []
+      
+      if (completingFloor && updatedParty.some(h => h !== null && h.isAlive)) {
+        const uniqueEffectResult = processUniqueEffects(updatedParty, 'onFloorAdvance', {
+          floor: newFloor
+        })
+        
+        if (uniqueEffectResult) {
+          updatedParty = uniqueEffectResult.party
+          floorAdvanceEffectMessage = uniqueEffectResult.message || null
+          floorAdvanceEffects = uniqueEffectResult.additionalEffects || []
+          
+          // Update roster with modified party
+          const updatedRosterWithEffects = state.heroRoster.map(rosterHero => {
+            const updatedVersion = updatedParty.find(h => h?.id === rosterHero.id)
+            return updatedVersion || rosterHero
+          })
+          
+          // Store for later use
+          updatedRoster.length = 0
+          updatedRoster.push(...updatedRosterWithEffects)
+        }
+      }
+
       const event = getNextEvent(newDepth, newFloor, isNextEventBoss, isMajorBoss, state.dungeon.eventHistory)
 
-      // Create resurrection outcome if any heroes were revived
-      const resurrectionOutcome = resurrectedHeroes.length > 0 ? {
-        text: resurrectedHeroes.length === 1 
-          ? `${resurrectedHeroes[0]}'s Amulet of Resurrection shatters in a blinding flash! They are revived with half health.`
-          : `The Amulets of Resurrection shatter in blinding flashes! ${resurrectedHeroes.join(', ')} revived with half health.`,
-        effects: [],
+      // Create resurrection outcome if any heroes were revived or if unique effects triggered
+      const resurrectionMessages: string[] = []
+      const allEffects: import('@/systems/events/eventResolver').ResolvedEffect[] = []
+      
+      if (resurrectedHeroes.length > 0) {
+        resurrectionMessages.push(
+          resurrectedHeroes.length === 1 
+            ? `${resurrectedHeroes[0]}'s Amulet of Resurrection shatters in a blinding flash! They are revived with half health.`
+            : `The Amulets of Resurrection shatter in blinding flashes! ${resurrectedHeroes.join(', ')} revived with half health.`
+        )
+      }
+      
+      if (floorAdvanceEffectMessage) {
+        resurrectionMessages.push(floorAdvanceEffectMessage)
+      }
+      
+      if (floorAdvanceEffects.length > 0) {
+        allEffects.push(...floorAdvanceEffects)
+      }
+      
+      const resurrectionOutcome = resurrectionMessages.length > 0 ? {
+        text: resurrectionMessages.join('\n\n'),
+        effects: allEffects,
         items: []
       } : null
 
@@ -272,15 +326,69 @@ export const createDungeonActions: StateCreator<
 
       const currentEvent = state.dungeon.currentEvent
 
+      // Process unique item effects at combat start
+      let partyForCombat = state.party
+      let combatStartEffectMessage: string | null = null
+      let combatStartEffects: ResolvedEffect[] = []
+      
+      if ((currentEvent.type === 'combat' || currentEvent.type === 'boss') && state.party.some(h => h !== null && h.isAlive)) {
+        const uniqueEffectResult = processUniqueEffects(state.party, 'onCombatStart', {
+          eventType: currentEvent.type,
+          floor: state.dungeon.floor
+        })
+        
+        if (uniqueEffectResult) {
+          partyForCombat = uniqueEffectResult.party
+          combatStartEffectMessage = uniqueEffectResult.message || null
+          combatStartEffects = uniqueEffectResult.additionalEffects || []
+          
+          // Check if party wiped from unique effects (e.g., Demon Coreflail radiation)
+          const wipedFromUniqueEffects = partyForCombat.every(h => h !== null && !h.isAlive)
+          if (wipedFromUniqueEffects) {
+            // Handle wipe before combat even starts
+            const wipeRun = state.activeRun ? {
+              ...state.activeRun,
+              finalDepth: state.dungeon.depth,
+              finalFloor: state.dungeon.floor,
+              result: 'defeat' as const,
+              endDate: Date.now(),
+            } : null
+
+            return {
+              party: partyForCombat,
+              dungeon: {
+                ...state.dungeon,
+                currentEvent: null,
+              },
+              activeRun: wipeRun,
+              isGameOver: true,
+              lastOutcome: {
+                text: uniqueEffectResult.message || 'The party has been wiped out by a cursed item\'s effect!',
+                effects: uniqueEffectResult.additionalEffects || [],
+                items: []
+              }
+            }
+          }
+        }
+      }
+
       // First resolve which outcome to use (handles weighted/success-fail/single)
-      const selectedOutcome = resolveChoiceOutcome(choice, state.party)
+      const selectedOutcome = resolveChoiceOutcome(choice, partyForCombat)
 
       const { updatedParty, updatedGold, metaXpGained, xpMentored, resolvedOutcome } = resolveEventOutcome(
         selectedOutcome,
-        state.party,
+        partyForCombat,
         state.dungeon,
         currentEvent
       )
+
+      // Prepend combat start effects to resolved outcome
+      if (combatStartEffectMessage) {
+        resolvedOutcome.text = `${combatStartEffectMessage}\n\n${resolvedOutcome.text}`
+      }
+      if (combatStartEffects.length > 0) {
+        resolvedOutcome.effects.unshift(...combatStartEffects)
+      }
 
       // Calculate statistics from effects
       const damageDealt = 0

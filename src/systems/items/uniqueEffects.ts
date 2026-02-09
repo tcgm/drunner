@@ -51,6 +51,7 @@ export type UniqueEffectTrigger =
   | 'onHeroRevive'        // When any hero is revived
   | 'onDamageTaken'       // When the wearer takes damage
   | 'onDamageDealt'       // When the wearer deals damage
+  | 'onDepthAdvance'      // When advancing depth (every event)
   | 'onFloorAdvance'      // When advancing to a new floor
   | 'onEventStart'        // At the start of any event
   | 'onEventEnd'          // At the end of any event
@@ -137,6 +138,48 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     }
   },
   
+  'Demon Coreflail': {
+    triggers: ['onCombatStart', 'onDepthAdvance'],
+    description: 'Lethal Radiation: Deals 8 damage to entire party at combat start and every depth advance',
+    handler: (context) => {
+      const { party } = context
+      const radiationDamage = 8
+      const deathMessages: string[] = []
+      const affectedHeroes: string[] = []
+      let totalDamage = 0
+      
+      // Damage all alive heroes
+      party.forEach(hero => {
+        if (hero && hero.isAlive) {
+          const actualDamage = Math.min(radiationDamage, hero.stats.hp)
+          hero.stats.hp = Math.max(0, hero.stats.hp - radiationDamage)
+          totalDamage += actualDamage
+          affectedHeroes.push(hero.id)
+          
+          if (hero.stats.hp <= 0) {
+            hero.isAlive = false
+            deathMessages.push(`${hero.name} succumbs to radiation poisoning!`)
+          }
+        }
+      })
+      
+      if (affectedHeroes.length === 0) {
+        return null
+      }
+      
+      return {
+        party,
+        message: null,
+        additionalEffects: [{
+          type: 'damage' as const,
+          target: affectedHeroes,
+          value: radiationDamage,
+          description: `⚛️ The Demon Coreflail bathes the party in lethal radiation! ${radiationDamage} damage to all party members. ${deathMessages.join(' ')}`
+        }]
+      }
+    }
+  },
+  
   // Example of other unique effects that could be added:
   // 'Amulet of Last Stand': {
   //   triggers: ['onDeath'],
@@ -195,7 +238,10 @@ export function processUniqueEffects(
       const itemData = item as Item & { uniqueEffect?: UniqueEffectDefinition }
       
       // Priority 1: Check for item-specific uniqueEffect defined in the item file
-      let effectDef = itemData.uniqueEffect
+      // Skip if handler is not a function (corrupted by save/load serialization)
+      let effectDef = (itemData.uniqueEffect && typeof itemData.uniqueEffect.handler === 'function')
+        ? itemData.uniqueEffect
+        : undefined
       
       // Priority 2: Check for individual item effect by exact name in UNIQUE_ITEM_EFFECTS
       if (!effectDef) {
@@ -208,6 +254,12 @@ export function processUniqueEffects(
       }
       
       if (!effectDef) continue
+      
+      // Final safety check: ensure handler is a function
+      if (typeof effectDef.handler !== 'function') {
+        console.warn(`UniqueEffect handler for ${itemData.name} is not a function, skipping`)
+        continue
+      }
       
       // Check if this trigger matches
       if (!effectDef.triggers.includes(trigger)) continue

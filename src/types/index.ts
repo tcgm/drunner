@@ -120,7 +120,7 @@ export interface Item {
   rarity: ItemRarity
   stats: Partial<Omit<Stats, 'hp'>> // Equipment can modify maxHp
   value: number
-  icon: IconType // react-icons icon component
+  icon: IconType  | string // react-icons icon component or local SVG path
   setId?: string // For set items (stretch)
   modifiers?: string[] // Array of modifier IDs applied to this item
   // Item generation metadata - for regenerating names if needed
