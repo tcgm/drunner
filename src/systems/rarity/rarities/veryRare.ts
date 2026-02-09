@@ -4,13 +4,13 @@ export const VERY_RARE: RarityConfig = {
   id: 'veryRare',
   name: 'Pristine',
   percentage: 0.05,
-  color: '#D946EF',
-  backgroundColor: '#6558cf',
+  color: '#581C87',        // Purple-900 (very dark purple)
+  backgroundColor: '#3B0764', // Purple-950 (L=0.0192)
   statMultiplierBase: 2.5,
   minFloor: 15,
-  glow: 'rgba(217, 70, 239, 0.6)',
-  text: '#E879F9',
-  textLight: '#FAE8FF',
-  bg: 'rgba(217, 70, 239, 0.1)',
-  gem: '#D946EF',
+  glow: 'rgba(88, 28, 135, 0.5)',
+  text: '#A855F7',         // Purple-500
+  textLight: '#C084FC',    // Purple-400
+  bg: 'rgba(88, 28, 135, 0.1)',
+  gem: '#581C87',
 }

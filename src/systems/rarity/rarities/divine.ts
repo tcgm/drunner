@@ -4,13 +4,13 @@ export const DIVINE: RarityConfig = {
   id: 'divine',
   name: 'Divine',
   percentage: 0.00005,
-  color: '#FBBF24',
-  backgroundColor: '#ffd700',
+  color: '#0E7490',        // Cyan-700 (dark cyan)
+  backgroundColor: '#083344', // Cyan-950 (L=0.0217)
   statMultiplierBase: 7.0,
   minFloor: 65,
-  glow: 'rgba(251, 191, 36, 0.8)',
-  text: '#FCD34D',
-  textLight: '#FEF3C7',
-  bg: 'rgba(251, 191, 36, 0.15)',
-  gem: '#FBBF24',
+  glow: 'rgba(14, 116, 144, 0.6)',
+  text: '#06B6D4',         // Cyan-500
+  textLight: '#22D3EE',    // Cyan-400
+  bg: 'rgba(14, 116, 144, 0.1)',
+  gem: '#0E7490',
 }

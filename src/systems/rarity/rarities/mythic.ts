@@ -4,13 +4,13 @@ export const MYTHIC: RarityConfig = {
   id: 'mythic',
   name: 'Mythic',
   percentage: 0.0005,
-  color: '#EF4444',
-  backgroundColor: '#b3003f',
+  color: '#FEF08A',        // Yellow-200 (very bright gold)
+  backgroundColor: '#713F12', // Yellow-900 (L=0.0621)
   statMultiplierBase: 5.0,
   minFloor: 50,
-  glow: 'rgba(239, 68, 68, 0.7)',
-  text: '#F87171',
-  textLight: '#FEE2E2',
-  bg: 'rgba(239, 68, 68, 0.1)',
-  gem: '#EF4444',
+  glow: 'rgba(254, 240, 138, 0.6)',
+  text: '#FEF9C3',         // Yellow-100
+  textLight: '#FEFCE8',    // Yellow-50
+  bg: 'rgba(254, 240, 138, 0.1)',
+  gem: '#FEF08A',
 }

@@ -4,13 +4,13 @@ export const ABUNDANT: RarityConfig = {
   id: 'abundant',
   name: 'Abundant',
   percentage: 1.0,
-  color: '#10B981',
-  backgroundColor: '#064E3B',
+  color: '#14532D',        // Green-900 (very dark green)
+  backgroundColor: '#052E16', // Green-950 (L=0.0165)
   statMultiplierBase: 0.8,
   minFloor: 0,
-  glow: 'rgba(16, 185, 129, 0.6)',
-  text: '#34D399',
-  textLight: '#D1FAE5',
-  bg: 'rgba(16, 185, 129, 0.1)',
-  gem: '#10B981',
+  glow: 'rgba(20, 83, 45, 0.5)',
+  text: '#22C55E',         // Green-500
+  textLight: '#4ADE80',    // Green-400
+  bg: 'rgba(20, 83, 45, 0.1)',
+  gem: '#14532D',
 }

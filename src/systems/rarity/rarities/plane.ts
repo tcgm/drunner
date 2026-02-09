@@ -4,13 +4,13 @@ export const PLANE: RarityConfig = {
   id: 'plane',
   name: 'Plane',
   percentage: 0.0000001,
-  color: '#BE123C',
-  backgroundColor: '#404040',
+  color: '#0C4A6E',        // Sky-900 (dark blue)
+  backgroundColor: '#082F49', // Sky-950 (L=0.0285)
   statMultiplierBase: 25.0,
   minFloor: 98,
-  glow: 'rgba(190, 18, 60, 0.9)',
-  text: '#F43F5E',
-  textLight: '#FFE4E6',
-  bg: 'rgba(190, 18, 60, 0.2)',
-  gem: '#9F1239',
+  glow: 'rgba(12, 74, 110, 0.6)',
+  text: '#0EA5E9',         // Sky-500
+  textLight: '#38BDF8',    // Sky-400
+  bg: 'rgba(12, 74, 110, 0.1)',
+  gem: '#0C4A6E',
 }

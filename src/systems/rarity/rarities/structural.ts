@@ -4,13 +4,13 @@ export const STRUCTURAL: RarityConfig = {
   id: 'structural',
   name: 'Structural',
   percentage: 0.000005,
-  color: '#6366F1',
-  backgroundColor: '#610022',
+  color: '#DDD6FE',        // Violet-200 (bright violet)
+  backgroundColor: '#4C1D95', // Violet-900 (L=0.0459)
   statMultiplierBase: 10.0,
   minFloor: 80,
-  glow: 'rgba(99, 102, 241, 0.8)',
-  text: '#818CF8',
-  textLight: '#E0E7FF',
-  bg: 'rgba(99, 102, 241, 0.15)',
-  gem: '#6366F1',
+  glow: 'rgba(221, 214, 254, 0.6)',
+  text: '#EDE9FE',         // Violet-100
+  textLight: '#F5F3FF',    // Violet-50
+  bg: 'rgba(221, 214, 254, 0.1)',
+  gem: '#DDD6FE',
 }

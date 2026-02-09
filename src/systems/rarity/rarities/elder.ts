@@ -4,13 +4,13 @@ export const ELDER: RarityConfig = {
   id: 'elder',
   name: 'Elder',
   percentage: 0.0000005,
-  color: '#4C1D95',
-  backgroundColor: '#b0b0b0',
+  color: '#7F1D1D',        // Red-900 (dark red)
+  backgroundColor: '#450A0A', // Red-950 (L=0.0089)
   statMultiplierBase: 18.0,
   minFloor: 93,
-  glow: 'rgba(76, 29, 149, 0.9)',
-  text: '#7C3AED',
-  textLight: '#DDD6FE',
-  bg: 'rgba(76, 29, 149, 0.2)',
-  gem: '#5B21B6',
+  glow: 'rgba(127, 29, 29, 0.6)',
+  text: '#DC2626',         // Red-600
+  textLight: '#EF4444',    // Red-500
+  bg: 'rgba(127, 29, 29, 0.1)',
+  gem: '#7F1D1D',
 }

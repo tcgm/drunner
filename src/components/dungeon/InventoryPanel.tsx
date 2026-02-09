@@ -28,12 +28,28 @@ const SLOT_ICONS: Record<string, IconType> = {
 
 const RARITY_COLORS: Record<string, string> = {
   junk: 'gray',
-  common: 'gray',
-  uncommon: 'green',
-  rare: 'blue',
-  epic: 'purple',
+  abundant: 'teal',
+  common: 'lime',
+  uncommon: 'blue',
+  rare: 'purple',
+  veryRare: 'fuchsia',
+  magical: 'cyan',
+  elite: 'rose',
+  epic: 'pink',
   legendary: 'orange',
-  mythic: 'pink',
+  mythic: 'yellow',
+  mythicc: 'red',
+  artifact: 'amber',
+  divine: 'emerald',
+  celestial: 'sky',
+  realityAnchor: 'indigo',
+  structural: 'violet',
+  singularity: 'purple',
+  void: 'lime',
+  elder: 'slate',
+  layer: 'rose',
+  plane: 'teal',
+  author: 'gray',
 }
 
 export default function InventoryPanel({ hero, onSlotClick, showBankOption }: InventoryPanelProps) {

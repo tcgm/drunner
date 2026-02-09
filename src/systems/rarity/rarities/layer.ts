@@ -4,13 +4,13 @@ export const LAYER: RarityConfig = {
   id: 'layer',
   name: 'Layer',
   percentage: 0.0000002,
-  color: '#BE185D',
-  backgroundColor: '#808080',
+  color: '#FDE047',        // Yellow-300 (bright yellow)
+  backgroundColor: '#713F12', // Yellow-900 (L=0.0621)
   statMultiplierBase: 20.0,
   minFloor: 96,
-  glow: 'rgba(190, 24, 93, 0.9)',
-  text: '#EC4899',
-  textLight: '#FBCFE8',
-  bg: 'rgba(190, 24, 93, 0.2)',
-  gem: '#9F1239',
+  glow: 'rgba(253, 224, 71, 0.6)',
+  text: '#FEF08A',         // Yellow-200
+  textLight: '#FEF9C3',    // Yellow-100
+  bg: 'rgba(253, 224, 71, 0.1)',
+  gem: '#FDE047',
 }

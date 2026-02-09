@@ -4,13 +4,13 @@ export const MAGICAL: RarityConfig = {
   id: 'magical',
   name: 'Magical',
   percentage: 0.01,
-  color: '#8B5CF6',
-  backgroundColor: '#9c93e0',
+  color: '#F0ABFC',        // Fuchsia-300 (bright fuchsia)
+  backgroundColor: '#701A75', // Fuchsia-900 (L=0.0547)
   statMultiplierBase: 2.8,
   minFloor: 20,
-  glow: 'rgba(139, 92, 246, 0.6)',
-  text: '#A78BFA',
-  textLight: '#EDE9FE',
-  bg: 'rgba(139, 92, 246, 0.1)',
-  gem: '#8B5CF6',
+  glow: 'rgba(240, 171, 252, 0.5)',
+  text: '#F5D0FE',         // Fuchsia-200
+  textLight: '#FAE8FF',    // Fuchsia-100
+  bg: 'rgba(240, 171, 252, 0.1)',
+  gem: '#F0ABFC',
 }

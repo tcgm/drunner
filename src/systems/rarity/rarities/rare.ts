@@ -4,13 +4,13 @@ export const RARE: RarityConfig = {
   id: 'rare',
   name: 'Rare',
   percentage: 0.2,
-  color: '#A855F7',
-  backgroundColor: '#581C87',
+  color: '#C084FC',        // Purple-400 (light purple)
+  backgroundColor: '#581C87', // Purple-900 (L=0.0465)
   statMultiplierBase: 2.0,
   minFloor: 10,
-  glow: 'rgba(168, 85, 247, 0.6)',
-  text: '#C084FC',
-  textLight: '#E9D5FF',
-  bg: 'rgba(168, 85, 247, 0.1)',
-  gem: '#A855F7',
+  glow: 'rgba(192, 132, 252, 0.5)',
+  text: '#E9D5FF',         // Purple-200
+  textLight: '#F3E8FF',    // Purple-100
+  bg: 'rgba(192, 132, 252, 0.1)',
+  gem: '#C084FC',
 }

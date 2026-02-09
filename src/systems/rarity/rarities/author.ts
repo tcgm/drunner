@@ -8,9 +8,9 @@ export const AUTHOR: RarityConfig = {
   backgroundColor: '#000000',
   statMultiplierBase: 30.0,
   minFloor: 100,
-  glow: 'rgba(255, 255, 255, 0.9)',
+  glow: 'rgba(255, 255, 255, 0.8)',
   text: '#FFFFFF',
   textLight: '#FFFFFF',
-  bg: 'rgba(255, 255, 255, 0.1)',
-  gem: '#F3F4F6',
+  bg: 'rgba(255, 255, 255, 0.15)',
+  gem: '#F9FAFB',
 }

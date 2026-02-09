@@ -383,14 +383,29 @@ button:focus-visible {
 }
 
 /* Corner borders by rarity */
-.item-detail-modal--junk .item-detail-modal__corner { border-color: #4A5568; }
-.item-detail-modal--common .item-detail-modal__corner { border-color: #22C55E; }
-.item-detail-modal--uncommon .item-detail-modal__corner { border-color: #3B82F6; }
-.item-detail-modal--rare .item-detail-modal__corner { border-color: #A855F7; }
-.item-detail-modal--epic .item-detail-modal__corner { border-color: #EC4899; }
-.item-detail-modal--legendary .item-detail-modal__corner { border-color: #F97316; }
-.item-detail-modal--mythic .item-detail-modal__corner { border-color: #EF4444; }
-.item-detail-modal--artifact .item-detail-modal__corner { border-color: #EAB308; }
+.item-detail-modal--junk .item-detail-modal__corner { border-color: #D1D5DB; }
+.item-detail-modal--abundant .item-detail-modal__corner { border-color: #115E59; }
+.item-detail-modal--common .item-detail-modal__corner { border-color: #BEF264; }
+.item-detail-modal--uncommon .item-detail-modal__corner { border-color: #1E40AF; }
+.item-detail-modal--rare .item-detail-modal__corner { border-color: #E9D5FF; }
+.item-detail-modal--veryRare .item-detail-modal__corner { border-color: #701A75; }
+.item-detail-modal--magical .item-detail-modal__corner { border-color: #A5F3FC; }
+.item-detail-modal--elite .item-detail-modal__corner { border-color: #881337; }
+.item-detail-modal--epic .item-detail-modal__corner { border-color: #FBCFE8; }
+.item-detail-modal--legendary .item-detail-modal__corner { border-color: #7C2D12; }
+.item-detail-modal--mythic .item-detail-modal__corner { border-color: #FEF9C3; }
+.item-detail-modal--mythicc .item-detail-modal__corner { border-color: #7F1D1D; }
+.item-detail-modal--artifact .item-detail-modal__corner { border-color: #FDE68A; }
+.item-detail-modal--divine .item-detail-modal__corner { border-color: #064E3B; }
+.item-detail-modal--celestial .item-detail-modal__corner { border-color: #BAE6FD; }
+.item-detail-modal--realityAnchor .item-detail-modal__corner { border-color: #312E81; }
+.item-detail-modal--structural .item-detail-modal__corner { border-color: #DDD6FE; }
+.item-detail-modal--singularity .item-detail-modal__corner { border-color: #4C1D95; }
+.item-detail-modal--void .item-detail-modal__corner { border-color: #D9F99D; }
+.item-detail-modal--elder .item-detail-modal__corner { border-color: #0F172A; }
+.item-detail-modal--layer .item-detail-modal__corner { border-color: #FDA4AF; }
+.item-detail-modal--plane .item-detail-modal__corner { border-color: #134E4A; }
+.item-detail-modal--author .item-detail-modal__corner { border-color: #FFFFFF; }
 .item-detail-modal--set .item-detail-modal__corner { border-color: #14B8A6; }
 .item-detail-modal--unique .item-detail-modal__corner { border-color: #FFD700; }
 
