@@ -12,5 +12,5 @@ export const UNCOMMON: RarityConfig = {
   text: '#3B82F6',         // Blue-500
   textLight: '#60A5FA',    // Blue-400
   bg: 'rgba(30, 58, 138, 0.1)',
-  gem: '#1E3A8A',
+  gem: '#83B9FB',          // HSL(213°, 94%, 75%) - bright blue
 }

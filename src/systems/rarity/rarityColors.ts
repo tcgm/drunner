@@ -49,7 +49,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#D1D5DB',         // Gray-300
     textLight: '#E5E7EB',    // Gray-200
     bg: 'rgba(156, 163, 175, 0.1)',
-    gem: '#9CA3AF',
+    gem: '#8FB3EF',          // HSL(218°, 75%, 75%) - bright blue-gray
     border: '#9CA3AF',
   },
 
@@ -61,7 +61,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#22C55E',         // Green-500
     textLight: '#4ADE80',    // Green-400
     bg: 'rgba(20, 83, 45, 0.1)',
-    gem: '#14532D',
+    gem: '#8FEFB3',          // HSL(142°, 75%, 75%) - bright green
     border: '#14532D',
   },
 
@@ -73,7 +73,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#BBF7D0',         // Green-200
     textLight: '#DCFCE7',    // Green-100
     bg: 'rgba(134, 239, 172, 0.1)',
-    gem: '#86EFAC',
+    gem: '#8EF0B2',          // HSL(142°, 77%, 75%) - bright green
     border: '#86EFAC',
   },
 
@@ -85,7 +85,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#3B82F6',         // Blue-500
     textLight: '#60A5FA',    // Blue-400
     bg: 'rgba(30, 58, 138, 0.1)',
-    gem: '#1E3A8A',
+    gem: '#83B9FB',          // HSL(213°, 94%, 75%) - bright blue
     border: '#1E3A8A',
   },
 
@@ -109,7 +109,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#A855F7',         // Purple-500
     textLight: '#C084FC',    // Purple-400
     bg: 'rgba(88, 28, 135, 0.1)',
-    gem: '#581C87',
+    gem: '#C185F9',          // HSL(271°, 91%, 75%) - bright purple
     border: '#581C87',
   },
 
@@ -133,7 +133,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#E11D48',         // Rose-600
     textLight: '#F43F5E',    // Rose-500
     bg: 'rgba(136, 19, 55, 0.1)',
-    gem: '#881337',
+    gem: '#FC8395',          // HSL(351°, 95%, 75%) - bright rose
     border: '#881337',
   },
 
@@ -157,7 +157,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#F59E0B',         // Amber-500
     textLight: '#FBBF24',    // Amber-400
     bg: 'rgba(146, 64, 14, 0.1)',
-    gem: '#92400E',
+    gem: '#FCDA82',          // HSL(43°, 96%, 75%) - bright amber
     border: '#92400E',
   },
 
@@ -181,7 +181,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#DC2626',         // Red-600
     textLight: '#EF4444',    // Red-500
     bg: 'rgba(127, 29, 29, 0.1)',
-    gem: '#7F1D1D',
+    gem: '#F98585',          // HSL(0°, 91%, 75%) - bright red
     border: '#7F1D1D',
   },
 
@@ -205,7 +205,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#06B6D4',         // Cyan-500
     textLight: '#22D3EE',    // Cyan-400
     bg: 'rgba(14, 116, 144, 0.1)',
-    gem: '#0E7490',
+    gem: '#88E7F6',          // HSL(188°, 86%, 75%) - bright cyan
     border: '#0E7490',
   },
 
@@ -229,7 +229,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#6366F1',         // Indigo-500
     textLight: '#818CF8',    // Indigo-400
     bg: 'rgba(49, 46, 129, 0.1)',
-    gem: '#312E81',
+    gem: '#8792F8',          // HSL(234°, 89%, 75%) - bright indigo
     border: '#312E81',
   },
 
@@ -253,7 +253,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#7C3AED',         // Violet-600
     textLight: '#8B5CF6',    // Violet-500
     bg: 'rgba(76, 29, 149, 0.1)',
-    gem: '#4C1D95',
+    gem: '#A78BFA',          // Violet-400 (bright)
     border: '#4C1D95',
   },
 
@@ -265,7 +265,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#E5E7EB',         // Gray-200
     textLight: '#F3F4F6',    // Gray-100
     bg: 'rgba(209, 213, 219, 0.1)',
-    gem: '#D1D5DB',
+    gem: '#B8D0F5',          // HSL(216°, 75%, 84%) - bright blue-gray
     border: '#D1D5DB',
   },
 
@@ -277,7 +277,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#DC2626',         // Red-600
     textLight: '#EF4444',    // Red-500
     bg: 'rgba(127, 29, 29, 0.1)',
-    gem: '#7F1D1D',
+    gem: '#F98585',          // HSL(0°, 91%, 75%) - bright red
     border: '#7F1D1D',
   },
 
@@ -289,7 +289,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#FEF08A',         // Yellow-200
     textLight: '#FEF9C3',    // Yellow-100
     bg: 'rgba(253, 224, 71, 0.1)',
-    gem: '#FDE047',
+    gem: '#FEE981',          // HSL(50°, 98%, 75%) - bright yellow
     border: '#FDE047',
   },
 
@@ -301,7 +301,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#0EA5E9',         // Sky-500
     textLight: '#38BDF8',    // Sky-400
     bg: 'rgba(12, 74, 110, 0.1)',
-    gem: '#0C4A6E',
+    gem: '#84D7FB',          // HSL(198°, 93%, 75%) - bright sky blue
     border: '#0C4A6E',
   },
 
@@ -313,7 +313,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#FFFFFF',         // White
     textLight: '#FFFFFF',    // White
     bg: 'rgba(255, 255, 255, 0.15)',
-    gem: '#F9FAFB',          // Gray-50
+    gem: '#F6FAFE',          // HSL(210°, 75%, 98%) - bright white-blue
     border: '#FFFFFF',
   },
 
@@ -325,7 +325,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#5EEAD4',         // Teal-300
     textLight: '#CCFBF1',    // Teal-100
     bg: 'rgba(20, 184, 166, 0.1)',
-    gem: '#14B8A6',
+    gem: '#8CF2E6',          // HSL(173°, 80%, 75%) - bright teal
     border: '#14B8A6',
   },
 
@@ -337,7 +337,7 @@ export const RARITY_COLORS: Record<string, RarityColorScheme> = {
     text: '#6B7280',         // Gray-500
     textLight: '#9CA3AF',    // Gray-400
     bg: 'rgba(75, 85, 99, 0.1)',
-    gem: '#4B5563',
+    gem: '#8FB7EF',          // HSL(215°, 75%, 75%) - bright blue-gray
     border: '#4B5563',
   },
 }

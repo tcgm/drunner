@@ -12,5 +12,5 @@ export const MYTHICC: RarityConfig = {
   text: '#DC2626',
   textLight: '#EF4444',
   bg: 'rgba(127, 29, 29, 0.1)',
-  gem: '#7F1D1D',
+  gem: '#F98585',          // HSL(0°, 91%, 75%) - bright red
 }

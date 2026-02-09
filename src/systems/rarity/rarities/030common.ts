@@ -12,5 +12,5 @@ export const COMMON: RarityConfig = {
   text: '#BBF7D0',         // Green-200
   textLight: '#DCFCE7',    // Green-100
   bg: 'rgba(134, 239, 172, 0.1)',
-  gem: '#86EFAC',
+  gem: '#8EF0B2',          // HSL(142°, 77%, 75%) - bright green
 }

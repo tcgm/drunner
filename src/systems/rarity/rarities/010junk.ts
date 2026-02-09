@@ -12,5 +12,5 @@ export const JUNK: RarityConfig = {
   text: '#D1D5DB',         // Gray-300
   textLight: '#E5E7EB',    // Gray-200
   bg: 'rgba(156, 163, 175, 0.1)',
-  gem: '#9CA3AF',
+  gem: '#8FB3EF',          // HSL(218°, 75%, 75%) - bright blue-gray
 }

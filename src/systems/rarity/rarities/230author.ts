@@ -12,5 +12,5 @@ export const AUTHOR: RarityConfig = {
   text: '#FFFFFF',
   textLight: '#FFFFFF',
   bg: 'rgba(255, 255, 255, 0.15)',
-  gem: '#F9FAFB',
+  gem: '#F6FAFE',          // HSL(210°, 75%, 98%) - bright white-blue
 }

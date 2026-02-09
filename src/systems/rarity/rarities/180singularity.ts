@@ -12,5 +12,5 @@ export const SINGULARITY: RarityConfig = {
   text: '#7C3AED',
   textLight: '#8B5CF6',
   bg: 'rgba(76, 29, 149, 0.1)',
-  gem: '#4C1D95',
+  gem: '#A78BFA',          // Violet-400 (bright)
 }

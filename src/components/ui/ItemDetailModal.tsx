@@ -28,6 +28,7 @@ import { MultIcon } from '@/components/ui/MultIcon'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { dehydrateItem } from '@/utils/itemHydration'
 import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/rarityColors'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -56,207 +57,37 @@ const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
   author: GameIcons.GiQuillInk,
 }
 
-const RARITY_COLORS = {
-  junk: {
-    border: '#4A5568',
-    glow: 'rgba(74, 85, 104, 0.5)',
-    text: '#9CA3AF',
-    textLight: '#D1D5DB',
-    bg: 'rgba(74, 85, 104, 0.2)',
-    gem: '#6B7280'
-  },
-  abundant: {
-    border: '#10B981',
-    glow: 'rgba(16, 185, 129, 0.6)',
-    text: '#34D399',
-    textLight: '#D1FAE5',
-    bg: 'rgba(16, 185, 129, 0.1)',
-    gem: '#10B981'
-  },
-  common: {
-    border: '#22C55E',
-    glow: 'rgba(34, 197, 94, 0.6)',
-    text: '#4ADE80',
-    textLight: '#BBF7D0',
-    bg: 'rgba(34, 197, 94, 0.1)',
-    gem: '#22C55E'
-  },
-  uncommon: {
-    border: '#3B82F6',
-    glow: 'rgba(59, 130, 246, 0.6)',
-    text: '#60A5FA',
-    textLight: '#DBEAFE',
-    bg: 'rgba(59, 130, 246, 0.1)',
-    gem: '#3B82F6'
-  },
-  rare: {
-    border: '#A855F7',
-    glow: 'rgba(168, 85, 247, 0.6)',
-    text: '#C084FC',
-    textLight: '#E9D5FF',
-    bg: 'rgba(168, 85, 247, 0.1)',
-    gem: '#A855F7'
-  },
-  veryRare: {
-    border: '#D946EF',
-    glow: 'rgba(217, 70, 239, 0.6)',
-    text: '#E879F9',
-    textLight: '#FAE8FF',
-    bg: 'rgba(217, 70, 239, 0.1)',
-    gem: '#D946EF'
-  },
-  magical: {
-    border: '#8B5CF6',
-    glow: 'rgba(139, 92, 246, 0.6)',
-    text: '#A78BFA',
-    textLight: '#EDE9FE',
-    bg: 'rgba(139, 92, 246, 0.1)',
-    gem: '#8B5CF6'
-  },
-  elite: {
-    border: '#DB2777',
-    glow: 'rgba(219, 39, 119, 0.6)',
-    text: '#F472B6',
-    textLight: '#FCE7F3',
-    bg: 'rgba(219, 39, 119, 0.1)',
-    gem: '#DB2777'
-  },
-  epic: {
-    border: '#EC4899',
-    glow: 'rgba(236, 72, 153, 0.6)',
-    text: '#F472B6',
-    textLight: '#FCE7F3',
-    bg: 'rgba(236, 72, 153, 0.1)',
-    gem: '#EC4899'
-  },
-  legendary: {
-    border: '#F97316',
-    glow: 'rgba(249, 115, 22, 0.7)',
-    text: '#FB923C',
-    textLight: '#FED7AA',
-    bg: 'rgba(249, 115, 22, 0.1)',
-    gem: '#F97316'
-  },
-  mythic: {
-    border: '#EF4444',
-    glow: 'rgba(239, 68, 68, 0.7)',
-    text: '#F87171',
-    textLight: '#FEE2E2',
-    bg: 'rgba(239, 68, 68, 0.1)',
-    gem: '#EF4444'
-  },
-  mythicc: {
-    border: '#DC2626',
-    glow: 'rgba(220, 38, 38, 0.8)',
-    text: '#EF4444',
-    textLight: '#FEE2E2',
-    bg: 'rgba(220, 38, 38, 0.15)',
-    gem: '#DC2626'
-  },
-  artifact: {
-    border: '#EAB308',
-    glow: 'rgba(234, 179, 8, 0.7)',
-    text: '#FACC15',
-    textLight: '#FEF3C7',
-    bg: 'rgba(234, 179, 8, 0.1)',
-    gem: '#EAB308'
-  },
-  divine: {
-    border: '#FBBF24',
-    glow: 'rgba(251, 191, 36, 0.8)',
-    text: '#FCD34D',
-    textLight: '#FEF3C7',
-    bg: 'rgba(251, 191, 36, 0.15)',
-    gem: '#FBBF24'
-  },
-  celestial: {
-    border: '#06B6D4',
-    glow: 'rgba(6, 182, 212, 0.8)',
-    text: '#22D3EE',
-    textLight: '#CFFAFE',
-    bg: 'rgba(6, 182, 212, 0.15)',
-    gem: '#06B6D4'
-  },
-  realityAnchor: {
-    border: '#0EA5E9',
-    glow: 'rgba(14, 165, 233, 0.8)',
-    text: '#38BDF8',
-    textLight: '#E0F2FE',
-    bg: 'rgba(14, 165, 233, 0.15)',
-    gem: '#0EA5E9'
-  },
-  structural: {
-    border: '#6366F1',
-    glow: 'rgba(99, 102, 241, 0.8)',
-    text: '#818CF8',
-    textLight: '#E0E7FF',
-    bg: 'rgba(99, 102, 241, 0.15)',
-    gem: '#6366F1'
-  },
-  singularity: {
-    border: '#8B5CF6',
-    glow: 'rgba(139, 92, 246, 0.8)',
-    text: '#A78BFA',
-    textLight: '#EDE9FE',
-    bg: 'rgba(139, 92, 246, 0.15)',
-    gem: '#8B5CF6'
-  },
-  void: {
-    border: '#1F2937',
-    glow: 'rgba(31, 41, 55, 0.9)',
-    text: '#6B7280',
-    textLight: '#D1D5DB',
-    bg: 'rgba(31, 41, 55, 0.3)',
-    gem: '#374151'
-  },
-  elder: {
-    border: '#4C1D95',
-    glow: 'rgba(76, 29, 149, 0.9)',
-    text: '#7C3AED',
-    textLight: '#DDD6FE',
-    bg: 'rgba(76, 29, 149, 0.2)',
-    gem: '#5B21B6'
-  },
-  layer: {
-    border: '#BE185D',
-    glow: 'rgba(190, 24, 93, 0.9)',
-    text: '#EC4899',
-    textLight: '#FBCFE8',
-    bg: 'rgba(190, 24, 93, 0.2)',
-    gem: '#9F1239'
-  },
-  plane: {
-    border: '#BE123C',
-    glow: 'rgba(190, 18, 60, 0.9)',
-    text: '#F43F5E',
-    textLight: '#FFE4E6',
-    bg: 'rgba(190, 18, 60, 0.2)',
-    gem: '#9F1239'
-  },
-  author: {
-    border: '#FFFFFF',
-    glow: 'rgba(255, 255, 255, 0.9)',
-    text: '#FFFFFF',
-    textLight: '#FFFFFF',
-    bg: 'rgba(255, 255, 255, 0.1)',
-    gem: '#F3F4F6'
-  },
-  cursed: {
-    border: '#7C3AED',
-    glow: 'rgba(124, 58, 237, 0.6)',
-    text: '#A78BFA',
-    textLight: '#EDE9FE',
-    bg: 'rgba(124, 58, 237, 0.1)',
-    gem: '#7C3AED'
-  },
-  set: {
-    border: '#14B8A6',
-    glow: 'rgba(20, 184, 166, 0.6)',
-    text: '#5EEAD4',
-    textLight: '#CCFBF1',
-    bg: 'rgba(20, 184, 166, 0.1)',
-    gem: '#14B8A6'
-  }
+// Use centralized rarity colors with adapted format for this modal
+const RARITY_COLORS = Object.fromEntries(
+  Object.entries(CENTRALIZED_RARITY_COLORS).map(([key, value]) => [
+    key,
+    {
+      border: value.border,
+      glow: value.glow,
+      text: value.text,
+      textLight: value.textLight,
+      bg: value.bg,
+      gem: value.gem
+    }
+  ])
+) as Record<string, {border: string, glow: string, text: string, textLight: string, bg: string, gem: string}>
+
+// Add special colors for cursed and set items
+RARITY_COLORS.cursed = {
+  border: '#7C3AED',
+  glow: 'rgba(124, 58, 237, 0.6)',
+  text: '#A78BFA',
+  textLight: '#EDE9FE',
+  bg: 'rgba(124, 58, 237, 0.1)',
+  gem: '#7C3AED'
+}
+RARITY_COLORS.set = {
+  border: '#14B8A6',
+  glow: 'rgba(20, 184, 166, 0.6)',
+  text: '#5EEAD4',
+  textLight: '#CCFBF1',
+  bg: 'rgba(20, 184, 166, 0.1)',
+  gem: '#14B8A6'
 }
 
 // Optimized animations - use transform and opacity only for performance

@@ -23,6 +23,7 @@ import { getModifierById } from '@/data/items/mods'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { resolveItemData } from '@/utils/itemDataResolver'
 import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/rarityColors'
 
 const MotionBox = motion.create(Box)
 
@@ -66,63 +67,23 @@ interface ItemSlotProps {
   stopPropagation?: boolean // Whether to stop event propagation (default: true)
 }
 
-// Keep rarity colors for dynamic effects that need JavaScript
-const RARITY_GLOW_COLORS: Record<string, string> = {
-  junk: 'rgba(209, 213, 219, 0.4)',
-  abundant: 'rgba(17, 94, 89, 0.5)',
-  common: 'rgba(190, 242, 100, 0.5)',
-  uncommon: 'rgba(30, 64, 175, 0.5)',
-  rare: 'rgba(233, 213, 255, 0.5)',
-  veryRare: 'rgba(112, 26, 117, 0.5)',
-  magical: 'rgba(165, 243, 252, 0.5)',
-  elite: 'rgba(136, 19, 55, 0.5)',
-  epic: 'rgba(251, 207, 232, 0.5)',
-  legendary: 'rgba(124, 45, 18, 0.5)',
-  mythic: 'rgba(254, 249, 195, 0.6)',
-  mythicc: 'rgba(127, 29, 29, 0.5)',
-  artifact: 'rgba(253, 230, 138, 0.6)',
-  divine: 'rgba(6, 78, 59, 0.6)',
-  celestial: 'rgba(186, 230, 253, 0.6)',
-  realityAnchor: 'rgba(49, 46, 129, 0.6)',
-  structural: 'rgba(221, 214, 254, 0.6)',
-  singularity: 'rgba(76, 29, 149, 0.6)',
-  void: 'rgba(217, 249, 157, 0.5)',
-  elder: 'rgba(15, 23, 42, 0.6)',
-  layer: 'rgba(253, 164, 175, 0.6)',
-  plane: 'rgba(19, 78, 74, 0.6)',
-  author: 'rgba(255, 255, 255, 0.8)',
-  cursed: 'rgba(75, 85, 99, 0.4)',
-  set: 'rgba(20, 184, 166, 0.5)',
-}
+// Create lookup objects from centralized rarity colors
+const RARITY_GLOW_COLORS: Record<string, string> = Object.fromEntries(
+  Object.entries(CENTRALIZED_RARITY_COLORS).map(([key, value]) => [key, value.glow])
+)
 
-// Keep text and bg colors for tooltips and dynamic content
-const RARITY_COLORS: Record<string, { text: string; bg: string; gem: string }> = {
-  junk: { text: '#E5E7EB', bg: '#1F2937', gem: '#D1D5DB' },
-  abundant: { text: '#14B8A6', bg: '#042F2E', gem: '#115E59' },
-  common: { text: '#D9F99D', bg: '#1A2E05', gem: '#BEF264' },
-  uncommon: { text: '#3B82F6', bg: '#1E3A8A', gem: '#1E40AF' },
-  rare: { text: '#F3E8FF', bg: '#581C87', gem: '#E9D5FF' },
-  veryRare: { text: '#C026D3', bg: '#4A044E', gem: '#701A75' },
-  magical: { text: '#CFFAFE', bg: '#164E63', gem: '#A5F3FC' },
-  elite: { text: '#E11D48', bg: '#4C0519', gem: '#881337' },
-  epic: { text: '#FCE7F3', bg: '#831843', gem: '#FBCFE8' },
-  legendary: { text: '#EA580C', bg: '#431407', gem: '#7C2D12' },
-  mythic: { text: '#FEFCE8', bg: '#713F12', gem: '#FEF9C3' },
-  mythicc: { text: '#DC2626', bg: '#450A0A', gem: '#7F1D1D' },
-  artifact: { text: '#FEF3C7', bg: '#78350F', gem: '#FDE68A' },
-  divine: { text: '#10B981', bg: '#022C22', gem: '#064E3B' },
-  celestial: { text: '#E0F2FE', bg: '#0C4A6E', gem: '#BAE6FD' },
-  realityAnchor: { text: '#6366F1', bg: '#1E1B4B', gem: '#312E81' },
-  structural: { text: '#EDE9FE', bg: '#2E1065', gem: '#DDD6FE' },
-  singularity: { text: '#7C3AED', bg: '#2E1065', gem: '#4C1D95' },
-  void: { text: '#ECFCCB', bg: '#1A2E05', gem: '#D9F99D' },
-  elder: { text: '#334155', bg: '#000000', gem: '#0F172A' },
-  layer: { text: '#FECDD3', bg: '#4C0519', gem: '#FDA4AF' },
-  plane: { text: '#14B8A6', bg: '#042F2E', gem: '#134E4A' },
-  author: { text: '#FFFFFF', bg: '#000000', gem: '#F9FAFB' },
-  cursed: { text: '#6B7280', bg: '#111827', gem: '#4B5563' },
-  set: { text: '#5EEAD4', bg: '#134E4A', gem: '#14B8A6' },
-}
+const RARITY_COLORS: Record<string, { text: string; bg: string; gem: string }> = Object.fromEntries(
+  Object.entries(CENTRALIZED_RARITY_COLORS).map(([key, value]) => [
+    key,
+    { text: value.text, bg: value.backgroundColor, gem: value.gem }
+  ])
+)
+
+// Special colors for cursed and set items (not in main rarity system)
+RARITY_GLOW_COLORS.cursed = 'rgba(75, 85, 99, 0.4)'
+RARITY_GLOW_COLORS.set = 'rgba(20, 184, 166, 0.5)'
+RARITY_COLORS.cursed = { text: '#6B7280', bg: '#111827', gem: '#4B5563' }
+RARITY_COLORS.set = { text: '#5EEAD4', bg: '#134E4A', gem: '#14B8A6' }
 
 export const ItemSlot = memo(function ItemSlot({
   item,
@@ -608,7 +569,7 @@ export const ItemSlot = memo(function ItemSlot({
                 : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
               }
               fontSize={iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')}
-              color="white"
+              color={item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.gem || '#6B7280'}
               mb={iconOnly ? 0 : 0.5}
             />
           </motion.div>

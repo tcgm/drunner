@@ -12,5 +12,5 @@ export const DIVINE: RarityConfig = {
   text: '#06B6D4',         // Cyan-500
   textLight: '#22D3EE',    // Cyan-400
   bg: 'rgba(14, 116, 144, 0.1)',
-  gem: '#0E7490',
+  gem: '#88E7F6',          // HSL(188°, 86%, 75%) - bright cyan
 }

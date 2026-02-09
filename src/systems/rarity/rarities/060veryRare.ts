@@ -12,5 +12,5 @@ export const VERY_RARE: RarityConfig = {
   text: '#A855F7',         // Purple-500
   textLight: '#C084FC',    // Purple-400
   bg: 'rgba(88, 28, 135, 0.1)',
-  gem: '#581C87',
+  gem: '#C185F9',          // HSL(271°, 91%, 75%) - bright purple
 }
