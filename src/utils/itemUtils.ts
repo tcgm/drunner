@@ -43,19 +43,33 @@ export function restoreItemIcon(item: Item): Item {
     }
   }
 
-  // Check if it's a unique item
-  if (itemWithCleanup.isUnique) {
+  // Check if it's a unique item (by flag)
+  if (itemWithCleanup.isUnique && !itemWithCleanup.setId) {
     const template = ALL_UNIQUE_ITEMS.find(t => t.name === itemWithCleanup.name)
     if (template?.icon) {
       return { ...itemWithCleanup, icon: template.icon }
     }
   }
 
-  // Check if it's a set item
+  // Check if it's a set item (by flag)
   if (itemWithCleanup.setId) {
     const template = ALL_SET_ITEMS.find(t => t.name === itemWithCleanup.name)
     if (template?.icon) {
       return { ...itemWithCleanup, icon: template.icon }
+    }
+  }
+
+  // Fallback: Try to match by name against uniques (for items missing isUnique flag)
+  if (!itemWithCleanup.isUnique && !itemWithCleanup.setId) {
+    const uniqueTemplate = ALL_UNIQUE_ITEMS.find(t => t.name === itemWithCleanup.name)
+    if (uniqueTemplate?.icon) {
+      return { ...itemWithCleanup, icon: uniqueTemplate.icon }
+    }
+
+    // Fallback: Try to match by name against sets (for items missing setId)
+    const setTemplate = ALL_SET_ITEMS.find(t => t.name === itemWithCleanup.name)
+    if (setTemplate?.icon) {
+      return { ...itemWithCleanup, icon: setTemplate.icon }
     }
   }
 

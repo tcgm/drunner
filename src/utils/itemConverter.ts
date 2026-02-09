@@ -85,7 +85,7 @@ export function convertToV3(itemV2: ItemV2): ItemV3 | null {
     }
 
     try {
-        // Check if it's a unique item
+        // Check if it's a unique item (by flag)
         if (itemV2.isUnique && !itemV2.setId) {
             return convertUniqueToV3(itemV2)
         }
@@ -98,6 +98,22 @@ export function convertToV3(itemV2: ItemV2): ItemV3 | null {
         // Check if it's a consumable
         if (itemV2.type === 'consumable') {
             return convertConsumableToV3(itemV2 as unknown as Consumable)
+        }
+
+        // Check if it's a unique item (by name lookup - fallback for items missing isUnique flag)
+        const templateId = itemV2.name.toUpperCase().replace(/['\s]/g, '_')
+        const uniqueTemplate = ALL_UNIQUE_ITEMS.find(t => {
+            const constantName = t.name.toUpperCase().replace(/['\s]/g, '_')
+            return templateId === constantName || itemV2.name === t.name
+        })
+        if (uniqueTemplate) {
+            return convertUniqueToV3(itemV2)
+        }
+
+        // Check if it's a set item (by name lookup - fallback for items missing setId)
+        const setId = getSetIdFromItemName(itemV2.name)
+        if (setId) {
+            return convertSetToV3(itemV2)
         }
 
         // Otherwise, it's a procedural item
@@ -252,11 +268,9 @@ function convertSetToV3(item: ItemV2): SetItemV3 | null {
 
     const templateId = template.name.toUpperCase().replace(/['\s]/g, '_')
 
-    // Check if it was rolled as unique (boosted stats)
-    // This is difficult to detect perfectly, but we can try:
-    // - If stats are significantly higher than base template
-    // - Or if rarity is legendary/mythic
-    const isUniqueRoll = item.rarity === 'legendary' || item.rarity === 'mythic'
+    // Check if it was rolled as unique using the isUnique flag
+    // Unique sets have both isUnique=true and setId defined
+    const isUniqueRoll = !!item.isUnique
 
     const v3Item: SetItemV3 = {
         version: 3,

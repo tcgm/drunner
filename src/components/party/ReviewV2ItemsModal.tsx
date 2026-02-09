@@ -4,6 +4,8 @@ import { ItemSlot } from '../ui/ItemSlot'
 import type { Item } from '@/types'
 import { ALL_MATERIALS } from '@/data/items/materials'
 import { getBasesByType } from '@/data/items/bases'
+import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
+import { getSetIdFromItemName } from '@/data/items/sets'
 import { useState, useEffect, useMemo } from 'react'
 
 export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
@@ -159,11 +161,32 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
     const currentIndex = 0
     const totalItems = v2Items.length
 
-    // Check if this is a consumable or unique that can be auto-converted
+    // Check if this is a consumable, unique, or set that can be auto-converted
     const isConsumable = currentItem.type === 'consumable' || 'consumableType' in currentItem
-    const isUnique = currentItem.isUnique && !currentItem.setId
-    const isSet = !!currentItem.setId
-    const canAutoConvert = isConsumable || isUnique || isSet
+    
+    // Check if unique by flag
+    let isUnique = currentItem.isUnique && !currentItem.setId
+    let isSet = !!currentItem.setId && !currentItem.isUnique
+    let isUniqueSet = !!currentItem.setId && !!currentItem.isUnique
+    
+    // Fallback: Check if unique/set by name lookup (for items missing flags)
+    if (!isUnique && !isSet && !isUniqueSet && !isConsumable) {
+        const templateId = currentItem.name.toUpperCase().replace(/['\s]/g, '_')
+        const uniqueTemplate = ALL_UNIQUE_ITEMS.find(t => {
+            const constantName = t.name.toUpperCase().replace(/['\s]/g, '_')
+            return templateId === constantName || currentItem.name === t.name
+        })
+        if (uniqueTemplate) {
+            isUnique = true
+        } else {
+            const setId = getSetIdFromItemName(currentItem.name)
+            if (setId) {
+                isSet = true
+            }
+        }
+    }
+    
+    const canAutoConvert = isConsumable || isUnique || isSet || isUniqueSet
 
     // Button is disabled only for procedural items without valid selections
     const isConvertDisabled = !canAutoConvert && (!isValidMaterial || !isValidBase)
@@ -200,9 +223,28 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
         for (const item of v2Items) {
             // Check if this is a consumable, unique, or set that can be auto-converted
             const isConsumable = item.type === 'consumable' || 'consumableType' in item
-            const isUnique = item.isUnique && !item.setId
-            const isSet = !!item.setId
-            const canAutoConvert = isConsumable || isUnique || isSet
+            let isUnique = item.isUnique && !item.setId
+            let isSet = !!item.setId && !item.isUnique
+            let isUniqueSet = !!item.setId && !!item.isUnique
+            
+            // Fallback: Check if unique/set by name lookup (for items missing flags)
+            if (!isUnique && !isSet && !isUniqueSet && !isConsumable) {
+                const templateId = item.name.toUpperCase().replace(/['\s]/g, '_')
+                const uniqueTemplate = ALL_UNIQUE_ITEMS.find(t => {
+                    const constantName = t.name.toUpperCase().replace(/['\s]/g, '_')
+                    return templateId === constantName || item.name === t.name
+                })
+                if (uniqueTemplate) {
+                    isUnique = true
+                } else {
+                    const setId = getSetIdFromItemName(item.name)
+                    if (setId) {
+                        isSet = true
+                    }
+                }
+            }
+            
+            const canAutoConvert = isConsumable || isUnique || isSet || isUniqueSet
 
             if (canAutoConvert) {
                 // Auto-convertible items
@@ -292,6 +334,7 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
                                         {isConsumable && ' • Consumable'}
                                         {isUnique && ' • Unique'}
                                         {isSet && ' • Set Item'}
+                                        {isUniqueSet && ' • Unique Set'}
                                     </Text>
                                 </VStack>
                             </HStack>
