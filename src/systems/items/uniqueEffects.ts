@@ -169,7 +169,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       
       return {
         party,
-        message: null,
+        message: undefined,
         additionalEffects: [{
           type: 'damage' as const,
           target: affectedHeroes,
@@ -336,4 +336,41 @@ export function getEquippedUniqueItems(
   }
   
   return equipped
+}
+
+/**
+ * Get the unique effect definition for a specific item (for display purposes)
+ * Returns null if the item has no unique effect
+ * 
+ * Priority order (same as processUniqueEffects):
+ * 1. item.uniqueEffect (defined inline in item definition)
+ * 2. UNIQUE_ITEM_EFFECTS[item.name] (centralized by item name)
+ * 3. UNIQUE_SET_EFFECTS[item.setId] (set-wide effect for unique-rolled set pieces)
+ */
+export function getUniqueEffectForItem(
+  item: Item | null | undefined
+): UniqueEffectDefinition | null {
+  // Safety checks
+  if (!item) return null
+  if ('consumableType' in item) return null
+  
+  const itemData = item as Item & { uniqueEffect?: UniqueEffectDefinition }
+  
+  // Priority 1: Check for item-specific uniqueEffect defined in the item file
+  // Skip if handler is not a function (corrupted by save/load serialization)
+  if (itemData.uniqueEffect && typeof itemData.uniqueEffect.handler === 'function') {
+    return itemData.uniqueEffect
+  }
+  
+  // Priority 2: Check for individual item effect by exact name in UNIQUE_ITEM_EFFECTS
+  if (itemData.name && UNIQUE_ITEM_EFFECTS[itemData.name]) {
+    return UNIQUE_ITEM_EFFECTS[itemData.name]
+  }
+  
+  // Priority 3: If item is a unique-rolled set piece, check set-wide effects
+  if (itemData.isUnique && itemData.setId && UNIQUE_SET_EFFECTS[itemData.setId]) {
+    return UNIQUE_SET_EFFECTS[itemData.setId]
+  }
+  
+  return null
 }

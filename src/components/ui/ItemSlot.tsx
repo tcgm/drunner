@@ -20,6 +20,7 @@ import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { resolveItemData } from '@/utils/itemDataResolver'
+import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
 
 const MotionBox = motion.create(Box)
 
@@ -137,6 +138,9 @@ export const ItemSlot = memo(function ItemSlot({
 
   // Detect set membership
   const setName = useMemo(() => getItemSetName(item.name), [item.name])
+
+  // Get unique effect if this item has one
+  const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
 
   // Memoize tooltip content to avoid recreation on every render
   const tooltipContent = useMemo(() => (
@@ -260,11 +264,32 @@ export const ItemSlot = memo(function ItemSlot({
           )}
         </>
       )}
+      {item.isUnique && uniqueEffect && (
+        <Box
+          w="full"
+          mt={1}
+          p={1}
+          bg="rgba(255, 215, 0, 0.15)"
+          borderRadius="md"
+          borderWidth="1px"
+          borderColor="#FFD700"
+        >
+          <HStack spacing={1} w="full" mb={0.5}>
+            <Icon as={GiSparkles} color="#FFD700" boxSize="12px" />
+            <Text fontSize="2xs" color="#FFD700" fontWeight="bold">
+              Unique Effect
+            </Text>
+          </HStack>
+          <Text fontSize="2xs" color="#FFF8DC">
+            {uniqueEffect.description}
+          </Text>
+        </Box>
+      )}
       <Text fontSize="2xs" color="yellow.300">
         Value: {item.value} gold
       </Text>
     </VStack>
-  ), [item, setName, comparisonItem, displayName, isCursed])
+  ), [item, setName, comparisonItem, displayName, isCursed, uniqueEffect])
 
   // Build className string
   const slotClassName = [

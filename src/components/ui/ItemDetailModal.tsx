@@ -27,6 +27,7 @@ import { getItemSetName, ALL_SETS } from '@/data/items/sets'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { dehydrateItem } from '@/utils/itemHydration'
+import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
@@ -326,6 +327,9 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
   const setName = getItemSetName(displayName)
   const setDefinition = setName ? ALL_SETS.find(s => s.name === setName) : null
 
+  // Get unique effect if this item has one
+  const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
+
   // Use set theme if item is part of a set
   const effectiveTheme = setName ? RARITY_COLORS.set : rarityTheme
   const borderColor = item.isUnique ? '#FFD700' : effectiveTheme.border
@@ -572,6 +576,62 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                           </Text>
                         </Box>
                       ))}
+                  </VStack>
+                </VStack>
+              </Box>
+            )}
+
+            {/* Unique Effects */}
+            {restoredItem.isUnique && uniqueEffect && (
+              <Box
+                className="item-detail-modal-unique-effect"
+                w="full"
+                bg="rgba(255, 215, 0, 0.15)"
+                p={1}
+                borderRadius="xl"
+                borderWidth="3px"
+                borderColor="#FFD700"
+                boxShadow="0 0 20px rgba(255, 215, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.2)"
+                position="relative"
+                overflow="hidden"
+              >
+                {/* Animated glow background */}
+                <Box
+                  position="absolute"
+                  top="50%"
+                  left="50%"
+                  transform="translate(-50%, -50%)"
+                  w="120%"
+                  h="120%"
+                  bg="radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%)"
+                  pointerEvents="none"
+                  animation="pulse 3s ease-in-out infinite"
+                />
+                <VStack spacing={1} align="start" position="relative" zIndex={1}>
+                  <HStack spacing={2}>
+                    <Icon as={GameIcons.GiSparkles} color="#FFD700" boxSize="24px" />
+                    <Text fontSize="md" fontWeight="bold" color="#FFD700">
+                      Unique Effect
+                    </Text>
+                  </HStack>
+                  <VStack align="start" spacing={2} w="full" pl={2}>
+                    <Box
+                      w="full"
+                      bg="rgba(255, 215, 0, 0.1)"
+                      p={2}
+                      borderRadius="md"
+                      borderLeft="3px solid #FFD700"
+                    >
+                      <Text fontSize="sm" color="#FFF8DC" fontWeight="semibold">
+                        {uniqueEffect.description}
+                      </Text>
+                      <Text fontSize="xs" color="#F0E68C" fontStyle="italic" mt={1}>
+                        Triggers: {uniqueEffect.triggers.map(t => {
+                          // Format trigger names to be more readable
+                          return t.replace(/([A-Z])/g, ' $1').replace(/^on /, 'On ').trim()
+                        }).join(', ')}
+                      </Text>
+                    </Box>
                   </VStack>
                 </VStack>
               </Box>
