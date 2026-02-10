@@ -9,6 +9,8 @@ export const HELM_OF_ETERNAL_GUARDIAN: Omit<Item, 'id'> = {
   description: 'Worn by the legendary guardian who never fell. Grants unwavering protection.',
   type: 'helmet',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: GiWingedEmblem,
   stats: {
     defense: 60,

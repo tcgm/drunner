@@ -11,6 +11,8 @@ export const HEART_OF_THE_PHOENIX: Omit<Item, 'id'> = {
   description: 'The crystallized heart of an eternal phoenix. Burns with the fire of rebirth. Upon defeating a boss, its flames will resurrect a fallen ally.',
   type: 'accessory1',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiHeartWings,
   stats: {
     maxHp: 200,

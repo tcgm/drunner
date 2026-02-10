@@ -9,6 +9,8 @@ export const EYE_OF_THE_STORM: Omit<Item, 'id'> = {
   description: 'A talisman containing a trapped lightning elemental. Crackles with raw power.',
   type: 'accessory2',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: GiLightningStorm,
   stats: {
     attack: 60,

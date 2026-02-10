@@ -9,6 +9,8 @@ export const NEKONOMICON: Omit<Item, 'id'> = {
   description: 'The Sacred Book of Cats. Contains ancient secrets of charm, grace, and overwhelming cuteness. Reading it grants the bearer irresistible charisma and the power to befriend anyone... or anything.',
   type: 'weapon',
   rarity: 'mythicc',
+  minRarity: 'legendary',
+  maxRarity: 'celestial',
   icon: GiBookCover,
   stats: {
     attack: 30,

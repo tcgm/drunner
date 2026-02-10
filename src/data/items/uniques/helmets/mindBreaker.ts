@@ -9,6 +9,8 @@ export const MIND_BREAKER: Omit<Item, 'id'> = {
   description: 'A helmet that amplifies mental prowess but fragments sanity. Power at a cost.',
   type: 'helmet',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiBrain,
   stats: {
     magicPower: 60,

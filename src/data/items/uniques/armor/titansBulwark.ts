@@ -9,6 +9,8 @@ export const TITANS_BULWARK: Omit<Item, 'id'> = {
   description: 'Forged by ancient titans to withstand the clash of gods. Immovable defense.',
   type: 'armor',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiShield,
   stats: {
     defense: 70,

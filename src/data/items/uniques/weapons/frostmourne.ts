@@ -9,6 +9,8 @@ export const FROSTMOURNE: Omit<Item, 'id'> = {
   description: 'A cursed runeblade that hungers for souls. Its frozen surface chills the very air around it.',
   type: 'weapon',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiRuneSword,
   stats: {
     attack: 200,

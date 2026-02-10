@@ -9,6 +9,8 @@ export const SHADOWFANG: Omit<Item, 'id'> = {
   description: 'A blade forged in eternal darkness. Whispers of the void emanate from its obsidian surface.',
   type: 'weapon',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: GiCurvyKnife,
   stats: {
     attack: 120,

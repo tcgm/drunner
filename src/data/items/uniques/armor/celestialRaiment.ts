@@ -9,6 +9,8 @@ export const CELESTIAL_RAIMENT: Omit<Item, 'id'> = {
   description: 'Robes woven from starlight by celestial beings. Radiates holy power.',
   type: 'armor',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiPlanetCore,
   stats: {
     defense: 120,

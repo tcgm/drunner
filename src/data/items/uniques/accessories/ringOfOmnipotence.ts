@@ -9,6 +9,8 @@ export const RING_OF_OMNIPOTENCE: Omit<Item, 'id'> = {
   description: 'One ring to rule them all. Contains the essence of ultimate power.',
   type: 'accessory1',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiDiamondRing,
   stats: {
     attack: 80,

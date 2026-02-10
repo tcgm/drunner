@@ -9,6 +9,8 @@ export const THUNDERFURY: Omit<Item, 'id'> = {
   description: 'Crackling with elemental fury, this blade channels the raw power of storms.',
   type: 'weapon',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiLightningBow,
   stats: {
     attack: 85,

@@ -9,6 +9,8 @@ export const PENDANT_OF_THE_WARRIOR: Omit<Item, 'id'> = {
   description: 'Contains the battle spirit of a legendary warrior. Grants overwhelming strength.',
   type: 'accessory2',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiMedal,
   stats: {
     attack: 45,

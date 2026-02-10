@@ -9,6 +9,8 @@ export const AEGIS_OF_THE_IMMORTAL: Omit<Item, 'id'> = {
   description: 'Armor blessed by the gods themselves. Legend says its wearer cannot fall in battle.',
   type: 'armor',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiShieldEchoes,
   stats: {
     defense: 150,

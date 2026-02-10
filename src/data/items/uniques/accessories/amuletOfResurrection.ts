@@ -9,6 +9,8 @@ export const AMULET_OF_RESURRECTION: Omit<Item, 'id'> = {
   description: 'A golden amulet infused with phoenix essence. If the wearer dies, the amulet shatters to revive them at the start of the next event.',
   type: 'accessory2',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: GiAnkh,
   stats: {
     maxHp: 150,

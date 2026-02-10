@@ -9,6 +9,8 @@ export const CHARM_OF_INFINITE_FORTUNE: Omit<Item, 'id'> = {
   description: 'A four-leaf clover encased in crystal. Bends probability in your favor.',
   type: 'accessory1',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiClover,
   stats: {
     luck: 40,

@@ -9,6 +9,8 @@ export const INFINITY_EDGE: Omit<Item, 'id'> = {
   description: 'A blade forged from crystallized time itself. Its edge cuts through reality.',
   type: 'weapon',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiCrystalWand,
   stats: {
     attack: 180,

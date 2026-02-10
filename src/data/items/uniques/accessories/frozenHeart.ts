@@ -10,6 +10,8 @@ export const FROZEN_HEART: Omit<Item, 'id'> = {
   description: 'A heart encased in eternal ice. Its cold touch slows enemies and fortifies the bearer with unbreakable resolve.',
   type: 'accessory1',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiCrystalBars, // Using fallback icon until ice-crystal is available
   stats: {
     defense: 120,

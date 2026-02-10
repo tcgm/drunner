@@ -9,6 +9,8 @@ export const EARTHSHAKER_GREAVES: Omit<Item, 'id'> = {
   description: 'Boots that make the ground tremble with each step. Grants the strength of mountains.',
   type: 'boots',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: GiSpikedArmor,
   stats: {
     defense: 45,

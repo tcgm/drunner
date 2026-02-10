@@ -9,6 +9,8 @@ export const SHADOWWEAVE_CLOAK: Omit<Item, 'id'> = {
   description: 'Woven from shadows themselves. Makes the wearer nearly invisible in darkness.',
   type: 'armor',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: GiCloak,
   stats: {
     defense: 60,

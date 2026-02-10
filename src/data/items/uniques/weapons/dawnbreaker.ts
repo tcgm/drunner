@@ -9,6 +9,8 @@ export const DAWNBREAKER: Omit<Item, 'id'> = {
   description: 'A radiant mace that burns with the light of dawn, devastating to undead creatures.',
   type: 'weapon',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiFlangedMace,
   stats: {
     attack: 90,

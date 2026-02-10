@@ -9,6 +9,8 @@ export const ICEBOUND_RELIC: Omit<Item, 'id'> = {
   description: 'An ancient artifact frozen in time. Its glacial power slows enemies and grants the wearer unshakable defense.',
   type: 'accessory1',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiFrozenBlock,
   stats: {
     defense: 120,

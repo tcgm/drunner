@@ -9,6 +9,8 @@ export const CROWN_OF_THE_LICH_KING: Omit<Item, 'id'> = {
   description: 'A dark crown that radiates necrotic energy. Commands the power over life and death.',
   type: 'helmet',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiCrownedSkull,
   stats: {
     defense: 80,

@@ -9,6 +9,8 @@ export const BOOTS_OF_WIND_WALKER: Omit<Item, 'id'> = {
   description: 'Each step feels like floating on air. Move with the grace of the wind itself.',
   type: 'boots',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiWingedEmblem,
   stats: {
     speed: 35,

@@ -9,6 +9,8 @@ export const VISAGE_OF_THE_VOID: Omit<Item, 'id'> = {
   description: 'A helmet that exists partially outside reality. Looking into it reveals infinite darkness.',
   type: 'helmet',
   rarity: 'mythic',
+  minRarity: 'epic',
+  maxRarity: 'divine',
   icon: GiMaskedSpider,
   stats: {
     defense: 90,

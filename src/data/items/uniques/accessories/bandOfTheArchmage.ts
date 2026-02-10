@@ -9,6 +9,8 @@ export const BAND_OF_THE_ARCHMAGE: Omit<Item, 'id'> = {
   description: 'A ring worn by the greatest mages in history. Channels immense magical power.',
   type: 'accessory1',
   rarity: 'epic',
+  minRarity: 'uncommon',
+  maxRarity: 'mythic',
   icon: GiGlobeRing,
   stats: {
     magicPower: 50,

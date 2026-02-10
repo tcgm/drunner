@@ -10,6 +10,8 @@ export const DEMON_COREFLAIL: Omit<Item, 'id'> = {
   description: 'Some absolute madman mounted a subcritical sphere of pure destructive energy to a chain. It emits an eerie blue glow and makes your teeth ache. Horrifyingly effective. Probably lethal to wield.',
   type: 'weapon',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: demonCoreflailLight,
   stats: {
     attack: 165, // Incredibly powerful

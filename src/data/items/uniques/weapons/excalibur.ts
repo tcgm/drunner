@@ -9,6 +9,8 @@ export const EXCALIBUR: Omit<Item, 'id'> = {
   description: 'The legendary blade of kings, gleaming with divine light. Said to have been forged by ancient gods.',
   type: 'weapon',
   rarity: 'legendary',
+  minRarity: 'rare',
+  maxRarity: 'mythicc',
   icon: GiBroadsword,
   stats: {
     attack: 150,
