@@ -11,7 +11,7 @@ export const RARE: RarityConfig = {
   glow: 'rgba(192, 132, 252, 0.5)',
   text: '#E9D5FF',         // Purple-200
   textLight: '#F3E8FF',    // Purple-100
-  bg: 'rgba(192, 132, 252, 0.1)',
+  bg: 'rgba(228, 201, 255, 0.1)',
   gem: '#C084FC',
   border: '#C084FC',
 }

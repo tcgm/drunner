@@ -93,9 +93,43 @@ export function getRarityRadialGradient(rarity: string, opacity: number, stop: n
 
 // Enable HMR for rarity system changes
 if (import.meta.hot) {
-  import.meta.hot.accept('@/systems/rarity/raritySystem', () => {
-    // Re-inject colors when rarity system updates
-    injectRarityColorVars()
+  import.meta.hot.accept('@/systems/rarity/raritySystem', async (newModule) => {
+    // Use dynamic import to get fresh RARITY_COLORS without causing React remounts
+    const { RARITY_COLORS: freshColors } = await import('@/systems/rarity/raritySystem')
+    
+    // Re-inject colors manually with fresh data
+    const root = document.documentElement
+    Object.entries(freshColors).forEach(([rarityName, colors]) => {
+      const prefix = `--rarity-${rarityName}`
+      
+      if (colors.color) root.style.setProperty(`${prefix}-color`, colors.color)
+      if (colors.backgroundColor) root.style.setProperty(`${prefix}-bg-color`, colors.backgroundColor)
+      if (colors.border) root.style.setProperty(`${prefix}-border`, colors.border)
+      if (colors.text) root.style.setProperty(`${prefix}-text`, colors.text)
+      if (colors.textLight) root.style.setProperty(`${prefix}-text-light`, colors.textLight)
+      if (colors.gem) root.style.setProperty(`${prefix}-gem`, colors.gem)
+      
+      if (colors.glow) {
+        root.style.setProperty(`${prefix}-glow`, colors.glow)
+        const match = colors.glow.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/)
+        if (match) {
+          const [, r, g, b, a = '1'] = match
+          root.style.setProperty(`${prefix}-glow-rgb`, `${r}, ${g}, ${b}`)
+          root.style.setProperty(`${prefix}-glow-alpha`, a)
+        }
+      }
+      
+      if (colors.bg) {
+        root.style.setProperty(`${prefix}-bg`, colors.bg)
+        const match = colors.bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/)
+        if (match) {
+          const [, r, g, b, a = '1'] = match
+          root.style.setProperty(`${prefix}-bg-rgb`, `${r}, ${g}, ${b}`)
+          root.style.setProperty(`${prefix}-bg-alpha`, a)
+        }
+      }
+    })
+    
     console.log('🔄 Rarity colors updated via HMR')
   })
 }

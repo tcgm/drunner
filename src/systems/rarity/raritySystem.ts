@@ -158,9 +158,10 @@ export function getRarityGlow(rarity: string): string {
   return RARITY_COLORS[rarity]?.glow || RARITY_COLORS.junk.glow
 }
 
-// Enable HMR for individual rarity file changes
+// Enable HMR for individual rarity file changes - accept without invalidating self
 if (import.meta.hot) {
-  import.meta.hot.accept('./rarities', () => {
-    console.log('🔄 Rarity configurations updated via HMR')
+  // Self-accept to prevent propagating invalidation to importers
+  import.meta.hot.accept(() => {
+    console.log('🔄 Rarity system accepted HMR update')
   })
 }

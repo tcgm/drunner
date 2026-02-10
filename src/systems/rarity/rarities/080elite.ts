@@ -12,6 +12,6 @@ export const ELITE: RarityConfig = {
   text: '#E11D48',
   textLight: '#F43F5E',
   bg: 'rgba(136, 19, 55, 0.1)',
-  gem: '#FC8395',          // HSL(351°, 95%, 75%) - bright rose
+  gem: '#ffd1d8',          // HSL(351°, 95%, 75%) - bright rose
   border: '#881337',
 }

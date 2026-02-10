@@ -283,13 +283,16 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       color={(() => {
                         if (item.modifiers && item.modifiers.length > 0) {
                           const mod = getModifierById(item.modifiers[0]);
-                          return mod ? mod.color : (item.isUnique ? '#FFD700' : rarityTheme.text);
+                          return mod ? mod.color : (item.isUnique ? '#FFFFFF' : rarityTheme.text);
                         }
-                        return item.isUnique ? '#FFD700' : rarityTheme.text;
+                        return item.isUnique ? '#FFFFFF' : rarityTheme.text;
                       })()}
                       style={{
                         position: 'relative',
                         zIndex: 1,
+                        ...(item.isUnique ? {
+                          filter: `drop-shadow(0 0 6px ${rarityTheme.gem}) drop-shadow(0 0 12px ${rarityTheme.gem}) drop-shadow(0 0 18px ${rarityTheme.gem}) drop-shadow(0 0 24px ${rarityTheme.gem})`
+                        } : {})
                       }}
                       className={`itemDetailModalIcon ${item.name}`}
                     />

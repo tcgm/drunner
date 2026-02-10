@@ -569,8 +569,11 @@ export const ItemSlot = memo(function ItemSlot({
                 : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
               }
               fontSize={iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')}
-              color={item.isUnique ? '#FFD700' : RARITY_COLORS[item.rarity]?.gem || '#6B7280'}
+              color={item.isUnique ? '#FFFFFF' : RARITY_COLORS[item.rarity]?.gem || '#6B7280'}
               mb={iconOnly ? 0 : 0.5}
+              style={item.isUnique ? {
+                filter: `drop-shadow(0 0 4px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 8px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 12px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'})`
+              } : undefined}
             />
           </motion.div>
           
