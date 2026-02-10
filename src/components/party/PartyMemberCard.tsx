@@ -1,9 +1,9 @@
-import { Box, HStack, VStack, Text, Icon, useDisclosure, Tooltip } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, Icon, Tooltip } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hero, Item, Consumable } from '@/types'
 import * as GameIcons from 'react-icons/gi'
-import HeroModal from './HeroModal'
+import { useHeroModal } from '@/contexts/HeroModalContext'
 import HeroTooltip from './HeroTooltip'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
@@ -26,7 +26,7 @@ interface PartyMemberCardProps {
 }
 
 export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon = false }: PartyMemberCardProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { openHeroModal } = useHeroModal()
   const [isHovered, setIsHovered] = useState(false)
   const { updateHero, party, dungeon, useAbility: activateAbility } = useGameStore()
   
@@ -69,7 +69,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
           borderWidth="2px"
           borderColor={hero.isAlive ? 'orange.600' : 'red.900'}
           cursor="pointer"
-          onClick={onOpen}
+          onClick={() => openHeroModal(hero, isDungeon)}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           whileHover={{ 
@@ -263,8 +263,6 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
           </HStack>
         </MotionBox>
       </HeroTooltip>
-
-      <HeroModal hero={hero} isOpen={isOpen} onClose={onClose} isDungeon={isDungeon} />
     </>
   )
 }
