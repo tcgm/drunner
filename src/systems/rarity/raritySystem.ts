@@ -157,3 +157,10 @@ export function getRarityColors(rarity: string): RarityColorScheme {
 export function getRarityGlow(rarity: string): string {
   return RARITY_COLORS[rarity]?.glow || RARITY_COLORS.junk.glow
 }
+
+// Enable HMR for individual rarity file changes
+if (import.meta.hot) {
+  import.meta.hot.accept('./rarities', () => {
+    console.log('🔄 Rarity configurations updated via HMR')
+  })
+}

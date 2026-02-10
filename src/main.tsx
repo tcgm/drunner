@@ -9,6 +9,15 @@ import { injectRarityColorVars } from '@/utils/injectRarityColors'
 // Inject rarity colors as CSS variables at startup
 injectRarityColorVars()
 
+// Enable HMR for rarity color changes
+if (import.meta.hot) {
+  import.meta.hot.accept('@/utils/injectRarityColors', (newModule) => {
+    if (newModule) {
+      newModule.injectRarityColorVars()
+    }
+  })
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ChakraProvider theme={theme}>

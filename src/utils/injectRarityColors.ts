@@ -90,3 +90,12 @@ export function getRarityBoxShadow(rarity: string, opacity: number, blur: number
 export function getRarityRadialGradient(rarity: string, opacity: number, stop: number = 70): string {
   return `radial-gradient(circle, rgba(var(--rarity-${rarity}-glow-rgb), ${opacity}) 0%, transparent ${stop}%)`
 }
+
+// Enable HMR for rarity system changes
+if (import.meta.hot) {
+  import.meta.hot.accept('@/systems/rarity/raritySystem', () => {
+    // Re-inject colors when rarity system updates
+    injectRarityColorVars()
+    console.log('🔄 Rarity colors updated via HMR')
+  })
+}
