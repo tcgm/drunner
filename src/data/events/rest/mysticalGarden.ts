@@ -15,7 +15,7 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
           outcome: {
             text: 'The fruit contains immense vitality! You feel incredible!',
             effects: [
-              { type: 'heal', target: 'all', value: 999 },
+              { type: 'heal', target: 'all', fullHeal: true },
               { type: 'xp', value: 50 },
             ],
           },
@@ -57,7 +57,7 @@ export const MYSTICAL_GARDEN: DungeonEvent = {
           outcome: {
             text: 'The garden\'s magic rejuvenates you completely.',
             effects: [
-              { type: 'heal', target: 'all', value: 999 }, // Full heal
+              { type: 'heal', target: 'all', fullHeal: true },
               { type: 'xp', value: 30 },
             ],
           },

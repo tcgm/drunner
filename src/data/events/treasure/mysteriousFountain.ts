@@ -24,7 +24,7 @@ export const MYSTERIOUS_FOUNTAIN: DungeonEvent = {
           outcome: {
             text: 'The water grants incredible power! You feel reborn!',
             effects: [
-              { type: 'heal', target: 'all', value: 999 },
+              { type: 'heal', target: 'all', fullHeal: true },
               { type: 'xp', value: 100 },
             ],
           },

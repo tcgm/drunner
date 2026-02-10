@@ -442,19 +442,34 @@ export function resolveEventOutcome(
       }
       
       case 'heal': {
-        const baseHealing = effect.value || 0
-        const scaledHealing = scaleValue(baseHealing, floor, GAME_CONFIG.scaling.healing)
-        const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
-        targets.forEach(hero => {
-          const effectiveMaxHp = calculateTotalStats(hero).maxHp
-          hero.stats.hp = Math.min(effectiveMaxHp, hero.stats.hp + healing)
-        })
-        resolvedEffects.push({
-          type: 'heal',
-          target: targets.map(h => h.id),
-          value: healing,
-          description: `${targets.map(h => h.name).join(', ')} restored ${healing} HP`
-        })
+        if (effect.fullHeal) {
+          // Full heal: restore all heroes to max HP
+          targets.forEach(hero => {
+            const effectiveMaxHp = calculateTotalStats(hero).maxHp
+            hero.stats.hp = effectiveMaxHp
+          })
+          resolvedEffects.push({
+            type: 'heal',
+            target: targets.map(h => h.id),
+            value: 0, // Value is per-hero, calculated elsewhere if needed
+            description: `${targets.map(h => h.name).join(', ')} fully restored to maximum HP`
+          })
+        } else {
+          // Normal heal: use value with scaling
+          const baseHealing = effect.value || 0
+          const scaledHealing = scaleValue(baseHealing, floor, GAME_CONFIG.scaling.healing)
+          const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
+          targets.forEach(hero => {
+            const effectiveMaxHp = calculateTotalStats(hero).maxHp
+            hero.stats.hp = Math.min(effectiveMaxHp, hero.stats.hp + healing)
+          })
+          resolvedEffects.push({
+            type: 'heal',
+            target: targets.map(h => h.id),
+            value: healing,
+            description: `${targets.map(h => h.name).join(', ')} restored ${healing} HP`
+          })
+        }
         break
       }
       

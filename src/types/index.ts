@@ -208,6 +208,7 @@ export interface EventOutcome {
     target?: 'random' | 'all' | 'weakest' | 'strongest'
     consumableId?: string // ID of consumable to give (for type: 'consumable')
     value?: number
+    fullHeal?: boolean // For heal effects: restore to full HP (ignores value)
     isTrueDamage?: boolean // For damage effects: ignore defense (true damage)
     upgradeType?: 'material' | 'rarity' | 'auto' | 'random' // For upgradeItem: specify material, rarity, auto (material first, then rarity), or random (picks material or rarity randomly)
     // Item generation specifications (only one should be used)

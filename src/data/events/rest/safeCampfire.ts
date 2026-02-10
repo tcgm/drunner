@@ -12,7 +12,7 @@ export const SAFE_CAMPFIRE: DungeonEvent = {
       outcome: {
         text: 'Your party rests peacefully and recovers completely.',
         effects: [
-          { type: 'heal', target: 'all', value: 999 }, // Full heal
+          { type: 'heal', target: 'all', fullHeal: true },
         ],
       },
     },
