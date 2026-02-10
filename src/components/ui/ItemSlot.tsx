@@ -6,7 +6,6 @@ import {
   HStack,
   SimpleGrid,
   Tooltip,
-  useDisclosure,
   Icon,
   Checkbox,
 } from '@chakra-ui/react'
@@ -16,7 +15,7 @@ import { GiGoldBar as GiTreasure, GiSparkles, GiCursedStar } from 'react-icons/g
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Item } from '@/types'
-import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
+import { useItemDetailModal } from '@/contexts/ItemDetailModalContext'
 import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
@@ -97,7 +96,7 @@ export const ItemSlot = memo(function ItemSlot({
   iconOnly = false,
   stopPropagation = true
 }: ItemSlotProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { openItemDetail } = useItemDetailModal()
   const [isHovered, setIsHovered] = useState(false)
   
   // Resolve any missing item data (e.g., consumable effects from metadata)
@@ -136,7 +135,7 @@ export const ItemSlot = memo(function ItemSlot({
       onClick()
     } else if (isClickable) {
       console.log('[ItemSlot] Opening item detail modal')
-      onOpen()
+      openItemDetail(item)
     }
   }
 
@@ -669,12 +668,6 @@ export const ItemSlot = memo(function ItemSlot({
           )}
         </MotionBox>
       </Tooltip>
-
-      <ItemDetailModal 
-        item={item}
-        isOpen={isOpen}
-        onClose={onClose}
-      />
     </>
   )
 }, (prevProps, nextProps) => {

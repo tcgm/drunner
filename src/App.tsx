@@ -9,6 +9,7 @@ import DevTools from '@components/ui/DevTools'
 import { MusicControls } from '@components/ui/MusicControls'
 import { MusicManager } from '@components/ui/MusicManager'
 import { MigrationWarningDialog } from '@components/ui/MigrationWarningDialog'
+import { ItemDetailModalProvider } from '@/contexts/ItemDetailModalContext'
 import { useGameStore } from '@/core/gameStore'
 import type { Hero } from '@/types'
 
@@ -112,109 +113,111 @@ function App() {
   }
 
   return (
-    <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden" key={hmrCounter}>
-      {/* Centralized Music Manager */}
-      <MusicManager currentScreen={currentScreen} />
-      
-      <AnimatePresence mode="wait">
-        {currentScreen === 'menu' && (
-          <MotionBox
-            key="menu"
-            h="full"
-            w="full"
-            variants={screenVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <MainMenuScreen 
-              onNewRun={handleNewRun}
-              onContinue={handleContinue}
-              onRunHistory={() => setCurrentScreen('run-history')}
-            />
-          </MotionBox>
-        )}
-        {currentScreen === 'party-setup' && (
-          <MotionBox
-            key="party-setup"
-            h="full"
-            w="full"
-            variants={screenVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <PartySetupScreen 
-              onStart={handleStartDungeon}
-              onBack={() => setCurrentScreen('menu')}
-            />
-          </MotionBox>
-        )}
-        {currentScreen === 'dungeon' && (
-          <MotionBox
-            key="dungeon"
-            h="full"
-            w="full"
-            variants={screenVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <DungeonScreen onExit={() => setCurrentScreen('menu')} />
-          </MotionBox>
-        )}
-        {currentScreen === 'run-history' && (
-          <MotionBox
-            key="run-history"
-            h="full"
-            w="full"
-            variants={screenVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <RunHistoryScreen onBack={() => setCurrentScreen('menu')} />
-          </MotionBox>
-        )}
-      </AnimatePresence>
-      
-      {/* New Run Confirmation Dialog */}
-      <AlertDialog
-        isOpen={isOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={onClose}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent bg="gray.800">
-            <AlertDialogHeader fontSize="lg" fontWeight="bold" color="orange.400">
-              Active Run in Progress
-            </AlertDialogHeader>
+    <ItemDetailModalProvider>
+      <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden" key={hmrCounter}>
+        {/* Centralized Music Manager */}
+        <MusicManager currentScreen={currentScreen} />
 
-            <AlertDialogBody color="gray.300">
-              You have an active run in progress. Starting a new run will end the current run 
-              and mark it as a retreat. Your heroes will keep their progress. Continue?
-            </AlertDialogBody>
+        <AnimatePresence mode="wait">
+          {currentScreen === 'menu' && (
+            <MotionBox
+              key="menu"
+              h="full"
+              w="full"
+              variants={screenVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <MainMenuScreen
+                onNewRun={handleNewRun}
+                onContinue={handleContinue}
+                onRunHistory={() => setCurrentScreen('run-history')}
+              />
+            </MotionBox>
+          )}
+          {currentScreen === 'party-setup' && (
+            <MotionBox
+              key="party-setup"
+              h="full"
+              w="full"
+              variants={screenVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <PartySetupScreen
+                onStart={handleStartDungeon}
+                onBack={() => setCurrentScreen('menu')}
+              />
+            </MotionBox>
+          )}
+          {currentScreen === 'dungeon' && (
+            <MotionBox
+              key="dungeon"
+              h="full"
+              w="full"
+              variants={screenVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <DungeonScreen onExit={() => setCurrentScreen('menu')} />
+            </MotionBox>
+          )}
+          {currentScreen === 'run-history' && (
+            <MotionBox
+              key="run-history"
+              h="full"
+              w="full"
+              variants={screenVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <RunHistoryScreen onBack={() => setCurrentScreen('menu')} />
+            </MotionBox>
+          )}
+        </AnimatePresence>
 
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="orange" onClick={handleConfirmNewRun} ml={3}>
-                Start New Run
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
-      
-      {/* Migration Warning Dialog */}
-      <MigrationWarningDialog isOpen={pendingMigration} />
-      
-      {/* Global Music Controls */}
-      <MusicControls />
-      
-      <DevTools />
-    </Box>
+        {/* New Run Confirmation Dialog */}
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent bg="gray.800">
+              <AlertDialogHeader fontSize="lg" fontWeight="bold" color="orange.400">
+                Active Run in Progress
+              </AlertDialogHeader>
+
+              <AlertDialogBody color="gray.300">
+                You have an active run in progress. Starting a new run will end the current run
+                and mark it as a retreat. Your heroes will keep their progress. Continue?
+              </AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button colorScheme="orange" onClick={handleConfirmNewRun} ml={3}>
+                  Start New Run
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+
+        {/* Migration Warning Dialog */}
+        <MigrationWarningDialog isOpen={pendingMigration} />
+
+        {/* Global Music Controls */}
+        <MusicControls />
+
+        <DevTools />
+      </Box>
+    </ItemDetailModalProvider>
   )
 }
 
