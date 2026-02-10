@@ -13,4 +13,5 @@ export const ABUNDANT: RarityConfig = {
   textLight: '#4ADE80',    // Green-400
   bg: 'rgba(20, 83, 45, 0.1)',
   gem: '#8FEFB3',          // HSL(142°, 75%, 75%) - bright green
+  border: '#14532D',
 }

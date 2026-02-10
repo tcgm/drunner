@@ -13,4 +13,5 @@ export const MYTHIC: RarityConfig = {
   textLight: '#FEFCE8',    // Yellow-50
   bg: 'rgba(254, 240, 138, 0.1)',
   gem: '#FEF08A',
+  border: '#FEF08A',
 }

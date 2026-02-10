@@ -13,4 +13,5 @@ export const MAGICAL: RarityConfig = {
   textLight: '#FAE8FF',    // Fuchsia-100
   bg: 'rgba(240, 171, 252, 0.1)',
   gem: '#F0ABFC',
+  border: '#F0ABFC',
 }

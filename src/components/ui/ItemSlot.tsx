@@ -23,7 +23,7 @@ import { getModifierById } from '@/data/items/mods'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { resolveItemData } from '@/utils/itemDataResolver'
 import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
-import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/rarityColors'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/raritySystem'
 
 const MotionBox = motion.create(Box)
 

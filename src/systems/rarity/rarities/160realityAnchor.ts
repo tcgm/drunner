@@ -13,4 +13,5 @@ export const REALITY_ANCHOR: RarityConfig = {
   textLight: '#818CF8',
   bg: 'rgba(49, 46, 129, 0.1)',
   gem: '#8792F8',          // HSL(234°, 89%, 75%) - bright indigo
+  border: '#312E81',
 }

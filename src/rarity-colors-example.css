@@ -1,0 +1,87 @@
+/* Example CSS Using Dynamic Rarity Color Variables
+ * 
+ * This file demonstrates how to use the dynamically injected CSS variables.
+ * Copy these patterns into index.css to migrate from hardcoded colors.
+ * 
+ * All variables are injected at runtime from TypeScript - they're always in sync!
+ */
+
+/* ============================================================================
+   EXAMPLE: Item Slots with Dynamic Variables
+   ============================================================================ */
+
+.item-slot--epic-example {
+  background-color: var(--rarity-epic-bg-color);
+  border-color: var(--rarity-epic-border);
+  /* Custom opacity using RGB components */
+  box-shadow: 0 0 8px rgba(var(--rarity-epic-glow-rgb), 0.125);
+}
+
+.item-slot--epic-example:hover {
+  /* Intensify glow on hover */
+  box-shadow: 0 0 24px rgba(var(--rarity-epic-glow-rgb), 0.375),
+              0 0 40px rgba(var(--rarity-epic-glow-rgb), 0.25);
+}
+
+/* ============================================================================
+   EXAMPLE: Item Detail Modal with Dynamic Variables
+   ============================================================================ */
+
+.item-detail-modal--epic-example .modal__icon-frame {
+  border-color: var(--rarity-epic-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-epic-glow-rgb), 0.5);
+}
+
+.item-detail-modal--epic-example .modal__bg-gradient {
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--rarity-epic-glow-rgb), 0.1) 0%,
+    transparent 70%
+  );
+}
+
+.item-detail-modal--epic-example .modal__shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(var(--rarity-epic-glow-rgb), 0.5) 50%,
+    transparent 100%
+  );
+}
+
+/* ============================================================================
+   EXAMPLE: All Rarities Pattern (DRY approach)
+   ============================================================================ */
+
+/* Define the pattern once, variables do the rest */
+.dynamic-rarity-border {
+  /* Works for ANY rarity by changing the data-rarity attribute */
+  border: 2px solid var(--rarity-epic-border);
+  color: var(--rarity-epic-text);
+}
+
+/* JavaScript can dynamically change which rarity's colors are used:
+ * element.style.setProperty('--current-rarity', 'var(--rarity-epic-border)')
+ */
+
+/* ============================================================================
+   BENEFITS DEMONSTRATED
+   ============================================================================ */
+
+/*
+ * 1. No hardcoded colors! If you change epic's color in TypeScript,
+ *    ALL these styles update automatically.
+ * 
+ * 2. RGB components allow flexible opacity:
+ *    rgba(var(--rarity-epic-glow-rgb), 0.5)  // 50% opacity
+ *    rgba(var(--rarity-epic-glow-rgb), 0.125) // 12.5% opacity
+ * 
+ * 3. Same pattern works for all rarities - just swap the variable name:
+ *    var(--rarity-legendary-border)
+ *    var(--rarity-mythic-glow-rgb)
+ *    var(--rarity-artifact-text)
+ * 
+ * 4. Type-safe in TypeScript with helper functions:
+ *    getRarityCssVar('epic', 'border')
+ *    getRarityBoxShadow('epic', 0.5, 12)
+ */

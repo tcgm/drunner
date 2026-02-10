@@ -13,4 +13,5 @@ export const PLANE: RarityConfig = {
   textLight: '#38BDF8',    // Sky-400
   bg: 'rgba(12, 74, 110, 0.1)',
   gem: '#84D7FB',          // HSL(198°, 93%, 75%) - bright sky blue
+  border: '#0C4A6E',
 }

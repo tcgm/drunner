@@ -113,7 +113,7 @@ export function getRarityColors(rarity: ItemRarity) {
         }
     }
     return {
-        border: config.color,
+        border: config.border || config.color,
         glow: config.glow || `rgba(255, 255, 255, 0.5)`,
         text: config.text || config.color,
         textLight: config.textLight || config.color,

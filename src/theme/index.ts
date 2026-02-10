@@ -1,5 +1,5 @@
 import { extendTheme, type ThemeConfig } from '@chakra-ui/react'
-import { RARITY_COLORS } from '@/systems/rarity/rarityColors'
+import { RARITY_COLORS } from '@/systems/rarity/raritySystem'
 
 const config: ThemeConfig = {
   initialColorMode: 'dark',

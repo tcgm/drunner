@@ -13,4 +13,5 @@ export const RARE: RarityConfig = {
   textLight: '#F3E8FF',    // Purple-100
   bg: 'rgba(192, 132, 252, 0.1)',
   gem: '#C084FC',
+  border: '#C084FC',
 }

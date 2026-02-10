@@ -13,4 +13,5 @@ export const STRUCTURAL: RarityConfig = {
   textLight: '#F5F3FF',    // Violet-50
   bg: 'rgba(221, 214, 254, 0.1)',
   gem: '#DDD6FE',
+  border: '#DDD6FE',
 }

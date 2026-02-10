@@ -13,4 +13,5 @@ export const LAYER: RarityConfig = {
   textLight: '#FEF9C3',    // Yellow-100
   bg: 'rgba(253, 224, 71, 0.1)',
   gem: '#FEE981',          // HSL(50°, 98%, 75%) - bright yellow
+  border: '#FDE047',
 }

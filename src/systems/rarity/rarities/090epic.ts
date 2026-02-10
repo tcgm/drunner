@@ -13,4 +13,5 @@ export const EPIC: RarityConfig = {
   textLight: '#FDF2F8',
   bg: 'rgba(251, 207, 232, 0.1)',
   gem: '#FBCFE8',
+  border: '#FBCFE8',
 }

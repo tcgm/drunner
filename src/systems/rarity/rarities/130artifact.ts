@@ -13,4 +13,5 @@ export const ARTIFACT: RarityConfig = {
   textLight: '#FFFBEB',
   bg: 'rgba(253, 230, 138, 0.1)',
   gem: '#FDE68A',
+  border: '#FDE68A',
 }

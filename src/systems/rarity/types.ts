@@ -14,6 +14,7 @@ export interface RarityConfig {
   textLight?: string       // Light text color (hex)
   bg?: string              // Background with opacity (rgba)
   gem?: string             // Gem/icon color (hex)
+  border?: string          // Border color (hex)
 }
 
 export type { ItemRarity }

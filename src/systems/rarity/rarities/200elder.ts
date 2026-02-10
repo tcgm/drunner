@@ -13,4 +13,5 @@ export const ELDER: RarityConfig = {
   textLight: '#EF4444',    // Red-500
   bg: 'rgba(127, 29, 29, 0.1)',
   gem: '#F98585',          // HSL(0°, 91%, 75%) - bright red
+  border: '#7F1D1D',
 }

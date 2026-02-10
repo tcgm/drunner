@@ -13,4 +13,5 @@ export const LEGENDARY: RarityConfig = {
   textLight: '#FBBF24',    // Amber-400
   bg: 'rgba(146, 64, 14, 0.1)',
   gem: '#FCDA82',          // HSL(43°, 96%, 75%) - bright amber
+  border: '#92400E',
 }

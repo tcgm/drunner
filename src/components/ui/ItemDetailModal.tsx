@@ -28,7 +28,7 @@ import { MultIcon } from '@/components/ui/MultIcon'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { dehydrateItem } from '@/utils/itemHydration'
 import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
-import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/rarityColors'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/raritySystem'
 
 // Gem icons for each rarity - increasing complexity and fanciness
 const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {

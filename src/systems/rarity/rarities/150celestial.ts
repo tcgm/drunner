@@ -13,4 +13,5 @@ export const CELESTIAL: RarityConfig = {
   textLight: '#FFFFFF',    // White
   bg: 'rgba(224, 242, 254, 0.1)',
   gem: '#E0F2FE',
+  border: '#E0F2FE',
 }

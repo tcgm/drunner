@@ -1,4 +1,13 @@
 /**
+ * @deprecated This file is deprecated. Use RARITY_COLORS from '@/systems/rarity/raritySystem' instead.
+ * 
+ * All rarity color definitions have been moved to individual rarity files in the rarities/ directory.
+ * The raritySystem now exports RARITY_COLORS built from those individual configurations.
+ * 
+ * This file is kept temporarily for reference but should not be imported in new code.
+ */
+
+/**
  * Centralized Rarity Color Definitions
  * 
  * All rarity colors are defined here to ensure consistency across the application.
