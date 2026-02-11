@@ -1,11 +1,28 @@
 import type { DungeonEvent } from '@/types'
 import { GiChainedHeart } from 'react-icons/gi'
+import { DEVASTATING_SLAM, REGENERATION } from '@/data/abilities/boss'
+import { RAPID_STRIKES, EXECUTE } from '@/data/attackPatterns/boss'
 
 export const BOUND_DEMON: DungeonEvent = {
   id: 'bound-demon',
   type: 'boss',
   title: 'Bound Demon',
   description: 'A fiendish creature strains against magical chains. Though bound, its power is still formidable, and it lashes out with claws and hellfire.',
+
+  // Combat properties for turn-based boss fights
+  bossAbilities: [DEVASTATING_SLAM, REGENERATION],
+  attackPatterns: [RAPID_STRIKES, EXECUTE],
+  phases: [
+    {
+      hpThreshold: 0.3,
+      name: 'Chains Breaking',
+      description: 'The magical chains begin to shatter! The demon\'s power surges!',
+      abilityChanges: { DEVASTATING_SLAM: true },
+      patternChanges: { RAPID_STRIKES: 2 }
+    }
+  ],
+
+  // Legacy choice-based rewards (used for victory rewards)
   choices: [
     {
       text: 'Fight while it\'s bound',

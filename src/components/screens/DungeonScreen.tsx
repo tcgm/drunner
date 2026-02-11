@@ -11,21 +11,36 @@ import GameOverScreen from '@components/dungeon/GameOverScreen'
 import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
+import { BossCombatScreen } from '@/components/combat'
+import { initializeBossCombatState } from '@/systems/combat'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
-import type { EventChoice, Hero } from '@/types'
+import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
 interface DungeonScreenProps {
   onExit: () => void
 }
 
 export default function DungeonScreen({ onExit }: DungeonScreenProps) {
-  const { dungeon, party, advanceDungeon, selectChoice, isGameOver, lastOutcome, retreatFromDungeon, activeRun } = useGameStore()
+  const {
+    dungeon,
+    party,
+    advanceDungeon,
+    selectChoice,
+    isGameOver,
+    lastOutcome,
+    retreatFromDungeon,
+    activeRun,
+    applyBossVictoryRewards,
+    endGame
+  } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
   // const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure() // Disabled
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
+  const [inBossCombat, setInBossCombat] = useState(false)
+  const [bossEvent, setBossEvent] = useState<DungeonEvent | null>(null)
   
   // When outcome changes, create floating numbers
   useEffect(() => {
@@ -80,7 +95,48 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     onClose()
     onExit()
   }
-  
+
+  // Boss combat handlers
+  const handleBossVictory = () => {
+    // Apply victory rewards from boss event
+    if (bossEvent) {
+      applyBossVictoryRewards(bossEvent)
+    }
+    setInBossCombat(false)
+    setBossEvent(null)
+    // Continue to next event after rewards applied
+    advanceDungeon()
+  }
+
+  const handleBossDefeat = () => {
+    setInBossCombat(false)
+    setBossEvent(null)
+    // Trigger game over
+    endGame()
+  }
+
+  const handleBossFlee = () => {
+    setInBossCombat(false)
+    setBossEvent(null)
+    retreatFromDungeon()
+    onExit()
+  }
+
+  // Initialize boss combat state when boss event is encountered
+  useEffect(() => {
+    if (dungeon.currentEvent && dungeon.currentEvent.type === 'boss' && !inBossCombat) {
+      // Initialize combat state if not already present
+      if (!dungeon.currentEvent.combatState) {
+        dungeon.currentEvent.combatState = initializeBossCombatState(
+          dungeon.currentEvent,
+          dungeon
+        )
+      }
+      setBossEvent(dungeon.currentEvent)
+      setInBossCombat(true)
+    }
+  }, [dungeon.currentEvent, dungeon, inBossCombat])
+
   // Victory check - player completed max floors (check floor, not depth!)
   if (dungeon.floor > GAME_CONFIG.dungeon.maxFloors) {
     return <VictoryScreen depth={dungeon.depth} onExit={onExit} />
@@ -99,6 +155,19 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   // Filter out null heroes for components that expect Hero[]
   const activeParty = party.filter((hero): hero is Hero => hero !== null)
   
+  // Render boss combat screen if in boss combat
+  if (inBossCombat && bossEvent) {
+    return (
+      <BossCombatScreen
+        event={bossEvent}
+        party={party}
+        onVictory={handleBossVictory}
+        onDefeat={handleBossDefeat}
+        onFlee={handleBossFlee}
+      />
+    )
+  }
+
   return (
     <Flex className="dungeon-screen" h="100vh" gap={2} p={2}>
       <PartySidebar party={activeParty} heroEffects={heroEffects} />

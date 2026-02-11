@@ -4,7 +4,7 @@
  */
 
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, EventChoice, Run } from '@/types'
+import type { GameState, Hero, EventChoice, Run, DungeonEvent } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
@@ -23,6 +23,7 @@ export interface DungeonActionsSlice {
   victoryGame: () => void
   retreatFromDungeon: () => void
   applyPenalty: () => void
+  applyBossVictoryRewards: (bossEvent: DungeonEvent) => void
 }
 
 export const createDungeonActions: StateCreator<
@@ -847,6 +848,113 @@ export const createDungeonActions: StateCreator<
         party: penalizedParty,
         heroRoster: updatedRoster,
         hasPendingPenalty: false,
+      }
+    }),
+
+  applyBossVictoryRewards: (bossEvent) =>
+    set((state) => {
+      if (!bossEvent || !bossEvent.choices[0] || !bossEvent.choices[0].outcome) {
+        console.error('Invalid boss event for rewards')
+        return state
+      }
+
+      // Use first choice's outcome as victory rewards
+      const victoryOutcome = bossEvent.choices[0].outcome
+
+      // Process rewards using event resolver
+      const { updatedParty, updatedGold, metaXpGained, resolvedOutcome } = resolveEventOutcome(
+        victoryOutcome,
+        state.party,
+        state.dungeon,
+        bossEvent
+      )
+
+      // Track statistics from resolved outcome
+      let damageDealt = 0
+      let damageTaken = 0
+      let healingReceived = 0
+      let xpGained = metaXpGained
+      let revivals = 0
+      const heroesAffected = new Set<string>()
+
+      resolvedOutcome.effects.forEach(effect => {
+        if (effect.type === 'damage') {
+          damageTaken += effect.value || 0
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = state.party.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        } else if (effect.type === 'heal') {
+          healingReceived += effect.value || 0
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = state.party.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        } else if (effect.type === 'revive') {
+          revivals += effect.target?.length || 0
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = updatedParty.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        } else if (effect.type === 'xp') {
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = state.party.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        }
+      })
+
+      // Update roster with modified party
+      const updatedRoster = state.heroRoster.map(rosterHero => {
+        const updatedVersion = updatedParty.find(h => h?.id === rosterHero.id)
+        return updatedVersion || rosterHero
+      })
+
+      // Create event log entry
+      const eventLogEntry: import('@/types').EventLogEntry = {
+        eventId: bossEvent.id,
+        eventTitle: Array.isArray(bossEvent.title) ? bossEvent.title[0] : bossEvent.title,
+        eventType: bossEvent.type,
+        floor: state.dungeon.floor,
+        depth: state.dungeon.depth,
+        choiceMade: 'Victory',
+        outcomeText: `Defeated ${Array.isArray(bossEvent.title) ? bossEvent.title[0] : bossEvent.title}! ${resolvedOutcome.text}`,
+        goldChange: updatedGold - state.dungeon.gold,
+        itemsGained: resolvedOutcome.items.map(item => item.name),
+        damageDealt,
+        damageTaken,
+        healingReceived,
+        xpGained,
+        heroesAffected: Array.from(heroesAffected)
+      }
+
+      // Update active run
+      const updatedRun = state.activeRun ? {
+        ...state.activeRun,
+        finalDepth: state.dungeon.depth,
+        finalFloor: state.dungeon.floor,
+        eventsCompleted: state.activeRun.eventsCompleted + 1
+      } : null
+
+      return {
+        party: updatedParty,
+        heroRoster: updatedRoster,
+        dungeon: {
+          ...state.dungeon,
+          gold: updatedGold,
+          inventory: [...state.dungeon.inventory, ...resolvedOutcome.items],
+          eventLog: [...state.dungeon.eventLog, eventLogEntry],
+        },
+        activeRun: updatedRun,
+        lastOutcome: resolvedOutcome,
       }
     }),
 })

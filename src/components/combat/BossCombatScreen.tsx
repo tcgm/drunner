@@ -14,7 +14,18 @@ import PartyHealthDisplay from './PartyHealthDisplay'
 import TurnOrderDisplay from './TurnOrderDisplay'
 import CombatActionsPanel from './CombatActionsPanel'
 import CombatLog from './CombatLog'
-import { startCombatRound, processBossTurn, processRoundEnd, checkVictory, checkDefeat } from '@/systems/combat'
+import {
+    startCombatRound,
+    processBossTurn,
+    processRoundEnd,
+    checkVictory,
+    checkDefeat,
+    executeAttack,
+    executeDefend,
+    executeHeroAbility,
+    useConsumable,
+    advanceTurn,
+} from '@/systems/combat'
 
 const MotionBox = motion.create(Box)
 
@@ -93,10 +104,61 @@ export default function BossCombatScreen({
         if (isProcessing || !event.combatState) return
 
         setIsProcessing(true)
-        addLogEntry('action', `Hero performs: ${action}`)
 
-        // TODO: Process hero action
-        // This will be wired up to heroTurn system
+        try {
+            const hero = party.find(h => h?.id === heroId) as Hero | null
+            if (!hero) {
+                throw new Error('Hero not found')
+            }
+
+            // Parse action type
+            if (action === 'attack') {
+                const result = executeAttack(hero, event.combatState)
+                if (result.success) {
+                    addLogEntry('damage', `${hero.name} attacks for ${result.damage} damage!`, 'boss', result.damage)
+                } else {
+                    addLogEntry('action', result.message)
+                }
+            } else if (action === 'defend') {
+                const result = executeDefend(hero, event.combatState)
+                addLogEntry('buff', `${hero.name} takes a defensive stance!`)
+            } else if (action.startsWith('ability:')) {
+                const abilityId = action.split(':')[1]
+                const ability = hero.abilities?.find(a => a.id === abilityId)
+                if (ability) {
+                    const result = executeHeroAbility(
+                        hero,
+                        ability,
+                        event.combatState,
+                        party.filter(h => h !== null) as Hero[]
+                    )
+                    addLogEntry('ability', result.message)
+                }
+            } else if (action.startsWith('item:')) {
+                const slot = action.split(':')[1]
+                const result = useConsumable(
+                    hero,
+                    slot,
+                    event.combatState,
+                    party.filter(h => h !== null) as Hero[]
+                )
+                addLogEntry('heal', result.message)
+            } else if (action === 'flee') {
+                // Handled by parent component
+                return
+            }
+
+            // Advance to next turn
+            advanceTurn(event.combatState)
+        } catch (error) {
+            console.error('Hero action error:', error)
+            toast({
+                title: 'Action Failed',
+                description: error instanceof Error ? error.message : 'Unknown error',
+                status: 'error',
+                duration: 3000,
+            })
+        }
 
         setIsProcessing(false)
     }

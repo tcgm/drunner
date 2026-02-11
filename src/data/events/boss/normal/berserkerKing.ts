@@ -1,11 +1,28 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicAxe } from 'react-icons/gi'
+import { ENRAGE } from '@/data/abilities/boss/enrage'
+import { HEAVY_STRIKE, WHIRLWIND } from '@/data/attackPatterns/boss'
 
 export const BERSERKER_KING: DungeonEvent = {
   id: 'berserker-king',
   type: 'boss',
   title: 'Berserker King',
   description: 'A massive warrior in bloodstained furs roars with primal fury. His twin axes drip with the blood of countless foes, and his eyes burn with battle madness.',
+
+  // Combat properties for turn-based boss fights
+  bossAbilities: [ENRAGE],
+  attackPatterns: [HEAVY_STRIKE, WHIRLWIND],
+  phases: [
+    {
+      hpThreshold: 0.5,
+      name: 'Primal Rage',
+      description: 'The Berserker King enters a berserk state, attacking with increased fury!',
+      abilityChanges: { ENRAGE: true },
+      patternChanges: { WHIRLWIND: 2 } // Doubles frequency
+    }
+  ],
+
+  // Legacy choice-based rewards (used for victory rewards)
   choices: [
     {
       text: 'Match his fury',
