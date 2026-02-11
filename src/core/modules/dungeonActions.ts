@@ -482,11 +482,11 @@ export const createDungeonActions: StateCreator<
       // Create event log entry
       const eventLogEntry: import('@/types').EventLogEntry = {
         eventId: currentEvent.id,
-        eventTitle: currentEvent.title,
+        eventTitle: Array.isArray(currentEvent.title) ? currentEvent.title[0] : currentEvent.title,
         eventType: currentEvent.type,
         floor: state.dungeon.floor,
         depth: state.dungeon.depth,
-        choiceMade: choice.text,
+        choiceMade: Array.isArray(choice.text) ? choice.text[0] : choice.text,
         outcomeText: resolvedOutcome.text,
         goldChange: updatedGold - state.dungeon.gold,
         itemsGained: resolvedOutcome.items.map(item => item.name),
@@ -519,7 +519,7 @@ export const createDungeonActions: StateCreator<
 
       // Capture death details if party wiped
       const deathDetails = isWiped ? {
-        eventTitle: currentEvent.title,
+        eventTitle: Array.isArray(currentEvent.title) ? currentEvent.title[0] : currentEvent.title,
         eventType: currentEvent.type,
         heroDamage: resolvedOutcome.effects
           .filter(effect => effect.type === 'damage' && effect.target)

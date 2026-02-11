@@ -136,8 +136,14 @@ export default function BossCombatScreen({
                 }
             } else if (action.startsWith('item:')) {
                 const slot = action.split(':')[1]
+                const item = hero.slots[slot]
+                if (!item || !('consumableType' in item)) {
+                    throw new Error('Invalid consumable')
+                }
+                const consumable = item as import('@/types').Consumable
                 const result = useConsumable(
                     hero,
+                    consumable,
                     slot,
                     event.combatState,
                     party.filter(h => h !== null) as Hero[]
