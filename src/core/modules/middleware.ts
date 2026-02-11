@@ -11,11 +11,19 @@ import { calculateMaxHp } from '@/utils/heroUtils'
  * Sanitize hero stats to fix any NaN values - mutates the hero in place
  */
 export function sanitizeHeroStats(hero: Hero): Hero {
-  const maxHp = calculateMaxHp(hero.level, hero.class.baseStats.defense)
+  // Only recalculate maxHp if it's invalid (NaN)
+  // This preserves maxHp that includes equipment bonuses
+  if (isNaN(hero.stats.maxHp)) {
+    const baseMaxHp = calculateMaxHp(hero.level, hero.class.baseStats.defense)
+    hero.stats.maxHp = baseMaxHp
+  }
 
-  if (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp)) {
-    hero.stats.maxHp = maxHp
-    hero.stats.hp = isNaN(hero.stats.hp) ? maxHp : Math.min(hero.stats.hp, maxHp)
+  // Only fix HP if it's NaN or exceeds the hero's actual maxHp (which may include equipment bonuses)
+  if (isNaN(hero.stats.hp)) {
+    hero.stats.hp = hero.stats.maxHp
+  } else if (hero.stats.hp > hero.stats.maxHp) {
+    // Only clamp if HP exceeds maxHp - this handles cases where maxHp decreased due to equipment changes
+    hero.stats.hp = hero.stats.maxHp
   }
 
   // Fix any other NaN stats
