@@ -19,9 +19,11 @@ export interface Ability {
   id: string
   name: string
   description: string
-  cooldown: number // Floors until usable again
-  currentCooldown: number // Deprecated - use lastUsedFloor
+  cooldown: number // Floors/Depths until usable again (depends on cooldownType)
+  cooldownType?: 'floor' | 'depth' // Whether cooldown is based on floor or depth progression (default: 'depth')
+  currentCooldown: number // Deprecated - use lastUsedFloor/lastUsedDepth
   lastUsedFloor?: number // Floor on which ability was last used
+  lastUsedDepth?: number // Depth on which ability was last used
   charges?: number // Limited uses per run (optional)
   chargesUsed?: number // Charges consumed this run
   effect: AbilityEffect

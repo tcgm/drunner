@@ -3,29 +3,59 @@ import { v4 as uuidv4 } from 'uuid'
 import { calculateTotalStats } from '@/utils/statCalculator'
 
 /**
- * Check if an ability can be used at the current floor
+ * Check if an ability can be used at the current floor/depth
  */
-export function canUseAbility(ability: Ability, currentFloor: number): boolean {
-    if (!ability.lastUsedFloor) {
-        // Never used before - can use
-        return true
-    }
+export function canUseAbility(
+    ability: Ability,
+    currentFloor: number,
+    currentDepth?: number
+): boolean {
+    const cooldownType = ability.cooldownType || 'depth' // Default to depth
 
-    const floorsSinceLastUse = currentFloor - ability.lastUsedFloor
-    return floorsSinceLastUse >= ability.cooldown
+    if (cooldownType === 'depth') {
+        if (ability.lastUsedDepth === undefined || currentDepth === undefined) {
+            // Never used before or no depth provided - can use
+            return true
+        }
+        const depthsSinceLastUse = currentDepth - ability.lastUsedDepth
+        return depthsSinceLastUse >= ability.cooldown
+    } else {
+        if (ability.lastUsedFloor === undefined) {
+            // Never used before - can use
+            return true
+        }
+        const floorsSinceLastUse = currentFloor - ability.lastUsedFloor
+        return floorsSinceLastUse >= ability.cooldown
+    }
 }
 
 /**
- * Get remaining cooldown floors for an ability
+ * Get remaining cooldown for an ability (floors or depths depending on cooldownType)
  */
-export function getRemainingCooldown(ability: Ability, currentFloor: number): number {
-    if (!ability.lastUsedFloor) {
-        return 0
-    }
+export function getRemainingCooldown(
+    ability: Ability,
+    currentFloor: number,
+    currentDepth?: number
+): number {
+    const cooldownType = ability.cooldownType || 'depth' // Default to depth
 
-    const floorsSinceLastUse = currentFloor - ability.lastUsedFloor
-    const remaining = ability.cooldown - floorsSinceLastUse
-    return Math.max(0, remaining)
+    console.log('[CD Debug]', ability.name, '- Type:', cooldownType, 'Floor:', currentFloor, 'Depth:', currentDepth, 'LastUsedFloor:', ability.lastUsedFloor, 'LastUsedDepth:', ability.lastUsedDepth)
+
+    if (cooldownType === 'depth') {
+        if (ability.lastUsedDepth === undefined || currentDepth === undefined) {
+            return 0
+        }
+        const depthsSinceLastUse = currentDepth - ability.lastUsedDepth
+        const remaining = ability.cooldown - depthsSinceLastUse
+        return Math.max(0, remaining)
+    } else {
+        if (ability.lastUsedFloor === undefined) {
+            return 0
+        }
+        const floorsSinceLastUse = currentFloor - ability.lastUsedFloor
+        const remaining = ability.cooldown - floorsSinceLastUse
+        return Math.max(0, remaining)
+    }
 }
 
 /**
@@ -49,7 +79,8 @@ export function useAbility(
     hero: Hero,
     abilityId: string,
     currentFloor: number,
-    party: (Hero | null)[]
+    party: (Hero | null)[],
+    currentDepth?: number
 ): {
     hero: Hero
     party: (Hero | null)[]
@@ -68,13 +99,16 @@ export function useAbility(
         }
     }
 
+    const cooldownType = ability.cooldownType || 'depth'
+    const unitName = cooldownType === 'depth' ? 'depth' : 'floor'
+
     // Check if ability can be used
-    if (!canUseAbility(ability, currentFloor)) {
-        const remaining = getRemainingCooldown(ability, currentFloor)
+    if (!canUseAbility(ability, currentFloor, currentDepth)) {
+        const remaining = getRemainingCooldown(ability, currentFloor, currentDepth)
         return {
             hero,
             party,
-            message: `${ability.name} is on cooldown (${remaining} floor${remaining !== 1 ? 's' : ''} remaining)`,
+            message: `${ability.name} is on cooldown (${remaining} ${unitName}${remaining !== 1 ? 's' : ''} remaining)`,
             success: false
         }
     }
@@ -95,9 +129,11 @@ export function useAbility(
     // Update ability usage tracking
     const updatedAbilities = hero.abilities.map(a => {
         if (a.id === abilityId) {
+            console.log('[CD Debug] Using ability:', a.name, 'Setting lastUsedFloor:', currentFloor, 'lastUsedDepth:', currentDepth)
             return {
                 ...a,
                 lastUsedFloor: currentFloor,
+                lastUsedDepth: currentDepth,
                 chargesUsed: (a.chargesUsed || 0) + (a.charges ? 1 : 0)
             }
         }
@@ -108,6 +144,8 @@ export function useAbility(
         ...result.hero,
         abilities: updatedAbilities
     }
+
+    console.log('[CD Debug] Updated hero abilities:', updatedHero.abilities.find(a => a.id === abilityId))
 
     return {
         hero: updatedHero,
@@ -274,6 +312,7 @@ export function resetAbilityCharges(hero: Hero): Hero {
         abilities: hero.abilities.map(ability => ({
             ...ability,
             lastUsedFloor: undefined,
+            lastUsedDepth: undefined,
             chargesUsed: 0
         }))
     }
@@ -282,21 +321,28 @@ export function resetAbilityCharges(hero: Hero): Hero {
 /**
  * Get ability status for UI display
  */
-export function getAbilityStatus(ability: Ability, currentFloor: number): {
+export function getAbilityStatus(
+    ability: Ability,
+    currentFloor: number,
+    currentDepth?: number
+): {
     canUse: boolean
     cooldownRemaining: number
     chargesRemaining: number | null
     statusText: string
 } {
-    const canUse = canUseAbility(ability, currentFloor) && hasChargesRemaining(ability)
-    const cooldownRemaining = getRemainingCooldown(ability, currentFloor)
+    const canUse = canUseAbility(ability, currentFloor, currentDepth) && hasChargesRemaining(ability)
+    const cooldownRemaining = getRemainingCooldown(ability, currentFloor, currentDepth)
     const chargesRemaining = ability.charges
         ? ability.charges - (ability.chargesUsed || 0)
         : null
 
+    const cooldownType = ability.cooldownType || 'depth'
+    const unitName = cooldownType === 'depth' ? 'depth' : 'floor'
+
     let statusText = ''
     if (cooldownRemaining > 0) {
-        statusText = `Cooldown: ${cooldownRemaining} floor${cooldownRemaining !== 1 ? 's' : ''}`
+        statusText = `Cooldown: ${cooldownRemaining} ${unitName}${cooldownRemaining !== 1 ? 's' : ''}`
     } else if (chargesRemaining !== null) {
         statusText = `Charges: ${chargesRemaining}/${ability.charges}`
     } else {

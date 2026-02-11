@@ -161,7 +161,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
                     })
                     .slice(0, 3)
                     .map(ability => {
-                      const status = getAbilityStatus(ability, dungeon.floor)
+                      const status = getAbilityStatus(ability, dungeon.floor, dungeon.depth)
                       // Use the ability's icon component directly, fallback to sparkles
                       const AbilityIcon = ability.icon || GameIcons.GiSparkles
                       const abilityDesc = getAbilityDescription(ability, heroWithIcons)

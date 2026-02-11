@@ -25,8 +25,9 @@ export const createAbilityActions: StateCreator<
       return { success: false, message: 'Hero not found' }
     }
 
-    // Use the current floor for cooldown tracking
-    const result = applyAbility(hero, abilityId, state.dungeon.floor, state.party)
+    // Use the current floor and depth for cooldown tracking
+    console.log('[CD Debug] useAbility - Floor:', state.dungeon.floor, 'Depth:', state.dungeon.depth)
+    const result = applyAbility(hero, abilityId, state.dungeon.floor, state.party, state.dungeon.depth)
 
     if (result.success) {
       // Update the hero and party state
