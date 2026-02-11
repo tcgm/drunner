@@ -19,6 +19,12 @@ import {
     checkDefeat,
     getCurrentCombatant,
     advanceTurn,
+    executeAttack,
+    executeDefend,
+    processHeroTurn,
+    calculateConsumableActionCost,
+    validateActionSequence,
+    getConsumableActionCost,
 } from './index'
 
 // Example: Floor Boss at Floor 5, 20 events completed
@@ -264,3 +270,146 @@ function exampleCombatFlow() {
 // exampleZoneBossWithCustomStats()
 // exampleCombatStateInit()
 // exampleCombatFlow()
+// exampleHeroTurn()
+// exampleActionEconomy()
+
+// Example: Hero Turn Actions
+function exampleHeroTurn() {
+    const mockHero: Hero = {
+        id: 'hero-1',
+        name: 'Warrior',
+        stats: {
+            hp: 80,
+            maxHp: 100,
+            attack: 20,
+            defense: 15,
+            speed: 10,
+            luck: 5,
+            wisdom: 5,
+            charisma: 5
+        },
+        isAlive: true,
+        slots: {
+            weapon: null,
+            armor: null,
+            consumable1: {
+                id: 'potion-1',
+                name: 'Health Potion',
+                description: 'Heals 50 HP',
+                type: 'consumable',
+                rarity: 'common',
+                value: 25,
+                icon: 'GiHealthPotion',
+                stats: {},
+                consumableType: 'potion',
+                effects: [{ type: 'heal', value: 50, target: 'self' }],
+                usableInCombat: true,
+                usableOutOfCombat: true,
+            } as any,
+        },
+        abilities: [],
+        activeEffects: [],
+        class: {} as any,
+        level: 1,
+        xp: 0,
+    } as Hero
+
+    const mockCombatState = {
+        currentHp: 200,
+        maxHp: 350,
+        baseStats: { attack: 30, defense: 10, speed: 15, luck: 10 },
+        abilities: [],
+        attackPatterns: [],
+        currentPhase: 1,
+        combatDepth: 5,
+        floor: 5,
+        depth: 20,
+        itemCooldowns: new Map(),
+        abilityCooldowns: new Map(),
+        activeEffects: [],
+        turnOrder: [],
+        currentTurnIndex: 0,
+    } as any
+
+    // Example 1: Hero attacks
+    console.log('=== Hero Attack ===')
+    const attackResult = executeAttack(mockHero, mockCombatState)
+    console.log('Damage dealt:', attackResult.damage)
+    console.log('Boss HP remaining:', mockCombatState.currentHp)
+
+    // Example 2: Hero defends
+    console.log('\n=== Hero Defend ===')
+    const defendResult = executeDefend(mockHero, mockCombatState)
+    console.log('Defense buff:', defendResult.effects[0].value)
+    console.log('Combat effects:', mockHero.combatEffects)
+
+    // Example 3: Hero uses consumable
+    console.log('\n=== Hero Uses Consumable ===')
+    const context = {
+        hero: mockHero,
+        combatState: mockCombatState,
+        party: [mockHero, null, null, null],
+        actionCostUsed: 0,
+    }
+
+    const actions = [
+        {
+            type: 'useItem' as const,
+            heroId: mockHero.id,
+            item: mockHero.slots.consumable1 as any,
+            itemSlot: 'consumable1',
+        },
+        {
+            type: 'attack' as const,
+            heroId: mockHero.id,
+        },
+    ]
+
+    const turnResult = processHeroTurn(context, actions)
+    console.log('Actions performed:', turnResult.actions.length)
+    console.log('Total action cost:', turnResult.totalActionCost)
+    console.log('Hero HP after heal:', mockHero.stats.hp)
+}
+
+// Example: Action Economy
+function exampleActionEconomy() {
+    const healingPotion = {
+        effects: [{ type: 'heal', value: 50 }],
+    } as any
+
+    const revivePotion = {
+        effects: [{ type: 'revive', value: 50 }],
+    } as any
+
+    console.log('=== Action Economy ===')
+    console.log('Healing potion cost:', getConsumableActionCost(healingPotion)) // 0.33
+    console.log('Revive potion cost:', getConsumableActionCost(revivePotion)) // 1.0
+
+    // Validate action sequence
+    const validSequence = [
+        { type: 'useItem' as const, heroId: 'h1', item: healingPotion },
+        { type: 'useItem' as const, heroId: 'h1', item: healingPotion },
+        { type: 'useItem' as const, heroId: 'h1', item: healingPotion },
+        { type: 'attack' as const, heroId: 'h1' },
+    ]
+
+    const validation = validateActionSequence(validSequence)
+    console.log('\nValid sequence (3 potions + attack):', validation.valid)
+
+    // Calculate cost
+    const cost = calculateConsumableActionCost([
+        healingPotion,
+        healingPotion,
+        healingPotion,
+    ])
+    console.log('Total consumable cost:', cost.totalCost) // 0.99
+    console.log('Total action cost with attack:', cost.totalCost + 1.0) // 1.99 (within 2.0 limit)
+
+    // Invalid sequence (too many main actions)
+    const invalidSequence = [
+        { type: 'attack' as const, heroId: 'h1' },
+        { type: 'defend' as const, heroId: 'h1' },
+    ]
+    const invalidValidation = validateActionSequence(invalidSequence)
+    console.log('\nInvalid sequence (attack + defend):', invalidValidation)
+}

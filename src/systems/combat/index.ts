@@ -87,3 +87,39 @@ export {
     type BossTurnResult,
     type RoundEndResult,
 } from './combatFlow'
+
+// Hero actions
+export {
+    executeAttack,
+    executeDefend,
+    executeFlee,
+    canPerformAction,
+    type HeroAction,
+    type HeroActionType,
+    type HeroActionResult,
+} from './heroActions'
+
+// Hero abilities
+export {
+    executeHeroAbility,
+} from './heroAbilities'
+
+// Item usage and consumables
+export {
+    useConsumable,
+    getConsumableActionCost,
+    isReviveConsumable,
+    getUsableConsumables,
+    type ConsumableUsageResult,
+} from './itemUsage'
+
+// Hero turn processing
+export {
+    processHeroTurn,
+    getAvailableActions,
+    canAffordActionCost,
+    calculateConsumableActionCost,
+    validateActionSequence,
+    type HeroTurnContext,
+    type HeroTurnResult,
+} from './heroTurn'
