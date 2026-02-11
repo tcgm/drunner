@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { CLERIC_ABILITIES } from '@/data/abilities/cleric'
+import { CLERIC_ABILITIES } from '@/data/abilities/clericAbilities'
 
 export const CLERIC: HeroClass = {
   id: 'cleric',

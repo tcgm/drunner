@@ -6,25 +6,25 @@
  */
 
 // Warrior abilities
-export * from './warrior'
+export * from './warriorAbilities'
 
 // Mage abilities
-export * from './mage'
+export * from './mageAbilities'
 
 // Rogue abilities
-export * from './rogue'
+export * from './rogueAbilities'
 
 // Cleric abilities
-export * from './cleric'
+export * from './clericAbilities'
 
 // Ranger abilities
-export * from './ranger'
+export * from './rangerAbilities'
 
 // Paladin abilities
-export * from './paladin'
+export * from './paladinAbilities'
 
 // Necromancer abilities
-export * from './necromancer'
+export * from './necromancerAbilities'
 
 // Bard abilities
-export * from './bard'
+export * from './bardAbilities'
