@@ -183,6 +183,63 @@ export const GAME_CONFIG = {
 
     mentorXpShare: 0.5, // 50% of overflow XP shared with lower level heroes
     defaultHealPercent: 0.5, // 50% max HP when no heal amount specified
+    
+    // Turn-based boss combat
+    turnBased: {
+      enabled: true, // Feature flag for turn-based combat
+      
+      // Boss base stats by tier
+      bossStats: {
+        floorBoss: {
+          baseHp: 200,
+          baseAttack: 30,
+          baseDefense: 10,
+          baseSpeed: 15,
+          baseLuck: 10,
+        },
+        zoneBoss: {
+          baseHp: 500,
+          baseAttack: 50,
+          baseDefense: 20,
+          baseSpeed: 20,
+          baseLuck: 15,
+        },
+        finalBoss: {
+          baseHp: 2000,
+          baseAttack: 100,
+          baseDefense: 40,
+          baseSpeed: 30,
+          baseLuck: 25,
+        },
+      },
+      
+      // Danger contribution weights
+      dangerWeights: {
+        floor: 1.0, // Floors contribute 1:1 to danger
+        depth: 0.05, // Events contribute minimally to danger
+        combatDepth: 0.05, // Combat turns contribute same as events to danger
+      },
+      
+      // First boss tutorial scaling (reduced difficulty)
+      firstBossScaling: {
+        enabled: true,
+        floorThreshold: 1, // Only applies to floor 1 bosses
+        dangerReduction: 0.5, // Reduce effective danger by 50%
+        description: 'First boss is easier to teach combat mechanics',
+      },
+      
+      // Stat scaling per danger point
+      bossScaling: {
+        // Locked at combat start
+        hp: 0.15, // 15% HP per danger point (fixed when combat begins)
+        
+        // Dynamic scaling during combat
+        attack: 0.12, // 12% attack per danger point (recalculated each turn)
+        defense: 0.10, // 10% defense per danger point (recalculated each turn)
+        speed: 0.08, // 8% speed per danger point (recalculated each turn)
+        luck: 0.05, // 5% luck per danger point (recalculated each turn)
+      },
+    },
   },
 
   // Loot Generation
