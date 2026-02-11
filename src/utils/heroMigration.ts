@@ -21,7 +21,7 @@ function recalculateHeroStats(hero: Hero): Hero {
   const gains = currentClass.statGains
   
   const recalculatedStats = {
-    hp: hero.stats.hp, // Keep current HP
+    hp: hero.stats.hp, // Keep current HP - don't clamp as it may exceed base maxHp due to equipment
     maxHp: calculateMaxHp(hero.level, currentClass.baseStats.defense),
     attack: currentClass.baseStats.attack + (levelBonus * gains.attack),
     defense: currentClass.baseStats.defense + (levelBonus * gains.defense),
@@ -34,10 +34,8 @@ function recalculateHeroStats(hero: Hero): Hero {
       : hero.stats.magicPower,
   }
   
-  // Cap HP at new maxHp if it somehow exceeds it
-  if (recalculatedStats.hp > recalculatedStats.maxHp) {
-    recalculatedStats.hp = recalculatedStats.maxHp
-  }
+  // Note: We don't clamp HP here because the hero may have equipment that boosts maxHp
+  // The displayed HP vs maxHp will be handled by calculateTotalStats which adds equipment bonuses
   
   console.log(`[Hero Migration] Recalculated ${hero.name} (${hero.class.name} L${hero.level}): wisdom ${hero.stats.wisdom}→${recalculatedStats.wisdom}, charisma ${hero.stats.charisma}→${recalculatedStats.charisma}`)
   

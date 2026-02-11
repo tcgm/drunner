@@ -7,6 +7,7 @@ import type { StateCreator } from 'zustand'
 import type { GameState, Hero } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
+import { calculateTotalStats } from '@/utils/statCalculator'
 import { getClassById } from '@/data/classes'
 import { sanitizeHeroStats } from './middleware'
 import { loadRunHistory } from './runHistory'
@@ -122,11 +123,13 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
   healParty: () =>
     set((state) => {
       const healHero = (hero: Hero): Hero => {
+        // Heal to effective maxHp (including equipment bonuses)
+        const effectiveMaxHp = calculateTotalStats(hero).maxHp
         return {
           ...hero,
           stats: {
             ...hero.stats,
-            hp: hero.stats.maxHp
+            hp: effectiveMaxHp
           }
         }
       }

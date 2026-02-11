@@ -68,7 +68,7 @@ export function calculateStatsWithEquipment(hero: Hero) {
   const baseMaxHp = GAME_CONFIG.hero.baseHp + (hero.level * GAME_CONFIG.hero.hpPerLevel) + (hero.class.baseStats.defense * GAME_CONFIG.hero.hpPerDefense)
 
   const stats = {
-    hp: hero.stats.hp, // Keep current HP
+    hp: hero.stats.hp, // Keep current HP - DO NOT clamp to base maxHp as it may be higher due to equipment
     maxHp: baseMaxHp,
     attack: hero.class.baseStats.attack + (levelBonus * gains.attack),
     defense: hero.class.baseStats.defense + (levelBonus * gains.defense),
@@ -81,8 +81,9 @@ export function calculateStatsWithEquipment(hero: Hero) {
       : undefined,
   }
   
-  // Ensure HP doesn't exceed maxHp
-  stats.hp = Math.min(stats.hp, stats.maxHp)
+  // Note: We don't clamp HP here because stats.maxHp is the BASE maxHp
+  // The hero's actual HP can exceed this due to equipment bonuses
+  // Use calculateTotalStats(hero).maxHp if you need the effective maxHp for clamping
   
   return stats
 }
