@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiSwordSmithing } from 'react-icons/gi'
 
 /**
  * Rogue: Backstab
@@ -15,5 +16,5 @@ export const BACKSTAB: Ability = {
         value: 30,
         target: 'enemy',
     },
-    icon: 'GiSwordSmithing',
+    icon: GiSwordSmithing,
 }

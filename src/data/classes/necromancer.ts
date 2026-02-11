@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { SUMMON_SKELETON, CURSE, DRAIN_LIFE } from '@/data/abilities'
+import { NECROMANCER_ABILITIES } from '@/data/abilities/necromancer'
 
 export const NECROMANCER: HeroClass = {
   id: 'necromancer',
@@ -24,10 +24,6 @@ export const NECROMANCER: HeroClass = {
     charisma: 2,
     magicPower: 10,
   },
-  abilities: [
-    SUMMON_SKELETON,
-    CURSE,
-    DRAIN_LIFE,
-  ],
+  abilities: NECROMANCER_ABILITIES,
   icon: 'GiDeathSkull',
 }

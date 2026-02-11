@@ -1,57 +1,16 @@
-import type { Ability } from '@/types'
-
 /**
- * Rogue: Backstab
- * High single-target damage
+ * Rogue Abilities
  */
-export const BACKSTAB: Ability = {
-    id: 'backstab',
-    name: 'Backstab',
-    description: 'High single-target damage',
-    cooldown: 2,
-    currentCooldown: 0,
-    effect: {
-        type: 'damage',
-        value: 30,
-        target: 'enemy',
-    },
-    icon: 'GiSwordSmithing',
-}
+export { BACKSTAB } from './backstab'
+export { POISON_BLADE } from './poisonBlade'
+export { DODGE } from './dodge'
 
-/**
- * Rogue: Poison Blade
- * Damage over time
- */
-export const POISON_BLADE: Ability = {
-    id: 'poison-blade',
-    name: 'Poison Blade',
-    description: 'Damage over time',
-    cooldown: 3,
-    currentCooldown: 0,
-    effect: {
-        type: 'debuff',
-        value: 5,
-        target: 'enemy',
-        duration: 3,
-    },
-    icon: 'GiPoisonBottle',
-}
+import { BACKSTAB } from './backstab'
+import { POISON_BLADE } from './poisonBlade'
+import { DODGE } from './dodge'
 
-/**
- * Rogue: Dodge
- * Avoid next attack
- */
-export const DODGE: Ability = {
-    id: 'dodge',
-    name: 'Dodge',
-    description: 'Avoid next attack',
-    cooldown: 3,
-    currentCooldown: 0,
-    effect: {
-        type: 'buff',
-        value: 100,
-        target: 'self',
-        duration: 1,
-    },
-    icon: 'GiDodge',
-}
+export const ROGUE_ABILITIES = [
+    BACKSTAB,
+    DODGE,
+    POISON_BLADE,
+]

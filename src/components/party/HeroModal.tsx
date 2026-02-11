@@ -23,13 +23,15 @@ import { calculateXpForLevel } from '@utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
 import { getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { restoreHeroAbilityIcons } from '@/utils/abilityUtils'
+import { getAbilityDescription } from '@/utils/abilityDisplay'
 
 interface HeroModalProps {
   hero: Hero
@@ -44,6 +46,9 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
   const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables, addItemToDungeonInventory, moveItemToBank } = useGameStore()
   const [swapMode, setSwapMode] = useState<string | null>(null)
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
+
+  // Restore ability icons if missing (handles deserialization issues)
+  const heroWithIcons = useMemo(() => restoreHeroAbilityIcons(hero), [hero])
 
   // Use appropriate autofill function based on context
   const handleAutofill = () => {
@@ -409,35 +414,44 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                     Abilities
                   </Text>
                   <VStack spacing="2%" align="stretch" flex={1} overflowY="auto" minH={0}>
-                    {hero.abilities.length === 0 ? (
+                    {heroWithIcons.abilities.length === 0 ? (
                       <Text fontSize="2xs" color="gray.500" textAlign="center" py={1}>
                         No abilities unlocked yet
                       </Text>
                     ) : (
-                      hero.abilities.map((ability, index) => (
-                        <Box
-                          key={index}
-                          bg="gray.850"
-                          p={1.5}
-                          borderRadius="md"
-                          borderWidth="1px"
-                          borderColor="gray.700"
-                          _hover={{ borderColor: 'orange.500', bg: 'gray.800' }}
-                          transition="all 0.2s"
-                        >
-                          <HStack justify="space-between" mb={0.5}>
-                            <Text fontSize="2xs" fontWeight="bold" color="orange.300" noOfLines={1}>
-                              {ability.name}
-                            </Text>
-                            <Badge colorScheme="purple" fontSize="2xs" px={1}>
-                              {ability.cooldown}
-                            </Badge>
-                          </HStack>
-                          <Text fontSize="2xs" color="gray.400" lineHeight="1.2" noOfLines={2}>
-                            {ability.description}
-                          </Text>
-                        </Box>
-                      ))
+                        heroWithIcons.abilities.map((ability, index) => {
+                          // Use the ability's icon component directly, fallback to sparkles
+                          const AbilityIcon = ability.icon || GameIcons.GiSparkles
+                          const abilityDesc = getAbilityDescription(ability, heroWithIcons)
+
+                          return (
+                            <Box
+                              key={index}
+                              bg="gray.850"
+                              p={1.5}
+                              borderRadius="md"
+                              borderWidth="1px"
+                              borderColor="gray.700"
+                              _hover={{ borderColor: 'orange.500', bg: 'gray.800' }}
+                              transition="all 0.2s"
+                            >
+                              <HStack justify="space-between" mb={0.5}>
+                                <HStack spacing={1}>
+                                  <Icon as={AbilityIcon} boxSize={3} color="purple.400" />
+                                  <Text fontSize="2xs" fontWeight="bold" color="orange.300" noOfLines={1}>
+                                    {ability.name}
+                                  </Text>
+                                </HStack>
+                                <Badge colorScheme="purple" fontSize="2xs" px={1}>
+                                  {ability.cooldown}
+                                </Badge>
+                              </HStack>
+                              <Text fontSize="2xs" color="gray.400" lineHeight="1.2" noOfLines={2}>
+                                {abilityDesc}
+                              </Text>
+                            </Box>
+                          )
+                        })
                     )}
                   </VStack>
                 </Box>

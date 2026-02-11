@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiSparkles } from 'react-icons/gi'
 
 /**
  * Cleric: Bless
@@ -7,14 +8,18 @@ import type { Ability } from '@/types'
 export const BLESS: Ability = {
     id: 'bless',
     name: 'Bless',
-    description: 'Buff ally stats',
+    description: 'Buff ally stats (scales with wisdom)',
     cooldown: 4,
     currentCooldown: 0,
     effect: {
         type: 'buff',
         value: 5,
         target: 'ally',
-        duration: 3,
+        duration: 2,
+        scaling: {
+            stat: 'wisdom',
+            ratio: 0.3
+        }
     },
-    icon: 'GiSparkles',
+    icon: GiSparkles,
 }

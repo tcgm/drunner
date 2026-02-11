@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiVampireDracula } from 'react-icons/gi'
 
 /**
  * Necromancer: Drain Life
@@ -11,9 +12,9 @@ export const DRAIN_LIFE: Ability = {
     cooldown: 2,
     currentCooldown: 0,
     effect: {
-        type: 'damage',
+        type: 'special',
         value: 15,
         target: 'enemy',
     },
-    icon: 'GiVampireDracula',
+    icon: GiVampireDracula,
 }

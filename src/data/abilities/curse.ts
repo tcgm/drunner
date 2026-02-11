@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiCursedStar } from 'react-icons/gi'
 
 /**
  * Necromancer: Curse
@@ -14,7 +15,7 @@ export const CURSE: Ability = {
         type: 'debuff',
         value: 5,
         target: 'enemy',
-        duration: 3,
+        duration: 2,
     },
-    icon: 'GiCursedStar',
+    icon: GiCursedStar,
 }

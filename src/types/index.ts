@@ -25,14 +25,18 @@ export interface Ability {
   charges?: number // Limited uses per run (optional)
   chargesUsed?: number // Charges consumed this run
   effect: AbilityEffect
-  icon?: string // react-icons/gi name
+  icon?: IconType // react-icons icon component
 }
 
 export interface AbilityEffect {
   type: 'damage' | 'heal' | 'buff' | 'debuff' | 'special'
-  value: number
+  value: number // Base value
   target: 'self' | 'ally' | 'enemy' | 'all-allies' | 'all-enemies'
   duration?: number // For buffs/debuffs
+  scaling?: { // Optional stat scaling
+    stat: 'attack' | 'defense' | 'wisdom' | 'magicPower' | 'charisma' | 'luck'
+    ratio: number // Multiplier (e.g., 0.5 = 50% of stat added to base value)
+  }
 }
 
 export interface HeroClass {

@@ -30,15 +30,27 @@ export const createAbilityActions: StateCreator<
 
     if (result.success) {
       // Update the hero and party state
+      // result.hero has the updated abilities with cooldowns
+      // result.party has the updated party with healing/buff effects
       set({
         party: state.party.map(h => {
           if (!h) return null
-          const updatedHero = result.party.find(ph => ph?.id === h.id)
-          return updatedHero || h
+          // Find the updated version from result.party (has healing effects)
+          const partyUpdate = result.party.find(ph => ph?.id === h.id)
+          // If this is the caster, use result.hero which has updated abilities
+          if (h.id === hero.id) {
+            return result.hero
+          }
+          return partyUpdate || h
         }),
         heroRoster: state.heroRoster.map(h => {
-          const updatedHero = result.party.find(ph => ph?.id === h.id) as Hero | undefined
-          return updatedHero || h
+          // Find the updated version from result.party
+          const partyUpdate = result.party.find(ph => ph?.id === h.id) as Hero | undefined
+          // If this is the caster, use result.hero which has updated abilities
+          if (h.id === hero.id) {
+            return result.hero
+          }
+          return partyUpdate || h
         })
       })
     }

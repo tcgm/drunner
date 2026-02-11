@@ -1,56 +1,16 @@
-import type { Ability } from '@/types'
-
 /**
- * Cleric: Heal
- * Restore ally HP
+ * Cleric Abilities
  */
-export const HEAL: Ability = {
-    id: 'heal',
-    name: 'Heal',
-    description: 'Restore ally HP',
-    cooldown: 2,
-    currentCooldown: 0,
-    effect: {
-        type: 'heal',
-        value: 30,
-        target: 'ally',
-    },
-    icon: 'GiHealing',
-}
+export { HEAL } from './heal'
+export { BLESS } from './bless'
+export { HOLY_LIGHT } from './holyLight'
 
-/**
- * Cleric: Bless
- * Buff ally stats
- */
-export const BLESS: Ability = {
-    id: 'bless',
-    name: 'Bless',
-    description: 'Buff ally stats',
-    cooldown: 4,
-    currentCooldown: 0,
-    effect: {
-        type: 'buff',
-        value: 5,
-        target: 'ally',
-        duration: 3,
-    },
-    icon: 'GiSparkles',
-}
+import { HEAL } from './heal'
+import { BLESS } from './bless'
+import { HOLY_LIGHT } from './holyLight'
 
-/**
- * Cleric: Holy Light
- * Damage enemy with minor self heal
- */
-export const HOLY_LIGHT: Ability = {
-    id: 'holy-light',
-    name: 'Holy Light',
-    description: 'Damage enemy with minor self heal',
-    cooldown: 3,
-    currentCooldown: 0,
-    effect: {
-        type: 'damage',
-        value: 15,
-        target: 'enemy',
-    },
-    icon: 'GiSunbeams',
-}
+export const CLERIC_ABILITIES = [
+    HEAL,
+    BLESS,
+    HOLY_LIGHT,
+]

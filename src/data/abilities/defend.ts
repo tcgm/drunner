@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiShield } from 'react-icons/gi'
 
 /**
  * Warrior: Defend
@@ -7,14 +8,18 @@ import type { Ability } from '@/types'
 export const DEFEND: Ability = {
     id: 'defend',
     name: 'Defend',
-    description: 'Reduce incoming damage this turn',
+    description: 'Reduce incoming damage (scales with defense)',
     cooldown: 3,
     currentCooldown: 0,
     effect: {
         type: 'buff',
-        value: 10,
+        value: 5,
         target: 'self',
         duration: 1,
+        scaling: {
+            stat: 'defense',
+            ratio: 0.5
+        }
     },
-    icon: 'GiShield',
+    icon: GiShield,
 }

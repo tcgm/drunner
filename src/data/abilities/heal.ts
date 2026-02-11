@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiHealing } from 'react-icons/gi'
 
 /**
  * Cleric: Heal
@@ -7,13 +8,17 @@ import type { Ability } from '@/types'
 export const HEAL: Ability = {
     id: 'heal',
     name: 'Heal',
-    description: 'Restore ally HP',
+    description: 'Restore ally HP (scales with wisdom)',
     cooldown: 2,
     currentCooldown: 0,
     effect: {
         type: 'heal',
-        value: 30,
+        value: 20,
         target: 'ally',
+        scaling: {
+            stat: 'wisdom',
+            ratio: 0.5
+        }
     },
-    icon: 'GiHealing',
+    icon: GiHealing,
 }

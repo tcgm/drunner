@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiFireball } from 'react-icons/gi'
 
 /**
  * Mage: Fireball
@@ -15,5 +16,5 @@ export const FIREBALL: Ability = {
         value: 25,
         target: 'enemy',
     },
-    icon: 'GiFireball',
+    icon: GiFireball,
 }

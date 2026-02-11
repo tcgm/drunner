@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiPoisonBottle } from 'react-icons/gi'
 
 /**
  * Rogue: Poison Blade
@@ -16,5 +17,5 @@ export const POISON_BLADE: Ability = {
         target: 'enemy',
         duration: 3,
     },
-    icon: 'GiPoisonBottle',
+    icon: GiPoisonBottle,
 }

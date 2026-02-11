@@ -1,57 +1,16 @@
-import type { Ability } from '@/types'
-
 /**
- * Necromancer: Summon Skeleton
- * Create undead minion ally
+ * Necromancer Abilities
  */
-export const SUMMON_SKELETON: Ability = {
-    id: 'summon-skeleton',
-    name: 'Summon Skeleton',
-    description: 'Create undead minion ally',
-    cooldown: 5,
-    currentCooldown: 0,
-    effect: {
-        type: 'special',
-        value: 15,
-        target: 'self',
-        duration: 5,
-    },
-    icon: 'GiSkeletonKey',
-}
+export { SUMMON_SKELETON } from './summonSkeleton'
+export { CURSE } from './curse'
+export { DRAIN_LIFE } from './drainLife'
 
-/**
- * Necromancer: Curse
- * Debuff enemy stats
- */
-export const CURSE: Ability = {
-    id: 'curse',
-    name: 'Curse',
-    description: 'Debuff enemy stats',
-    cooldown: 3,
-    currentCooldown: 0,
-    effect: {
-        type: 'debuff',
-        value: 5,
-        target: 'enemy',
-        duration: 3,
-    },
-    icon: 'GiCursedStar',
-}
+import { SUMMON_SKELETON } from './summonSkeleton'
+import { CURSE } from './curse'
+import { DRAIN_LIFE } from './drainLife'
 
-/**
- * Necromancer: Drain Life
- * Damage enemy and heal self
- */
-export const DRAIN_LIFE: Ability = {
-    id: 'drain-life',
-    name: 'Drain Life',
-    description: 'Damage enemy and heal self',
-    cooldown: 2,
-    currentCooldown: 0,
-    effect: {
-        type: 'damage',
-        value: 15,
-        target: 'enemy',
-    },
-    icon: 'GiVampireDracula',
-}
+export const NECROMANCER_ABILITIES = [
+    SUMMON_SKELETON,
+    CURSE,
+    DRAIN_LIFE,
+]

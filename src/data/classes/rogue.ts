@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { BACKSTAB, DODGE, POISON_BLADE } from '@/data/abilities'
+import { ROGUE_ABILITIES } from '@/data/abilities/rogue'
 
 export const ROGUE: HeroClass = {
   id: 'rogue',
@@ -22,10 +22,6 @@ export const ROGUE: HeroClass = {
     wisdom: 3,
     charisma: 4,
   },
-  abilities: [
-    BACKSTAB,
-    DODGE,
-    POISON_BLADE,
-  ],
+  abilities: ROGUE_ABILITIES,
   icon: 'GiNinjaHeroicStance',
 }

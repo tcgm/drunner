@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { HEAL, BLESS, HOLY_LIGHT } from '@/data/abilities'
+import { CLERIC_ABILITIES } from '@/data/abilities/cleric'
 
 export const CLERIC: HeroClass = {
   id: 'cleric',
@@ -24,10 +24,6 @@ export const CLERIC: HeroClass = {
     charisma: 6,
     magicPower: 7,
   },
-  abilities: [
-    HEAL,
-    BLESS,
-    HOLY_LIGHT,
-  ],
+  abilities: CLERIC_ABILITIES,
   icon: 'GiHolySymbol',
 }

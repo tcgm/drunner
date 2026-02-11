@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiBullseye } from 'react-icons/gi'
 
 /**
  * Ranger: Aimed Shot
@@ -12,8 +13,8 @@ export const AIMED_SHOT: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 18,
+        value: 20,
         target: 'enemy',
     },
-    icon: 'GiBullseye',
+    icon: GiBullseye,
 }

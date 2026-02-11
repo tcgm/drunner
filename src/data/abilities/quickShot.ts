@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiBowArrow } from 'react-icons/gi'
 
 /**
  * Ranger: Quick Shot
@@ -15,5 +16,5 @@ export const QUICK_SHOT: Ability = {
         value: 12,
         target: 'enemy',
     },
-    icon: 'GiBowArrow',
+    icon: GiBowArrow,
 }

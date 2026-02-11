@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiHolySymbol } from 'react-icons/gi'
 
 /**
  * Paladin: Smite
@@ -15,5 +16,5 @@ export const SMITE_PALADIN: Ability = {
         value: 20,
         target: 'enemy',
     },
-    icon: 'GiHolySymbol',
+    icon: GiHolySymbol,
 }

@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { SMITE_PALADIN, LAY_ON_HANDS, DIVINE_SHIELD } from '@/data/abilities'
+import { PALADIN_ABILITIES } from '@/data/abilities/paladin'
 
 export const PALADIN: HeroClass = {
   id: 'paladin',
@@ -24,10 +24,6 @@ export const PALADIN: HeroClass = {
     charisma: 6,
     magicPower: 5,
   },
-  abilities: [
-    SMITE_PALADIN,
-    LAY_ON_HANDS,
-    DIVINE_SHIELD,
-  ],
+  abilities: PALADIN_ABILITIES,
   icon: 'GiTemplarShield',
 }

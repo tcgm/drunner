@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiFootprint } from 'react-icons/gi'
 
 /**
  * Ranger: Track
@@ -15,5 +16,5 @@ export const TRACK: Ability = {
         value: 0,
         target: 'self',
     },
-    icon: 'GiFootprint',
+    icon: GiFootprint,
 }

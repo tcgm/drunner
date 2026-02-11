@@ -1,5 +1,6 @@
 import type { Hero, Ability, AbilityEffect } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 /**
  * Check if an ability can be used at the current floor
@@ -117,6 +118,19 @@ export function useAbility(
 }
 
 /**
+ * Calculate the final effect value with stat scaling
+ */
+function calculateEffectValue(baseValue: number, scaling: AbilityEffect['scaling'], hero: Hero): number {
+    if (!scaling) return baseValue
+
+    const stats = calculateTotalStats(hero)
+    const statValue = stats[scaling.stat] || 0
+    const scaledBonus = Math.floor(statValue * scaling.ratio)
+
+    return baseValue + scaledBonus
+}
+
+/**
  * Apply the actual ability effect based on type
  */
 function applyAbilityEffect(
@@ -134,26 +148,36 @@ function applyAbilityEffect(
     let updatedParty = [...party]
     let message = `${hero.name} used ${ability.name}!`
 
+    // Calculate final effect value with stat scaling
+    const effectValue = calculateEffectValue(effect.value, effect.scaling, hero)
+
     switch (effect.type) {
         case 'heal': {
             const targets = selectTargets(effect.target, hero, party)
             targets.forEach(target => {
-                const healAmount = Math.min(effect.value, target.stats.maxHp - target.stats.hp)
                 const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
                 if (targetIndex !== -1 && updatedParty[targetIndex]) {
+                    const currentTarget = updatedParty[targetIndex]!
+                    const totalStats = calculateTotalStats(currentTarget)
+                    const currentHp = currentTarget.stats.hp
+                    const maxHp = totalStats.maxHp
+                    const healAmount = Math.min(effectValue, maxHp - currentHp)
+                    const newHp = Math.min(currentHp + effectValue, maxHp)
+
                     updatedParty[targetIndex] = {
-                        ...updatedParty[targetIndex]!,
+                        ...currentTarget,
                         stats: {
-                            ...updatedParty[targetIndex]!.stats,
-                            hp: Math.min(target.stats.hp + effect.value, target.stats.maxHp)
+                            ...currentTarget.stats,
+                            hp: newHp
                         }
                     }
 
                     if (target.id === hero.id) {
                         updatedHero = updatedParty[targetIndex]!
                     }
+
+                    message += ` Healed ${target.name} for ${healAmount} HP!`
                 }
-                message += ` Healed ${target.name} for ${healAmount} HP!`
             })
             break
         }
@@ -168,7 +192,7 @@ function applyAbilityEffect(
         case 'damage': {
             // Damage abilities would need enemy targeting
             // For now, just show message
-            message += ` Dealt ${effect.value} damage!`
+            message += ` Dealt ${effectValue} damage!`
             break
         }
 

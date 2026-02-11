@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { FIREBALL, MAGIC_MISSILE, MANA_SHIELD } from '@/data/abilities'
+import { MAGE_ABILITIES } from '@/data/abilities/mage'
 
 export const MAGE: HeroClass = {
   id: 'mage',
@@ -24,10 +24,6 @@ export const MAGE: HeroClass = {
     charisma: 4,
     magicPower: 10,
   },
-  abilities: [
-    FIREBALL,
-    MAGIC_MISSILE,
-    MANA_SHIELD,
-  ],
+  abilities: MAGE_ABILITIES,
   icon: 'GiWizardStaff',
 }

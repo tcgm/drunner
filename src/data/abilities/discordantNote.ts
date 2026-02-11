@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiMicrophone } from 'react-icons/gi'
 
 /**
  * Bard: Discordant Note
@@ -16,5 +17,5 @@ export const DISCORDANT_NOTE: Ability = {
         target: 'enemy',
         duration: 2,
     },
-    icon: 'GiMicrophone',
+    icon: GiMicrophone,
 }

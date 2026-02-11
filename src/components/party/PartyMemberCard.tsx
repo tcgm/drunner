@@ -1,5 +1,5 @@
 import { Box, HStack, VStack, Text, Icon, Tooltip } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hero, Item, Consumable } from '@/types'
 import * as GameIcons from 'react-icons/gi'
@@ -13,6 +13,8 @@ import { useGameStore } from '@/core/gameStore'
 import { useConsumable as applyConsumable } from '@/systems/consumables/consumableManager'
 import { getAbilityStatus } from '@/systems/abilities/abilityManager'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { restoreHeroAbilityIcons } from '@/utils/abilityUtils'
+import { getAbilityDescription } from '@/utils/abilityDisplay'
 import { ItemSlot } from '@components/ui/ItemSlot'
 import { EquipmentPips } from './EquipmentPips'
 import { calculateTotalStats } from '@/utils/statCalculator'
@@ -30,6 +32,9 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
   const [isHovered, setIsHovered] = useState(false)
   const { updateHero, party, dungeon, useAbility: activateAbility } = useGameStore()
   
+  // Restore ability icons if missing (handles deserialization issues)
+  const heroWithIcons = useMemo(() => restoreHeroAbilityIcons(hero), [hero])
+
   const handleEffectComplete = (id: string) => {
     // Filtering is handled by AnimatePresence and the effect completion
   }
@@ -146,64 +151,75 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               />
 
               {/* Abilities row */}
-              {hero.abilities && hero.abilities.length > 0 && (
+              {heroWithIcons.abilities && heroWithIcons.abilities.length > 0 && (
                 <HStack spacing={1} pt={0}>
-                  {hero.abilities.slice(0, 3).map(ability => {
-                    const status = getAbilityStatus(ability, dungeon.floor)
-                    return (
-                      <Tooltip
-                        key={ability.id}
-                        label={`${ability.name}: ${ability.description}\n${status.statusText}`}
-                        fontSize="xs"
-                        placement="top"
-                      >
-                        <Box
-                          w="20px"
-                          h="20px"
-                          bg={status.canUse ? 'purple.900' : 'gray.800'}
-                          borderRadius="md"
-                          borderWidth="1px"
-                          borderColor={status.canUse ? 'purple.500' : 'gray.600'}
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          cursor={status.canUse && hero.isAlive ? 'pointer' : 'not-allowed'}
-                          opacity={status.canUse && hero.isAlive ? 1 : 0.5}
-                          onClick={(e) => {
-                            if (status.canUse && hero.isAlive) {
-                              handleUseAbility(ability.id, e)
-                            }
-                          }}
-                          _hover={status.canUse && hero.isAlive ? {
-                            bg: 'purple.800',
-                            borderColor: 'purple.400'
-                          } : undefined}
-                          position="relative"
+                  {heroWithIcons.abilities
+                    // Filter out combat-only abilities (no combat system yet)
+                    .filter(ability => {
+                      const target = ability.effect.target
+                      return target !== 'enemy' && target !== 'all-enemies'
+                    })
+                    .slice(0, 3)
+                    .map(ability => {
+                      const status = getAbilityStatus(ability, dungeon.floor)
+                      // Use the ability's icon component directly, fallback to sparkles
+                      const AbilityIcon = ability.icon || GameIcons.GiSparkles
+                      const abilityDesc = getAbilityDescription(ability, heroWithIcons)
+
+                      return (
+                        <Tooltip
+                          key={ability.id}
+                          label={`${ability.name}: ${abilityDesc}\n${status.statusText}`}
+                          fontSize="xs"
+                          placement="top"
                         >
-                          <Icon as={GameIcons.GiSparkles} boxSize={3} color={status.canUse ? 'purple.300' : 'gray.500'} />
-                          {status.cooldownRemaining > 0 && (
-                            <Text
-                              position="absolute"
-                              bottom="-2px"
-                              right="-2px"
-                              fontSize="8px"
-                              fontWeight="bold"
-                              color="white"
-                              bg="gray.900"
-                              borderRadius="full"
-                              w="12px"
-                              h="12px"
-                              display="flex"
-                              alignItems="center"
-                              justifyContent="center"
-                            >
-                              {status.cooldownRemaining}
-                            </Text>
-                          )}
-                        </Box>
-                      </Tooltip>
-                    )
-                  })}
+                          <Box
+                            w="20px"
+                            h="20px"
+                            bg={status.canUse ? 'purple.900' : 'gray.800'}
+                            borderRadius="md"
+                            borderWidth="1px"
+                            borderColor={status.canUse ? 'purple.500' : 'gray.600'}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            cursor={status.canUse && hero.isAlive ? 'pointer' : 'not-allowed'}
+                            opacity={status.canUse && hero.isAlive ? 1 : 0.5}
+                            onClick={(e) => {
+                              if (status.canUse && hero.isAlive) {
+                                handleUseAbility(ability.id, e)
+                              }
+                            }}
+                            _hover={status.canUse && hero.isAlive ? {
+                              bg: 'purple.800',
+                              borderColor: 'purple.400'
+                            } : undefined}
+                            position="relative"
+                          >
+                            <Icon as={AbilityIcon} boxSize={3} color={status.canUse ? 'purple.300' : 'gray.500'} />
+                            {status.cooldownRemaining > 0 && (
+                              <Text
+                                position="absolute"
+                                bottom="-2px"
+                                right="-2px"
+                                fontSize="8px"
+                                fontWeight="bold"
+                                color="white"
+                                bg="gray.900"
+                                borderRadius="full"
+                                w="12px"
+                                h="12px"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                              >
+                                {status.cooldownRemaining}
+                              </Text>
+                            )}
+                          </Box>
+                        </Tooltip>
+                      )
+                    })}
                 </HStack>
               )}
             </VStack>

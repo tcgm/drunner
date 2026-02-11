@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { INSPIRE, SONG_OF_REST, DISCORDANT_NOTE } from '@/data/abilities'
+import { BARD_ABILITIES } from '@/data/abilities/bard'
 
 export const BARD: HeroClass = {
   id: 'bard',
@@ -24,10 +24,6 @@ export const BARD: HeroClass = {
     charisma: 8,
     magicPower: 6,
   },
-  abilities: [
-    INSPIRE,
-    SONG_OF_REST,
-    DISCORDANT_NOTE,
-  ],
+  abilities: BARD_ABILITIES,
   icon: 'GiMusicalNotes',
 }

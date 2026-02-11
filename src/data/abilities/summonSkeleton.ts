@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiSkeletonKey } from 'react-icons/gi'
 
 /**
  * Necromancer: Summon Skeleton
@@ -16,5 +17,5 @@ export const SUMMON_SKELETON: Ability = {
         target: 'self',
         duration: 5,
     },
-    icon: 'GiSkeletonKey',
+    icon: GiSkeletonKey,
 }

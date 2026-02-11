@@ -1,19 +1,20 @@
 import type { Ability } from '@/types'
+import { GiSunbeams } from 'react-icons/gi'
 
 /**
  * Cleric: Holy Light
- * Damage enemy with minor self heal
+ * Damage enemy with holy energy
  */
 export const HOLY_LIGHT: Ability = {
     id: 'holy-light',
     name: 'Holy Light',
-    description: 'Damage enemy with minor self heal',
+    description: 'Damage enemy with holy energy',
     cooldown: 3,
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 15,
+        value: 20,
         target: 'enemy',
     },
-    icon: 'GiSunbeams',
+    icon: GiSunbeams,
 }

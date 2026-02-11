@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiPunch } from 'react-icons/gi'
 
 /**
  * Warrior: Power Strike
@@ -15,5 +16,5 @@ export const POWER_STRIKE: Ability = {
         value: 20,
         target: 'enemy',
     },
-    icon: 'GiPunch',
+    icon: GiPunch,
 }

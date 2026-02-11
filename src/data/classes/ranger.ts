@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { AIMED_SHOT, QUICK_SHOT, TRACK } from '@/data/abilities'
+import { RANGER_ABILITIES } from '@/data/abilities/ranger'
 
 export const RANGER: HeroClass = {
   id: 'ranger',
@@ -23,10 +23,6 @@ export const RANGER: HeroClass = {
     charisma: 4,
     magicPower: 2,
   },
-  abilities: [
-    AIMED_SHOT,
-    QUICK_SHOT,
-    TRACK,
-  ],
+  abilities: RANGER_ABILITIES,
   icon: 'GiBowArrow',
 }

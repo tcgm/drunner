@@ -1,5 +1,5 @@
 import type { HeroClass } from '@/types'
-import { POWER_STRIKE, DEFEND, TAUNT } from '@/data/abilities'
+import { WARRIOR_ABILITIES } from '@/data/abilities/warrior'
 
 export const WARRIOR: HeroClass = {
   id: 'warrior',
@@ -23,10 +23,6 @@ export const WARRIOR: HeroClass = {
     charisma: 4,
     magicPower: 2,
   },
-  abilities: [
-    POWER_STRIKE,
-    DEFEND,
-    TAUNT,
-  ],
+  abilities: WARRIOR_ABILITIES,
   icon: 'GiSwordman',
 }

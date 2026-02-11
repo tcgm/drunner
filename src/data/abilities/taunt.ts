@@ -1,4 +1,5 @@
 import type { Ability } from '@/types'
+import { GiScreaming } from 'react-icons/gi'
 
 /**
  * Warrior: Taunt
@@ -16,5 +17,5 @@ export const TAUNT: Ability = {
         target: 'enemy',
         duration: 2,
     },
-    icon: 'GiRoar',
+    icon: GiScreaming,
 }
