@@ -4,7 +4,7 @@
  * This file demonstrates how to use the boss combat system
  */
 
-import type { DungeonEvent, Dungeon } from '@/types'
+import type { DungeonEvent, Dungeon, Hero } from '@/types'
 import {
     calculateDanger,
     applyFirstBossScaling,
@@ -12,6 +12,13 @@ import {
     recalculateDynamicBossStats,
     getBossBaseStats,
     initializeBossCombatState,
+    startCombatRound,
+    processBossTurn,
+    processRoundEnd,
+    checkVictory,
+    checkDefeat,
+    getCurrentCombatant,
+    advanceTurn,
 } from './index'
 
 // Example: Floor Boss at Floor 5, 20 events completed
@@ -159,8 +166,101 @@ function exampleCombatStateInit() {
     // All fields initialized, ready for combat!
 }
 
+// Example: Full Combat Flow
+function exampleCombatFlow() {
+    const mockBossEvent: DungeonEvent = {
+        id: 'example-boss',
+        type: 'boss',
+        title: 'Example Boss',
+        description: 'A test boss',
+        choices: [],
+        depth: 5,
+        bossAbilities: [],
+        attackPatterns: [
+            {
+                id: 'basic-attack',
+                name: 'Basic Attack',
+                weight: 100,
+                attackType: 'single',
+                damageMultiplier: 1.0,
+                description: 'A simple attack',
+            },
+        ],
+    }
+
+    const mockDungeon = {
+        floor: 5,
+        depth: 20,
+        eventsThisFloor: 5,
+        eventsRequiredThisFloor: 5,
+        currentEvent: null,
+        eventHistory: [],
+        eventLog: [],
+        gold: 100,
+        inventory: [],
+    } as Dungeon
+
+    const mockParty: (Hero | null)[] = [
+        {
+            id: 'hero-1',
+            name: 'Warrior',
+            stats: { hp: 100, maxHp: 100, attack: 20, defense: 15, speed: 10, luck: 5, wisdom: 5, charisma: 5 },
+            isAlive: true,
+        } as Hero,
+        null,
+        null,
+        null,
+    ]
+
+    // Initialize combat
+    const combatState = initializeBossCombatState(mockBossEvent, mockDungeon)
+    startCombatRound(combatState, mockParty)
+
+    console.log('=== Combat Round 1 ===')
+    console.log('Turn order:', combatState.turnOrder.map(c => c.id))
+
+    // Simulate combat loop
+    let roundCount = 0
+    while (roundCount < 3) {
+        // Check current combatant
+        const current = getCurrentCombatant(combatState)
+        if (!current) {
+            // Round ended
+            console.log('--- Round End ---')
+            const roundEnd = processRoundEnd(combatState, mockParty)
+            console.log('Status effects:', roundEnd.effectsProcessed)
+            roundCount++
+            continue
+        }
+
+        if (current.type === 'boss') {
+            console.log('Boss turn:')
+            const bossTurn = processBossTurn(combatState, mockParty)
+            console.log('  Healing:', bossTurn.passiveHealing)
+            console.log('  Abilities:', bossTurn.abilitiesUsed.length)
+            console.log('  Attack:', bossTurn.attackResult?.pattern.name)
+        } else {
+            console.log(`Hero ${current.id} turn (skipped for example)`)
+        }
+
+        // Advance turn
+        advanceTurn(combatState)
+
+        // Check victory/defeat
+        if (checkVictory(combatState)) {
+            console.log('=== VICTORY ===')
+            break
+        }
+        if (checkDefeat(mockParty)) {
+            console.log('=== DEFEAT ===')
+            break
+        }
+    }
+}
+
 // Uncomment to run examples
 // exampleFloorBoss()
 // exampleFirstBoss()
 // exampleZoneBossWithCustomStats()
 // exampleCombatStateInit()
+// exampleCombatFlow()

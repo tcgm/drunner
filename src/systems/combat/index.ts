@@ -30,3 +30,60 @@ export {
     initializeBossCombatState,
     updateBossEventWithState,
 } from './combatState'
+
+// Turn order
+export {
+    calculateTurnOrder,
+    getHeroPosition,
+    updateHeroPositions,
+} from './turnOrder'
+
+// Targeting
+export {
+    selectBossTarget,
+    checkPatternCondition,
+} from './targeting'
+
+// Attack patterns
+export {
+    selectAttackPattern,
+    executeAttackPattern,
+    type AttackResult,
+} from './attackPatterns'
+
+// Abilities
+export {
+    checkAbilityTriggers,
+    executeAbility,
+    type AbilityExecutionResult,
+} from './abilities'
+
+// Phase transitions
+export {
+    checkPhaseTransition,
+    executePhaseTransition,
+    type PhaseTransitionResult,
+} from './phases'
+
+// Effects and cooldowns
+export {
+    decrementCooldowns,
+    processEffectDurations,
+    processStatusEffects,
+    applyPassiveHealing,
+    applyStatModifiers,
+} from './effects'
+
+// Combat flow
+export {
+    startCombatRound,
+    processBossTurn,
+    processRoundEnd,
+    checkVictory,
+    checkDefeat,
+    getCurrentCombatant,
+    advanceTurn,
+    isCombatActive,
+    type BossTurnResult,
+    type RoundEndResult,
+} from './combatFlow'
