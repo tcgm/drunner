@@ -8,7 +8,7 @@ import { GiHealing } from 'react-icons/gi'
 export const HEAL: Ability = {
     id: 'heal',
     name: 'Heal',
-    description: 'Restore ally HP (scales with wisdom)',
+    description: 'Restore ally HP (scales with magic power)',
     cooldown: 2,
     currentCooldown: 0,
     effect: {
@@ -16,7 +16,7 @@ export const HEAL: Ability = {
         value: 20,
         target: 'ally',
         scaling: {
-            stat: 'wisdom',
+            stat: 'magicPower',
             ratio: 0.5
         }
     },

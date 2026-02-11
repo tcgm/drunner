@@ -30,7 +30,7 @@ import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
 import { getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'
-import { restoreHeroAbilityIcons } from '@/utils/abilityUtils'
+import { refreshHeroAbilities } from '@/utils/abilityUtils'
 import { getAbilityDescription } from '@/utils/abilityDisplay'
 
 interface HeroModalProps {
@@ -47,8 +47,8 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
   const [swapMode, setSwapMode] = useState<string | null>(null)
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
 
-  // Restore ability icons if missing (handles deserialization issues)
-  const heroWithIcons = useMemo(() => restoreHeroAbilityIcons(hero), [hero])
+  // Refresh abilities from templates (ensures current definitions + icons)
+  const heroWithIcons = useMemo(() => refreshHeroAbilities(hero), [hero])
 
   // Use appropriate autofill function based on context
   const handleAutofill = () => {

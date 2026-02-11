@@ -6,6 +6,7 @@ import type { Dungeon, Run, GameState, Hero, Item } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { migrateHeroArray } from './heroMigration'
 import { migrateItemArray, migrateHeroArrayItems } from './itemMigration'
+import { refreshHeroAbilities } from './abilityUtils'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
 
 // Current save version - increment when breaking changes require migration
@@ -131,6 +132,11 @@ export function migrateGameState(state: GameState): GameState {
   const migratedRosterWithNulls = migrateHeroArrayItems(migratedRoster)
   const migratedRosterFiltered: Hero[] = migratedRosterWithNulls.filter((h): h is Hero => h !== null)
   
+  // Refresh abilities from templates to ensure they have current definitions
+  // This fixes issues where old saved abilities have outdated effects/scaling
+  migratedParty = migratedParty.map(h => h ? refreshHeroAbilities(h) : null)
+  const migratedRosterWithAbilities = migratedRosterFiltered.map(refreshHeroAbilities)
+  
   // Migrate items in inventories
   const migratedBankInventory = migrateItemArray(state.bankInventory)
   const migratedOverflowInventory = migrateItemArray(state.overflowInventory)
@@ -150,7 +156,7 @@ export function migrateGameState(state: GameState): GameState {
     ...state,
     saveVersion: CURRENT_SAVE_VERSION, // Mark this save as current version
     party: migratedParty,
-    heroRoster: migratedRosterFiltered,
+    heroRoster: migratedRosterWithAbilities,
     bankInventory: finalBankInventory,
     overflowInventory: migratedOverflowInventory,
     // Ensure critical fields are preserved with defaults if missing

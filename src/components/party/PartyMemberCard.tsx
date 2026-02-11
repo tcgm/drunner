@@ -13,7 +13,7 @@ import { useGameStore } from '@/core/gameStore'
 import { useConsumable as applyConsumable } from '@/systems/consumables/consumableManager'
 import { getAbilityStatus } from '@/systems/abilities/abilityManager'
 import { restoreItemIcon } from '@/utils/itemUtils'
-import { restoreHeroAbilityIcons } from '@/utils/abilityUtils'
+import { refreshHeroAbilities } from '@/utils/abilityUtils'
 import { getAbilityDescription } from '@/utils/abilityDisplay'
 import { ItemSlot } from '@components/ui/ItemSlot'
 import { EquipmentPips } from './EquipmentPips'
@@ -33,7 +33,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
   const { updateHero, party, dungeon, useAbility: activateAbility } = useGameStore()
   
   // Restore ability icons if missing (handles deserialization issues)
-  const heroWithIcons = useMemo(() => restoreHeroAbilityIcons(hero), [hero])
+  const heroWithIcons = useMemo(() => refreshHeroAbilities(hero), [hero])
 
   const handleEffectComplete = (id: string) => {
     // Filtering is handled by AnimatePresence and the effect completion
