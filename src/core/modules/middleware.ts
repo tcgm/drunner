@@ -45,23 +45,10 @@ export function sanitizeHeroStats(hero: Hero): Hero {
 }
 
 /**
- * Middleware that sanitizes party state after every mutation AND on subscribe
+ * Middleware that sanitizes party state after every mutation
  */
 export const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>): StateCreator<T> =>
   (set, get, api) => {
-    // Subscribe to changes and sanitize on every access
-    api.subscribe(() => {
-      const state = get() as GameState
-      if (state.party?.length > 0) {
-        const needsSanitization = state.party.some(hero =>
-          hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp) || !hero.activeEffects)
-        )
-        if (needsSanitization) {
-          set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats }, activeEffects: h.activeEffects || [] }) : null) } as Partial<T>)
-        }
-      }
-    })
-
     return config(
       (args) => {
         set(args)

@@ -231,13 +231,13 @@ export const GAME_CONFIG = {
       // Stat scaling per danger point
       bossScaling: {
         // Locked at combat start
-        hp: 0.15, // 15% HP per danger point (fixed when combat begins)
+        hp: 0.35, // 35% HP per danger point (fixed when combat begins)
         
         // Dynamic scaling during combat
-        attack: 0.12, // 12% attack per danger point (recalculated each turn)
-        defense: 0.10, // 10% defense per danger point (recalculated each turn)
-        speed: 0.08, // 8% speed per danger point (recalculated each turn)
-        luck: 0.05, // 5% luck per danger point (recalculated each turn)
+        attack: 1.2, // 12% attack per danger point (recalculated each turn)
+        defense: 2, // 2 defense per danger point (recalculated each turn)
+        speed: 1, // 8% speed per danger point (recalculated each turn)
+        luck: 2.5, // 5% luck per danger point (recalculated each turn)
       },
     },
   },

@@ -1,6 +1,7 @@
 import type { Hero, Ability, AbilityEffect } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { refreshAbilityFromTemplate } from '@/utils/abilityUtils'
 
 /**
  * Check if an ability can be used at the current floor/depth
@@ -15,6 +16,10 @@ export function canUseAbility(
     if (cooldownType === 'depth') {
         if (ability.lastUsedDepth === undefined || currentDepth === undefined) {
             // Never used before or no depth provided - can use
+            return true
+        }
+        // If lastUsedDepth is higher than current depth, it's stale data from previous run - treat as available
+        if (ability.lastUsedDepth > currentDepth) {
             return true
         }
         const depthsSinceLastUse = currentDepth - ability.lastUsedDepth
@@ -45,16 +50,22 @@ export function getRemainingCooldown(
         if (ability.lastUsedDepth === undefined || currentDepth === undefined) {
             return 0
         }
+        // If lastUsedDepth is higher than current depth, it's stale data from previous run - no cooldown
+        if (ability.lastUsedDepth > currentDepth) {
+            return 0
+        }
         const depthsSinceLastUse = currentDepth - ability.lastUsedDepth
         const remaining = ability.cooldown - depthsSinceLastUse
-        return Math.max(0, remaining)
+        // Cap at max cooldown (safety check for edge cases)
+        return Math.min(Math.max(0, remaining), ability.cooldown)
     } else {
         if (ability.lastUsedFloor === undefined) {
             return 0
         }
         const floorsSinceLastUse = currentFloor - ability.lastUsedFloor
         const remaining = ability.cooldown - floorsSinceLastUse
-        return Math.max(0, remaining)
+        // Cap at max cooldown (safety check for edge cases)
+        return Math.min(Math.max(0, remaining), ability.cooldown)
     }
 }
 
@@ -88,9 +99,9 @@ export function useAbility(
     success: boolean
 } {
     // Find the ability
-    const ability = hero.abilities.find(a => a.id === abilityId)
+    const savedAbility = hero.abilities.find(a => a.id === abilityId)
 
-    if (!ability) {
+    if (!savedAbility) {
         return {
             hero,
             party,
@@ -98,6 +109,9 @@ export function useAbility(
             success: false
         }
     }
+
+    // Refresh ability from template to ensure current definition with scaling
+    const ability = refreshAbilityFromTemplate(savedAbility)
 
     const cooldownType = ability.cooldownType || 'depth'
     const unitName = cooldownType === 'depth' ? 'depth' : 'floor'
@@ -126,18 +140,23 @@ export function useAbility(
     // Apply the ability effect
     const result = applyAbilityEffect(hero, ability, party, currentFloor)
 
-    // Update ability usage tracking
+    // Update ability usage tracking - refresh all abilities to ensure current definitions
     const updatedAbilities = hero.abilities.map(a => {
+        // Refresh all abilities from template to ensure current definitions
+        const refreshed = refreshAbilityFromTemplate(a)
+
         if (a.id === abilityId) {
-            console.log('[CD Debug] Using ability:', a.name, 'Setting lastUsedFloor:', currentFloor, 'lastUsedDepth:', currentDepth)
+            const cooldownType = ability.cooldownType || 'depth'
+            console.log('[CD Debug] Using ability:', a.name, 'Setting lastUsedFloor:', currentFloor, 'lastUsedDepth:', currentDepth, 'cooldownType:', cooldownType)
+            // Update runtime state for the used ability
             return {
-                ...a,
+                ...refreshed,
                 lastUsedFloor: currentFloor,
                 lastUsedDepth: currentDepth,
                 chargesUsed: (a.chargesUsed || 0) + (a.charges ? 1 : 0)
             }
         }
-        return a
+        return refreshed
     })
 
     const updatedHero = {

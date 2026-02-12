@@ -10,6 +10,7 @@ export const DEFEND: Ability = {
     name: 'Defend',
     description: 'Reduce incoming damage (scales with defense)',
     cooldown: 3,
+    cooldownType: 'depth',
     currentCooldown: 0,
     effect: {
         type: 'buff',

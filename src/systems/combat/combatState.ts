@@ -6,6 +6,7 @@
 
 import type { BossCombatState, DungeonEvent, Dungeon } from '@/types'
 import { calculateInitialBossStats, getBossBaseStats } from './bossStats'
+import { HEAVY_STRIKE, WHIRLWIND, RAPID_STRIKES } from '@/data/attackPatterns/boss'
 
 /**
  * Initialize boss combat state at the start of battle
@@ -25,6 +26,12 @@ export function initializeBossCombatState(
     const initialStats = calculateInitialBossStats(bossEvent, floor, depth)
     const baseStats = getBossBaseStats(bossEvent)
 
+    // Use default attack patterns if none provided
+    const defaultAttackPatterns = [HEAVY_STRIKE, WHIRLWIND, RAPID_STRIKES]
+    const attackPatterns = bossEvent.attackPatterns && bossEvent.attackPatterns.length > 0
+        ? [...bossEvent.attackPatterns]
+        : defaultAttackPatterns
+
     // Initialize combat state
     const combatState: BossCombatState = {
         currentHp: initialStats.currentHp,
@@ -36,7 +43,7 @@ export function initializeBossCombatState(
             luck: baseStats.baseLuck,
         },
         abilities: bossEvent.bossAbilities ? [...bossEvent.bossAbilities] : [],
-        attackPatterns: bossEvent.attackPatterns ? [...bossEvent.attackPatterns] : [],
+        attackPatterns: attackPatterns,
         phases: bossEvent.phases ? [...bossEvent.phases] : undefined,
         currentPhase: 1, // Start at phase 1
         combatChoices: bossEvent.combatChoices ? [...bossEvent.combatChoices] : undefined,

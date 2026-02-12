@@ -4,11 +4,16 @@
  * Action buttons for attack, defend, abilities, items, and flee
  */
 
-import { Box, HStack, VStack, Button, Text, Badge, Icon, Tooltip, SimpleGrid } from '@chakra-ui/react'
+import {
+    Box, HStack, VStack, Button, Text, Badge, Icon, Tooltip, SimpleGrid,
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter,
+    useDisclosure
+} from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import type { Hero, BossCombatState } from '@/types'
-import { GiSwordman, GiShield, GiSparkles, GiHealthPotion, GiRunningNinja } from 'react-icons/gi'
+import { GiSwordman, GiShield, GiSparkles, GiRunningNinja } from 'react-icons/gi'
 import { useMemo } from 'react'
+import { ItemSlot } from '@/components/ui/ItemSlot'
 
 const MotionButton = motion.create(Button)
 
@@ -29,6 +34,8 @@ export default function CombatActionsPanel({
     onEndTurn,
     onFlee,
 }: CombatActionsPanelProps) {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
     // Get current active hero
     const activeHero = useMemo(() => {
         if (!combatState.turnOrder || combatState.turnOrder.length === 0) return null
@@ -76,24 +83,24 @@ export default function CombatActionsPanel({
             borderWidth="2px"
             borderColor="orange.600"
             borderRadius="lg"
-            p={4}
+            p={2}
             boxShadow="0 0 20px rgba(249, 115, 22, 0.4)"
         >
             {isBossTurn ? (
                 /* Boss Turn - Show End Turn Button */
-                <VStack spacing={3}>
-                    <Text fontSize="lg" fontWeight="bold" color="red.400" textAlign="center">
+                <VStack spacing={1}>
+                    <Text fontSize="md" fontWeight="bold" color="red.400" textAlign="center">
                         ⚔️ BOSS TURN ⚔️
                     </Text>
                     <Button
-                        size="lg"
+                        size="md"
                         colorScheme="orange"
                         w="full"
                         isLoading={isProcessing}
                         onClick={onEndTurn}
-                        leftIcon={<Icon as={GiSwordman} boxSize={6} />}
-                        h="60px"
-                        fontSize="xl"
+                        leftIcon={<Icon as={GiSwordman} boxSize={5} />}
+                        h="50px"
+                        fontSize="lg"
                     >
                         Process Boss Turn
                     </Button>
@@ -105,40 +112,40 @@ export default function CombatActionsPanel({
                 </Text>
             ) : (
                 /* Hero Turn - Show Actions */
-                <VStack spacing={4} align="stretch">
+                        <VStack spacing={2} align="stretch">
                     {/* Active Hero Info */}
                     <HStack justify="space-between" p={2} bg="orange.900" borderRadius="md">
                         <VStack align="start" spacing={0}>
-                            <Text fontSize="sm" color="gray.400">Active Hero</Text>
-                            <Text fontSize="lg" fontWeight="bold" color="white">
+                                    <Text fontSize="xs" color="gray.400">Active Hero</Text>
+                                    <Text fontSize="md" fontWeight="bold" color="white">
                                 {activeHero.name}
                             </Text>
                         </VStack>
                         <VStack align="end" spacing={0}>
-                            <Text fontSize="xs" color="gray.400">Action Cost</Text>
-                            <Badge colorScheme="orange" fontSize="lg" px={3}>
+                                    <Text fontSize="2xs" color="gray.400">Action Cost</Text>
+                                    <Badge colorScheme="orange" fontSize="sm" px={2}>
                                 {actionCost.toFixed(1)} / 2.0
                             </Badge>
                         </VStack>
                     </HStack>
 
                     {/* Main Actions */}
-                    <SimpleGrid columns={3} spacing={2}>
+                            <SimpleGrid columns={2} spacing={2}>
                         {/* Attack */}
                         <Tooltip label={`Deal damage to boss (Cost: ${actionCost})`}>
                             <MotionButton
                                 colorScheme="red"
-                                size="lg"
-                                h="80px"
+                                        size="md"
+                                        h="60px"
                                 flexDirection="column"
-                                gap={1}
+                                        gap={0}
                                 isDisabled={isProcessing || !activeHero.isAlive}
                                 onClick={() => onAction(activeHero.id, 'attack')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                <Icon as={GiSwordman} boxSize={8} />
-                                <Text fontSize="sm">Attack</Text>
+                                        <Icon as={GiSwordman} boxSize={6} />
+                                        <Text fontSize="xs">Attack</Text>
                                 <Badge colorScheme="red" fontSize="2xs">{actionCost}</Badge>
                             </MotionButton>
                         </Tooltip>
@@ -147,128 +154,163 @@ export default function CombatActionsPanel({
                         <Tooltip label={`Increase defense for this turn (Cost: ${actionCost})`}>
                             <MotionButton
                                 colorScheme="blue"
-                                size="lg"
-                                h="80px"
+                                        size="md"
+                                        h="60px"
                                 flexDirection="column"
-                                gap={1}
+                                        gap={0}
                                 isDisabled={isProcessing || !activeHero.isAlive}
                                 onClick={() => onAction(activeHero.id, 'defend')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                <Icon as={GiShield} boxSize={8} />
-                                <Text fontSize="sm">Defend</Text>
+                                        <Icon as={GiShield} boxSize={6} />
+                                        <Text fontSize="xs">Defend</Text>
                                 <Badge colorScheme="blue" fontSize="2xs">{actionCost}</Badge>
                             </MotionButton>
-                        </Tooltip>
-
-                        {/* Flee */}
-                        <Tooltip label="Attempt to flee from combat">
-                            <MotionButton
-                                colorScheme="purple"
-                                size="lg"
-                                h="80px"
-                                flexDirection="column"
-                                gap={1}
-                                isDisabled={isProcessing}
-                                onClick={onFlee}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Icon as={GiRunningNinja} boxSize={8} />
-                                <Text fontSize="sm">Flee</Text>
-                                <Badge colorScheme="purple" fontSize="2xs">Exit</Badge>
-                            </MotionButton>
-                        </Tooltip>
+                                </Tooltip>
                     </SimpleGrid>
 
                     {/* Abilities */}
                     {usableAbilities.length > 0 && (
-                        <VStack align="stretch" spacing={2}>
-                            <Text fontSize="xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
+                                <VStack align="stretch" spacing={1}>
+                                    <Text fontSize="2xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
                                 ABILITIES
                             </Text>
-                            <SimpleGrid columns={2} spacing={2}>
+                                    <VStack spacing={1}>
                                 {usableAbilities.slice(0, 4).map((ability) => (
-                                    <Tooltip
+                                    <MotionButton
                                         key={ability.id}
-                                        label={`${ability.description} (Cost: ${actionCost})`}
+                                        colorScheme="cyan"
+                                        size="sm"
+                                        w="full"
+                                        h="auto"
+                                        py={1}
+                                        isDisabled={isProcessing || !activeHero.isAlive}
+                                        onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
                                     >
-                                        <MotionButton
-                                            colorScheme="cyan"
-                                            size="sm"
-                                            h="60px"
-                                            flexDirection="column"
-                                            gap={1}
-                                            fontSize="xs"
-                                            isDisabled={isProcessing || !activeHero.isAlive}
-                                            onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                        >
-                                            <Icon as={GiSparkles} boxSize={5} />
-                                            <Text noOfLines={1}>{ability.name}</Text>
-                                            {ability.cooldown > 0 && (
-                                                <Badge colorScheme="cyan" fontSize="2xs">CD:{ability.cooldown}</Badge>
-                                            )}
-                                        </MotionButton>
-                                    </Tooltip>
+                                        <HStack w="full" justify="space-between" px={1}>
+                                            <HStack spacing={2}>
+                                                <Icon as={GiSparkles} boxSize={5} />
+                                                <VStack align="start" spacing={0}>
+                                                    <Text fontSize="xs" fontWeight="bold">{ability.name}</Text>
+                                                    <Text fontSize="2xs" color="cyan.200" fontStyle="italic" noOfLines={1}>
+                                                        {ability.description}
+                                                    </Text>
+                                                </VStack>
+                                            </HStack>
+                                            <HStack spacing={1}>
+                                                {ability.cooldown > 0 && (
+                                                    <Badge colorScheme="cyan" fontSize="2xs">CD:{ability.cooldown}</Badge>
+                                                )}
+                                                <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
+                                            </HStack>
+                                        </HStack>
+                                    </MotionButton>
                                 ))}
-                            </SimpleGrid>
+                                    </VStack>
                         </VStack>
                     )}
 
                     {/* Consumables */}
                     {usableItems.length > 0 && (
-                        <VStack align="stretch" spacing={2}>
+                                <VStack align="stretch" spacing={1}>
                             <HStack justify="space-between">
-                                <Text fontSize="xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
+                                        <Text fontSize="2xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
                                     CONSUMABLES
                                 </Text>
                                 <Badge colorScheme="green" fontSize="2xs">
                                     Cost: {consumableCost} each
                                 </Badge>
                             </HStack>
-                            <SimpleGrid columns={3} spacing={2}>
-                                {usableItems.slice(0, 3).map(({ slot, item }) => {
+                                    <SimpleGrid columns={4} spacing={1}>
+                                        {usableItems.slice(0, 4).map(({ slot, item }) => {
                                     if (!item) return null
+                                            const consumable = item as import('@/types').Consumable
+                                            const isRevive = consumable.effects?.some(effect => effect.type === 'revive') ?? false
+                                            const canUse = (isRevive ? !activeHero.isAlive : activeHero.isAlive) && !isProcessing
+
                                     return (
-                                        <Tooltip
+                                        <Box
                                             key={slot}
-                                            label={`${item.description} (Cost: ${consumableCost})`}
+                                            borderRadius="lg"
+                                            opacity={canUse ? 1 : 0.4}
+                                            cursor={canUse ? 'pointer' : 'not-allowed'}
+                                            boxShadow={isRevive && canUse ? '0 0 8px 2px rgba(255, 215, 0, 0.6)' : undefined}
+                                            transition="box-shadow 0.3s ease, opacity 0.2s ease"
+                                            _hover={isRevive && canUse ? { boxShadow: '0 0 12px 3px rgba(255, 215, 0, 0.8)' } : undefined}
                                         >
-                                            <MotionButton
-                                                colorScheme="green"
+                                            <ItemSlot
+                                                item={item}
                                                 size="sm"
-                                                h="50px"
-                                                flexDirection="column"
-                                                gap={1}
-                                                fontSize="2xs"
-                                                isDisabled={isProcessing || !activeHero.isAlive}
-                                                onClick={() => onAction(activeHero.id, `item:${slot}`)}
-                                                whileHover={{ scale: 1.05 }}
-                                                whileTap={{ scale: 0.95 }}
-                                            >
-                                                <Icon as={GiHealthPotion} boxSize={4} />
-                                                <Text noOfLines={1}>{item.name}</Text>
-                                            </MotionButton>
-                                        </Tooltip>
+                                                isClickable={canUse}
+                                                iconOnly={true}
+                                                onClick={canUse ? () => {
+                                                    onAction(activeHero.id, `item:${slot}`)
+                                                } : undefined}
+                                            />
+                                        </Box>
                                     )
                                 })}
                             </SimpleGrid>
                         </VStack>
                     )}
 
-                    {/* End Turn Button */}
-                    <Button
-                        colorScheme="orange"
-                        size="lg"
-                        isLoading={isProcessing}
-                        onClick={onEndTurn}
-                        isDisabled={!activeHero.isAlive}
-                    >
-                        ⏩ End Turn
-                    </Button>
+                            {/* Flee Button */}
+                            <Button
+                                colorScheme="purple"
+                                variant="outline"
+                                size="sm"
+                                isDisabled={isProcessing}
+                                onClick={onOpen}
+                                leftIcon={<Icon as={GiRunningNinja} />}
+                            >
+                                Flee from Combat
+                            </Button>
+
+                            {/* Flee Confirmation Modal */}
+                            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                                <ModalOverlay bg="blackAlpha.800" />
+                                <ModalContent bg="gray.800" borderColor="purple.500" borderWidth="2px">
+                                    <ModalHeader color="purple.300">⚠️ Flee from Combat?</ModalHeader>
+                                    <ModalBody>
+                                        <VStack align="start" spacing={3}>
+                                            <Text color="white">
+                                                Are you sure you want to flee from this boss battle?
+                                            </Text>
+                                            <VStack align="start" spacing={1} w="full" p={3} bg="red.900" borderRadius="md">
+                                                <Text fontSize="sm" fontWeight="bold" color="red.300">
+                                                    Consequences:
+                                                </Text>
+                                                <Text fontSize="sm" color="red.200">
+                                                    • You will lose this battle
+                                                </Text>
+                                                <Text fontSize="sm" color="red.200">
+                                                    • No rewards will be earned
+                                                </Text>
+                                                <Text fontSize="sm" color="red.200">
+                                                    • Boss will remain undefeated
+                                                </Text>
+                                            </VStack>
+                                        </VStack>
+                                    </ModalBody>
+                                    <ModalFooter gap={3}>
+                                        <Button colorScheme="gray" onClick={onClose}>
+                                            Stay and Fight
+                                        </Button>
+                                        <Button 
+                                            colorScheme="purple"
+                                            onClick={() => {
+                                                onClose()
+                                                onFlee()
+                                            }}
+                                        >
+                                            Flee
+                                        </Button>
+                                    </ModalFooter>
+                                </ModalContent>
+                            </Modal>
                 </VStack>
             )}
         </Box>

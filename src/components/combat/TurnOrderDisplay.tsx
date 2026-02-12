@@ -175,7 +175,10 @@ export default function TurnOrderDisplay({ combatState, party }: TurnOrderDispla
                     borderColor="purple.600"
                 >
                     <Text fontSize="xs" color="purple.200" textAlign="center">
-                        Turn {currentIndex + 1} / {turnOrder.length}
+                        {currentIndex >= turnOrder.length
+                            ? `Round Complete`
+                            : `Turn ${currentIndex + 1} / ${turnOrder.length}`
+                        }
                     </Text>
                 </Box>
             </VStack>

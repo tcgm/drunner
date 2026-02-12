@@ -10,6 +10,7 @@ import { useMemo, useEffect, useState } from 'react'
 import type { DungeonEvent, BossCombatState } from '@/types'
 import * as GameIcons from 'react-icons/gi'
 import { GiSkullCrossedBones, GiCrownedSkull, GiDragonHead } from 'react-icons/gi'
+import { recalculateDynamicBossStats } from '@/systems/combat/bossStats'
 
 const MotionBox = motion.create(Box)
 const MotionProgress = motion.create(Progress)
@@ -18,11 +19,13 @@ interface BossDisplayProps {
     event: DungeonEvent
     combatState: BossCombatState
     onPhaseChange?: (phase: number) => void
+    isActing?: boolean // New prop to indicate boss is performing an action
 }
 
-export default function BossDisplay({ event, combatState, onPhaseChange }: BossDisplayProps) {
+export default function BossDisplay({ event, combatState, onPhaseChange, isActing }: BossDisplayProps) {
     const [previousPhase, setPreviousPhase] = useState(combatState.currentPhase)
     const [shake, setShake] = useState(false)
+    const [previousHp, setPreviousHp] = useState(combatState.currentHp)
 
     // Detect phase changes
     useEffect(() => {
@@ -34,15 +37,47 @@ export default function BossDisplay({ event, combatState, onPhaseChange }: BossD
         }
     }, [combatState.currentPhase, previousPhase, onPhaseChange])
 
+    // Detect damage taken
+    useEffect(() => {
+        if (combatState.currentHp < previousHp) {
+            setShake(true)
+            setTimeout(() => setShake(false), 300)
+        }
+        setPreviousHp(combatState.currentHp)
+    }, [combatState.currentHp, previousHp])
+
     // Calculate health percentage
     const healthPercent = useMemo(() => {
         return (combatState.currentHp / combatState.maxHp) * 100
     }, [combatState.currentHp, combatState.maxHp])
 
-    // Determine boss tier for styling based on event type and stats
-    const isFinalBoss = event.id.includes('final') || combatState.maxHp > 1500
-    const isZoneBoss = event.id.includes('zone') || event.id.includes('major') || combatState.maxHp > 400
+    // Calculate current scaled stats for display
+    const scaledStats = useMemo(() => {
+        const stats = recalculateDynamicBossStats(
+            {
+                baseHp: 0, // Not needed for recalc
+                baseAttack: combatState.baseStats.attack,
+                baseDefense: combatState.baseStats.defense,
+                baseSpeed: combatState.baseStats.speed,
+                baseLuck: combatState.baseStats.luck
+            },
+            combatState.floor,
+            combatState.depth,
+            combatState.combatDepth,
+            combatState.currentHp,
+            combatState.maxHp
+        )
+        return stats
+    }, [combatState.baseStats, combatState.floor, combatState.depth, combatState.combatDepth, combatState.currentHp, combatState.maxHp])
+
+    // Determine boss tier based on dungeon generation flags
+    // isFinalBoss: Floor 100 final boss
+    // isZoneBoss: Major milestone bosses (floors 10, 20, 30, etc.)
+    // Otherwise: Regular floor boss
+    const isFinalBoss = event.isFinalBoss ?? false
+    const isZoneBoss = event.isZoneBoss ?? false
     const tierColor = isFinalBoss ? 'red' : isZoneBoss ? 'purple' : 'pink'
+    const tierLabel = isFinalBoss ? 'FINAL BOSS' : isZoneBoss ? 'ZONE BOSS' : 'FLOOR BOSS'
 
     // Boss icon - safely get from GameIcons
     const iconName = typeof event.icon === 'string' ? event.icon : event.icon?.name
@@ -69,14 +104,37 @@ export default function BossDisplay({ event, combatState, onPhaseChange }: BossD
             w="full"
             bg="blackAlpha.700"
             borderWidth="3px"
-            borderColor={`${tierColor}.500`}
+            borderColor={isActing ? 'orange.400' : `${tierColor}.500`}
             borderRadius="xl"
             p={6}
-            boxShadow={`0 0 40px ${glowColor}, inset 0 0 30px ${glowColor}`}
+            boxShadow={
+                isActing
+                    ? `0 0 40px rgba(249, 115, 22, 0.8), inset 0 0 30px rgba(249, 115, 22, 0.6)`
+                    : `0 0 40px ${glowColor}, inset 0 0 30px ${glowColor}`
+            }
             position="relative"
             overflow="hidden"
-            animate={shake ? { x: [-5, 5, -5, 5, 0] } : {}}
-            transition={{ duration: 0.5 }}
+            animate={
+                shake
+                    ? { x: [-5, 5, -5, 5, 0] }
+                    : isActing
+                        ? {
+                            boxShadow: [
+                                `0 0 40px rgba(249, 115, 22, 0.8), inset 0 0 30px rgba(249, 115, 22, 0.6)`,
+                                `0 0 60px rgba(249, 115, 22, 1), inset 0 0 40px rgba(249, 115, 22, 0.8)`,
+                                `0 0 40px rgba(249, 115, 22, 0.8), inset 0 0 30px rgba(249, 115, 22, 0.6)`
+                            ]
+                        }
+                        : {}
+            }
+            // @ts-ignore - framer motion types
+            transition={
+                shake
+                    ? { duration: 0.5 }
+                    : isActing
+                        ? { repeat: Infinity, duration: 1.5 }
+                        : {}
+            }
         >
             {/* Background Glow Effect */}
             <Box
@@ -160,7 +218,7 @@ export default function BossDisplay({ event, combatState, onPhaseChange }: BossD
                                 textTransform="uppercase"
                                 letterSpacing="wider"
                             >
-                                {isFinalBoss ? '👑 Final Boss' : isZoneBoss ? '⚔️ Zone Boss' : '🛡️ Floor Boss'}
+                                {isFinalBoss ? '👑 ' : isZoneBoss ? '⚔️ ' : '🛡️ '}{tierLabel}
                             </Badge>
 
                             {/* Boss Stats */}
@@ -168,19 +226,25 @@ export default function BossDisplay({ event, combatState, onPhaseChange }: BossD
                                 <HStack spacing={1}>
                                     <Text fontSize="sm" color="gray.400">ATK:</Text>
                                     <Text fontSize="sm" fontWeight="bold" color="red.300">
-                                        {combatState.baseStats.attack}
+                                        {scaledStats.attack}
                                     </Text>
                                 </HStack>
                                 <HStack spacing={1}>
                                     <Text fontSize="sm" color="gray.400">DEF:</Text>
                                     <Text fontSize="sm" fontWeight="bold" color="blue.300">
-                                        {combatState.baseStats.defense}
+                                        {scaledStats.defense}
                                     </Text>
                                 </HStack>
                                 <HStack spacing={1}>
                                     <Text fontSize="sm" color="gray.400">SPD:</Text>
                                     <Text fontSize="sm" fontWeight="bold" color="green.300">
-                                        {combatState.baseStats.speed}
+                                        {scaledStats.speed}
+                                    </Text>
+                                </HStack>
+                                <HStack spacing={1}>
+                                    <Text fontSize="sm" color="gray.400">LCK:</Text>
+                                    <Text fontSize="sm" fontWeight="bold" color="yellow.300">
+                                        {scaledStats.luck}
                                     </Text>
                                 </HStack>
                             </HStack>

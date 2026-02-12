@@ -7,6 +7,7 @@
 import type { Hero, BossCombatState, Ability, Consumable } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
+import { recalculateDynamicBossStats } from './bossStats'
 
 export type HeroActionType =
     | 'attack'
@@ -50,18 +51,35 @@ export function executeAttack(
 ): HeroActionResult {
     const heroStats = calculateTotalStats(hero)
 
+    // Get boss's current scaled stats
+    const scaledBossStats = recalculateDynamicBossStats(
+        {
+            baseHp: 0, // Not needed
+            baseAttack: combatState.baseStats.attack,
+            baseDefense: combatState.baseStats.defense,
+            baseSpeed: combatState.baseStats.speed,
+            baseLuck: combatState.baseStats.luck
+        },
+        combatState.floor,
+        combatState.depth,
+        combatState.combatDepth,
+        combatState.currentHp,
+        combatState.maxHp
+    )
+
     // Calculate base damage
     let baseDamage = heroStats.attack
 
-    // Crit check
-    const critChance = heroStats.luck / 1000 // 1% per 10 luck
+    // Crit check (hero luck vs boss luck)
+    // Boss luck counters hero's crit chance
+    const netLuck = Math.max(0, heroStats.luck - scaledBossStats.luck)
+    const critChance = netLuck / 1000 // 1% per 10 net luck
     const isCrit = Math.random() < critChance
     if (isCrit) {
         baseDamage = Math.round(baseDamage * 2)
     }
 
-    // Get boss defense (with current scaling)
-    const bossDefense = combatState.baseStats.defense
+    const bossDefense = scaledBossStats.defense
 
     // Apply defense reduction
     const finalDamage = applyDefenseReduction(baseDamage, bossDefense)

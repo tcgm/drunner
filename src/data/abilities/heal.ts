@@ -10,6 +10,7 @@ export const HEAL: Ability = {
     name: 'Heal',
     description: 'Restore ally HP (scales with magic power)',
     cooldown: 2,
+    cooldownType: 'depth',
     currentCooldown: 0,
     effect: {
         type: 'heal',

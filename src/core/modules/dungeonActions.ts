@@ -13,6 +13,7 @@ import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { processUniqueEffects } from '@/systems/items/uniqueEffects'
 import { applyPenaltyToParty } from './statActions'
 import { saveRunHistory, loadRunHistory } from './runHistory'
+import { resetPartyCooldowns } from '@/utils/abilityUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
 
 export interface DungeonActionsSlice {
@@ -37,15 +38,15 @@ export const createDungeonActions: StateCreator<
 
 
       // Penalty should already be applied by endGame
-      // Revive all party members and full heal at dungeon start
-      const healedParty = state.party.map(hero => hero ? ({
+      // Revive all party members, full heal, and reset ability cooldowns at dungeon start
+      const healedParty = resetPartyCooldowns(state.party.map(hero => hero ? ({
         ...hero,
         isAlive: true,
         stats: {
           ...hero.stats,
           hp: calculateTotalStats(hero).maxHp
         }
-      }) : null)
+      }) : null))
 
       // Update roster with healed heroes
       const updatedRoster = state.heroRoster.map(rosterHero => {

@@ -5,9 +5,9 @@
  */
 
 import './combat-animations.css'
-import { Box, VStack, HStack, useToast } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, useToast } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { DungeonEvent, Hero, BossCombatState } from '@/types'
 import BossDisplay from './BossDisplay'
 import PartyHealthDisplay from './PartyHealthDisplay'
@@ -25,6 +25,7 @@ import {
     executeHeroAbility,
     useConsumable,
     advanceTurn,
+    getCurrentCombatant,
 } from '@/systems/combat'
 
 const MotionBox = motion.create(Box)
@@ -55,6 +56,9 @@ export default function BossCombatScreen({
 }: BossCombatScreenProps) {
     const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
+    const [updateTrigger, setUpdateTrigger] = useState(0)
+    const [isBossActing, setIsBossActing] = useState(false)
+    const combatInitialized = useRef(false)
     const toast = useToast()
 
     // Add log entry helper
@@ -75,18 +79,117 @@ export default function BossCombatScreen({
         setCombatLog(prev => [...prev, entry].slice(-50)) // Keep last 50 entries
     }
 
+    // Helper to process boss turn with animations and delays
+    const processBossTurnWithAnimations = async (bossTurnResult: any) => {
+        setIsBossActing(true)
+
+        // Passive healing animation
+        if (bossTurnResult.passiveHealing) {
+            addLogEntry('heal', `Boss regenerates ${bossTurnResult.passiveHealing} HP`, 'boss', bossTurnResult.passiveHealing)
+            setUpdateTrigger(prev => prev + 1)
+            await new Promise(resolve => setTimeout(resolve, 600))
+        }
+
+        // Phase transition animation
+        if (bossTurnResult.phaseTransition) {
+            addLogEntry('phase', `Boss enters Phase ${bossTurnResult.phaseTransition.newPhase}!`)
+            setUpdateTrigger(prev => prev + 1)
+            await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+
+        // Abilities animations
+        if (bossTurnResult.abilitiesUsed.length > 0) {
+            for (const abilityResult of bossTurnResult.abilitiesUsed) {
+                addLogEntry('ability', `Boss uses ${abilityResult.ability.name}!`)
+                setUpdateTrigger(prev => prev + 1)
+                await new Promise(resolve => setTimeout(resolve, 500))
+
+                // Show each effect with delay
+                if (abilityResult.effects) {
+                    for (const effect of abilityResult.effects) {
+                        if (effect.description) {
+                            addLogEntry('action', effect.description)
+                            setUpdateTrigger(prev => prev + 1)
+                            await new Promise(resolve => setTimeout(resolve, 400))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Attack animation
+        if (bossTurnResult.attackResult) {
+            const pattern = bossTurnResult.attackResult.pattern
+            if (pattern) {
+                addLogEntry('action', `Boss uses ${pattern.name}!`)
+                setUpdateTrigger(prev => prev + 1)
+                await new Promise(resolve => setTimeout(resolve, 700))
+            }
+
+            // Show damage with delays between each target
+            if (bossTurnResult.attackResult.damage && bossTurnResult.attackResult.damage.length > 0) {
+                for (const dmg of bossTurnResult.attackResult.damage) {
+                    if (dmg.isDodge) {
+                        addLogEntry('action', `${dmg.heroName} dodged!`)
+                    } else {
+                        const critText = dmg.isCrit ? ' (Critical Hit!)' : ''
+                        addLogEntry('damage', `${dmg.heroName} takes ${dmg.damage} damage${critText}`, dmg.heroId, dmg.damage)
+                    }
+                    setUpdateTrigger(prev => prev + 1)
+                    await new Promise(resolve => setTimeout(resolve, 500))
+                }
+            } else {
+                addLogEntry('action', 'Boss attacks but misses!')
+                setUpdateTrigger(prev => prev + 1)
+                await new Promise(resolve => setTimeout(resolve, 500))
+            }
+        } else {
+            addLogEntry('action', 'Boss readies for the next attack...')
+            setUpdateTrigger(prev => prev + 1)
+            await new Promise(resolve => setTimeout(resolve, 500))
+        }
+
+        setIsBossActing(false)
+    }
+
     // Initialize combat on mount
     useEffect(() => {
-        if (event.combatState) {
+        if (event.combatState && !combatInitialized.current) {
+            combatInitialized.current = true
             addLogEntry('turn', 'Combat begins!')
             // Start first round (modifies state in place)
             startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
+
+            // Process boss turns if boss goes first
+            const processInitialBossTurns = async () => {
+                let currentCombatant = getCurrentCombatant(event.combatState!)
+                while (currentCombatant && currentCombatant.type === 'boss') {
+                    await new Promise(resolve => setTimeout(resolve, 800))
+                    addLogEntry('turn', 'Processing boss turn...')
+                    setUpdateTrigger(prev => prev + 1)
+                    await new Promise(resolve => setTimeout(resolve, 400))
+
+                    const bossTurnResult = processBossTurn(event.combatState!, party.filter(h => h !== null) as Hero[])
+
+                    // Animate boss actions with delays
+                    await processBossTurnWithAnimations(bossTurnResult)
+
+                    // Advance turn
+                    const continues = advanceTurn(event.combatState!)
+                    if (!continues) {
+                        break
+                    }
+                    currentCombatant = getCurrentCombatant(event.combatState!)
+                }
+            }
+
+            processInitialBossTurns()
         }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Check victory/defeat conditions
     useEffect(() => {
-        if (!event.combatState) return
+        if (!event.combatState || isProcessing) return
 
         const victory = checkVictory(event.combatState)
         const defeat = checkDefeat(party.filter(h => h !== null) as Hero[])
@@ -98,7 +201,7 @@ export default function BossCombatScreen({
             addLogEntry('phase', '💀 Defeat... Your party has fallen...')
             setTimeout(() => onDefeat(), 2000)
         }
-    }, [event.combatState, party, onVictory, onDefeat])
+    }, [updateTrigger, event.combatState, party, onVictory, onDefeat, isProcessing])
 
     const handleHeroAction = async (heroId: string, action: string) => {
         if (isProcessing || !event.combatState) return
@@ -155,7 +258,66 @@ export default function BossCombatScreen({
             }
 
             // Advance to next turn
-            advanceTurn(event.combatState)
+            const roundContinues = advanceTurn(event.combatState)
+
+            // Force update to check victory
+            setUpdateTrigger(prev => prev + 1)
+
+            // Check if boss is defeated before processing boss turn
+            if (checkVictory(event.combatState)) {
+                setIsProcessing(false)
+                return
+            }
+
+            // If round ended after hero turn, start new round
+            if (!roundContinues) {
+                processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+                addLogEntry('turn', `Round ${event.combatState.combatDepth} complete`)
+                await new Promise(resolve => setTimeout(resolve, 400))
+                startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
+                setUpdateTrigger(prev => prev + 1)
+            }
+
+            // Process any consecutive boss turns until we reach the next hero turn or end of round
+            let currentCombatant = getCurrentCombatant(event.combatState)
+            while (currentCombatant && currentCombatant.type === 'boss') {
+                // Process boss turn
+                await new Promise(resolve => setTimeout(resolve, 800))
+                addLogEntry('turn', 'Processing boss turn...')
+                setUpdateTrigger(prev => prev + 1)
+                await new Promise(resolve => setTimeout(resolve, 400))
+
+                const bossTurnResult = processBossTurn(event.combatState, party.filter(h => h !== null) as Hero[])
+
+                // Animate boss actions with delays
+                await processBossTurnWithAnimations(bossTurnResult)
+
+                // Check for hero defeat after boss turn
+                if (checkDefeat(party.filter(h => h !== null) as Hero[])) {
+                    setIsProcessing(false)
+                    return
+                }
+
+                // Advance to next turn
+                const continues = advanceTurn(event.combatState)
+                if (!continues) {
+                    // End of round - process round end and start new round
+                    processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+                    addLogEntry('turn', `Round ${event.combatState.combatDepth} complete`)
+                    startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
+                    setUpdateTrigger(prev => prev + 1)
+                    // Update currentCombatant to reflect the new round
+                    currentCombatant = getCurrentCombatant(event.combatState)
+                    // Continue loop to check if boss goes first in new round
+                    continue
+                }
+
+                // Check next combatant
+                currentCombatant = getCurrentCombatant(event.combatState)
+            }
+
+            // Note: Round end is now handled inside the while loop
+            // No need for duplicate round-end-processing here
         } catch (error) {
             console.error('Hero action error:', error)
             toast({
@@ -174,26 +336,15 @@ export default function BossCombatScreen({
 
         setIsProcessing(true)
         addLogEntry('turn', 'Processing boss turn...')
+        setUpdateTrigger(prev => prev + 1)
+        await new Promise(resolve => setTimeout(resolve, 400))
 
         try {
             // Process boss turn (returns result object)
             const bossTurnResult = processBossTurn(event.combatState, party.filter(h => h !== null) as Hero[])
 
-            // Log boss actions
-            if (bossTurnResult.passiveHealing) {
-                addLogEntry('heal', `Boss regenerates ${bossTurnResult.passiveHealing} HP`, 'boss', bossTurnResult.passiveHealing)
-            }
-            if (bossTurnResult.phaseTransition) {
-                addLogEntry('phase', `Boss transitions to Phase ${bossTurnResult.phaseTransition.newPhase}!`)
-            }
-            if (bossTurnResult.abilitiesUsed.length > 0) {
-                bossTurnResult.abilitiesUsed.forEach(ability => {
-                    addLogEntry('ability', `Boss uses ${ability.name}!`)
-                })
-            }
-            if (bossTurnResult.attackResult) {
-                addLogEntry('damage', 'Boss attacks!', bossTurnResult.attackResult.targets?.[0])
-            }
+            // Animate boss actions with delays
+            await processBossTurnWithAnimations(bossTurnResult)
 
             // End round (modifies state in place, returns result object)
             processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
@@ -213,6 +364,21 @@ export default function BossCombatScreen({
         }
 
         setIsProcessing(false)
+    }
+
+    // Handler for using consumables from party display
+    const handleUseConsumableFromParty = (heroId: string, slot: string) => {
+        // Only allow consumable use during hero's turn and not during boss actions
+        if (isProcessing || isBossActing) return
+
+        const currentCombatant = getCurrentCombatant(event.combatState!)
+        if (!currentCombatant || currentCombatant.id !== heroId) {
+            // Not this hero's turn
+            return
+        }
+
+        // Use the existing hero action handler
+        handleHeroAction(heroId, `item:${slot}`)
     }
 
     if (!event.combatState) {
@@ -263,63 +429,107 @@ export default function BossCombatScreen({
                 zIndex={0}
             />
 
-            {/* Main Combat Layout */}
-            <VStack
+            {/* Main Combat Layout - Three Column Design */}
+            <HStack
                 position="relative"
                 zIndex={1}
                 h="full"
-                spacing={0}
-                justify="space-between"
+                spacing={3}
+                align="stretch"
                 p={4}
             >
-                {/* Top Section - Boss Display */}
-                <Box w="full" flex="0 0 auto">
-                    <BossDisplay
-                        event={event}
-                        combatState={combatState}
-                        onPhaseChange={(phase: number) => addLogEntry('phase', `Boss enters Phase ${phase}!`)}
-                    />
-                </Box>
-
-                {/* Middle Section - Turn Order & Combat Log */}
-                <HStack
-                    w="full"
-                    flex="1"
+                {/* Left Sidebar - Turn Order & Combat Info */}
+                <VStack
+                    flex="0 0 250px"
                     spacing={4}
                     align="stretch"
-                    minH={0}
+                    h="full"
                 >
-                    {/* Turn Order */}
-                    <Box flex="0 0 200px">
-                        <TurnOrderDisplay
+                    <TurnOrderDisplay
+                        combatState={combatState}
+                        party={activeHeroes}
+                    />
+
+                    {/* Combat Stats */}
+                    <Box
+                        bg="blackAlpha.700"
+                        borderRadius="lg"
+                        border="1px solid"
+                        borderColor="whiteAlpha.300"
+                        p={3}
+                        flex="1"
+                    >
+                        <VStack align="stretch" spacing={2} fontSize="sm">
+                            <Box>
+                                <Text color="whiteAlpha.600">Round</Text>
+                                <Text color="white" fontSize="xl" fontWeight="bold">
+                                    {combatState.combatDepth}
+                                </Text>
+                            </Box>
+                            <Box>
+                                <Text color="whiteAlpha.600">Boss Phase</Text>
+                                <Text color="white" fontSize="xl" fontWeight="bold">
+                                    {combatState.currentPhase + 1}
+                                </Text>
+                            </Box>
+                        </VStack>
+                    </Box>
+                </VStack>
+
+                {/* Center Column - Boss & Party */}
+                <VStack
+                    flex="1"
+                    spacing={6}
+                    justify="space-between"
+                    align="stretch"
+                    h="full"
+                    minW={0}
+                >
+                    {/* Boss Display */}
+                    <Box flex="0 0 auto">
+                        <BossDisplay
+                            event={event}
                             combatState={combatState}
+                            isActing={isBossActing}
+                            onPhaseChange={(phase: number) => addLogEntry('phase', `Boss enters Phase ${phase}!`)}
+                        />
+                    </Box>
+
+                    {/* Party Health Display */}
+                    <Box flex="0 0 auto" w="full">
+                        <PartyHealthDisplay
                             party={activeHeroes}
+                            combatState={combatState}
+                            onUseConsumable={handleUseConsumableFromParty}
+                        />
+                    </Box>
+                </VStack>
+
+                {/* Right Sidebar - Combat Actions & Log */}
+                <VStack
+                    flex="0 0 250px"
+                    spacing={1}
+                    align="stretch"
+                    h="full"
+                >
+                    {/* Combat Actions */}
+                    <Box flex="0 0 auto">
+                        <CombatActionsPanel
+                            party={activeHeroes}
+                            combatState={combatState}
+                            isProcessing={isProcessing}
+                            onAction={handleHeroAction}
+                            onEndTurn={handleEndTurn}
+                            onFlee={onFlee}
                         />
                     </Box>
 
                     {/* Combat Log */}
-                    <Box flex="1" minW={0}>
+                    <Box flex="1" minH={0}>
                         <CombatLog entries={combatLog} />
                     </Box>
-                </HStack>
-
-                {/* Bottom Section - Party & Actions */}
-                <VStack w="full" spacing={3} flex="0 0 auto">
-                    <PartyHealthDisplay
-                        party={activeHeroes}
-                        combatState={combatState}
-                    />
-
-                    <CombatActionsPanel
-                        party={activeHeroes}
-                        combatState={combatState}
-                        isProcessing={isProcessing}
-                        onAction={handleHeroAction}
-                        onEndTurn={handleEndTurn}
-                        onFlee={onFlee}
-                    />
                 </VStack>
-            </VStack>
+            </HStack>
 
             {/* Victory/Defeat Overlay */}
             <AnimatePresence>

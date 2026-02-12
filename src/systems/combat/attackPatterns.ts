@@ -124,15 +124,21 @@ export function executeAttackPattern(
             baseDamage = Math.round(baseDamage * pattern.aoeDamageReduction)
         }
 
-        // Crit check
-        const critChance = pattern.critChance ?? (bossStats.luck / 1000) // Default crit from luck
+        // Crit check (boss luck vs hero luck)
+        // Hero luck counters boss's crit chance
+        const baseCritChance = pattern.critChance ?? 0.05 // Default 5% base crit if no pattern crit
+        const luckDifference = bossStats.luck - heroStats.luck
+        const luckCritBonus = Math.max(0, luckDifference) / 1000 // Only positive difference adds to crit
+        const critChance = Math.min(0.95, baseCritChance + luckCritBonus) // Cap at 95%
         const isCrit = Math.random() < critChance
         if (isCrit) {
             baseDamage = Math.round(baseDamage * 2) // 2x damage on crit
         }
 
-        // Dodge check (hero luck affects dodge chance)
-        const dodgeChance = heroStats.luck / 1000 // 1% per 10 luck
+        // Dodge check (hero luck vs boss luck)
+        // Boss luck counters hero's dodge chance
+        const netLuck = Math.max(0, heroStats.luck - bossStats.luck)
+        const dodgeChance = netLuck / 1000 // 1% per 10 net luck
         const isDodge = Math.random() < dodgeChance
 
         let finalDamage = 0

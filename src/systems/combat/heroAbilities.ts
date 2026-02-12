@@ -4,10 +4,11 @@
  * Handles hero ability execution during combat
  */
 
-import type { Hero, BossCombatState, Ability, AbilityEffect } from '@/types'
+import type { Hero, BossCombatState, Ability, AbilityEffect, Stats } from '@/types'
 import type { HeroActionResult } from './heroActions'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
+import { recalculateDynamicBossStats } from './bossStats'
 
 /**
  * Execute hero ability during combat
@@ -41,8 +42,9 @@ export function executeHeroAbility(
     // Calculate effective value with scaling
     let effectiveValue = effect.value
     if (effect.scaling) {
-        const scalingStat = heroStats[effect.scaling.stat] || 0
-        effectiveValue += Math.round(scalingStat * effect.scaling.ratio)
+        const scalingStat = heroStats[effect.scaling.stat as keyof Stats]
+        const scalingValue = (typeof scalingStat === 'number' ? scalingStat : 0)
+        effectiveValue += Math.round(scalingValue * effect.scaling.ratio)
     }
 
     // Process effect based on type
@@ -98,24 +100,18 @@ export function executeHeroAbility(
             break
     }
 
-    // Set cooldown
+    // Set cooldown for combat (turn-based)
     const cooldownKey = `${hero.id}-${ability.id}`
     combatState.abilityCooldowns.set(cooldownKey, ability.cooldown)
 
-    // Track ability usage in hero's ability state
-    const heroAbility = hero.abilities.find(a => a.id === ability.id)
-    if (heroAbility) {
-        // Update cooldown tracking
-        if (ability.cooldownType === 'floor') {
-            heroAbility.lastUsedFloor = combatState.floor
-        } else {
-            heroAbility.lastUsedDepth = combatState.depth + combatState.combatDepth
-        }
+    // Note: Global cooldowns (lastUsedFloor/lastUsedDepth) are NOT updated during combat
+    // They will be updated when combat ends if needed
+    // Combat uses its own turn-based cooldown system via combatState.abilityCooldowns
 
-        // Track charges
-        if (heroAbility.charges !== undefined) {
-            heroAbility.chargesUsed = (heroAbility.chargesUsed || 0) + 1
-        }
+    // Track charges
+    const heroAbility = hero.abilities.find(a => a.id === ability.id)
+    if (heroAbility && heroAbility.charges !== undefined) {
+        heroAbility.chargesUsed = (heroAbility.chargesUsed || 0) + 1
     }
 
     return result
@@ -135,8 +131,22 @@ function processDamageEffect(
     let totalDamage = 0
 
     if (effect.target === 'enemy' || effect.target === 'all-enemies') {
-        // Damage boss
-        const bossDefense = combatState.baseStats.defense
+        // Damage boss - use current scaled defense
+        const scaledBossStats = recalculateDynamicBossStats(
+            {
+                baseHp: 0,
+                baseAttack: combatState.baseStats.attack,
+                baseDefense: combatState.baseStats.defense,
+                baseSpeed: combatState.baseStats.speed,
+                baseLuck: combatState.baseStats.luck
+            },
+            combatState.floor,
+            combatState.depth,
+            combatState.combatDepth,
+            combatState.currentHp,
+            combatState.maxHp
+        )
+        const bossDefense = scaledBossStats.defense
         const finalDamage = applyDefenseReduction(value, bossDefense)
         const actualDamage = Math.max(1, finalDamage)
 

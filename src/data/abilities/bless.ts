@@ -10,6 +10,7 @@ export const BLESS: Ability = {
     name: 'Bless',
     description: 'Buff ally stats (scales with wisdom)',
     cooldown: 4,
+    cooldownType: 'depth',
     currentCooldown: 0,
     effect: {
         type: 'buff',

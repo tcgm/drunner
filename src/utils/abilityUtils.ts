@@ -47,12 +47,24 @@ export function refreshAbilityFromTemplate(ability: Ability): Ability {
     }
 
     // Use template for all static data, preserve runtime state from saved ability
-    return {
+    const refreshed: Ability = {
         ...template, // Get fresh definition (name, description, effect, scaling, cooldown, etc.)
-        lastUsedFloor: ability.lastUsedFloor, // Preserve cooldown state
-        chargesUsed: ability.chargesUsed, // Preserve charge usage
+        cooldownType: template.cooldownType || 'depth', // Explicitly set cooldownType with default
         // Note: icon comes from template
     }
+
+    // Only set runtime fields if they exist (don't override with undefined)
+    if (ability.lastUsedFloor !== undefined) {
+        refreshed.lastUsedFloor = ability.lastUsedFloor
+    }
+    if (ability.lastUsedDepth !== undefined) {
+        refreshed.lastUsedDepth = ability.lastUsedDepth
+    }
+    if (ability.chargesUsed !== undefined) {
+        refreshed.chargesUsed = ability.chargesUsed
+    }
+
+    return refreshed
 }
 
 /**
@@ -91,4 +103,28 @@ export function restorePartyAbilityIcons(party: (Hero | null)[]): (Hero | null)[
  */
 export function refreshPartyAbilities(party: (Hero | null)[]): (Hero | null)[] {
     return party.map(hero => hero ? refreshHeroAbilities(hero) : null)
+}
+
+/**
+ * Reset ability cooldowns and charges for a hero
+ * Used when starting a new dungeon run
+ */
+export function resetAbilityCooldowns(hero: Hero): Hero {
+    return {
+        ...hero,
+        abilities: hero.abilities.map(ability => ({
+            ...ability,
+            lastUsedFloor: undefined,
+            lastUsedDepth: undefined,
+            chargesUsed: 0
+        }))
+    }
+}
+
+/**
+ * Reset ability cooldowns and charges for entire party
+ * Used when starting a new dungeon run
+ */
+export function resetPartyCooldowns(party: (Hero | null)[]): (Hero | null)[] {
+    return party.map(hero => hero ? resetAbilityCooldowns(hero) : null)
 }
