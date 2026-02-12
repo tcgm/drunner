@@ -235,7 +235,21 @@ export default function BossCombatScreen({
                         event.combatState,
                         party.filter(h => h !== null) as Hero[]
                     )
-                    addLogEntry('ability', result.message)
+                    // Log the ability effects
+                    if (result.damage) {
+                        addLogEntry('damage', `${hero.name} used ${ability.name} for ${result.damage} damage!`, 'boss', result.damage)
+                    } else if (result.healing) {
+                        addLogEntry('heal', `${hero.name} used ${ability.name} to heal ${result.healing} HP!`, hero.id, result.healing)
+                    } else {
+                        addLogEntry('ability', result.message)
+                    }
+                    
+                    // Log additional effects
+                    for (const effect of result.effects) {
+                        if (effect.description && !effect.description.includes('healed') && !effect.description.includes('damage')) {
+                            addLogEntry('buff', effect.description)
+                        }
+                    }
                 }
             } else if (action.startsWith('item:')) {
                 const slot = action.split(':')[1]
@@ -302,7 +316,19 @@ export default function BossCombatScreen({
                 const continues = advanceTurn(event.combatState)
                 if (!continues) {
                     // End of round - process round end and start new round
-                    processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+                    const roundEndResult = processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+                    
+                    // Log status effects (HoTs, DoTs, etc.)
+                    if (roundEndResult.effectsProcessed && roundEndResult.effectsProcessed.length > 0) {
+                        for (const effect of roundEndResult.effectsProcessed) {
+                            if (effect.healing) {
+                                addLogEntry('heal', `${effect.target} regenerates ${effect.healing} HP from ${effect.effectName}`, effect.target, effect.healing)
+                            } else if (effect.damage) {
+                                addLogEntry('damage', `${effect.target} takes ${effect.damage} damage from ${effect.effectName}`, effect.target, effect.damage)
+                            }
+                        }
+                    }
+                    
                     addLogEntry('turn', `Round ${event.combatState.combatDepth} complete`)
                     startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
                     setUpdateTrigger(prev => prev + 1)
@@ -347,7 +373,18 @@ export default function BossCombatScreen({
             await processBossTurnWithAnimations(bossTurnResult)
 
             // End round (modifies state in place, returns result object)
-            processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+            const roundEndResult = processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+
+            // Log status effects (HoTs, DoTs, etc.)
+            if (roundEndResult.effectsProcessed && roundEndResult.effectsProcessed.length > 0) {
+                for (const effect of roundEndResult.effectsProcessed) {
+                    if (effect.healing) {
+                        addLogEntry('heal', `${effect.target} regenerates ${effect.healing} HP from ${effect.effectName}`, effect.target, effect.healing)
+                    } else if (effect.damage) {
+                        addLogEntry('damage', `${effect.target} takes ${effect.damage} damage from ${effect.effectName}`, effect.target, effect.damage)
+                    }
+                }
+            }
 
             addLogEntry('turn', `Round ${event.combatState.combatDepth} complete`)
 

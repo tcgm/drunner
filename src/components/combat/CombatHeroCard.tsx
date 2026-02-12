@@ -9,7 +9,7 @@ import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
-import { GiHeartPlus, GiSwordWound, GiSkullCrossedBones } from 'react-icons/gi'
+import { GiHeartPlus, GiSwordWound, GiSkullCrossedBones, GiSparkles } from 'react-icons/gi'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import StatBar from '@/components/ui/StatBar'
 import { EquipmentPips } from '@/components/party/EquipmentPips'
@@ -38,6 +38,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
     const effects = hero.combatEffects || []
     const buffs = effects.filter(e => e.type === 'buff')
     const debuffs = effects.filter(e => e.type === 'debuff')
+    const statusEffects = effects.filter(e => e.type === 'status')
 
     const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
 
@@ -151,6 +152,22 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                                     </Badge>
                                 </Tooltip>
                             ))}
+                            {statusEffects.slice(0, 2).map((effect) => {
+                                // Determine badge color and icon based on effect behavior
+                                const isHeal = effect.behavior?.type === 'healPerTurn'
+                                const isDamage = effect.behavior?.type === 'damagePerTurn'
+                                const colorScheme = isHeal ? 'cyan' : isDamage ? 'orange' : 'purple'
+                                const icon = isHeal ? GiHeartPlus : isDamage ? GiSwordWound : GiSparkles
+                                
+                                return (
+                                    <Tooltip key={effect.id} label={`${effect.name} (${effect.duration} turns)`}>
+                                        <Badge colorScheme={colorScheme} fontSize="2xs" display="flex" alignItems="center">
+                                            <Icon as={icon} boxSize={2} mr={1} />
+                                            {effect.name.slice(0, 5)}
+                                        </Badge>
+                                    </Tooltip>
+                                )
+                            })}
                             {effects.length > 4 && (
                                 <Badge colorScheme="gray" fontSize="2xs">
                                     +{effects.length - 4}

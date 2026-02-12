@@ -177,17 +177,54 @@ function processHealEffect(
     let totalHealing = 0
     const targets = selectHealTargets(effect, hero, party)
 
-    for (const target of targets) {
-        const healAmount = Math.min(value, target.stats.maxHp - target.stats.hp)
-        target.stats.hp += healAmount
-        totalHealing += healAmount
+    // Check if this is a heal-over-time effect (has duration)
+    if (effect.duration && effect.duration > 1) {
+        // Apply as HoT status effect - value is healing per turn
+        const healPerTurn = value
+        
+        for (const target of targets) {
+            if (!target.combatEffects) {
+                target.combatEffects = []
+            }
 
-        result.effects.push({
-            type: 'heal',
-            target: target.id,
-            value: healAmount,
-            description: `${target.name} healed for ${healAmount} HP!`,
-        })
+            target.combatEffects.push({
+                id: `regen-${Date.now()}-${target.id}`,
+                type: 'status',
+                name: 'Regeneration',
+                duration: effect.duration,
+                target: target.id,
+                behavior: {
+                    type: 'healPerTurn',
+                    healAmount: healPerTurn,
+                }
+            })
+
+            totalHealing += healPerTurn * effect.duration
+
+            result.effects.push({
+                type: 'heal',
+                target: target.id,
+                value: healPerTurn,
+                description: `${target.name} will regenerate ${healPerTurn} HP per turn for ${effect.duration} turns!`,
+            })
+        }
+    } else {
+        // Apply instant heal
+        for (const target of targets) {
+            const targetStats = calculateTotalStats(target)
+            const actualMaxHp = targetStats.maxHp
+            const maxPossibleHeal = Math.max(0, actualMaxHp - target.stats.hp)
+            const healAmount = Math.min(value, maxPossibleHeal)
+            target.stats.hp += healAmount
+            totalHealing += healAmount
+
+            result.effects.push({
+                type: 'heal',
+                target: target.id,
+                value: healAmount,
+                description: `${target.name} healed for ${healAmount} HP!`,
+            })
+        }
     }
 
     return totalHealing
@@ -277,15 +314,18 @@ function selectHealTargets(
             return [hero]
 
         case 'ally': {
-            // Select most wounded ally
+            // Select most wounded ally (using total stats including equipment)
             const others = aliveHeroes.filter(h => h.id !== hero.id)
             if (others.length === 0) return [hero]
 
-            return [others.reduce((lowest, h) =>
-                (h.stats.hp / h.stats.maxHp) < (lowest.stats.hp / lowest.stats.maxHp)
-                    ? h
-                    : lowest
-            )]
+            const mostWounded = others.reduce((lowest, h) => {
+                const hStats = calculateTotalStats(h)
+                const lowestStats = calculateTotalStats(lowest)
+                const hRatio = h.stats.hp / hStats.maxHp
+                const lowestRatio = lowest.stats.hp / lowestStats.maxHp
+                return hRatio < lowestRatio ? h : lowest
+            })
+            return [mostWounded]
         }
 
         case 'all-allies':

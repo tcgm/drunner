@@ -8,13 +8,17 @@ import { GiMagicSwirl } from 'react-icons/gi'
 export const MAGIC_MISSILE: Ability = {
     id: 'magic-missile',
     name: 'Magic Missile',
-    description: 'Guaranteed hit',
+    description: 'Guaranteed hit (scales with magic power)',
     cooldown: 1,
     currentCooldown: 0,
     effect: {
         type: 'damage',
         value: 15,
         target: 'enemy',
+        scaling: {
+            stat: 'magicPower',
+            ratio: 0.5
+        }
     },
     icon: GiMagicSwirl,
 }

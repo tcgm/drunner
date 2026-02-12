@@ -14,6 +14,7 @@ import type { Hero, BossCombatState } from '@/types'
 import { GiSwordman, GiShield, GiSparkles, GiRunningNinja } from 'react-icons/gi'
 import { useMemo } from 'react'
 import { ItemSlot } from '@/components/ui/ItemSlot'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 const MotionButton = motion.create(Button)
 
@@ -135,6 +136,7 @@ export default function CombatActionsPanel({
                         <Tooltip label={`Deal damage to boss (Cost: ${actionCost})`}>
                             <MotionButton
                                 colorScheme="red"
+                                variant="outline"
                                         size="md"
                                         h="60px"
                                 flexDirection="column"
@@ -154,6 +156,7 @@ export default function CombatActionsPanel({
                         <Tooltip label={`Increase defense for this turn (Cost: ${actionCost})`}>
                             <MotionButton
                                 colorScheme="blue"
+                                variant="outline"
                                         size="md"
                                         h="60px"
                                 flexDirection="column"
@@ -177,38 +180,66 @@ export default function CombatActionsPanel({
                                 ABILITIES
                             </Text>
                                     <VStack spacing={1}>
-                                {usableAbilities.slice(0, 4).map((ability) => (
-                                    <MotionButton
-                                        key={ability.id}
-                                        colorScheme="cyan"
-                                        size="sm"
-                                        w="full"
-                                        h="auto"
-                                        py={1}
-                                        isDisabled={isProcessing || !activeHero.isAlive}
-                                        onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        <HStack w="full" justify="space-between" px={1}>
-                                            <HStack spacing={2}>
-                                                <Icon as={GiSparkles} boxSize={5} />
-                                                <VStack align="start" spacing={0}>
-                                                    <Text fontSize="xs" fontWeight="bold">{ability.name}</Text>
-                                                    <Text fontSize="2xs" color="cyan.200" fontStyle="italic" noOfLines={1}>
-                                                        {ability.description}
-                                                    </Text>
-                                                </VStack>
+                                {usableAbilities.slice(0, 4).map((ability) => {
+                                    // Calculate ability power preview
+                                    const heroStats = calculateTotalStats(activeHero)
+                                    let effectValue = ability.effect.value
+                                    if (ability.effect.scaling) {
+                                        const scalingStat = heroStats[ability.effect.scaling.stat as keyof typeof heroStats]
+                                        const bonus = Math.round((typeof scalingStat === 'number' ? scalingStat : 0) * ability.effect.scaling.ratio)
+                                        effectValue += bonus
+                                    }
+                                    const duration = ability.effect.duration
+                                    
+                                    const powerText = ability.effect.type === 'heal' ? 
+                                        (duration && duration > 1 ? `${effectValue} HP/turn × ${duration}` : `${effectValue} HP`) :
+                                        ability.effect.type === 'damage' ? `${effectValue} DMG` : ''
+                                    
+                                    // Color-code by ability type
+                                    const abilityColor = ability.effect.type === 'heal' ? 'green' :
+                                                        ability.effect.type === 'damage' ? 'orange' :
+                                                        ability.effect.type === 'buff' ? 'purple' :
+                                                        ability.effect.type === 'debuff' ? 'red' : 'cyan'
+                                    
+                                    const textColor = ability.effect.type === 'heal' ? 'green.200' :
+                                                     ability.effect.type === 'damage' ? 'orange.200' :
+                                                     ability.effect.type === 'buff' ? 'purple.200' :
+                                                     ability.effect.type === 'debuff' ? 'red.200' : 'cyan.200'
+                                    
+                                    return (
+                                        <MotionButton
+                                            key={ability.id}
+                                            colorScheme={abilityColor}
+                                            variant="outline"
+                                            size="sm"
+                                            w="full"
+                                            h="auto"
+                                            py={1}
+                                            isDisabled={isProcessing || !activeHero.isAlive}
+                                            onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <HStack w="full" justify="space-between" px={1}>
+                                                <HStack spacing={2}>
+                                                    <Icon as={ability.icon || GiSparkles} boxSize={5} />
+                                                    <VStack align="start" spacing={0}>
+                                                        <Text fontSize="xs" fontWeight="bold">{ability.name}</Text>
+                                                        <Text fontSize="2xs" color={textColor} fontStyle="italic" noOfLines={1}>
+                                                            {powerText || ability.description}
+                                                        </Text>
+                                                    </VStack>
+                                                </HStack>
+                                                <HStack spacing={1}>
+                                                    {ability.cooldown > 0 && (
+                                                        <Badge colorScheme={abilityColor} fontSize="2xs">CD:{ability.cooldown}</Badge>
+                                                    )}
+                                                    <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
+                                                </HStack>
                                             </HStack>
-                                            <HStack spacing={1}>
-                                                {ability.cooldown > 0 && (
-                                                    <Badge colorScheme="cyan" fontSize="2xs">CD:{ability.cooldown}</Badge>
-                                                )}
-                                                <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
-                                            </HStack>
-                                        </HStack>
-                                    </MotionButton>
-                                ))}
+                                        </MotionButton>
+                                    )
+                                })}
                                     </VStack>
                         </VStack>
                     )}

@@ -211,31 +211,71 @@ function applyAbilityEffect(
     switch (effect.type) {
         case 'heal': {
             const targets = selectTargets(effect.target, hero, party)
-            targets.forEach(target => {
-                const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
-                if (targetIndex !== -1 && updatedParty[targetIndex]) {
-                    const currentTarget = updatedParty[targetIndex]!
-                    const totalStats = calculateTotalStats(currentTarget)
-                    const currentHp = currentTarget.stats.hp
-                    const maxHp = totalStats.maxHp
-                    const healAmount = Math.min(effectValue, maxHp - currentHp)
-                    const newHp = Math.min(currentHp + effectValue, maxHp)
-
-                    updatedParty[targetIndex] = {
-                        ...currentTarget,
-                        stats: {
-                            ...currentTarget.stats,
-                            hp: newHp
+            
+            // Check if this is a heal-over-time effect (has duration > 1)
+            if (effect.duration && effect.duration > 1) {
+                // Apply HoT as status effect - value is healing per turn
+                const healPerTurn = effectValue
+                targets.forEach(target => {
+                    const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
+                    if (targetIndex !== -1 && updatedParty[targetIndex]) {
+                        const currentTarget = updatedParty[targetIndex]!
+                        
+                        // Add regeneration combat effect
+                        const combatEffects = currentTarget.combatEffects || []
+                        combatEffects.push({
+                            id: `regen-${Date.now()}-${target.id}`,
+                            type: 'status',
+                            name: 'Regeneration',
+                            duration: effect.duration,
+                            target: target.id,
+                            behavior: {
+                                type: 'healPerTurn',
+                                healAmount: healPerTurn,
+                            }
+                        })
+                        
+                        updatedParty[targetIndex] = {
+                            ...currentTarget,
+                            combatEffects
                         }
+                        
+                        if (target.id === hero.id) {
+                            updatedHero = updatedParty[targetIndex]!
+                        }
+                        
+                        message += ` ${target.name} will regenerate ${healPerTurn} HP per event for ${effect.duration} events!`
                     }
+                })
+            } else {
+                // Instant heal
+                targets.forEach(target => {
+                    const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
+                    if (targetIndex !== -1 && updatedParty[targetIndex]) {
+                        const currentTarget = updatedParty[targetIndex]!
+                        const totalStats = calculateTotalStats(currentTarget)
+                        const currentHp = currentTarget.stats.hp
+                        const maxHp = totalStats.maxHp
+                        const maxPossibleHeal = Math.max(0, maxHp - currentHp)
+                        const healAmount = Math.min(effectValue, maxPossibleHeal)
+                        const newHp = Math.min(currentHp + effectValue, maxHp)
 
-                    if (target.id === hero.id) {
-                        updatedHero = updatedParty[targetIndex]!
+                        updatedParty[targetIndex] = {
+                            ...currentTarget,
+                            stats: {
+                                ...currentTarget.stats,
+                                hp: newHp
+                            }
+                        }
+
+                        if (target.id === hero.id) {
+                            updatedHero = updatedParty[targetIndex]!
+                        }
+
+                        message += ` Healed ${target.name} for ${healAmount} HP!`
                     }
-
-                    message += ` Healed ${target.name} for ${healAmount} HP!`
-                }
-            })
+                })
+            }
             break
         }
 

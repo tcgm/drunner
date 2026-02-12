@@ -12,6 +12,7 @@ import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
 import { BossCombatScreen } from '@/components/combat'
+import { refreshPartyAbilities } from '@/utils/abilityUtils'
 import { initializeBossCombatState } from '@/systems/combat'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero, DungeonEvent } from '@/types'
@@ -157,10 +158,13 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   
   // Render boss combat screen if in boss combat
   if (inBossCombat && bossEvent) {
+    // Refresh party abilities to ensure current definitions and icons are loaded
+    const refreshedParty = refreshPartyAbilities(party)
+    
     return (
       <BossCombatScreen
         event={bossEvent}
-        party={party}
+        party={refreshedParty}
         onVictory={handleBossVictory}
         onDefeat={handleBossDefeat}
         onFlee={handleBossFlee}

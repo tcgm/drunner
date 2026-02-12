@@ -142,7 +142,8 @@ function processHealEffect(
     const healAmount = effect.value || 0
 
     for (const target of targets) {
-        const actualHeal = Math.min(healAmount, target.stats.maxHp - target.stats.hp)
+        const maxPossibleHeal = Math.max(0, target.stats.maxHp - target.stats.hp)
+        const actualHeal = Math.min(healAmount, maxPossibleHeal)
         target.stats.hp += actualHeal
 
         result.healing = (result.healing || 0) + actualHeal
