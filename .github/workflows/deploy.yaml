@@ -2,7 +2,11 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
+      - combat
+      - develop  # Add other branches you want to deploy
+      # - feature/*  # Uncomment to deploy all feature branches
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -25,6 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all branches
       
       - uses: actions/setup-node@v4
         with:
@@ -33,15 +39,77 @@ jobs:
       
       - run: npm ci
       
+      - name: Determine base path
+        id: base-path
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          
+          if [ "$BRANCH_NAME" = "main" ]; then
+            echo "base=/${{ github.event.repository.name }}/" >> $GITHUB_OUTPUT
+            echo "target=main" >> $GITHUB_OUTPUT
+          else
+            echo "base=/${{ github.event.repository.name }}/$BRANCH_NAME/" >> $GITHUB_OUTPUT
+            echo "target=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          fi
+      
       - name: Build
         env:
-          BASE_URL: /${{ github.event.repository.name }}/
+          BASE_URL: ${{ steps.base-path.outputs.base }}
         run: npx vite build
       
-      - name: Check build output
+      - name: Prepare deployment directory
         run: |
-          echo "Listing dist directory:"
-          ls -la dist/
+          mkdir -p deploy
+          
+          # If this is main branch, copy to root
+          if [ "${{ steps.base-path.outputs.target }}" = "main" ]; then
+            cp -r dist/* deploy/
+          else
+            # For other branches, create subfolder
+            mkdir -p deploy/${{ steps.base-path.outputs.target }}
+            cp -r dist/* deploy/${{ steps.base-path.outputs.target }}/
+          fi
+          
+          # Try to download existing site to merge with it
+          echo "Attempting to preserve existing deployments..."
+          
+          # Clone the gh-pages branch if it exists
+          if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
+            git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }}.git gh-pages-content
+            
+            # Copy existing content, but don't overwrite what we just built
+            if [ "${{ steps.base-path.outputs.target }}" = "main" ]; then
+              # Keep branch subfolders when deploying main
+              if [ -d "gh-pages-content" ]; then
+                for dir in gh-pages-content/*/; do
+                  [ -d "$dir" ] && cp -rn "$dir" deploy/
+                done
+              fi
+            else
+              # Keep main content when deploying a branch
+              if [ -d "gh-pages-content" ]; then
+                # Copy all files from root (main branch content)
+                find gh-pages-content -maxdepth 1 -type f -exec cp {} deploy/ \;
+                # Copy other branch folders
+                for dir in gh-pages-content/*/; do
+                  dirname=$(basename "$dir")
+                  if [ "$dirname" != "${{ steps.base-path.outputs.target }}" ]; then
+                    cp -rn "$dir" deploy/
+                  fi
+                done
+              fi
+            fi
+            
+            rm -rf gh-pages-content
+          fi
+      
+      - name: Check deployment structure
+        run: |
+          echo "Deployment directory structure:"
+          ls -la deploy/
+          echo "---"
+          find deploy -type f | head -20
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -49,7 +117,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: './deploy'
       
       - name: Deploy to GitHub Pages
         id: deployment
