@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - main
+      - combat
       - develop  # Add other branches you want to deploy
       # - feature/*  # Uncomment to deploy all feature branches
   workflow_dispatch:
