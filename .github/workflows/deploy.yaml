@@ -62,46 +62,33 @@ jobs:
         run: |
           mkdir -p deploy
           
-          # If this is main branch, copy to root
-          if [ "${{ steps.base-path.outputs.target }}" = "main" ]; then
-            cp -r dist/* deploy/
-          else
-            # For other branches, create subfolder
-            mkdir -p deploy/${{ steps.base-path.outputs.target }}
-            cp -r dist/* deploy/${{ steps.base-path.outputs.target }}/
+          # Try to fetch existing gh-pages branch
+          echo "Attempting to preserve existing deployments..."
+          git fetch origin gh-pages:gh-pages 2>/dev/null || echo "No gh-pages branch yet"
+          
+          # If gh-pages exists, check it out to preserve existing content
+          if git rev-parse --verify gh-pages >/dev/null 2>&1; then
+            echo "Found existing gh-pages branch, preserving content..."
+            git checkout gh-pages
+            
+            # Copy all existing content to deploy folder
+            cp -r . deploy/ 2>/dev/null || true
+            
+            # Remove git files from deploy
+            rm -rf deploy/.git deploy/.github
+            
+            # Switch back to the original branch
+            git checkout -
           fi
           
-          # Try to download existing site to merge with it
-          echo "Attempting to preserve existing deployments..."
-          
-          # Clone the gh-pages branch if it exists
-          if git ls-remote --heads origin gh-pages | grep -q gh-pages; then
-            git clone --depth 1 --branch gh-pages https://github.com/${{ github.repository }}.git gh-pages-content
-            
-            # Copy existing content, but don't overwrite what we just built
-            if [ "${{ steps.base-path.outputs.target }}" = "main" ]; then
-              # Keep branch subfolders when deploying main
-              if [ -d "gh-pages-content" ]; then
-                for dir in gh-pages-content/*/; do
-                  [ -d "$dir" ] && cp -rn "$dir" deploy/
-                done
-              fi
-            else
-              # Keep main content when deploying a branch
-              if [ -d "gh-pages-content" ]; then
-                # Copy all files from root (main branch content)
-                find gh-pages-content -maxdepth 1 -type f -exec cp {} deploy/ \;
-                # Copy other branch folders
-                for dir in gh-pages-content/*/; do
-                  dirname=$(basename "$dir")
-                  if [ "$dirname" != "${{ steps.base-path.outputs.target }}" ]; then
-                    cp -rn "$dir" deploy/
-                  fi
-                done
-              fi
-            fi
-            
-            rm -rf gh-pages-content
+          # Now overlay the new build
+          if [ "${{ steps.base-path.outputs.target }}" = "main" ]; then
+            # For main branch, copy to root (overwriting)
+            cp -r dist/* deploy/
+          else
+            # For other branches, create/update subfolder
+            mkdir -p deploy/${{ steps.base-path.outputs.target }}
+            cp -r dist/* deploy/${{ steps.base-path.outputs.target }}/
           fi
       
       - name: Check deployment structure
