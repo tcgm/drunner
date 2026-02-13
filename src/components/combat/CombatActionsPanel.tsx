@@ -51,16 +51,13 @@ export default function CombatActionsPanel({
         return currentCombatant?.id === 'boss'
     }, [combatState.turnOrder, combatState.currentTurnIndex])
 
-    // Get usable abilities and items for active hero
-    const usableAbilities = activeHero?.abilities?.filter(a => {
-        // Check cooldown
+    // Get all abilities (show disabled if on cooldown or no charges)
+    const allAbilities = activeHero?.abilities?.map(a => {
         const cooldown = combatState.abilityCooldowns?.get(`${activeHero.id}-${a.id}`) || 0
-        if (cooldown > 0) return false
-
-        // Check charges
-        if (a.charges !== undefined && a.charges <= 0) return false
-
-        return true
+        const hasCharges = a.charges === undefined || a.charges > 0
+        const isUsable = cooldown === 0 && hasCharges
+        
+        return { ability: a, isUsable, remainingCooldown: cooldown, hasCharges }
     }) || []
 
     const usableItems = activeHero ? Object.entries(activeHero.slots)
@@ -215,10 +212,11 @@ export default function CombatActionsPanel({
                                             w="full"
                                             h="auto"
                                             py={1}
-                                            isDisabled={isProcessing || !activeHero.isAlive}
+                                            isDisabled={isProcessing || !activeHero.isAlive || !isUsable}
                                             onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
+                                            opacity={isUsable ? 1 : 0.5}
+                                            whileHover={{ scale: isUsable ? 1.02 : 1 }}
+                                            whileTap={{ scale: isUsable ? 0.98 : 1 }}
                                         >
                                             <HStack w="full" justify="space-between" px={1}>
                                                 <HStack spacing={2}>
@@ -231,8 +229,14 @@ export default function CombatActionsPanel({
                                                     </VStack>
                                                 </HStack>
                                                 <HStack spacing={1}>
-                                                    {ability.cooldown > 0 && (
-                                                        <Badge colorScheme={abilityColor} fontSize="2xs">CD:{ability.cooldown}</Badge>
+                                                    {remainingCooldown > 0 && (
+                                                        <Badge colorScheme="red" fontSize="2xs">{remainingCooldown} turn{remainingCooldown !== 1 ? 's' : ''}</Badge>
+                                                    )}
+                                                    {!hasCharges && (
+                                                        <Badge colorScheme="gray" fontSize="2xs">No Charges</Badge>
+                                                    )}
+                                                    {remainingCooldown === 0 && ability.cooldown > 0 && (
+                                                        <Badge colorScheme={abilityColor} fontSize="2xs" opacity={0.6}>CD:{ability.cooldown}</Badge>
                                                     )}
                                                     <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
                                                 </HStack>
