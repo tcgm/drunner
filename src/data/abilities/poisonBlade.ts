@@ -16,6 +16,7 @@ export const POISON_BLADE: Ability = {
         value: 5,
         target: 'enemy',
         duration: 3,
+        stat: 'defense',
     },
     icon: GiPoisonBottle,
 }

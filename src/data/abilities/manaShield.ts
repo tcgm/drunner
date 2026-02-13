@@ -15,8 +15,7 @@ export const MANA_SHIELD: Ability = {
         type: 'buff',
         value: 10,
         target: 'self',
-        duration: 2,
-        scaling: {
+        duration: 2,        stat: 'defense',        scaling: {
             stat: 'wisdom',
             ratio: 0.5
         }

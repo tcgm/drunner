@@ -16,6 +16,7 @@ export const INSPIRE: Ability = {
         value: 3,
         target: 'all-allies',
         duration: 2,
+        stat: 'attack',
         scaling: {
             stat: 'charisma',
             ratio: 0.2

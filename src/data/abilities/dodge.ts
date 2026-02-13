@@ -15,8 +15,7 @@ export const DODGE: Ability = {
         type: 'buff',
         value: 50,
         target: 'self',
-        duration: 1,
-        scaling: {
+        duration: 1,        stat: 'speed',        scaling: {
             stat: 'luck',
             ratio: 0.5
         }

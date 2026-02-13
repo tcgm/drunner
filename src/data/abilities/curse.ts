@@ -16,6 +16,7 @@ export const CURSE: Ability = {
         value: 5,
         target: 'enemy',
         duration: 2,
+        stat: 'attack',
         scaling: {
             stat: 'magicPower',
             ratio: 0.3

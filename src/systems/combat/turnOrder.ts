@@ -52,7 +52,8 @@ export function calculateTurnOrder(
         combatState.depth,
         combatState.combatDepth,
         combatState.currentHp,
-        combatState.maxHp
+        combatState.maxHp,
+        combatState.activeEffects
     )
 
     combatants.push({

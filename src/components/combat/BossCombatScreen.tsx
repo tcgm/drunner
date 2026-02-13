@@ -271,13 +271,17 @@ export default function BossCombatScreen({
                 return
             }
 
-            // Advance to next turn
-            const roundContinues = advanceTurn(event.combatState)
-
             // Force update to check victory
             setUpdateTrigger(prev => prev + 1)
 
-            // Check if boss is defeated before processing boss turn
+            // Check if boss is defeated before advancing turn
+            if (checkVictory(event.combatState)) {
+                setIsProcessing(false)
+                return
+            }
+
+            // Advance to next turn
+            const roundContinues = advanceTurn(event.combatState)
             if (checkVictory(event.combatState)) {
                 setIsProcessing(false)
                 return

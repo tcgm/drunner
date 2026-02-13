@@ -144,7 +144,8 @@ function processDamageEffect(
             combatState.depth,
             combatState.combatDepth,
             combatState.currentHp,
-            combatState.maxHp
+            combatState.maxHp,
+            combatState.activeEffects
         )
         const bossDefense = scaledBossStats.defense
         const finalDamage = applyDefenseReduction(value, bossDefense)
@@ -248,11 +249,11 @@ function processBuffEffect(
             target.combatEffects = []
         }
 
-        // TODO: Add proper stat targeting when AbilityEffect is extended
         target.combatEffects.push({
             id: `buff-${Date.now()}-${target.id}`,
             type: 'buff',
             name: `Buff`,
+            stat: effect.stat,
             value,
             duration,
             target: target.id,
@@ -262,7 +263,7 @@ function processBuffEffect(
             type: 'buff',
             target: target.id,
             value,
-            description: `${target.name} gained a buff!`,
+            description: `${target.name} gained +${value} ${effect.stat || 'stat'}!`,
         })
     }
 }

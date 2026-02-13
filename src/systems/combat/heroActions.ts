@@ -8,6 +8,7 @@ import type { Hero, BossCombatState, Ability, Consumable } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { recalculateDynamicBossStats } from './bossStats'
+import { applyStatModifiers } from './effects'
 
 export type HeroActionType =
     | 'attack'
@@ -50,6 +51,11 @@ export function executeAttack(
     combatState: BossCombatState
 ): HeroActionResult {
     const heroStats = calculateTotalStats(hero)
+    
+    // Apply combat effects to hero stats
+    const effectiveAttack = applyStatModifiers(heroStats.attack, hero.combatEffects, 'attack')
+    const effectiveSpeed = applyStatModifiers(heroStats.speed, hero.combatEffects, 'speed')
+    const effectiveLuck = applyStatModifiers(heroStats.luck, hero.combatEffects, 'luck')
 
     // Get boss's current scaled stats
     const scaledBossStats = recalculateDynamicBossStats(
@@ -64,15 +70,16 @@ export function executeAttack(
         combatState.depth,
         combatState.combatDepth,
         combatState.currentHp,
-        combatState.maxHp
+        combatState.maxHp,
+        combatState.activeEffects
     )
 
-    // Calculate base damage
-    let baseDamage = heroStats.attack
+    // Calculate base damage with combat effects
+    let baseDamage = effectiveAttack
 
     // Crit check (hero luck vs boss luck)
     // Boss luck counters hero's crit chance
-    const netLuck = Math.max(0, heroStats.luck - scaledBossStats.luck)
+    const netLuck = Math.max(0, effectiveLuck - scaledBossStats.luck)
     const critChance = netLuck / 1000 // 1% per 10 net luck
     const isCrit = Math.random() < critChance
     if (isCrit) {

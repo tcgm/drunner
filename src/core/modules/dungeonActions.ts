@@ -859,6 +859,13 @@ export const createDungeonActions: StateCreator<
         return state
       }
 
+      // Preserve HP and status from combat before processing rewards
+      const combatHpState = state.party.map(hero => hero ? {
+        id: hero.id,
+        hp: hero.stats.hp,
+        isAlive: hero.isAlive
+      } : null)
+
       // Use first choice's outcome as victory rewards
       const victoryOutcome = bossEvent.choices[0].outcome
 
@@ -869,6 +876,31 @@ export const createDungeonActions: StateCreator<
         state.dungeon,
         bossEvent
       )
+
+      // Restore HP and status from combat (rewards might have healing, so apply those on top)
+      const finalParty = updatedParty.map((hero, index) => {
+        if (!hero || !combatHpState[index]) return hero
+        
+        // Start with combat HP
+        let finalHp = combatHpState[index]!.hp
+        
+        // Apply any healing from victory rewards
+        const healingEffect = resolvedOutcome.effects.find(
+          effect => effect.type === 'heal' && effect.target?.includes(hero.id)
+        )
+        if (healingEffect && healingEffect.value) {
+          finalHp = Math.min(finalHp + healingEffect.value, hero.stats.maxHp)
+        }
+        
+        return {
+          ...hero,
+          stats: {
+            ...hero.stats,
+            hp: finalHp
+          },
+          isAlive: combatHpState[index]!.isAlive
+        }
+      })
 
       // Track statistics from resolved outcome
       let damageDealt = 0
@@ -915,7 +947,7 @@ export const createDungeonActions: StateCreator<
 
       // Update roster with modified party
       const updatedRoster = state.heroRoster.map(rosterHero => {
-        const updatedVersion = updatedParty.find(h => h?.id === rosterHero.id)
+        const updatedVersion = finalParty.find(h => h?.id === rosterHero.id)
         return updatedVersion || rosterHero
       })
 
@@ -946,7 +978,7 @@ export const createDungeonActions: StateCreator<
       } : null
 
       return {
-        party: updatedParty,
+        party: finalParty,
         heroRoster: updatedRoster,
         dungeon: {
           ...state.dungeon,

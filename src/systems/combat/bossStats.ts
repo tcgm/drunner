@@ -5,7 +5,7 @@
  */
 
 import { GAME_CONFIG } from '@/config/gameConfig'
-import type { DungeonEvent } from '@/types'
+import type { DungeonEvent, CombatEffect } from '@/types'
 import { calculateDanger, applyFirstBossScaling } from './dangerCalculation'
 
 export interface BossBaseStats {
@@ -129,6 +129,7 @@ export function calculateInitialBossStats(
  * @param combatDepth - Current turn count
  * @param currentHp - Current HP (doesn't change)
  * @param maxHp - Max HP (locked at combat start, doesn't change)
+ * @param activeEffects - Active combat effects on boss (optional)
  * @returns Updated boss stats with new dynamic values
  */
 export function recalculateDynamicBossStats(
@@ -137,7 +138,8 @@ export function recalculateDynamicBossStats(
     depth: number,
     combatDepth: number,
     currentHp: number,
-    maxHp: number
+    maxHp: number,
+    activeEffects?: CombatEffect[]
 ): BossScaledStats {
     // Calculate current danger with combat depth
     let danger = calculateDanger(floor, depth, combatDepth)
@@ -147,11 +149,33 @@ export function recalculateDynamicBossStats(
 
     const scaling = GAME_CONFIG.combat.turnBased.bossScaling
 
-    // Recalculate dynamic stats only
-    const attack = calculateScaledStat(baseStats.baseAttack, danger, scaling.attack)
-    const defense = calculateScaledStat(baseStats.baseDefense, danger, scaling.defense)
-    const speed = calculateScaledStat(baseStats.baseSpeed, danger, scaling.speed)
-    const luck = calculateScaledStat(baseStats.baseLuck, danger, scaling.luck)
+    // Recalculate dynamic stats
+    let attack = calculateScaledStat(baseStats.baseAttack, danger, scaling.attack)
+    let defense = calculateScaledStat(baseStats.baseDefense, danger, scaling.defense)
+    let speed = calculateScaledStat(baseStats.baseSpeed, danger, scaling.speed)
+    let luck = calculateScaledStat(baseStats.baseLuck, danger, scaling.luck)
+
+    // Apply combat effects if provided
+    if (activeEffects && activeEffects.length > 0) {
+        for (const effect of activeEffects) {
+            if (effect.value !== undefined && effect.stat) {
+                switch (effect.stat) {
+                    case 'attack':
+                        attack = Math.max(0, attack + effect.value)
+                        break
+                    case 'defense':
+                        defense = Math.max(0, defense + effect.value)
+                        break
+                    case 'speed':
+                        speed = Math.max(0, speed + effect.value)
+                        break
+                    case 'luck':
+                        luck = Math.max(0, luck + effect.value)
+                        break
+                }
+            }
+        }
+    }
 
     return {
         maxHp, // Stays locked

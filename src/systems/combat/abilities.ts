@@ -7,6 +7,7 @@
 import type { Hero, BossCombatState, BossAbility, AbilityEffect } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
+import { recalculateDynamicBossStats } from './bossStats'
 
 export interface AbilityExecutionResult {
     ability: BossAbility
@@ -100,7 +101,7 @@ export function executeAbility(
 
     // Process each effect
     for (const effect of ability.effects) {
-        const effectResult = executeAbilityEffect(effect, combatState, party, ability.name)
+        const effectResult = executeAbilityEffect(effect, combatState, party, ability.name, ability.id)
         result.effects.push(effectResult)
     }
 
@@ -118,7 +119,8 @@ function executeAbilityEffect(
     effect: AbilityEffect,
     combatState: BossCombatState,
     party: (Hero | null)[],
-    abilityName: string
+    abilityName: string,
+    abilityId: string
 ): {
     type: string
     target: string[]
@@ -173,10 +175,34 @@ function executeAbilityEffect(
 
         case 'buff': {
             if (effect.target === 'self') {
-                // For now, buffs are handled via activeEffects with generic stat modifiers
-                // TODO: Implement proper buff system with stat targeting
+                let buffValue = effect.value || 0
+                
+                // Special handling for ENRAGE - double the boss's current attack
+                if (abilityId === 'enrage' && effect.stat === 'attack') {
+                    const currentBossStats = recalculateDynamicBossStats(
+                        combatState.baseStats,
+                        combatState.floor,
+                        combatState.depth,
+                        combatState.combatDepth,
+                        combatState.currentHp,
+                        combatState.maxHp,
+                        combatState.activeEffects
+                    )
+                    buffValue = currentBossStats.attack // Add current attack to double it
+                }
+                
+                combatState.activeEffects.push({
+                    id: `buff-${Date.now()}-boss`,
+                    type: 'buff',
+                    name: abilityName,
+                    stat: effect.stat,
+                    value: buffValue,
+                    duration: effect.duration || 3,
+                    target: 'boss',
+                })
+                
                 targets.push('boss')
-                description = `Boss gained a buff from ${abilityName}!`
+                description = `Boss gained +${buffValue} ${effect.stat || 'stat'}!`
             }
             break
         }
@@ -189,11 +215,21 @@ function executeAbilityEffect(
                 if (!hero.combatEffects) {
                     hero.combatEffects = []
                 }
-                // TODO: Implement proper debuff system
+                
+                hero.combatEffects.push({
+                    id: `debuff-${Date.now()}-${hero.id}`,
+                    type: 'debuff',
+                    name: `Debuff`,
+                    stat: effect.stat,
+                    value: -(effect.value || 0),
+                    duration: effect.duration || 2,
+                    target: hero.id,
+                })
+                
                 targets.push(hero.id)
             }
 
-            description = `${targetHeroes.map(h => h.name).join(', ')} were debuffed by ${abilityName}!`
+            description = `${targetHeroes.map(h => h.name).join(', ')} lost ${effect.value} ${effect.stat || 'stat'}!`
             break
         }
 

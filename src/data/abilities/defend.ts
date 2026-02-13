@@ -17,6 +17,7 @@ export const DEFEND: Ability = {
         value: 5,
         target: 'self',
         duration: 1,
+        stat: 'defense',
         scaling: {
             stat: 'defense',
             ratio: 0.5

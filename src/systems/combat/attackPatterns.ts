@@ -9,6 +9,7 @@ import { checkPatternCondition, selectBossTarget } from './targeting'
 import { recalculateDynamicBossStats } from './bossStats'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { applyStatModifiers } from './effects'
 
 /**
  * Select attack pattern from available patterns using weights
@@ -106,7 +107,8 @@ export function executeAttackPattern(
         combatState.depth,
         combatState.combatDepth,
         combatState.currentHp,
-        combatState.maxHp
+        combatState.maxHp,
+        combatState.activeEffects
     )
 
     // Calculate damage for each target
@@ -115,6 +117,10 @@ export function executeAttackPattern(
 
     for (const target of targets) {
         const heroStats = calculateTotalStats(target)
+        
+        // Apply combat effects to hero defense
+        const effectiveDefense = applyStatModifiers(heroStats.defense, target.combatEffects, 'defense')
+        const effectiveLuck = applyStatModifiers(heroStats.luck, target.combatEffects, 'luck')
 
         // Base damage = boss attack * pattern multiplier
         let baseDamage = Math.round(bossStats.attack * pattern.damageMultiplier)
@@ -127,7 +133,7 @@ export function executeAttackPattern(
         // Crit check (boss luck vs hero luck)
         // Hero luck counters boss's crit chance
         const baseCritChance = pattern.critChance ?? 0.05 // Default 5% base crit if no pattern crit
-        const luckDifference = bossStats.luck - heroStats.luck
+        const luckDifference = bossStats.luck - effectiveLuck
         const luckCritBonus = Math.max(0, luckDifference) / 1000 // Only positive difference adds to crit
         const critChance = Math.min(0.95, baseCritChance + luckCritBonus) // Cap at 95%
         const isCrit = Math.random() < critChance
@@ -137,14 +143,14 @@ export function executeAttackPattern(
 
         // Dodge check (hero luck vs boss luck)
         // Boss luck counters hero's dodge chance
-        const netLuck = Math.max(0, heroStats.luck - bossStats.luck)
+        const netLuck = Math.max(0, effectiveLuck - bossStats.luck)
         const dodgeChance = netLuck / 1000 // 1% per 10 net luck
         const isDodge = Math.random() < dodgeChance
 
         let finalDamage = 0
         if (!isDodge) {
-            // Apply defense reduction
-            finalDamage = applyDefenseReduction(baseDamage, heroStats.defense)
+            // Apply defense reduction with combat effects
+            finalDamage = applyDefenseReduction(baseDamage, effectiveDefense)
             finalDamage = Math.max(1, finalDamage) // Minimum 1 damage
         }
 

@@ -35,6 +35,7 @@ export interface AbilityEffect {
   value: number // Base value
   target: 'self' | 'ally' | 'enemy' | 'all-allies' | 'all-enemies'
   duration?: number // For buffs/debuffs
+  stat?: 'attack' | 'defense' | 'speed' | 'luck' // Which stat to buff/debuff
   scaling?: { // Optional stat scaling
     stat: 'attack' | 'defense' | 'wisdom' | 'magicPower' | 'charisma' | 'luck'
     ratio: number // Multiplier (e.g., 0.5 = 50% of stat added to base value)

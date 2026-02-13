@@ -16,8 +16,7 @@ export const BLESS: Ability = {
         type: 'buff',
         value: 5,
         target: 'ally',
-        duration: 2,
-        scaling: {
+        duration: 2,        stat: 'defense',        scaling: {
             stat: 'wisdom',
             ratio: 0.3
         }

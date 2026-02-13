@@ -77,7 +77,7 @@ export const DEFENSE_CONFIG: DefenseConfig = {
   // Last calculated: 2/12/2026, 8:43:51 PM
   maxDefense: 33760, // Auto-calculated: 2026-02-13
   
-  midpointDefenseRatio: 0.4, // 50% of max block reached at 40% of max defense
+  midpointDefenseRatio: 0.75, // 50% of max block reached at 40% of max defense
   curveModifier: 1.0,
 }
 

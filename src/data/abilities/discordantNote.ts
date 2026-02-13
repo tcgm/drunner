@@ -15,8 +15,7 @@ export const DISCORDANT_NOTE: Ability = {
         type: 'debuff',
         value: 4,
         target: 'enemy',
-        duration: 2,
-        scaling: {
+        duration: 2,        stat: 'attack',        scaling: {
             stat: 'charisma',
             ratio: 0.2
         }

@@ -128,8 +128,29 @@ export default function CombatActionsPanel({
                     </HStack>
 
                     {/* Main Actions */}
-                            <SimpleGrid columns={2} spacing={2}>
+                            <SimpleGrid columns={!activeHero.isAlive ? 1 : 2} spacing={2}>
+                        {/* Skip Turn (Dead Hero) */}
+                        {!activeHero.isAlive && (
+                            <MotionButton
+                                colorScheme="gray"
+                                variant="solid"
+                                size="md"
+                                h="60px"
+                                flexDirection="column"
+                                gap={0}
+                                isDisabled={isProcessing}
+                                onClick={onEndTurn}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <Icon as={GiRunningNinja} boxSize={6} />
+                                <Text fontSize="xs">Skip Turn (Dead)</Text>
+                                <Badge colorScheme="gray" fontSize="2xs">Hero is dead</Badge>
+                            </MotionButton>
+                        )}
+                        
                         {/* Attack */}
+                        {activeHero.isAlive && (
                         <Tooltip label={`Deal damage to boss (Cost: ${actionCost})`}>
                             <MotionButton
                                 colorScheme="red"
@@ -138,7 +159,7 @@ export default function CombatActionsPanel({
                                         h="60px"
                                 flexDirection="column"
                                         gap={0}
-                                isDisabled={isProcessing || !activeHero.isAlive}
+                                isDisabled={isProcessing}
                                 onClick={() => onAction(activeHero.id, 'attack')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -148,8 +169,10 @@ export default function CombatActionsPanel({
                                 <Badge colorScheme="red" fontSize="2xs">{actionCost}</Badge>
                             </MotionButton>
                         </Tooltip>
+                        )}
 
                         {/* Defend */}
+                        {activeHero.isAlive && (
                         <Tooltip label={`Increase defense for this turn (Cost: ${actionCost})`}>
                             <MotionButton
                                 colorScheme="blue"
@@ -158,7 +181,7 @@ export default function CombatActionsPanel({
                                         h="60px"
                                 flexDirection="column"
                                         gap={0}
-                                isDisabled={isProcessing || !activeHero.isAlive}
+                                isDisabled={isProcessing}
                                 onClick={() => onAction(activeHero.id, 'defend')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -168,16 +191,17 @@ export default function CombatActionsPanel({
                                 <Badge colorScheme="blue" fontSize="2xs">{actionCost}</Badge>
                             </MotionButton>
                                 </Tooltip>
+                        )}
                     </SimpleGrid>
 
                     {/* Abilities */}
-                    {usableAbilities.length > 0 && (
+                    {allAbilities.length > 0 && (
                                 <VStack align="stretch" spacing={1}>
                                     <Text fontSize="2xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
                                 ABILITIES
                             </Text>
                                     <VStack spacing={1}>
-                                {usableAbilities.slice(0, 4).map((ability) => {
+                                {allAbilities.map(({ ability, isUsable, remainingCooldown, hasCharges }) => {
                                     // Calculate ability power preview
                                     const heroStats = calculateTotalStats(activeHero)
                                     let effectValue = ability.effect.value

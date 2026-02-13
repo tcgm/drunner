@@ -16,6 +16,7 @@ export const TAUNT: Ability = {
         value: 0,
         target: 'enemy',
         duration: 2,
+        stat: 'defense',
     },
     icon: GiScreaming,
 }
