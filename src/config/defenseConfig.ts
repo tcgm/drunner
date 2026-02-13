@@ -63,13 +63,13 @@ export interface DefenseConfig {
  * Current defense configuration
  * 
  * Default settings:
- * - Logarithmic curve for smooth, natural-feeling progression
+ * - Exponential curve for smooth, natural-feeling progression
  * - 0% minimum (no block at 0 defense)
  * - 95% maximum (always some risk)
  * - 50% cap reached at 40% of theoretical max
  */
 export const DEFENSE_CONFIG: DefenseConfig = {
-  curveType: 'logarithmic',
+  curveType: 'exponential',
   minBlockPercent: 0.0,
   maxBlockPercent: 0.95,
   
@@ -77,7 +77,7 @@ export const DEFENSE_CONFIG: DefenseConfig = {
   // Last calculated: 2/12/2026, 8:43:51 PM
   maxDefense: 33760, // Auto-calculated: 2026-02-13
   
-  midpointDefenseRatio: 0.75, // 50% of max block reached at 40% of max defense
+  midpointDefenseRatio: 0.15, // 50% of max block reached at 15% of max defense
   curveModifier: 1.0,
 }
 
