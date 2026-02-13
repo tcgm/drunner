@@ -62,28 +62,30 @@ jobs:
         run: |
           mkdir -p deploy
           
-          # Try to fetch existing gh-pages branch
+          # Try to fetch existing gh-pages branch and extract to temp directory
           echo "Attempting to preserve existing deployments..."
-          git fetch origin gh-pages:gh-pages 2>/dev/null || echo "No gh-pages branch yet"
-          
-          # If gh-pages exists, check it out to preserve existing content
-          if git rev-parse --verify gh-pages >/dev/null 2>&1; then
+          if git ls-remote --exit-code origin gh-pages; then
             echo "Found existing gh-pages branch, preserving content..."
-            git checkout gh-pages
             
-            # Copy all existing content to deploy folder
-            cp -r . deploy/ 2>/dev/null || true
+            # Create a worktree for gh-pages in a temp directory
+            git worktree add gh-pages-temp gh-pages 2>/dev/null || git worktree add gh-pages-temp origin/gh-pages
+            
+            # Copy all existing content from gh-pages to deploy
+            cp -r gh-pages-temp/* deploy/ 2>/dev/null || true
+            cp -r gh-pages-temp/.[!.]* deploy/ 2>/dev/null || true
+            
+            # Clean up worktree
+            git worktree remove gh-pages-temp --force
             
             # Remove git files from deploy
             rm -rf deploy/.git deploy/.github
-            
-            # Switch back to the original branch
-            git checkout -
+          else
+            echo "No existing gh-pages branch found"
           fi
           
-          # Now overlay the new build
+          # Now overlay the new build (this will overwrite files)
           if [ "${{ steps.base-path.outputs.target }}" = "main" ]; then
-            # For main branch, copy to root (overwriting)
+            # For main branch, copy to root (overwriting existing root files)
             cp -r dist/* deploy/
           else
             # For other branches, create/update subfolder
