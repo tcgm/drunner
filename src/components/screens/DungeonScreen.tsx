@@ -14,6 +14,7 @@ import JournalModal from '@components/dungeon/JournalModal'
 import { BossCombatScreen } from '@/components/combat'
 import { refreshPartyAbilities } from '@/utils/abilityUtils'
 import { initializeBossCombatState } from '@/systems/combat'
+import { MusicContext } from '@/types/audio'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
@@ -32,7 +33,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     retreatFromDungeon,
     activeRun,
     applyBossVictoryRewards,
-    endGame
+    endGame,
+    changeMusicContext
   } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
@@ -107,6 +109,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     setBossEvent(null)
     // Continue to next event after rewards applied
     advanceDungeon()
+    // Explicitly change music back to normal dungeon music
+    changeMusicContext(MusicContext.DUNGEON_NORMAL)
   }
 
   const handleBossDefeat = () => {

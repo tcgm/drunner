@@ -10,6 +10,14 @@ import exploreMusic1 from '@/assets/audio/music/explore2-1.mp3?url';
 import exploreMusic2 from '@/assets/audio/music/explore2-2.mp3?url';
 import exploreMusic3 from '@/assets/audio/music/explore2-3.mp3?url';
 import exploreMusic4 from '@/assets/audio/music/explore2-4.mp3?url';
+import combatMusic1 from '@/assets/audio/music/combat1.mp3?url';
+import combatMusic2 from '@/assets/audio/music/combat2.mp3?url';
+import combatMusic3 from '@/assets/audio/music/combat3.mp3?url';
+import combatMusic4 from '@/assets/audio/music/combat4.mp3?url';
+import combatMusic5 from '@/assets/audio/music/combat5.mp3?url';
+import combatMusic6 from '@/assets/audio/music/combat6.mp3?url';
+import combatMusic7 from '@/assets/audio/music/combat7.mp3?url';
+import combatMusic8 from '@/assets/audio/music/combat8.mp3?url';
 
 /**
  * Music playlists for different game contexts
@@ -89,14 +97,56 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.DUNGEON_BOSS]: {
     context: MusicContext.DUNGEON_BOSS,
     tracks: [
-      // {
-      //   name: 'Boss Battle',
-      //   path: partyMusic2, // Placeholder - add your boss music
-      //   volume: 0.8,
-      //   loop: true
-      // }
+      {
+        name: 'Combat 1',
+        path: combatMusic1,
+        volume: 0.8,
+        loop: true
+      },
+      {
+        name: 'Combat 2',
+        path: combatMusic2,
+        volume: 0.8,
+        loop: true
+      },
+      {
+        name: 'Combat 3',
+        path: combatMusic3,
+        volume: 0.8,
+        loop: true
+      },
+      {
+        name: 'Combat 4',
+        path: combatMusic4,
+        volume: 0.8,
+        loop: true
+      },
+      {
+        name: 'Combat 5',
+        path: combatMusic5,
+        volume: 0.8,
+        loop: true
+      },
+      {
+        name: 'Combat 6',
+        path: combatMusic6,
+        volume: 0.8,
+        loop: true
+      },
+      {
+        name: 'Combat 7',
+        path: combatMusic7,
+        volume: 0.8,
+        loop: true
+      },
+      {
+        name: 'Combat 8',
+        path: combatMusic8,
+        volume: 0.8,
+        loop: true
+      }
     ],
-    shuffle: false,
+    shuffle: true,
     crossfadeDuration: 500 // Faster transition for combat
   },
 
@@ -201,7 +251,33 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
 
 /**
  * Helper function to get playlist for a context
+ * Boss contexts with no tracks will fall back to lesser boss types:
+ * FINAL_BOSS → ZONE_BOSS → FLOOR_BOSS → DUNGEON_BOSS
  */
 export function getPlaylistForContext(context: MusicContext): MusicPlaylist {
-  return musicPlaylists[context];
+  const playlist = musicPlaylists[context];
+  
+  // If playlist has tracks, use it
+  if (playlist.tracks && playlist.tracks.length > 0) {
+    return playlist;
+  }
+  
+  // Define fallback hierarchy for boss contexts
+  if (context === MusicContext.FINAL_BOSS) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to ZONE_BOSS`);
+    return getPlaylistForContext(MusicContext.ZONE_BOSS);
+  }
+  
+  if (context === MusicContext.ZONE_BOSS) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to FLOOR_BOSS`);
+    return getPlaylistForContext(MusicContext.FLOOR_BOSS);
+  }
+  
+  if (context === MusicContext.FLOOR_BOSS) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to DUNGEON_BOSS`);
+    return getPlaylistForContext(MusicContext.DUNGEON_BOSS);
+  }
+  
+  // No fallback available, return empty playlist
+  return playlist;
 }
