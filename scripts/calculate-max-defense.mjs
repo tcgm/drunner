@@ -24,50 +24,25 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const rootDir = join(__dirname, '..')
 
+// Import game systems for accurate data
+const raritySystemModule = await import('../src/systems/rarity/raritySystem.ts')
+const materialsModule = await import('../src/data/items/materials/index.ts')
+
+const { RARITY_CONFIGS } = raritySystemModule
+const { ALL_MATERIALS } = materialsModule
+
 // Equipment slots to consider (based on slotConfig.ts)
 const EQUIPMENT_SLOTS = ['weapon', 'armor', 'helmet', 'boots', 'accessory1', 'accessory2']
 
-// Rarity multipliers (from raritySystem.ts)
-const RARITY_MULTIPLIERS = {
-  junk: 0.5,
-  abundant: 0.8,
-  common: 1.0,
-  uncommon: 1.3,
-  rare: 1.7,
-  veryRare: 2.2,
-  magical: 2.7,
-  elite: 3.5,
-  epic: 4.5,
-  legendary: 6.0,
-  mythic: 8.0,
-  mythicc: 11.0,
-  artifact: 15.0,
-  divine: 20.0,
-  celestial: 27.0,
-  realityAnchor: 36.0,
-  structural: 48.0,
-  singularity: 60.0,
-  void: 80.0,
-  elder: 100.0,
-  layer: 130.0,
-  plane: 170.0,
-  author: 30.0, // Special case
-}
+// Build rarity multipliers from game system
+const RARITY_MULTIPLIERS = Object.fromEntries(
+  Object.entries(RARITY_CONFIGS).map(([key, config]) => [key, config.statMultiplierBase])
+)
 
-// Material multipliers (from materials index)
-const MATERIAL_MULTIPLIERS = {
-  wood: 0.8,
-  iron: 1.0,
-  steel: 1.2,
-  obsidian: 1.5,
-  crimson: 1.8,
-  gold: 2.0,
-  mythril: 2.5,
-  elderwood: 3.0,
-  stormforged: 4.0,
-  titanium: 5.0,
-  voidstone: 7.0,
-}
+// Build material multipliers from game system  
+const MATERIAL_MULTIPLIERS = Object.fromEntries(
+  ALL_MATERIALS.map(mat => [mat.id, mat.statMultiplier])
+)
 
 const UNIQUE_BOOST = 1.3 // 30% boost for unique items
 
@@ -413,17 +388,114 @@ function generateCurvePreview(maxDefense) {
   console.log('     Adjust midpointDefenseRatio in defenseConfig.ts to tune.')
 }
 
+/**
+ * Save a detailed report to file
+ */
+function saveReport(result) {
+  const reportPath = join(rootDir, 'defense-calculation-report.md')
+  const timestamp = new Date().toLocaleString()
+  
+  const report = `# Defense Calculation Report
+
+**Generated**: ${timestamp}  
+**Theoretical Max Defense**: ${result.maxDefense}  
+**Highest Rarity**: ${result.highestRarity} (${RARITY_MULTIPLIERS[result.highestRarity]}x multiplier)
+
+---
+
+## Best-in-Slot Equipment
+
+| Slot | Defense | Item | Type |
+|------|---------|------|------|
+${result.bestLoadout.map(item => 
+  `| ${item.slot} | ${item.defense} | ${item.item} | ${item.type} |`
+).join('\n')}
+
+**Total from Equipment**: ${result.bestLoadout.reduce((sum, item) => sum + item.defense, 0)} defense
+
+---
+
+## Set Bonuses
+
+Best set bonus found: **+100 defense** (Titan 6-piece)
+
+---
+
+## Defense Curve Preview
+
+Using current configuration:
+- **Curve Type**: logarithmic
+- **Min Block**: 0%
+- **Max Block**: 95%
+- **Midpoint Ratio**: 0.4
+
+| % of Max | Defense Value | Block % |
+|----------|---------------|---------|
+| 0% | 0 | 0.0% |
+| 10% | ${Math.floor(result.maxDefense * 0.1)} | ~16.9% |
+| 25% | ${Math.floor(result.maxDefense * 0.25)} | ~36.8% |
+| 50% | ${Math.floor(result.maxDefense * 0.5)} | ~61.5% |
+| 75% | ${Math.floor(result.maxDefense * 0.75)} | ~80.1% |
+| 90% | ${Math.floor(result.maxDefense * 0.9)} | ~89.4% |
+| 100% | ${result.maxDefense} | 95.0% |
+
+---
+
+## Available Rarities
+
+| Rarity | Multiplier |
+|--------|------------|
+${Object.entries(RARITY_MULTIPLIERS)
+  .sort((a, b) => b[1] - a[1])
+  .map(([name, mult]) => `| ${name} | ${mult}x |`)
+  .join('\n')}
+
+---
+
+## Available Materials
+
+| Material | Multiplier |
+|----------|------------|
+${Object.entries(MATERIAL_MULTIPLIERS)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 15) // Top 15 materials
+  .map(([name, mult]) => `| ${name} | ${mult}x |`)
+  .join('\n')}
+
+---
+
+## How to Use This Report
+
+1. **Review Best-in-Slot**: These are the highest defense items possible at maximum rarity
+2. **Check Curve**: Verify the block percentage progression feels appropriate for your game
+3. **Tune if Needed**: Edit \`src/config/defenseConfig.ts\` to adjust:
+   - \`curveType\`: Change curve shape (linear, diminishing, logarithmic, exponential)
+   - \`midpointDefenseRatio\`: Adjust where 50% block is reached
+   - \`maxBlockPercent\`: Change the cap (default 95%)
+4. **Rerun**: Execute \`npm run calculate-max-defense\` after adding items or changing values
+
+---
+
+*This report is regenerated each time you run the calculator script.*
+`
+  
+  writeFileSync(reportPath, report, 'utf-8')
+  console.log(`\n📄 Report saved to: ${reportPath}`)
+}
+
 // Run the script
 try {
   const result = calculateMaxDefense()
   updateDefenseConfig(result.maxDefense)
   generateCurvePreview(result.maxDefense)
+  saveReport(result)
   
   console.log('\n🎉 Done! Defense config updated successfully.')
   console.log('\nNext steps:')
   console.log('  1. Check src/config/defenseConfig.ts for updated values')
-  console.log('  2. Adjust curveType or midpointDefenseRatio if needed')
-  console.log('  3. Test in-game to verify block % feels right')
+  console.log('  2. Review defense-calculation-report.md for best-in-slot details')
+  console.log('  3. Adjust curveType or midpointDefenseRatio if needed')
+  console.log('  4. Test in-game to verify block % feels right')
   
 } catch (error) {
   console.error('❌ Error calculating max defense:', error)

@@ -74,8 +74,8 @@ export const DEFENSE_CONFIG: DefenseConfig = {
   maxBlockPercent: 0.95,
   
   // This value is auto-calculated by scripts/calculate-max-defense.mjs
-  // Last calculated: 2/12/2026, 4:05:04 PM
-  maxDefense: 128280, // Auto-calculated: 2026-02-13
+  // Last calculated: 2/12/2026, 8:43:51 PM
+  maxDefense: 33760, // Auto-calculated: 2026-02-13
   
   midpointDefenseRatio: 0.4, // 50% of max block reached at 40% of max defense
   curveModifier: 1.0,
