@@ -50,7 +50,7 @@ export const BLESSED: ItemModifier = {
   colorLight: '#FCD34D',
   backgroundColor: 'rgba(251, 191, 36, 0.15)',
   glow: 'rgba(251, 191, 36, 0.7)',
-  icon: GameIcons.GiAngelsWing,
+  icon: GameIcons.GiAngelOutfit,
   statMultipliers: {
     defense: 1.2,
     luck: 1.3,

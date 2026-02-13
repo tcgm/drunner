@@ -7,7 +7,7 @@ import type { Item } from '@/types'
 export const SHADOWS_HEART: Omit<Item, 'id'> = {
   name: "Shadow's Heart",
   description: 'A dark gem that pulses with the essence of night. Empowers the wielder.',
-  type: 'accessory',
+  type: 'accessory2',
   rarity: 'epic',
   icon: GiMoon,
   stats: {
