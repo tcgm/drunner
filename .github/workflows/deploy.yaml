@@ -5,8 +5,6 @@ on:
     branches: 
       - main
       - combat
-      - develop  # Add other branches you want to deploy
-      # - feature/*  # Uncomment to deploy all feature branches
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -30,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all branches
+          fetch-depth: 0
       
       - uses: actions/setup-node@v4
         with:
@@ -39,59 +37,27 @@ jobs:
       
       - run: npm ci
       
-      - name: Determine base path
-        id: base-path
+      - name: Build main branch
         run: |
-          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
-          
-          if [ "$BRANCH_NAME" = "main" ]; then
-            echo "base=/${{ github.event.repository.name }}/" >> $GITHUB_OUTPUT
-            echo "target=main" >> $GITHUB_OUTPUT
-          else
-            echo "base=/${{ github.event.repository.name }}/$BRANCH_NAME/" >> $GITHUB_OUTPUT
-            echo "target=$BRANCH_NAME" >> $GITHUB_OUTPUT
-          fi
+          echo "Building main branch..."
+          git checkout main
+          npm ci
+          BASE_URL=/${{ github.event.repository.name }}/ npx vite build
+          mkdir -p ../deploy
+          cp -r dist/* ../deploy/
       
-      - name: Build
-        env:
-          BASE_URL: ${{ steps.base-path.outputs.base }}
-        run: npx vite build
-      
-      - name: Prepare deployment directory
+      - name: Build combat branch
         run: |
-          mkdir -p deploy
-          
-          # Try to fetch existing gh-pages branch and extract to temp directory
-          echo "Attempting to preserve existing deployments..."
-          if git ls-remote --exit-code origin gh-pages; then
-            echo "Found existing gh-pages branch, preserving content..."
-            
-            # Create a worktree for gh-pages in a temp directory
-            git worktree add gh-pages-temp gh-pages 2>/dev/null || git worktree add gh-pages-temp origin/gh-pages
-            
-            # Copy all existing content from gh-pages to deploy
-            cp -r gh-pages-temp/* deploy/ 2>/dev/null || true
-            cp -r gh-pages-temp/.[!.]* deploy/ 2>/dev/null || true
-            
-            # Clean up worktree
-            git worktree remove gh-pages-temp --force
-            
-            # Remove git files from deploy
-            rm -rf deploy/.git deploy/.github
-          else
-            echo "No existing gh-pages branch found"
-          fi
-          
-          # Now overlay the new build (this will overwrite files)
-          if [ "${{ steps.base-path.outputs.target }}" = "main" ]; then
-            # For main branch, copy to root (overwriting existing root files)
-            cp -r dist/* deploy/
-          else
-            # For other branches, create/update subfolder
-            mkdir -p deploy/${{ steps.base-path.outputs.target }}
-            cp -r dist/* deploy/${{ steps.base-path.outputs.target }}/
-          fi
+          echo "Building combat branch..."
+          git checkout combat
+          npm ci
+          BASE_URL=/${{ github.event.repository.name }}/combat/ npx vite build
+          mkdir -p ../deploy/combat
+          cp -r dist/* ../deploy/combat/
+      
+      - name: Move deploy folder
+        run: |
+          mv ../deploy ./deploy
       
       - name: Check deployment structure
         run: |
