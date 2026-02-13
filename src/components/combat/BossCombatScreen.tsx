@@ -14,6 +14,7 @@ import PartyHealthDisplay from './PartyHealthDisplay'
 import TurnOrderDisplay from './TurnOrderDisplay'
 import CombatActionsPanel from './CombatActionsPanel'
 import CombatLog from './CombatLog'
+import CombatParticles, { ParticleEffect } from './CombatParticles'
 import {
     startCombatRound,
     processBossTurn,
@@ -58,6 +59,8 @@ export default function BossCombatScreen({
     const [isProcessing, setIsProcessing] = useState(false)
     const [updateTrigger, setUpdateTrigger] = useState(0)
     const [isBossActing, setIsBossActing] = useState(false)
+    const [particleEffect, setParticleEffect] = useState<ParticleEffect | null>(null)
+    const [particlePosition, setParticlePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
     const combatInitialized = useRef(false)
     const toast = useToast()
 
@@ -79,6 +82,12 @@ export default function BossCombatScreen({
         setCombatLog(prev => [...prev, entry].slice(-50)) // Keep last 50 entries
     }
 
+    // Trigger particle effect helper
+    const triggerParticles = (effect: ParticleEffect, position: { x: number; y: number } = { x: 50, y: 50 }) => {
+        setParticleEffect(effect)
+        setParticlePosition(position)
+    }
+
     // Helper to process boss turn with animations and delays
     const processBossTurnWithAnimations = async (bossTurnResult: any) => {
         setIsBossActing(true)
@@ -86,6 +95,7 @@ export default function BossCombatScreen({
         // Passive healing animation
         if (bossTurnResult.passiveHealing) {
             addLogEntry('heal', `Boss regenerates ${bossTurnResult.passiveHealing} HP`, 'boss', bossTurnResult.passiveHealing)
+            triggerParticles('heal', { x: 50, y: 30 })
             setUpdateTrigger(prev => prev + 1)
             await new Promise(resolve => setTimeout(resolve, 600))
         }
@@ -93,6 +103,7 @@ export default function BossCombatScreen({
         // Phase transition animation
         if (bossTurnResult.phaseTransition) {
             addLogEntry('phase', `Boss enters Phase ${bossTurnResult.phaseTransition.newPhase}!`)
+            triggerParticles('phase', { x: 50, y: 30 })
             setUpdateTrigger(prev => prev + 1)
             await new Promise(resolve => setTimeout(resolve, 1000))
         }
@@ -131,9 +142,11 @@ export default function BossCombatScreen({
                 for (const dmg of bossTurnResult.attackResult.damage) {
                     if (dmg.isDodge) {
                         addLogEntry('action', `${dmg.heroName} dodged!`)
+                        triggerParticles('dodge', { x: 50, y: 70 })
                     } else {
                         const critText = dmg.isCrit ? ' (Critical Hit!)' : ''
                         addLogEntry('damage', `${dmg.heroName} takes ${dmg.damage} damage${critText}`, dmg.heroId, dmg.damage)
+                        triggerParticles(dmg.isCrit ? 'critical' : 'damage', { x: 50, y: 70 })
                     }
                     setUpdateTrigger(prev => prev + 1)
                     await new Promise(resolve => setTimeout(resolve, 500))
@@ -196,6 +209,7 @@ export default function BossCombatScreen({
 
         if (victory) {
             addLogEntry('phase', '🎉 Victory! The boss has been defeated!')
+            triggerParticles('victory', { x: 50, y: 50 })
             setTimeout(() => onVictory(), 2000)
         } else if (defeat) {
             addLogEntry('phase', '💀 Defeat... Your party has fallen...')
@@ -219,6 +233,7 @@ export default function BossCombatScreen({
                 const result = executeAttack(hero, event.combatState)
                 if (result.success) {
                     addLogEntry('damage', `${hero.name} attacks for ${result.damage} damage!`, 'boss', result.damage)
+                    triggerParticles('damage', { x: 50, y: 30 })
                 } else {
                     addLogEntry('action', result.message)
                 }
@@ -238,8 +253,10 @@ export default function BossCombatScreen({
                     // Log the ability effects
                     if (result.damage) {
                         addLogEntry('damage', `${hero.name} used ${ability.name} for ${result.damage} damage!`, 'boss', result.damage)
+                        triggerParticles('critical', { x: 50, y: 30 })
                     } else if (result.healing) {
                         addLogEntry('heal', `${hero.name} used ${ability.name} to heal ${result.healing} HP!`, hero.id, result.healing)
+                        triggerParticles('heal', { x: 50, y: 70 })
                     } else {
                         addLogEntry('ability', result.message)
                     }
@@ -266,6 +283,7 @@ export default function BossCombatScreen({
                     party.filter(h => h !== null) as Hero[]
                 )
                 addLogEntry('heal', result.message)
+                triggerParticles('heal', { x: 50, y: 70 })
             } else if (action === 'flee') {
                 // Handled by parent component
                 return
@@ -384,8 +402,10 @@ export default function BossCombatScreen({
                 for (const effect of roundEndResult.effectsProcessed) {
                     if (effect.healing) {
                         addLogEntry('heal', `${effect.target} regenerates ${effect.healing} HP from ${effect.effectName}`, effect.target, effect.healing)
+                        triggerParticles('heal', { x: 50, y: 70 })
                     } else if (effect.damage) {
                         addLogEntry('damage', `${effect.target} takes ${effect.damage} damage from ${effect.effectName}`, effect.target, effect.damage)
+                        triggerParticles('damage', { x: 50, y: 70 })
                     }
                 }
             }
@@ -571,6 +591,13 @@ export default function BossCombatScreen({
                     </Box>
                 </VStack>
             </HStack>
+
+            {/* Particle Effects */}
+            <CombatParticles
+                effect={particleEffect}
+                position={particlePosition}
+                onComplete={() => setParticleEffect(null)}
+            />
 
             {/* Victory/Defeat Overlay */}
             <AnimatePresence>

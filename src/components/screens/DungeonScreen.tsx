@@ -130,13 +130,12 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   // Initialize boss combat state when boss event is encountered
   useEffect(() => {
     if (dungeon.currentEvent && dungeon.currentEvent.type === 'boss' && !inBossCombat) {
-      // Initialize combat state if not already present
-      if (!dungeon.currentEvent.combatState) {
-        dungeon.currentEvent.combatState = initializeBossCombatState(
-          dungeon.currentEvent,
-          dungeon
-        )
-      }
+      // Always initialize fresh combat state for new boss encounter
+      // (Events are reused from shared arrays, so old combatState may persist)
+      dungeon.currentEvent.combatState = initializeBossCombatState(
+        dungeon.currentEvent,
+        dungeon
+      )
       setBossEvent(dungeon.currentEvent)
       setInBossCombat(true)
     }
