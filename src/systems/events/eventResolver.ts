@@ -251,14 +251,16 @@ function generateItemFromSpec(spec: {
           }
           
           // Recalculate stats with the specified material (only for equipment items)
-          if ('attack' in item) {
-            item.attack = Math.floor((baseTemplate.stats.attack || 0) * materialObj.statMultiplier)
-            item.defense = Math.floor((baseTemplate.stats.defense || 0) * materialObj.statMultiplier)
-            item.speed = Math.floor((baseTemplate.stats.speed || 0) * materialObj.statMultiplier)
-            item.luck = Math.floor((baseTemplate.stats.luck || 0) * materialObj.statMultiplier)
-            item.maxHp = Math.floor((baseTemplate.stats.maxHp || 0) * materialObj.statMultiplier)
+          if ('attack' in item && 'defense' in item) {
+            const equipItem = item as Item & { attack: number; defense: number; speed: number; luck: number; maxHp: number }
+            equipItem.attack = Math.floor((baseTemplate.stats.attack || 0) * materialObj.statMultiplier)
+            equipItem.defense = Math.floor((baseTemplate.stats.defense || 0) * materialObj.statMultiplier)
+            equipItem.speed = Math.floor((baseTemplate.stats.speed || 0) * materialObj.statMultiplier)
+            equipItem.luck = Math.floor((baseTemplate.stats.luck || 0) * materialObj.statMultiplier)
+            equipItem.maxHp = Math.floor((baseTemplate.stats.maxHp || 0) * materialObj.statMultiplier)
           }
-          item.value = Math.floor(('baseValue' in baseTemplate ? baseTemplate.baseValue || 0 : 0) * materialObj.valueMultiplier)
+          const baseValue = 'baseValue' in baseTemplate ? (baseTemplate.baseValue as number || 0) : 0
+          item.value = Math.floor(baseValue * materialObj.valueMultiplier)
         }
       }
       
