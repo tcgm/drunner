@@ -17,7 +17,7 @@ export const POWER_STRIKE: Ability = {
         target: 'enemy',
         scaling: {
             stat: 'attack',
-            ratio: 0.6
+            ratio: 2
         }
     },
     icon: GiPunch,
