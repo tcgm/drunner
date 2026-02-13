@@ -147,7 +147,7 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       }
     ],
     shuffle: true,
-    crossfadeDuration: 500 // Faster transition for combat
+    crossfadeDuration: 100 // Faster transition for combat
   },
 
   [MusicContext.FLOOR_BOSS]: {
@@ -161,7 +161,7 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // }
     ],
     shuffle: false,
-    crossfadeDuration: 500
+    crossfadeDuration: 100
   },
 
   [MusicContext.ZONE_BOSS]: {
@@ -175,7 +175,7 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // }
     ],
     shuffle: false,
-    crossfadeDuration: 500
+    crossfadeDuration: 100
   },
 
   [MusicContext.FINAL_BOSS]: {
@@ -189,7 +189,7 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // }
     ],
     shuffle: false,
-    crossfadeDuration: 1000
+    crossfadeDuration: 100
   },
 
   [MusicContext.VICTORY]: {
