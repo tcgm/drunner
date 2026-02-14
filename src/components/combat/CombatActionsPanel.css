@@ -1,5 +1,23 @@
 /* CombatActionsPanel responsive styles */
 
+/* Portrait Footer Bar Layout */
+@media (orientation: portrait) and (max-width: 768px) {
+  .combat-actions-footer-portrait {
+    position: relative;
+    width: 100%;
+    border-radius: 0 !important;
+  }
+
+  .combat-actions-footer-portrait button {
+    font-size: 0.75rem !important;
+    padding: 0.25rem !important;
+  }
+
+  .combat-actions-footer-portrait .chakra-icon {
+    font-size: 1.25rem !important;
+  }
+}
+
 /* Portrait phones - compact action panel */
 @media (orientation: portrait) and (max-width: 768px) {
   .combat-actions-panel {

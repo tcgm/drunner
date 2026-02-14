@@ -7,13 +7,14 @@
 import './CombatActionsPanel.css'
 import {
     Box, HStack, VStack, Button, Text, Badge, Icon, Tooltip, SimpleGrid,
-    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter,
-    useDisclosure
+    Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton,
+    Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody, PopoverCloseButton, PopoverArrow,
+    useDisclosure, IconButton, Divider
 } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import type { Hero, BossCombatState } from '@/types'
-import { GiSwordman, GiShield, GiSparkles, GiRunningNinja } from 'react-icons/gi'
-import { useMemo } from 'react'
+import { GiSwordman, GiShield, GiSparkles, GiRunningNinja, GiMightySpanner } from 'react-icons/gi'
+import { useMemo, useState } from 'react'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { calculateTotalStats } from '@/utils/statCalculator'
 
@@ -37,6 +38,18 @@ export default function CombatActionsPanel({
     onFlee,
 }: CombatActionsPanelProps) {
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen: isAbilitiesOpen, onOpen: onAbilitiesOpen, onClose: onAbilitiesClose } = useDisclosure()
+    const [isPortrait, setIsPortrait] = useState(false)
+
+    // Detect orientation on mount and window resize
+    useMemo(() => {
+        const checkOrientation = () => {
+            setIsPortrait(window.innerWidth <= 768 && window.matchMedia('(orientation: portrait)').matches)
+        }
+        checkOrientation()
+        window.addEventListener('resize', checkOrientation)
+        return () => window.removeEventListener('resize', checkOrientation)
+    }, [])
 
     // Get current active hero
     const activeHero = useMemo(() => {
@@ -57,7 +70,7 @@ export default function CombatActionsPanel({
         const cooldown = combatState.abilityCooldowns?.get(`${activeHero.id}-${a.id}`) || 0
         const hasCharges = a.charges === undefined || a.charges > 0
         const isUsable = cooldown === 0 && hasCharges
-        
+
         return { ability: a, isUsable, remainingCooldown: cooldown, hasCharges }
     }) || []
 
@@ -74,6 +87,398 @@ export default function CombatActionsPanel({
     const actionCost = 1.0 // Base action cost
     const consumableCost = 0.33 // Regular consumable cost
 
+    // Portrait Mode Footer Bar Layout
+    if (isPortrait) {
+        if (isBossTurn) {
+            return (
+                <Box
+                    className="combat-actions-panel combat-actions-footer-portrait"
+                    w="full"
+                    bg="blackAlpha.900"
+                    borderTopWidth="2px"
+                    borderColor="red.600"
+                    p={2}
+                    boxShadow="0 -4px 20px rgba(220, 38, 38, 0.4)"
+                >
+                    <VStack spacing={1}>
+                        <Text fontSize="sm" fontWeight="bold" color="red.400" textAlign="center">
+                            ⚔️ BOSS TURN ⚔️
+                        </Text>
+                        <Button
+                            size="sm"
+                            colorScheme="orange"
+                            w="full"
+                            isLoading={isProcessing}
+                            onClick={onEndTurn}
+                            leftIcon={<Icon as={GiSwordman} />}
+                        >
+                            Process Boss Turn
+                        </Button>
+                    </VStack>
+                </Box>
+            )
+        }
+
+        if (!activeHero) {
+            return (
+                <Box
+                    className="combat-actions-panel combat-actions-footer-portrait"
+                    w="full"
+                    bg="blackAlpha.900"
+                    borderTopWidth="2px"
+                    borderColor="gray.600"
+                    p={2}
+                >
+                    <Text fontSize="sm" color="gray.500" textAlign="center">
+                        Waiting for turn...
+                    </Text>
+                </Box>
+            )
+        }
+
+        // Hero Turn - Portrait Footer Bar
+        return (
+            <Box
+                className="combat-actions-panel combat-actions-footer-portrait"
+                w="full"
+                bg="blackAlpha.900"
+                borderTopWidth="2px"
+                borderColor="orange.600"
+                p={2}
+                boxShadow="0 -4px 20px rgba(249, 115, 22, 0.4)"
+            >
+                <VStack spacing={1.5} w="full">
+                    {/* Hero Name Badge */}
+                    <HStack w="full" justify="space-between" bg="orange.900" borderRadius="md" px={2} py={1}>
+                        <Text fontSize="xs" fontWeight="bold" color="white" isTruncated>
+                            {activeHero.name}
+                        </Text>
+                        <Badge colorScheme="orange" fontSize="2xs">
+                            {actionCost.toFixed(1)} / 2.0
+                        </Badge>
+                    </HStack>
+
+                    {/* Action Buttons Row */}
+                    <HStack w="full" spacing={1.5}>
+                        {activeHero.isAlive ? (
+                            <>
+                                {/* Attack */}
+                                <Button
+                                    flex={1}
+                                    colorScheme="red"
+                                    variant="solid"
+                                    size="sm"
+                                    h="48px"
+                                    flexDirection="column"
+                                    gap={0}
+                                    isDisabled={isProcessing}
+                                    onClick={() => onAction(activeHero.id, 'attack')}
+                                >
+                                    <Icon as={GiSwordman} boxSize={5} />
+                                    <Text fontSize="2xs">Attack</Text>
+                                </Button>
+
+                                {/* Defend */}
+                                <Button
+                                    flex={1}
+                                    colorScheme="blue"
+                                    variant="solid"
+                                    size="sm"
+                                    h="48px"
+                                    flexDirection="column"
+                                    gap={0}
+                                    isDisabled={isProcessing}
+                                    onClick={() => onAction(activeHero.id, 'defend')}
+                                >
+                                    <Icon as={GiShield} boxSize={5} />
+                                    <Text fontSize="2xs">Defend</Text>
+                                </Button>
+
+                                {/* Abilities - Wrapped in Popover */}
+                                <Popover
+                                    isOpen={isAbilitiesOpen}
+                                    onClose={onAbilitiesClose}
+                                    placement="top"
+                                    closeOnBlur={true}
+                                    strategy="fixed"
+                                >
+                                    <PopoverTrigger>
+                                        <Button
+                                            flex={1}
+                                            colorScheme="purple"
+                                            variant="solid"
+                                            size="sm"
+                                            h="48px"
+                                            flexDirection="column"
+                                            gap={0}
+                                            isDisabled={isProcessing || allAbilities.length === 0}
+                                            onClick={onAbilitiesOpen}
+                                        >
+                                            <Icon as={GiSparkles} boxSize={5} />
+                                            <Text fontSize="2xs">Abilities</Text>
+                                            {allAbilities.filter(a => a.isUsable).length > 0 && (
+                                                <Badge
+                                                    position="absolute"
+                                                    top={1}
+                                                    right={1}
+                                                    colorScheme="green"
+                                                    fontSize="3xs"
+                                                    borderRadius="full"
+                                                    px={1}
+                                                >
+                                                    {allAbilities.filter(a => a.isUsable).length}
+                                                </Badge>
+                                            )}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent
+                                        bg="gray.900"
+                                        borderColor="purple.500"
+                                        borderWidth="2px"
+                                        maxH="70vh"
+                                        w="95vw"
+                                        maxW="400px"
+                                    >
+                                        <PopoverArrow bg="gray.900" />
+                                        <PopoverCloseButton />
+                                        <PopoverHeader color="purple.400" fontWeight="bold">
+                                            {activeHero.name}'s Abilities & Items
+                                        </PopoverHeader>
+                                        <PopoverBody pb={4} px={2} overflowY="auto" maxH="60vh">
+                                            <VStack align="stretch" spacing={4}>
+                                                {/* Abilities Section */}
+                                                {allAbilities.length > 0 && (
+                                                    <VStack align="stretch" spacing={2}>
+                                                        <Text fontSize="sm" color="gray.400" fontWeight="bold" letterSpacing="wider">
+                                                            ABILITIES
+                                                        </Text>
+                                                        {allAbilities.map(({ ability, isUsable, remainingCooldown, hasCharges }) => {
+                                                            const heroStats = calculateTotalStats(activeHero)
+                                                            let effectValue = ability.effect.value
+                                                            if (ability.effect.scaling) {
+                                                                const scalingStat = heroStats[ability.effect.scaling.stat as keyof typeof heroStats]
+                                                                const bonus = Math.round((typeof scalingStat === 'number' ? scalingStat : 0) * ability.effect.scaling.ratio)
+                                                                effectValue += bonus
+                                                            }
+                                                            const duration = ability.effect.duration
+
+                                                            const powerText = ability.effect.type === 'heal' ?
+                                                                (duration && duration > 1 ? `${effectValue} HP/turn × ${duration}` : `${effectValue} HP`) :
+                                                                ability.effect.type === 'damage' ? `${effectValue} DMG` : ''
+
+                                                            const abilityColor = ability.effect.type === 'heal' ? 'green' :
+                                                                ability.effect.type === 'damage' ? 'orange' :
+                                                                    ability.effect.type === 'buff' ? 'purple' :
+                                                                        ability.effect.type === 'debuff' ? 'red' : 'cyan'
+
+                                                            return (
+                                                                <Button
+                                                                    key={ability.id}
+                                                                    colorScheme={abilityColor}
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    h="auto"
+                                                                    py={2}
+                                                                    isDisabled={!isUsable}
+                                                                    opacity={isUsable ? 1 : 0.5}
+                                                                    onClick={() => {
+                                                                        onAction(activeHero.id, `ability:${ability.id}`)
+                                                                        onAbilitiesClose()
+                                                                    }}
+                                                                >
+                                                                    <VStack w="full" align="start" spacing={1}>
+                                                                        <HStack w="full" justify="space-between">
+                                                                            <HStack spacing={2}>
+                                                                                <Icon as={ability.icon || GiSparkles} boxSize={5} />
+                                                                                <Text fontSize="sm" fontWeight="bold">{ability.name}</Text>
+                                                                            </HStack>
+                                                                            <HStack spacing={1}>
+                                                                                {remainingCooldown > 0 && (
+                                                                                    <Badge colorScheme="red" fontSize="2xs">{remainingCooldown}t</Badge>
+                                                                                )}
+                                                                                {!hasCharges && (
+                                                                                    <Badge colorScheme="gray" fontSize="2xs">0</Badge>
+                                                                                )}
+                                                                                {isUsable && (
+                                                                                    <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
+                                                                                )}
+                                                                            </HStack>
+                                                                        </HStack>
+                                                                        <Text fontSize="xs" opacity={0.8}>
+                                                                            {ability.description}
+                                                                        </Text>
+                                                                        {powerText && (
+                                                                            <Text fontSize="xs" color={abilityColor + '.300'}>
+                                                                                {powerText}
+                                                                            </Text>
+                                                                        )}
+                                                                    </VStack>
+                                                                </Button>
+                                                            )
+                                                        })}
+                                                    </VStack>
+                                                )}
+
+                                                {/* Consumables Section */}
+                                                {usableItems.length > 0 && (
+                                                    <VStack align="stretch" spacing={2}>
+                                                        <HStack justify="space-between">
+                                                            <Text fontSize="xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
+                                                                CONSUMABLES
+                                                            </Text>
+                                                            <Badge colorScheme="green" fontSize="2xs">
+                                                                {consumableCost}
+                                                            </Badge>
+                                                        </HStack>
+                                                        <SimpleGrid columns={4} spacing={1}>
+                                                            {usableItems.map(({ slot, item }) => {
+                                                                if (!item) return null
+                                                                const consumable = item as import('@/types').Consumable
+                                                                const isRevive = consumable.effects?.some(effect => effect.type === 'revive') ?? false
+                                                                const canUse = (isRevive ? !activeHero.isAlive : activeHero.isAlive)
+
+                                                                return (
+                                                                    <Button
+                                                                        key={slot}
+                                                                        h="auto"
+                                                                        minH="50px"
+                                                                        py={0.5}
+                                                                        px={0.5}
+                                                                        variant="outline"
+                                                                        colorScheme={isRevive ? 'yellow' : 'green'}
+                                                                        isDisabled={!canUse}
+                                                                        onClick={() => {
+                                                                            onAction(activeHero.id, `item:${slot}`)
+                                                                            onAbilitiesClose()
+                                                                        }}
+                                                                        boxShadow={isRevive && canUse ? '0 0 6px 1px rgba(255, 215, 0, 0.5)' : undefined}
+                                                                    >
+                                                                        <VStack spacing={0}>
+                                                                            <ItemSlot
+                                                                                item={item}
+                                                                                size="xs"
+                                                                                isClickable={false}
+                                                                                iconOnly={true}
+                                                                            />
+                                                                        </VStack>
+                                                                    </Button>
+                                                                )
+                                                            })}
+                                                        </SimpleGrid>
+                                                    </VStack>
+                                                )}
+                                            </VStack>
+                                        </PopoverBody>
+                                    </PopoverContent>
+                                </Popover>
+
+                                {/* Items */}
+                                {usableItems.length > 0 && (
+                                    <Button
+                                        flex={0.8}
+                                        colorScheme="green"
+                                        variant="solid"
+                                        size="sm"
+                                        h="48px"
+                                        flexDirection="column"
+                                        gap={0}
+                                        isDisabled={isProcessing}
+                                        onClick={onAbilitiesOpen}
+                                    >
+                                        <Icon as={GiMightySpanner} boxSize={5} />
+                                        <Badge
+                                            position="absolute"
+                                            top={1}
+                                            right={1}
+                                            colorScheme="green"
+                                            fontSize="3xs"
+                                            borderRadius="full"
+                                            px={1}
+                                        >
+                                            {usableItems.length}
+                                        </Badge>
+                                    </Button>
+                                )}
+
+                                {/* Flee */}
+                                <IconButton
+                                    flex={0.6}
+                                    aria-label="Flee"
+                                    icon={<Icon as={GiRunningNinja} boxSize={5} />}
+                                    colorScheme="purple"
+                                    variant="outline"
+                                    size="sm"
+                                    h="48px"
+                                    isDisabled={isProcessing}
+                                    onClick={onOpen}
+                                />
+                            </>
+                        ) : (
+                            <Button
+                                w="full"
+                                colorScheme="gray"
+                                variant="solid"
+                                size="sm"
+                                h="48px"
+                                flexDirection="column"
+                                gap={0}
+                                isDisabled={isProcessing}
+                                onClick={onEndTurn}
+                            >
+                                <Icon as={GiRunningNinja} boxSize={5} />
+                                <Text fontSize="2xs">Skip Turn (Dead)</Text>
+                            </Button>
+                        )}
+                    </HStack>
+                </VStack>
+
+                {/* Flee Confirmation Modal */}
+                <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                    <ModalOverlay bg="blackAlpha.800" />
+                    <ModalContent bg="gray.800" borderColor="purple.500" borderWidth="2px" mx={4}>
+                        <ModalHeader color="purple.300">⚠️ Flee from Combat?</ModalHeader>
+                        <ModalBody>
+                            <VStack align="start" spacing={3}>
+                                <Text color="white">
+                                    Are you sure you want to flee from this boss battle?
+                                </Text>
+                                <VStack align="start" spacing={1} w="full" p={3} bg="red.900" borderRadius="md">
+                                    <Text fontSize="sm" fontWeight="bold" color="red.300">
+                                        Consequences:
+                                    </Text>
+                                    <Text fontSize="sm" color="red.200">
+                                        • You will lose this battle
+                                    </Text>
+                                    <Text fontSize="sm" color="red.200">
+                                        • No rewards will be earned
+                                    </Text>
+                                    <Text fontSize="sm" color="red.200">
+                                        • Boss will remain undefeated
+                                    </Text>
+                                </VStack>
+                            </VStack>
+                        </ModalBody>
+                        <ModalFooter gap={3}>
+                            <Button colorScheme="gray" onClick={onClose}>
+                                Stay and Fight
+                            </Button>
+                            <Button
+                                colorScheme="purple"
+                                onClick={() => {
+                                    onClose()
+                                    onFlee()
+                                }}
+                            >
+                                Flee
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            </Box>
+        )
+    }
+
+    // Landscape/Desktop Layout (existing code)
     return (
         <Box
             className="combat-actions-panel"
@@ -84,295 +489,293 @@ export default function CombatActionsPanel({
             borderRadius="lg"
             p={2}
             boxShadow="0 0 20px rgba(249, 115, 22, 0.4)"
-        >
-            {isBossTurn ? (
-                /* Boss Turn - Show End Turn Button */
-                <VStack spacing={1}>
-                    <Text fontSize="md" fontWeight="bold" color="red.400" textAlign="center">
-                        ⚔️ BOSS TURN ⚔️
-                    </Text>
-                    <Button
-                        size="md"
-                        colorScheme="orange"
-                        w="full"
-                        isLoading={isProcessing}
-                        onClick={onEndTurn}
-                        leftIcon={<Icon as={GiSwordman} boxSize={5} />}
-                        h="clamp(40px, 5vh, 55px)"
-                        fontSize="lg"
-                    >
-                        Process Boss Turn
-                    </Button>
-                </VStack>
-            ) : !activeHero ? (
-                /* No Active Hero */
-                <Text fontSize="sm" color="gray.500" textAlign="center">
-                    Waiting for turn...
+        >            {isBossTurn ? (
+            /* Boss Turn - Show End Turn Button */
+            <VStack spacing={1}>
+                <Text fontSize="md" fontWeight="bold" color="red.400" textAlign="center">
+                    ⚔️ BOSS TURN ⚔️
                 </Text>
-            ) : (
-                /* Hero Turn - Show Actions */
-                        <VStack spacing={2} align="stretch">
-                    {/* Active Hero Info */}
-                    <HStack justify="space-between" p={2} bg="orange.900" borderRadius="md">
-                        <VStack align="start" spacing={0}>
-                                    <Text fontSize="xs" color="gray.400">Active Hero</Text>
-                                    <Text fontSize="md" fontWeight="bold" color="white">
-                                {activeHero.name}
-                            </Text>
-                        </VStack>
-                        <VStack align="end" spacing={0}>
-                                    <Text fontSize="2xs" color="gray.400">Action Cost</Text>
-                                    <Badge colorScheme="orange" fontSize="sm" px={2}>
-                                {actionCost.toFixed(1)} / 2.0
-                            </Badge>
-                        </VStack>
-                    </HStack>
+                <Button
+                    size="md"
+                    colorScheme="orange"
+                    w="full"
+                    isLoading={isProcessing}
+                    onClick={onEndTurn}
+                    leftIcon={<Icon as={GiSwordman} boxSize={5} />}
+                    h="clamp(40px, 5vh, 55px)"
+                    fontSize="lg"
+                >
+                    Process Boss Turn
+                </Button>
+            </VStack>
+        ) : !activeHero ? (
+            /* No Active Hero */
+            <Text fontSize="sm" color="gray.500" textAlign="center">
+                Waiting for turn...
+            </Text>
+        ) : (
+            /* Hero Turn - Show Actions */
+            <VStack spacing={2} align="stretch">
+                {/* Active Hero Info */}
+                <HStack justify="space-between" p={2} bg="orange.900" borderRadius="md">
+                    <VStack align="start" spacing={0}>
+                        <Text fontSize="xs" color="gray.400">Active Hero</Text>
+                        <Text fontSize="md" fontWeight="bold" color="white">
+                            {activeHero.name}
+                        </Text>
+                    </VStack>
+                    <VStack align="end" spacing={0}>
+                        <Text fontSize="2xs" color="gray.400">Action Cost</Text>
+                        <Badge colorScheme="orange" fontSize="sm" px={2}>
+                            {actionCost.toFixed(1)} / 2.0
+                        </Badge>
+                    </VStack>
+                </HStack>
 
-                    {/* Main Actions */}
-                            <SimpleGrid columns={!activeHero.isAlive ? 1 : 2} spacing={2}>
-                        {/* Skip Turn (Dead Hero) */}
-                        {!activeHero.isAlive && (
+                {/* Main Actions */}
+                <SimpleGrid columns={!activeHero.isAlive ? 1 : 2} spacing={2}>
+                    {/* Skip Turn (Dead Hero) */}
+                    {!activeHero.isAlive && (
+                        <MotionButton
+                            colorScheme="gray"
+                            variant="solid"
+                            size="md"
+                            h="clamp(50px, 6vh, 65px)"
+                            flexDirection="column"
+                            gap={0}
+                            isDisabled={isProcessing}
+                            onClick={onEndTurn}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <Icon as={GiRunningNinja} boxSize={6} />
+                            <Text fontSize="xs">Skip Turn (Dead)</Text>
+                            <Badge colorScheme="gray" fontSize="2xs">Hero is dead</Badge>
+                        </MotionButton>
+                    )}
+
+                    {/* Attack */}
+                    {activeHero.isAlive && (
+                        <Tooltip label={`Deal damage to boss (Cost: ${actionCost})`}>
                             <MotionButton
-                                colorScheme="gray"
-                                variant="solid"
+                                colorScheme="red"
+                                variant="outline"
                                 size="md"
                                 h="clamp(50px, 6vh, 65px)"
                                 flexDirection="column"
                                 gap={0}
                                 isDisabled={isProcessing}
-                                onClick={onEndTurn}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Icon as={GiRunningNinja} boxSize={6} />
-                                <Text fontSize="xs">Skip Turn (Dead)</Text>
-                                <Badge colorScheme="gray" fontSize="2xs">Hero is dead</Badge>
-                            </MotionButton>
-                        )}
-                        
-                        {/* Attack */}
-                        {activeHero.isAlive && (
-                        <Tooltip label={`Deal damage to boss (Cost: ${actionCost})`}>
-                            <MotionButton
-                                colorScheme="red"
-                                variant="outline"
-                                        size="md"
-                                        h="clamp(50px, 6vh, 65px)"
-                                flexDirection="column"
-                                        gap={0}
-                                isDisabled={isProcessing}
                                 onClick={() => onAction(activeHero.id, 'attack')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                        <Icon as={GiSwordman} boxSize={6} />
-                                        <Text fontSize="xs">Attack</Text>
+                                <Icon as={GiSwordman} boxSize={6} />
+                                <Text fontSize="xs">Attack</Text>
                                 <Badge colorScheme="red" fontSize="2xs">{actionCost}</Badge>
                             </MotionButton>
                         </Tooltip>
-                        )}
+                    )}
 
-                        {/* Defend */}
-                        {activeHero.isAlive && (
+                    {/* Defend */}
+                    {activeHero.isAlive && (
                         <Tooltip label={`Increase defense for this turn (Cost: ${actionCost})`}>
                             <MotionButton
                                 colorScheme="blue"
                                 variant="outline"
-                                        size="md"
-                                        h="clamp(50px, 6vh, 65px)"
+                                size="md"
+                                h="clamp(50px, 6vh, 65px)"
                                 flexDirection="column"
-                                        gap={0}
+                                gap={0}
                                 isDisabled={isProcessing}
                                 onClick={() => onAction(activeHero.id, 'defend')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                        <Icon as={GiShield} boxSize={6} />
-                                        <Text fontSize="xs">Defend</Text>
+                                <Icon as={GiShield} boxSize={6} />
+                                <Text fontSize="xs">Defend</Text>
                                 <Badge colorScheme="blue" fontSize="2xs">{actionCost}</Badge>
                             </MotionButton>
-                                </Tooltip>
-                        )}
-                    </SimpleGrid>
+                        </Tooltip>
+                    )}
+                </SimpleGrid>
 
-                    {/* Abilities */}
-                    {allAbilities.length > 0 && (
-                                <VStack align="stretch" spacing={1}>
-                                    <Text fontSize="2xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
-                                ABILITIES
-                            </Text>
-                                    <VStack spacing={1}>
-                                {allAbilities.map(({ ability, isUsable, remainingCooldown, hasCharges }) => {
-                                    // Calculate ability power preview
-                                    const heroStats = calculateTotalStats(activeHero)
-                                    let effectValue = ability.effect.value
-                                    if (ability.effect.scaling) {
-                                        const scalingStat = heroStats[ability.effect.scaling.stat as keyof typeof heroStats]
-                                        const bonus = Math.round((typeof scalingStat === 'number' ? scalingStat : 0) * ability.effect.scaling.ratio)
-                                        effectValue += bonus
-                                    }
-                                    const duration = ability.effect.duration
-                                    
-                                    const powerText = ability.effect.type === 'heal' ? 
-                                        (duration && duration > 1 ? `${effectValue} HP/turn × ${duration}` : `${effectValue} HP`) :
-                                        ability.effect.type === 'damage' ? `${effectValue} DMG` : ''
-                                    
-                                    // Color-code by ability type
-                                    const abilityColor = ability.effect.type === 'heal' ? 'green' :
-                                                        ability.effect.type === 'damage' ? 'orange' :
-                                                        ability.effect.type === 'buff' ? 'purple' :
-                                                        ability.effect.type === 'debuff' ? 'red' : 'cyan'
-                                    
-                                    const textColor = ability.effect.type === 'heal' ? 'green.200' :
-                                                     ability.effect.type === 'damage' ? 'orange.200' :
-                                                     ability.effect.type === 'buff' ? 'purple.200' :
-                                                     ability.effect.type === 'debuff' ? 'red.200' : 'cyan.200'
-                                    
-                                    return (
-                                        <MotionButton
-                                            key={ability.id}
-                                            colorScheme={abilityColor}
-                                            variant="outline"
-                                            size="sm"
-                                            w="full"
-                                            h="auto"
-                                            py={1}
-                                            isDisabled={isProcessing || !activeHero.isAlive || !isUsable}
-                                            onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
-                                            opacity={isUsable ? 1 : 0.5}
-                                            whileHover={{ scale: isUsable ? 1.02 : 1 }}
-                                            whileTap={{ scale: isUsable ? 0.98 : 1 }}
-                                        >
-                                            <HStack w="full" justify="space-between" px={1}>
-                                                <HStack spacing={2}>
-                                                    <Icon as={ability.icon || GiSparkles} boxSize={5} />
-                                                    <VStack align="start" spacing={0}>
-                                                        <Text fontSize="xs" fontWeight="bold">{ability.name}</Text>
-                                                        <Text fontSize="2xs" color={textColor} fontStyle="italic" noOfLines={1}>
-                                                            {powerText || ability.description}
-                                                        </Text>
-                                                    </VStack>
-                                                </HStack>
-                                                <HStack spacing={1}>
-                                                    {remainingCooldown > 0 && (
-                                                        <Badge colorScheme="red" fontSize="2xs">{remainingCooldown} turn{remainingCooldown !== 1 ? 's' : ''}</Badge>
-                                                    )}
-                                                    {!hasCharges && (
-                                                        <Badge colorScheme="gray" fontSize="2xs">No Charges</Badge>
-                                                    )}
-                                                    {remainingCooldown === 0 && ability.cooldown > 0 && (
-                                                        <Badge colorScheme={abilityColor} fontSize="2xs" opacity={0.6}>CD:{ability.cooldown}</Badge>
-                                                    )}
-                                                    <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
-                                                </HStack>
+                {/* Abilities */}
+                {allAbilities.length > 0 && (
+                    <VStack align="stretch" spacing={1}>
+                        <Text fontSize="2xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
+                            ABILITIES
+                        </Text>
+                        <VStack spacing={1}>
+                            {allAbilities.map(({ ability, isUsable, remainingCooldown, hasCharges }) => {
+                                // Calculate ability power preview
+                                const heroStats = calculateTotalStats(activeHero)
+                                let effectValue = ability.effect.value
+                                if (ability.effect.scaling) {
+                                    const scalingStat = heroStats[ability.effect.scaling.stat as keyof typeof heroStats]
+                                    const bonus = Math.round((typeof scalingStat === 'number' ? scalingStat : 0) * ability.effect.scaling.ratio)
+                                    effectValue += bonus
+                                }
+                                const duration = ability.effect.duration
+
+                                const powerText = ability.effect.type === 'heal' ?
+                                    (duration && duration > 1 ? `${effectValue} HP/turn × ${duration}` : `${effectValue} HP`) :
+                                    ability.effect.type === 'damage' ? `${effectValue} DMG` : ''
+
+                                // Color-code by ability type
+                                const abilityColor = ability.effect.type === 'heal' ? 'green' :
+                                    ability.effect.type === 'damage' ? 'orange' :
+                                        ability.effect.type === 'buff' ? 'purple' :
+                                            ability.effect.type === 'debuff' ? 'red' : 'cyan'
+
+                                const textColor = ability.effect.type === 'heal' ? 'green.200' :
+                                    ability.effect.type === 'damage' ? 'orange.200' :
+                                        ability.effect.type === 'buff' ? 'purple.200' :
+                                            ability.effect.type === 'debuff' ? 'red.200' : 'cyan.200'
+
+                                return (
+                                    <MotionButton
+                                        key={ability.id}
+                                        colorScheme={abilityColor}
+                                        variant="outline"
+                                        size="sm"
+                                        w="full"
+                                        h="auto"
+                                        py={1}
+                                        isDisabled={isProcessing || !activeHero.isAlive || !isUsable}
+                                        onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
+                                        opacity={isUsable ? 1 : 0.5}
+                                        whileHover={{ scale: isUsable ? 1.02 : 1 }}
+                                        whileTap={{ scale: isUsable ? 0.98 : 1 }}
+                                    >
+                                        <HStack w="full" justify="space-between" px={1}>
+                                            <HStack spacing={2}>
+                                                <Icon as={ability.icon || GiSparkles} boxSize={5} />
+                                                <VStack align="start" spacing={0}>
+                                                    <Text fontSize="xs" fontWeight="bold">{ability.name}</Text>
+                                                    <Text fontSize="2xs" color={textColor} fontStyle="italic" noOfLines={1}>
+                                                        {powerText || ability.description}
+                                                    </Text>
+                                                </VStack>
                                             </HStack>
-                                        </MotionButton>
-                                    )
-                                })}
-                                    </VStack>
+                                            <HStack spacing={1}>
+                                                {remainingCooldown > 0 && (
+                                                    <Badge colorScheme="red" fontSize="2xs">{remainingCooldown} turn{remainingCooldown !== 1 ? 's' : ''}</Badge>
+                                                )}
+                                                {!hasCharges && (
+                                                    <Badge colorScheme="gray" fontSize="2xs">No Charges</Badge>
+                                                )}
+                                                {remainingCooldown === 0 && ability.cooldown > 0 && (
+                                                    <Badge colorScheme={abilityColor} fontSize="2xs" opacity={0.6}>CD:{ability.cooldown}</Badge>
+                                                )}
+                                                <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
+                                            </HStack>
+                                        </HStack>
+                                    </MotionButton>
+                                )
+                            })}
                         </VStack>
-                    )}
+                    </VStack>
+                )}
 
-                    {/* Consumables */}
-                    {usableItems.length > 0 && (
-                                <VStack align="stretch" spacing={1}>
-                            <HStack justify="space-between">
-                                        <Text fontSize="2xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
-                                    CONSUMABLES
+                {/* Consumables */}
+                {usableItems.length > 0 && (
+                    <VStack align="stretch" spacing={1}>
+                        <HStack justify="space-between">
+                            <Text fontSize="2xs" color="gray.400" fontWeight="bold" letterSpacing="wider">
+                                CONSUMABLES
+                            </Text>
+                            <Badge colorScheme="green" fontSize="2xs">
+                                Cost: {consumableCost} each
+                            </Badge>
+                        </HStack>
+                        <SimpleGrid columns={3} spacing={1}>
+                            {usableItems.slice(0, 4).map(({ slot, item }) => {
+                                if (!item) return null
+                                const consumable = item as import('@/types').Consumable
+                                const isRevive = consumable.effects?.some(effect => effect.type === 'revive') ?? false
+                                const canUse = (isRevive ? !activeHero.isAlive : activeHero.isAlive) && !isProcessing
+
+                                return (
+                                    <Box
+                                        key={slot}
+                                        borderRadius="lg"
+                                        opacity={canUse ? 1 : 0.4}
+                                        cursor={canUse ? 'pointer' : 'not-allowed'}
+                                        boxShadow={isRevive && canUse ? '0 0 8px 2px rgba(255, 215, 0, 0.6)' : undefined}
+                                        transition="box-shadow 0.3s ease, opacity 0.2s ease"
+                                        _hover={isRevive && canUse ? { boxShadow: '0 0 12px 3px rgba(255, 215, 0, 0.8)' } : undefined}
+                                    >
+                                        <ItemSlot
+                                            item={item}
+                                            isClickable={canUse}
+                                            iconOnly={true}
+                                            onClick={canUse ? () => {
+                                                onAction(activeHero.id, `item:${slot}`)
+                                            } : undefined}
+                                        />
+                                    </Box>
+                                )
+                            })}
+                        </SimpleGrid>
+                    </VStack>
+                )}
+
+                {/* Flee Button */}
+                <Button
+                    colorScheme="purple"
+                    variant="outline"
+                    size="sm"
+                    isDisabled={isProcessing}
+                    onClick={onOpen}
+                    leftIcon={<Icon as={GiRunningNinja} />}
+                >
+                    Flee from Combat
+                </Button>
+
+                {/* Flee Confirmation Modal */}
+                <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                    <ModalOverlay bg="blackAlpha.800" />
+                    <ModalContent bg="gray.800" borderColor="purple.500" borderWidth="2px">
+                        <ModalHeader color="purple.300">⚠️ Flee from Combat?</ModalHeader>
+                        <ModalBody>
+                            <VStack align="start" spacing={3}>
+                                <Text color="white">
+                                    Are you sure you want to flee from this boss battle?
                                 </Text>
-                                <Badge colorScheme="green" fontSize="2xs">
-                                    Cost: {consumableCost} each
-                                </Badge>
-                            </HStack>
-                                    <SimpleGrid columns={4} spacing={1}>
-                                        {usableItems.slice(0, 4).map(({ slot, item }) => {
-                                    if (!item) return null
-                                            const consumable = item as import('@/types').Consumable
-                                            const isRevive = consumable.effects?.some(effect => effect.type === 'revive') ?? false
-                                            const canUse = (isRevive ? !activeHero.isAlive : activeHero.isAlive) && !isProcessing
-
-                                    return (
-                                        <Box
-                                            key={slot}
-                                            borderRadius="lg"
-                                            opacity={canUse ? 1 : 0.4}
-                                            cursor={canUse ? 'pointer' : 'not-allowed'}
-                                            boxShadow={isRevive && canUse ? '0 0 8px 2px rgba(255, 215, 0, 0.6)' : undefined}
-                                            transition="box-shadow 0.3s ease, opacity 0.2s ease"
-                                            _hover={isRevive && canUse ? { boxShadow: '0 0 12px 3px rgba(255, 215, 0, 0.8)' } : undefined}
-                                        >
-                                            <ItemSlot
-                                                item={item}
-                                                size="sm"
-                                                isClickable={canUse}
-                                                iconOnly={true}
-                                                onClick={canUse ? () => {
-                                                    onAction(activeHero.id, `item:${slot}`)
-                                                } : undefined}
-                                            />
-                                        </Box>
-                                    )
-                                })}
-                            </SimpleGrid>
-                        </VStack>
-                    )}
-
-                            {/* Flee Button */}
+                                <VStack align="start" spacing={1} w="full" p={3} bg="red.900" borderRadius="md">
+                                    <Text fontSize="sm" fontWeight="bold" color="red.300">
+                                        Consequences:
+                                    </Text>
+                                    <Text fontSize="sm" color="red.200">
+                                        • You will lose this battle
+                                    </Text>
+                                    <Text fontSize="sm" color="red.200">
+                                        • No rewards will be earned
+                                    </Text>
+                                    <Text fontSize="sm" color="red.200">
+                                        • Boss will remain undefeated
+                                    </Text>
+                                </VStack>
+                            </VStack>
+                        </ModalBody>
+                        <ModalFooter gap={3}>
+                            <Button colorScheme="gray" onClick={onClose}>
+                                Stay and Fight
+                            </Button>
                             <Button
                                 colorScheme="purple"
-                                variant="outline"
-                                size="sm"
-                                isDisabled={isProcessing}
-                                onClick={onOpen}
-                                leftIcon={<Icon as={GiRunningNinja} />}
+                                onClick={() => {
+                                    onClose()
+                                    onFlee()
+                                }}
                             >
-                                Flee from Combat
+                                Flee
                             </Button>
-
-                            {/* Flee Confirmation Modal */}
-                            <Modal isOpen={isOpen} onClose={onClose} isCentered>
-                                <ModalOverlay bg="blackAlpha.800" />
-                                <ModalContent bg="gray.800" borderColor="purple.500" borderWidth="2px">
-                                    <ModalHeader color="purple.300">⚠️ Flee from Combat?</ModalHeader>
-                                    <ModalBody>
-                                        <VStack align="start" spacing={3}>
-                                            <Text color="white">
-                                                Are you sure you want to flee from this boss battle?
-                                            </Text>
-                                            <VStack align="start" spacing={1} w="full" p={3} bg="red.900" borderRadius="md">
-                                                <Text fontSize="sm" fontWeight="bold" color="red.300">
-                                                    Consequences:
-                                                </Text>
-                                                <Text fontSize="sm" color="red.200">
-                                                    • You will lose this battle
-                                                </Text>
-                                                <Text fontSize="sm" color="red.200">
-                                                    • No rewards will be earned
-                                                </Text>
-                                                <Text fontSize="sm" color="red.200">
-                                                    • Boss will remain undefeated
-                                                </Text>
-                                            </VStack>
-                                        </VStack>
-                                    </ModalBody>
-                                    <ModalFooter gap={3}>
-                                        <Button colorScheme="gray" onClick={onClose}>
-                                            Stay and Fight
-                                        </Button>
-                                        <Button 
-                                            colorScheme="purple"
-                                            onClick={() => {
-                                                onClose()
-                                                onFlee()
-                                            }}
-                                        >
-                                            Flee
-                                        </Button>
-                                    </ModalFooter>
-                                </ModalContent>
-                            </Modal>
-                </VStack>
-            )}
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            </VStack>
+        )}
         </Box>
     )
 }

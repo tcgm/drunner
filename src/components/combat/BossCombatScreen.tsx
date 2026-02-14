@@ -550,11 +550,13 @@ export default function BossCombatScreen({
                 {/* Center Column - Boss & Party */}
                 <VStack
                     flex="1"
-                    spacing={{ base: 2, md: 4 }}
-                    justify="space-between"
+                    spacing={{ base: 0, md: 4 }}
+                    justify="flex-start"
                     align="stretch"
                     h="full"
+                    minH={0}
                     minW={0}
+                    overflow="hidden"
                 >
                     {/* Portrait Mode: Combat Info Header */}
                     <HStack className="combat-info-header-portrait portrait-only" display="none">
@@ -595,7 +597,7 @@ export default function BossCombatScreen({
                     </HStack>
 
                     {/* Boss Display */}
-                    <Box flex="0 0 auto">
+                    <Box flex="0 0 auto" className="landscape-only">
                         <BossDisplay
                             event={event}
                             combatState={combatState}
@@ -605,16 +607,45 @@ export default function BossCombatScreen({
                     </Box>
 
                     {/* Party Health Display */}
-                    <Box flex="0 0 auto" w="full">
+                    <Box flex="0 0 auto" w="full" className="landscape-only">
                         <PartyHealthDisplay
                             party={activeHeroes}
                             combatState={combatState}
                             onUseConsumable={handleUseConsumableFromParty}
                         />
                     </Box>
+
+                    {/* Portrait Mode: Scrollable Content Area */}
+                    <VStack 
+                        className="combat-content-portrait portrait-only" 
+                        display="none"
+                        flex="1"
+                        minH={0}
+                        overflowY="auto"
+                        overflowX="hidden"
+                        w="full"
+                        spacing={2}
+                        pb={2}
+                    >
+                        <Box w="full">
+                            <BossDisplay
+                                event={event}
+                                combatState={combatState}
+                                isActing={isBossActing}
+                                onPhaseChange={(phase: number) => addLogEntry('phase', `Boss enters Phase ${phase}!`)}
+                            />
+                        </Box>
+                        <Box w="full">
+                            <PartyHealthDisplay
+                                party={activeHeroes}
+                                combatState={combatState}
+                                onUseConsumable={handleUseConsumableFromParty}
+                            />
+                        </Box>
+                    </VStack>
                     
-                    {/* Mobile Combat Actions - Portrait Only */}
-                    <Box className="portrait-only" flex="0 0 auto" w="full">
+                    {/* Mobile Combat Actions - Portrait Only - Fixed at Bottom */}
+                    <Box className="combat-actions-portrait portrait-only" display="none" flex="0 0 auto" w="full">
                         <CombatActionsPanel
                             party={activeHeroes}
                             combatState={combatState}
@@ -633,6 +664,8 @@ export default function BossCombatScreen({
                     spacing={1}
                     align="stretch"
                     h="full"
+                    minH={0}
+                    overflow="hidden"
                 >
                     {/* Combat Actions */}
                     <Box flex="0 0 auto">
@@ -647,7 +680,7 @@ export default function BossCombatScreen({
                     </Box>
 
                     {/* Combat Log */}
-                    <Box flex="1" minH={0}>
+                    <Box flex="1" minH={0} overflow="hidden">
                         <CombatLog entries={combatLog} />
                     </Box>
                 </VStack>
