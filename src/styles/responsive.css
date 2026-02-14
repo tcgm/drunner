@@ -602,9 +602,15 @@
   bottom: 1rem;
   right: 1rem;
   z-index: 999;
-  display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+/* Ensure FAB container displays as flex when visible in portrait */
+@media (orientation: portrait) {
+  .mobile-fab-container {
+    display: flex !important;
+  }
 }
 
 .mobile-fab {
@@ -638,6 +644,13 @@
   flex-shrink: 0;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+}
+
+/* Ensure compact party bar displays as flex when visible in portrait */
+@media (orientation: portrait) {
+  .compact-party-bar {
+    display: flex !important;
+  }
 }
 
 .compact-party-bar::-webkit-scrollbar {

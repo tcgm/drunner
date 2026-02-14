@@ -10,8 +10,7 @@ interface CompactPartyBarProps {
 export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps) {
   return (
     <HStack 
-      className="compact-party-bar"
-      display={{ base: "flex", lg: "none" }}
+      className="compact-party-bar portrait-only"
       bg="gray.800" 
       borderRadius="md" 
       p={2} 

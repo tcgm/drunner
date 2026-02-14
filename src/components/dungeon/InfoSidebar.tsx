@@ -37,14 +37,13 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
 
   return (
     <Box 
-      className="info-sidebar" 
+      className="info-sidebar landscape-only" 
       w="clamp(200px, 20vw, 300px)"
       bg="gray.800" 
       borderRadius="lg" 
       p={4}
       overflowY="auto"
       maxH="100%"
-      display={{ base: "none", lg: "block" }}
     >
       <VStack spacing={4} align="stretch">
         {/* <Heading size="md" color="orange.400">Info</Heading> */}

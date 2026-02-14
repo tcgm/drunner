@@ -4,20 +4,19 @@
 
 /* Show/hide based on orientation */
 .portrait-only {
-  display: none;
-}
-
-.landscape-only {
-  display: block;
+  display: none !important;
 }
 
 @media (orientation: portrait) {
+  /* In portrait mode, show portrait-only elements with block display by default */
+  /* Individual components can override with more specific rules if needed (e.g., flex containers) */
   .portrait-only {
-    display: block;
+    display: block !important;
   }
   
+  /* Hide landscape-only elements */
   .landscape-only {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -43,6 +42,7 @@
 /* Responsive flex direction */
 .flex-responsive {
   display: flex;
+  flex-direction: row;
 }
 
 @media (orientation: portrait) and (max-width: 768px) {

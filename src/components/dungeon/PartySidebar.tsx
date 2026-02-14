@@ -10,14 +10,13 @@ interface PartySidebarProps {
 export default function PartySidebar({ party, heroEffects = {} }: PartySidebarProps) {
   return (
     <Box 
-      className="party-sidebar" 
+      className="party-sidebar landscape-only" 
       w="clamp(200px, 20vw, 280px)"
       bg="gray.800" 
       borderRadius="lg" 
       p={3}
       overflowY="auto"
       maxH="100%"
-      display={{ base: "none", lg: "block" }}
     >
       <VStack className="party-sidebar-content" spacing={3} align="stretch">
         {/* <Heading className="party-sidebar-title" size="sm" color="orange.400" px={1}>

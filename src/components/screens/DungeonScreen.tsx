@@ -186,7 +186,6 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
       h="100vh"
       gap={2}
       p={2}
-      direction={{ base: "column", lg: "row" }}
     >
       <PartySidebar party={activeParty} heroEffects={heroEffects} />
       
@@ -305,7 +304,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
       </Modal>
 
       {/* Floating Action Buttons - Mobile/Portrait Only */}
-      <Box className="mobile-fab-container" display={{ base: "flex", lg: "none" }} position="fixed" bottom={4} right={4} flexDirection="column" gap={2} zIndex={999}>
+      <Box className="mobile-fab-container portrait-only">
         <IconButton
           className="mobile-fab mobile-fab-party"
           aria-label="View Party"
