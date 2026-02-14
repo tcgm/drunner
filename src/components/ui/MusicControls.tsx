@@ -101,11 +101,15 @@ export const MusicControls: FC = () => {
         ref={buttonRef}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
-        onMouseLeave={() => {
+        onMouseLeave={(e) => {
+        // Clear long press timer
           if (longPressTimer) {
             clearTimeout(longPressTimer)
             setLongPressTimer(null)
           }
+          // Reset hover styles
+          e.currentTarget.style.transform = 'scale(1)'
+          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)'
         }}
         onContextMenu={handleContextMenu}
         style={{
@@ -131,10 +135,6 @@ export const MusicControls: FC = () => {
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.1)'
           e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)'
-          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)'
         }}
         title={musicEnabled ? 'Click to mute | Long press for volume' : 'Click to unmute | Long press for volume'}
       >

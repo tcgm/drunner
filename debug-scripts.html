@@ -1,0 +1,342 @@
+<!--
+  DEBUG SCRIPTS AND ELEMENTS
+  Archived from index.html for reference
+  To re-enable debugging, copy sections back to index.html
+-->
+
+<!-- DEBUG CONSOLE STYLES -->
+<style>
+  #debug-console {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 40%;
+    background: rgba(0, 0, 0, 0.95);
+    color: #0f0;
+    font-family: monospace;
+    font-size: 10px;
+    overflow: auto;
+    padding: 10px;
+    border-top: 2px solid #0f0;
+    z-index: 100000;
+    display: none;
+  }
+
+  #debug-console.show {
+    display: block;
+  }
+
+  #debug-toggle {
+    position: fixed;
+    top: 60px;
+    right: 10px;
+    background: rgba(0, 255, 0, 0.9);
+    color: black;
+    border: 3px solid #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 99999;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    -webkit-tap-highlight-color: transparent;
+  }
+</style>
+
+<!-- CONSOLE LOG CAPTURE SYSTEM -->
+<script>
+  // Console log capture for mobile debugging
+  window.debugLogs = [];
+  var originalConsoleLog = console.log;
+  var originalConsoleError = console.error;
+  var originalConsoleWarn = console.warn;
+
+  function addDebugLog(type, args) {
+    var msg = Array.from(args).map(function (arg) {
+      if (typeof arg === 'object') {
+        try { return JSON.stringify(arg); }
+        catch (e) { return String(arg); }
+      }
+      return String(arg);
+    }).join(' ');
+
+    window.debugLogs.push({ type: type, msg: msg, time: new Date().toISOString().substr(11, 12) });
+
+    var console = document.getElementById('debug-console');
+    if (console) {
+      var entry = document.createElement('div');
+      entry.style.color = type === 'error' ? '#ff4444' : type === 'warn' ? '#ffaa00' : '#00ff00';
+      entry.textContent = '[' + window.debugLogs[window.debugLogs.length - 1].time + '] ' + type.toUpperCase() + ': ' + msg;
+      console.appendChild(entry);
+      console.scrollTop = console.scrollHeight;
+    }
+  }
+
+  console.log = function () {
+    originalConsoleLog.apply(console, arguments);
+    addDebugLog('log', arguments);
+  };
+
+  console.error = function () {
+    originalConsoleError.apply(console, arguments);
+    addDebugLog('error', arguments);
+  };
+
+  console.warn = function () {
+    originalConsoleWarn.apply(console, arguments);
+    addDebugLog('warn', arguments);
+  };
+
+  // Initial log to confirm console capture is working
+  console.log('Console capture initialized');
+  console.log('Viewport size: ' + window.innerWidth + 'x' + window.innerHeight);
+</script>
+
+<!-- AUTO-SHOW DEBUG CONSOLE TIMEOUT -->
+<script>
+  // Auto-show debug console if app doesn't load within 3 seconds
+  setTimeout(function () {
+    var loader = document.getElementById('app-loader');
+    if (loader && loader.style.display !== 'none') {
+      console.warn('App still loading after 3 seconds - auto-showing debug console');
+      var debugConsole = document.getElementById('debug-console');
+      if (debugConsole) {
+        debugConsole.className = 'show';
+      }
+      var btn = document.getElementById('debug-toggle');
+      if (btn) {
+        btn.textContent = 'LOGS ▼';
+      }
+    }
+  }, 3000);
+</script>
+
+<!-- DIAGNOSTIC BANNERS -->
+<div id="html-loaded-banner"
+  style="position:fixed;top:0;left:0;background:red;color:white;padding:5px;z-index:99999;font-size:12px;font-family:monospace;">
+  HTML LOADED ✓
+</div>
+<div id="js-loaded-banner"
+  style="position:fixed;top:30px;left:0;background:blue;color:white;padding:5px;z-index:99999;font-size:12px;font-family:monospace;display:none;">
+  JS RUNNING ✓
+</div>
+<div id="module-loaded-banner"
+  style="position:fixed;top:60px;left:0;background:purple;color:white;padding:5px;z-index:99999;font-size:12px;font-family:monospace;display:none;">
+  MODULE LOADING...
+</div>
+
+<!-- DEBUG TOGGLE BUTTON -->
+<button id="debug-toggle" onclick="(function(btn) {
+  console.log('LOGS button clicked');
+  var d = document.getElementById('debug-console');
+  if (!d) {
+    console.error('debug-console element not found!');
+    return;
+  }
+  console.log('Current className: [' + d.className + ']');
+  if (d.className === 'show') {
+    d.className = '';
+    btn.textContent = 'LOGS';
+    console.log('Console hidden');
+  } else {
+    d.className = 'show';
+    btn.textContent = 'LOGS ▼';
+    console.log('Console shown with className=show');
+    // Force display check
+    setTimeout(function() {
+      console.log('After toggle, display:', window.getComputedStyle(d).display);
+    }, 10);
+  }
+})(this)">LOGS</button>
+
+<!-- DEBUG CONSOLE ELEMENT -->
+<div id="debug-console">
+  <div style="color: yellow; padding: 5px; border-bottom: 1px solid #0f0;">
+    === DEBUG CONSOLE ===
+  </div>
+</div>
+
+<!-- DEBUG CONSOLE TEST -->
+<script>
+  // Immediate test - verify console element exists
+  (function() {
+    var consoleEl = document.getElementById('debug-console');
+    var btn = document.getElementById('debug-toggle');
+    console.log('Console element exists:', !!consoleEl);
+    console.log('Button exists:', !!btn);
+    if (consoleEl) {
+      console.log('Console display:', window.getComputedStyle(consoleEl).display);
+      console.log('Console z-index:', window.getComputedStyle(consoleEl).zIndex);
+    }
+  })();
+</script>
+
+<!-- MODULE SUPPORT AND FETCH TESTS -->
+<script>
+  // Test module support and log details
+  console.log('Browser:', navigator.userAgent);
+  console.log('ES Module support:', 'noModule' in HTMLScriptElement.prototype);
+  console.log('Current URL:', window.location.href);
+  console.log('Origin:', window.location.origin);
+  
+  // Test if we can fetch the module file
+  fetch('/src/main.tsx')
+    .then(function(response) {
+      console.log('Fetch /src/main.tsx status:', response.status);
+      console.log('Content-Type:', response.headers.get('content-type'));
+      if (!response.ok) {
+        console.error('Server returned error:', response.status, response.statusText);
+      }
+      return response.text();
+    })
+    .then(function(text) {
+      console.log('Module file size:', text.length, 'bytes');
+      console.log('First 100 chars:', text.substring(0, 100));
+    })
+    .catch(function(error) {
+      console.error('Failed to fetch /src/main.tsx:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+    });
+  
+  // Track module loading
+  var moduleLoadStart = Date.now();
+  console.log('Attempting to load main module...');
+  
+  // Detect production vs dev mode by checking for bundled scripts
+  var bundleScript = document.querySelector('script[src^="/assets/"]');
+  if (bundleScript) {
+    var bundleSrc = bundleScript.getAttribute('src');
+    console.log('PRODUCTION MODE - Bundle:', bundleSrc);
+    
+    // Test if bundle is accessible
+    console.log('Testing bundle accessibility at:', bundleSrc);
+    console.log('Full URL would be:', window.location.origin + bundleSrc);
+    
+    fetch(bundleSrc)
+      .then(function(response) {
+        console.log('✓ Bundle fetch succeeded!');
+        console.log('Status:', response.status, response.statusText);
+        console.log('Content-Type:', response.headers.get('content-type'));
+        var contentLength = response.headers.get('content-length');
+        if (contentLength) {
+          var sizeMB = (parseInt(contentLength) / 1024 / 1024).toFixed(2);
+          console.log('Bundle size:', sizeMB, 'MB');
+          console.log('Estimated download time at 1 Mbps:', (sizeMB * 8) + 's');
+        }
+        if (!response.ok) {
+          console.error('Bundle fetch returned error status:', response.status, response.statusText);
+        }
+        return response.text();
+      })
+      .then(function(text) {
+        console.log('✓ Bundle fully downloaded:', (text.length / 1024 / 1024).toFixed(2), 'MB');
+        console.log('First 100 chars:', text.substring(0, 100));
+      })
+      .catch(function(error) {
+        console.error('✗ Failed to fetch bundle');
+        console.error('Error type:', typeof error);
+        console.error('Error object:', error);
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+          console.error('This is likely a network/CORS issue');
+          console.error('Check if preview server is still running');
+        }
+      });
+  } else {
+    console.log('DEV MODE - Module: /src/main.tsx');
+  }
+</script>
+
+<!-- INLINE MODULE TEST -->
+<script type="module">
+  // Test inline module execution
+  console.log('✓ Inline test module executed successfully');
+  
+  // In production, the bundle loads via script tag, not dynamic import
+  // In dev, try importing main.tsx
+  var bundleScript = document.querySelector('script[src^="/assets/"]');
+  if (!bundleScript) {
+    console.log('DEV MODE: Testing .vite/deps access...');
+    fetch('/.vite/deps/react-icons_gi.js')
+      .then(function(response) {
+        console.log('Vite deps fetch status:', response.status);
+        if (response.ok) {
+          console.log('✓ Can access .vite/deps directory');
+        } else {
+          console.error('✗ Cannot access .vite/deps - status:', response.status);
+        }
+      })
+      .catch(function(error) {
+        console.error('✗ Fetch .vite/deps failed:', error.message);
+      });
+    
+    // Try importing main.tsx and catch any errors
+    import('/src/main.tsx')
+      .then(function() {
+        console.log('✓ main.tsx imported successfully via dynamic import');
+      })
+      .catch(function(error) {
+        console.error('✗ Failed to import main.tsx:');
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        
+        // Show error in banner
+        var banner = document.getElementById('module-loaded-banner');
+        if (banner) {
+          banner.innerHTML = 'IMPORT ERROR: ' + error.message + '<br><small>Vite deps issue - try: npm run dev --force</small>';
+          banner.style.background = 'red';
+          banner.style.display = 'block';
+          banner.style.whiteSpace = 'normal';
+          banner.style.padding = '10px';
+          banner.style.maxWidth = '90%';
+        }
+      });
+  } else {
+    console.log('PRODUCTION MODE: Bundle loads via script tag');
+  }
+</script>
+
+<!-- MODULE LOAD TIMEOUT -->
+<script>
+  setTimeout(function () {
+    var banner = document.getElementById('module-loaded-banner');
+    if (banner && banner.style.display === 'none') {
+      var elapsed = Date.now() - moduleLoadStart;
+      var bundleScript = document.querySelector('script[src^="/assets/"]');
+      var mode = bundleScript ? 'PRODUCTION' : 'DEV';
+      
+      console.error('Module did not execute after ' + elapsed + 'ms');
+      if (bundleScript) {
+        console.error('Large bundle may still be downloading...');
+        console.error('Bundle:', bundleScript.getAttribute('src'));
+      }
+      console.error('This usually means:');
+      console.error('1. File is still downloading (large bundle on slow connection)');
+      console.error('2. Network error loading the module');
+      console.error('3. Syntax error in the module');
+      
+      banner.innerHTML = mode + ' TIMEOUT (' + elapsed + 'ms)<br>' + 
+                       (bundleScript ? 'Large bundle downloading...' : 'Module load failed') + 
+                       '<br>Tap LOGS button';
+      banner.style.backgroundColor = bundleScript ? 'orange' : 'red';
+      banner.style.display = 'block';
+      banner.style.whiteSpace = 'normal';
+      banner.style.maxWidth = '90%';
+      banner.style.padding = '10px';
+      
+      // Auto-show console on mobile
+      var debugConsole = document.getElementById('debug-console');
+      var debugBtn = document.getElementById('debug-toggle');
+      if (debugConsole && debugBtn) {
+        debugConsole.className = 'show';
+        debugBtn.textContent = 'LOGS ▼';
+      }
+    }
+  }, 30000);  // Increased to 30 seconds for large bundle download
+</script>

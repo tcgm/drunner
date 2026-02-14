@@ -6,6 +6,10 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   base: process.env.BASE_URL || '/',
+  logLevel: 'warn', // Reduce console output (error, warn, info, silent)
+  build: {
+    chunkSizeWarningLimit: 1000, // Reduce warnings
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

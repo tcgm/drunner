@@ -116,7 +116,7 @@ function App() {
   return (
     <ItemDetailModalProvider>
       <HeroModalProvider>
-        <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden" key={hmrCounter}>
+        <Box position="fixed" top={0} left={0} right={0} bottom={0} bg="gray.900" overflow="hidden" key={hmrCounter}>
         {/* Centralized Music Manager */}
         <MusicManager currentScreen={currentScreen} />
 

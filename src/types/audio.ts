@@ -14,17 +14,25 @@ export const MusicContext = {
 
 export type MusicContext = typeof MusicContext[keyof typeof MusicContext]
 
+// Loop modes for playlists
+export type LoopMode =
+  | 'none'    // Play once and stop after last track
+  | 'all'     // Loop entire playlist continuously
+  | 'single'  // Loop current track continuously
+
 export interface MusicTrack {
   name: string;
   path: string;
   volume?: number; // 0-1, default 1
-  loop?: boolean; // default true for background music
+  loop?: boolean; // Deprecated: use loop at playlist level instead
 }
 
 export interface MusicPlaylist {
   context: MusicContext;
   tracks: MusicTrack[];
-  shuffle?: boolean; // default false
+  shuffle?: boolean; // Shuffle track order, default false
+  loop?: LoopMode; // Loop behavior, default 'all'
+  playMode?: 'sequential' | 'loop' | 'shuffle' | 'shuffle-loop' | 'loop-one'; // Deprecated: use shuffle + loop instead
   crossfadeDuration?: number; // in ms, default 1000
 }
 

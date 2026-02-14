@@ -34,11 +34,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Entrance',
         path: menuMusic,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       }
     ],
     shuffle: false,
+    loop: 'single', // Loop single track continuously
     crossfadeDuration: 2000
   },
 
@@ -48,17 +48,16 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Lanterns Up B2',
         path: partyMusic1,
-        volume: 0.7,
-        loop: true
+        volume: 0.7
       },
       {
         name: 'Lanterns Up B3',
         path: partyMusic2,
-        volume: 0.7,
-        loop: true
+        volume: 0.7
       }
     ],
     shuffle: true,
+    loop: 'all', // Shuffle tracks and loop playlist
     crossfadeDuration: 2000
   },
 
@@ -68,29 +67,26 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Dungeon Exploration 1',
         path: exploreMusic1,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       },
       {
         name: 'Dungeon Exploration 2',
         path: exploreMusic2,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       },
       {
         name: 'Dungeon Exploration 3',
         path: exploreMusic3,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       },
       {
         name: 'Dungeon Exploration 4',
         path: exploreMusic4,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       }
     ],
     shuffle: true,
+    loop: 'all', // Shuffle exploration tracks and loop
     crossfadeDuration: 1500
   },
 
@@ -100,53 +96,46 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Combat 1',
         path: combatMusic1,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       },
       {
         name: 'Combat 2',
         path: combatMusic2,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       },
       {
         name: 'Combat 3',
         path: combatMusic3,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       },
       {
         name: 'Combat 4',
         path: combatMusic4,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       },
       {
         name: 'Combat 5',
         path: combatMusic5,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       },
       {
         name: 'Combat 6',
         path: combatMusic6,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       },
       {
         name: 'Combat 7',
         path: combatMusic7,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       },
       {
         name: 'Combat 8',
         path: combatMusic8,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       }
     ],
     shuffle: true,
+    loop: 'all', // Shuffle combat tracks and loop
     crossfadeDuration: 100 // Faster transition for combat
   },
 
@@ -156,11 +145,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Floor Boss',
       //   path: partyMusic2, // Placeholder - add your floor boss music
-      //   volume: 0.85,
-      //   loop: true
+      //   volume: 0.85
       // }
     ],
-    shuffle: false,
+    shuffle: true,
+    loop: 'all',
     crossfadeDuration: 100
   },
 
@@ -170,11 +159,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Zone Boss',
       //   path: partyMusic2, // Placeholder - add your zone boss music
-      //   volume: 0.9,
-      //   loop: true
+      //   volume: 0.9
       // }
     ],
-    shuffle: false,
+    shuffle: true,
+    loop: 'all',
     crossfadeDuration: 100
   },
 
@@ -184,11 +173,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Final Confrontation',
       //   path: partyMusic2, // Placeholder - add your final boss music
-      //   volume: 0.95,
-      //   loop: true
+      //   volume: 0.95
       // }
     ],
-    shuffle: false,
+    shuffle: true,
+    loop: 'all',
     crossfadeDuration: 100
   },
 
@@ -198,11 +187,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Victory',
       //   path: partyMusic1, // Placeholder - add your victory music
-      //   volume: 0.8,
-      //   loop: false // Victory music plays once
+      //   volume: 0.8
       // }
     ],
     shuffle: false,
+    loop: 'none', // Play once and stop
     crossfadeDuration: 1000
   },
 
@@ -212,11 +201,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Defeat',
       //   path: partyMusic2, // Placeholder - add your defeat music
-      //   volume: 0.7,
-      //   loop: false // Defeat music plays once
+      //   volume: 0.7
       // }
     ],
     shuffle: false,
+    loop: 'none', // Play once and stop
     crossfadeDuration: 1500
   },
 
@@ -226,11 +215,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Merchant\'s Haven',
       //   path: partyMusic1, // Placeholder - add your shop music
-      //   volume: 0.65,
-      //   loop: true
+      //   volume: 0.65
       // }
     ],
     shuffle: false,
+    loop: 'single', // Loop single shop track
     crossfadeDuration: 1500
   },
 
@@ -240,11 +229,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Peaceful Rest',
       //   path: partyMusic1, // Placeholder - add your rest music
-      //   volume: 0.6,
-      //   loop: true
+      //   volume: 0.6
       // }
     ],
     shuffle: false,
+    loop: 'single', // Loop single peaceful track
     crossfadeDuration: 2000 // Slower transition for peaceful music
   }
 };

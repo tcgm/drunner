@@ -1,5 +1,5 @@
 import { MusicContext } from '@/types/audio';
-import type { MusicTrack, MusicPlaylist } from '@/types/audio';
+import type { MusicTrack, MusicPlaylist, LoopMode } from '@/types/audio';
 
 class AudioManager {
   private currentAudio: HTMLAudioElement | null = null;
@@ -12,6 +12,8 @@ class AudioManager {
   private isFading: boolean = false;
   private fadeInterval: number | null = null;
   private shuffleHistory: number[] = [];
+  private shuffleQueue: number[] = []; // Queue of shuffled track indices
+  private hasPlayedAllTracks: boolean = false; // Track if all tracks played once (for non-looping modes)
   private pendingContext: MusicPlaylist | null = null; // Store context until user interaction
   private isChangingContext: boolean = false; // Flag to prevent concurrent context changes
   private contextChangeAborted: boolean = false; // Flag to abort ongoing context change
@@ -155,9 +157,15 @@ class AudioManager {
     this.currentPlaylist = playlist;
     this.currentTrackIndex = 0;
     this.shuffleHistory = [];
+    this.shuffleQueue = [];
+    this.hasPlayedAllTracks = false;
 
-    if (playlist.shuffle) {
-      this.currentTrackIndex = this.getRandomTrackIndex();
+    const shouldShuffle = this.getShuffle(playlist);
+
+    if (shouldShuffle) {
+      // Initialize shuffle queue
+      this.initializeShuffleQueue();
+      this.currentTrackIndex = this.shuffleQueue.shift() ?? 0;
     }
 
     const fadeDuration = playlist.crossfadeDuration ?? 1000;
@@ -224,8 +232,13 @@ class AudioManager {
       console.error(`Failed to load music track: ${track.name}`, e);
     };
 
-    // Set up end event for non-looping tracks
-    if (!this.nextAudio.loop) {
+    // Set up end event based on loop mode
+    const loopMode = this.getLoopMode(this.currentPlaylist);
+    const shouldLoop = loopMode === 'single' || track.loop;
+
+    this.nextAudio.loop = shouldLoop;
+
+    if (!shouldLoop) {
       this.nextAudio.onended = () => {
         this.playNextTrack();
       };
@@ -422,10 +435,51 @@ class AudioManager {
   private playNextTrack(): void {
     if (!this.currentPlaylist) return;
 
-    if (this.currentPlaylist.shuffle) {
-      this.currentTrackIndex = this.getRandomTrackIndex();
-    } else {
-      this.currentTrackIndex = (this.currentTrackIndex + 1) % this.currentPlaylist.tracks.length;
+    const loopMode = this.getLoopMode(this.currentPlaylist);
+    const shouldShuffle = this.getShuffle(this.currentPlaylist);
+    const trackCount = this.currentPlaylist.tracks.length;
+
+    // Handle loop-single mode (should never reach here, but just in case)
+    if (loopMode === 'single') {
+      // Stay on current track (it should be looping anyway)
+      return;
+    }
+
+    // Handle shuffle mode
+    if (shouldShuffle) {
+      // If shuffle queue is empty, check if we should continue
+      if (this.shuffleQueue.length === 0) {
+        if (loopMode === 'none') {
+          // Non-looping: stop after all tracks played
+          this.hasPlayedAllTracks = true;
+          this.stop();
+          return;
+        } else {
+          // Looping: refill queue and continue
+          this.initializeShuffleQueue();
+        }
+      }
+
+      this.currentTrackIndex = this.shuffleQueue.shift() ?? 0;
+    }
+    // Handle sequential mode
+    else {
+      const nextIndex = this.currentTrackIndex + 1;
+
+      if (nextIndex >= trackCount) {
+        // Reached end of playlist
+        if (loopMode === 'none') {
+          // Non-looping: stop playback
+          this.hasPlayedAllTracks = true;
+          this.stop();
+          return;
+        } else {
+          // Loop mode: go back to start
+          this.currentTrackIndex = 0;
+        }
+      } else {
+        this.currentTrackIndex = nextIndex;
+      }
     }
 
     const fadeDuration = this.currentPlaylist.crossfadeDuration ?? 1000;
@@ -433,7 +487,65 @@ class AudioManager {
   }
 
   /**
-   * Get a random track index (avoiding recent plays)
+   * Get the effective loop mode for a playlist (handles backward compatibility)
+   */
+  private getLoopMode(playlist: MusicPlaylist | null): LoopMode {
+    if (!playlist) return 'all';
+
+    // New loop property takes precedence
+    if (playlist.loop) return playlist.loop;
+
+    // Backward compatibility: convert old playMode to loop mode
+    if (playlist.playMode) {
+      switch (playlist.playMode) {
+        case 'loop-one': return 'single';
+        case 'sequential': return 'none';
+        case 'shuffle': return 'none';
+        case 'loop': return 'all';
+        case 'shuffle-loop': return 'all';
+      }
+    }
+
+    // Default to 'all' (loop playlist) for backward compatibility
+    return 'all';
+  }
+
+  /**
+   * Get the effective shuffle setting for a playlist (handles backward compatibility)
+   */
+  private getShuffle(playlist: MusicPlaylist | null): boolean {
+    if (!playlist) return false;
+
+    // shuffle property is the primary source
+    if (playlist.shuffle !== undefined) return playlist.shuffle;
+
+    // Backward compatibility: check old playMode
+    if (playlist.playMode === 'shuffle' || playlist.playMode === 'shuffle-loop') {
+      return true;
+    }
+
+    // Default to false
+    return false;
+  }
+
+  /**
+   * Initialize shuffle queue with all track indices in random order
+   */
+  private initializeShuffleQueue(): void {
+    if (!this.currentPlaylist) return;
+
+    const trackCount = this.currentPlaylist.tracks.length;
+    this.shuffleQueue = Array.from({ length: trackCount }, (_, i) => i);
+
+    // Fisher-Yates shuffle
+    for (let i = trackCount - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.shuffleQueue[i], this.shuffleQueue[j]] = [this.shuffleQueue[j], this.shuffleQueue[i]];
+    }
+  }
+
+  /**
+   * Get a random track index (avoiding recent plays) - Legacy method for backward compatibility
    */
   private getRandomTrackIndex(): number {
     if (!this.currentPlaylist) return 0;

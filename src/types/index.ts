@@ -519,5 +519,25 @@ export interface BaseTemplate {
   stats: Partial<Omit<Stats, 'hp'>>
 }
 
-// Re-export V3 types
-export * from './items-v3'
+// Re-export V3 types (excluding Item to avoid conflict with Item interface above)
+export type {
+  ItemV3Base,
+  ProceduralItemV3,
+  UniqueItemV3,
+  SetItemV3,
+  ConsumableV3,
+  ItemV3,
+  ItemV2,
+  ItemStorage
+} from './items-v3'
+export {
+  isItemV3,
+  isItemV2,
+  isProceduralItemV3,
+  isUniqueItemV3,
+  isSetItemV3,
+  isConsumableV3
+} from './items-v3'
+
+// Re-export audio types
+export type { MusicTrack, MusicPlaylist, AudioState, LoopMode } from './audio'

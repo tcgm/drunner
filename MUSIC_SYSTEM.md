@@ -6,7 +6,8 @@ The game now features a comprehensive music system with automatic crossfading be
 
 - **Context-aware music**: Different music for different game states (menu, dungeon, bosses, victory, etc.)
 - **Automatic crossfading**: Smooth transitions between tracks (configurable duration)
-- **Playlist support**: Multiple tracks per context with shuffle support
+- **Playlist support**: Multiple tracks per context with independent shuffle and loop controls
+- **Flexible playback**: Shuffle and loop modes work independently for maximum control
 - **Volume control**: Master volume with per-track volume adjustments
 - **TypeScript imports**: Music files are imported directly in the config
 - **Persistent settings**: Volume and enabled state saved to localStorage
@@ -45,10 +46,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Main Menu Theme',
         path: mainMenuTheme,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       }
     ],
+    shuffle: false,
+    loop: 'one', // Loop single track continuously
     crossfadeDuration: 2000
   },
 
@@ -58,17 +60,16 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Dungeon Exploration 1',
         path: dungeonExplore1,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       },
       {
         name: 'Dungeon Exploration 2',
         path: dungeonExplore2,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       }
     ],
-    shuffle: true, // Randomize track order
+    shuffle: true,
+    loop: 'all', // Shuffle and loop playlist
     crossfadeDuration: 1500
   },
   // ... more contexts
@@ -273,7 +274,7 @@ function MuteButton() {
   name: string;           // Display name
   path: string;           // Import path
   volume?: number;        // Track volume (0-1), default 1
-  loop?: boolean;         // Loop track, default true
+  loop?: boolean;         // Deprecated: use loop at playlist level
 }
 ```
 
@@ -283,8 +284,73 @@ function MuteButton() {
 {
   context: MusicContext;
   tracks: MusicTrack[];
-  shuffle?: boolean;              // Random order, default false
+  shuffle?: boolean;              // Shuffle track order, default false
+  loop?: LoopMode;                // Loop behavior ('none' | 'all' | 'one'), default 'all'
   crossfadeDuration?: number;     // Fade time in ms, default 1000
+}
+```
+
+### Loop Modes
+
+The `loop` property controls how the playlist repeats:
+
+- **`'none'`**: Play tracks once and stop (ideal for victory/defeat music)
+- **`'all'`**: Loop entire playlist continuously (default)
+- **`'single'`**: Loop current track continuously (for single-track contexts)
+
+### Shuffle + Loop Mode Combinations
+
+Shuffle and loop work independently, allowing flexible combinations:
+
+```typescript
+// Sequential playlist that loops
+shuffle: false,
+loop: 'all'
+
+// Randomized playlist that loops
+shuffle: true,
+loop: 'all'
+
+// Sequential one-time playthrough
+shuffle: false,
+loop: 'none'
+
+// Randomized one-time playthrough 
+shuffle: true,
+loop: 'none'
+
+// Single track looping (shuffle doesn't matter)
+loop: 'single'
+```
+
+**Examples:**
+```typescript
+// Single looping track (menu music)
+{
+  tracks: [{ name: 'Menu', path: menuMusic }],
+  shuffle: false,
+  loop: 'single'
+}
+
+// Multiple tracks in order, looping
+{
+  tracks: [track1, track2, track3],
+  shuffle: false,
+  loop: 'all'
+}
+
+// Randomized looping playlist (exploration)
+{
+  tracks: [track1, track2, track3, track4],
+  shuffle: true,
+  loop: 'all'
+}
+
+// Play once and stop (victory fanfare)
+{
+  tracks: [victoryTrack],
+  shuffle: false,
+  loop: 'none'
 }
 ```
 
