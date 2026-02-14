@@ -1,4 +1,6 @@
-import { Box, Flex, useDisclosure } from '@chakra-ui/react'
+import './PartySetupScreen.css'
+import { Box, Flex, useDisclosure, IconButton, Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton } from '@chakra-ui/react'
+import { GiBackpack, GiSwordman } from 'react-icons/gi'
 import { useGameStore } from '../../core/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
 import { GAME_CONFIG } from '../../config/gameConfig'
@@ -92,6 +94,12 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Corrupted items modal
   const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
+
+  // Mobile hero selection modal (portrait only)
+  const { isOpen: isMobileHeroOpen, onOpen: onMobileHeroOpen, onClose: onMobileHeroClose } = useDisclosure()
+
+  // Mobile equipment modal (portrait only)
+  const { isOpen: isMobileEquipOpen, onOpen: onMobileEquipOpen, onClose: onMobileEquipClose } = useDisclosure()
 
   // Auto-open corrupted items modal if there are corrupted items (highest priority)
   useEffect(() => {
@@ -385,6 +393,71 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         bankGold={bankGold}
         currentSlots={bankStorageSlots}
       />
+
+      {/* Mobile Portrait FAB Buttons */}
+      <Box className="party-setup-fabs">
+        <IconButton
+          className="mobile-fab"
+          aria-label="View Heroes"
+          icon={<GiSwordman size={24} />}
+          colorScheme="blue"
+          size="lg"
+          isRound
+          onClick={onMobileHeroOpen}
+          boxShadow="0 4px 12px rgba(66, 153, 225, 0.5)"
+          _active={{ transform: "scale(0.9)" }}
+        />
+        <IconButton
+          className="mobile-fab"
+          aria-label="View Equipment"
+          icon={<GiBackpack size={24} />}
+          colorScheme="purple"
+          size="lg"
+          isRound
+          onClick={onMobileEquipOpen}
+          boxShadow="0 4px 12px rgba(159, 122, 234, 0.5)"
+          _active={{ transform: "scale(0.9)" }}
+        />
+      </Box>
+
+      {/* Mobile Hero Selection Modal */}
+      <Modal isOpen={isMobileHeroOpen} onClose={onMobileHeroClose} size="full">
+        <ModalOverlay />
+        <ModalContent bg="gray.900" maxH="95vh">
+          <ModalCloseButton />
+          <ModalBody p={0} overflow="auto">
+            <HeroSelectionSidebar
+              tabIndex={tabIndex}
+              onTabChange={setTabIndex}
+              selectedClass={selectedClass}
+              selectedHeroFromRoster={selectedHeroFromRoster}
+              storedHeroes={heroRoster}
+              onClassSelect={handleClassSelect}
+              onRosterHeroClick={handleRosterHeroClick}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Mobile Equipment Modal */}
+      <Modal isOpen={isMobileEquipOpen} onClose={onMobileEquipClose} size="full">
+        <ModalOverlay />
+        <ModalContent bg="gray.900" maxH="95vh">
+          <ModalCloseButton />
+          <ModalBody p={0} overflow="auto">
+            <EquipmentPanel
+              selectedHeroIndex={selectedHeroIndex}
+              party={party}
+              bankInventory={bankInventory}
+              onSelectHero={setSelectedHeroIndex}
+              onSlotClick={handleOpenBankForSlot}
+              onUnequipItem={handleUnequipItem}
+              onEquipItem={handleEquipItemDirect}
+              isBankModalOpen={isOpen}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   )
 }

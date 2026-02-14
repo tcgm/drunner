@@ -39,7 +39,39 @@
 /* Responsive adjustments for compact party bar */
 @media (orientation: portrait) and (max-width: 480px) {
   .compact-party-bar {
-    padding: 0.5rem !important;
-    gap: 0.5rem !important;
+    padding: 0.375rem !important;
+    gap: 0.375rem !important;
+  }
+
+  .compact-party-bar > div {
+    min-width: 70px !important;
+    max-width: 100px !important;
+    padding: 0.25rem !important;
+    font-size: 0.7rem !important;
+  }
+
+  .compact-party-bar .chakra-text {
+    font-size: 0.65rem !important;
+  }
+
+  .compact-party-bar .chakra-progress {
+    height: 3px !important;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 400px) {
+  .compact-party-bar {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+
+  .compact-party-bar > div {
+    min-width: 60px !important;
+    max-width: 90px !important;
+    padding: 0.125rem !important;
+  }
+
+  .compact-party-bar .chakra-text {
+    font-size: 0.6rem !important;
   }
 }

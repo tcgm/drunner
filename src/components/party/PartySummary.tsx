@@ -1,3 +1,4 @@
+import './PartySummary.css'
 import { HStack, Box, Text } from '@chakra-ui/react'
 import type { Hero } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'

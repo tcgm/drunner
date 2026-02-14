@@ -1,3 +1,4 @@
+import './PartySetupSlots.css'
 import { Box, VStack, Heading, Text, Badge, HStack, SimpleGrid } from '@chakra-ui/react'
 import type { Hero } from '../../types'
 import { PartySlot } from './PartySlot'

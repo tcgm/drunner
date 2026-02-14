@@ -1,0 +1,86 @@
+/* ============================================================================
+   PARTY SETUP SCREEN RESPONSIVE STYLES
+   Component: PartySetupScreen.tsx
+   ============================================================================ */
+
+/* Mobile FAB buttons for accessing sidebars in portrait mode */
+.party-setup-fabs {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 999;
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Show FABs only in portrait mode */
+@media (orientation: portrait) and (max-width: 768px) {
+  .party-setup-fabs {
+    display: flex;
+  }
+  
+  .hero-selection-sidebar,
+  .equipment-panel {
+    display: none !important;
+  }
+  
+  .party-setup-screen-center {
+    width: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .party-setup-screen-content {
+    min-height: 0 !important;
+    flex: 1 !important;
+  }
+  
+  /* Ensure modals are scrollable */
+  .chakra-modal__body {
+    overflow-y: auto !important;
+    max-height: 85vh !important;
+  }
+}
+
+/* Mobile landscape - compact sidebars */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 600px) {
+  .hero-selection-sidebar {
+    width: clamp(160px, 18vw, 220px) !important;
+    min-width: 160px !important;
+  }
+  
+  .equipment-panel {
+    width: clamp(160px, 18vw, 220px) !important;
+    min-width: 160px !important;
+  }
+  
+  .party-setup-screen-center {
+    padding: 0.5rem !important;
+    min-width: 0 !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* Very small portrait screens */
+@media (orientation: portrait) and (max-width: 480px) {
+  .party-setup-fabs {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    gap: 0.5rem;
+  }
+  
+  .party-setup-fabs .mobile-fab {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+  }
+  
+  .party-setup-screen {
+    overflow: hidden !important;
+  }
+  
+  .party-setup-screen-center {
+    padding: 0 !important;
+  }
+}

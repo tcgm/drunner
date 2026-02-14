@@ -1,3 +1,4 @@
+import './OutcomeDisplay.css'
 import { Box, VStack, Text, Button, HStack, Icon, Divider, Badge } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'

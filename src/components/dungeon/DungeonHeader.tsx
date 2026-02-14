@@ -1,3 +1,4 @@
+import './DungeonHeader.css'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { Heading, Text, Box, HStack, Spacer } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'

@@ -1,3 +1,4 @@
+import './PartyMemberCard.css'
 import { Box, HStack, VStack, Text, Icon, Tooltip } from '@chakra-ui/react'
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'

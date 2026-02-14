@@ -1,3 +1,4 @@
+import './EventDisplay.css'
 import { Box, VStack, Heading, Text, Button, HStack, Badge, Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'

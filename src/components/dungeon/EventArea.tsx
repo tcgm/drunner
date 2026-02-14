@@ -1,3 +1,4 @@
+import './EventArea.css'
 import { Box } from '@chakra-ui/react'
 import EventDisplay from './EventDisplay'
 import OutcomeDisplay from './OutcomeDisplay'

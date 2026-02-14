@@ -1,0 +1,130 @@
+/* ============================================================================
+   PARTY SETUP HEADER RESPONSIVE STYLES
+   Component: PartySetupHeader.tsx
+   ============================================================================ */
+
+/* Portrait mode - stack vertically and wrap */
+@media (orientation: portrait) and (max-width: 768px) {
+  .party-setup-header {
+    padding: 0.75rem 0.5rem !important;
+  }
+  
+  .party-setup-header-content {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    align-items: stretch !important;
+  }
+  
+  /* Info section - wrap resources */
+  .party-setup-header-info {
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+  }
+  
+  .party-setup-header-info .chakra-heading {
+    width: 100% !important;
+    text-align: center !important;
+    font-size: 1rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .party-setup-header-gold,
+  .party-setup-header-alkahest,
+  .party-setup-header-metaxp {
+    flex: 1 1 30% !important;
+    justify-content: center !important;
+    padding: 0.375rem 0.5rem !important;
+  }
+  
+  /* Actions section - wrap buttons */
+  .party-setup-header-actions {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+  }
+  
+  .party-setup-header-actions button {
+    flex: 1 1 auto !important;
+    min-width: fit-content !important;
+    font-size: 0.75rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  /* Make primary action button full width */
+  .party-setup-header-actions button:last-child {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
+}
+
+/* Very small portrait screens */
+@media (orientation: portrait) and (max-width: 400px) {
+  .party-setup-header {
+    padding: 0.5rem 0.375rem !important;
+  }
+  
+  .party-setup-header-content {
+    gap: 0.5rem !important;
+  }
+  
+  .party-setup-header-info {
+    gap: 0.375rem !important;
+  }
+  
+  .party-setup-header-gold,
+  .party-setup-header-alkahest,
+  .party-setup-header-metaxp {
+    padding: 0.25rem 0.375rem !important;
+  }
+  
+  .party-setup-header-gold .chakra-text,
+  .party-setup-header-alkahest .chakra-text,
+  .party-setup-header-metaxp .chakra-text {
+    font-size: 0.75rem !important;
+  }
+  
+  .party-setup-header-gold .chakra-icon,
+  .party-setup-header-alkahest .chakra-icon,
+  .party-setup-header-metaxp .chakra-icon {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+  }
+  
+  .party-setup-header-actions button {
+    font-size: 0.625rem !important;
+    padding: 0.375rem 0.5rem !important;
+  }
+  
+  /* Make all buttons stack vertically on very small screens */
+  .party-setup-header-actions button {
+    flex: 1 1 45% !important;
+  }
+}
+
+/* Landscape mobile - more compact but horizontal */
+@media (orientation: landscape) and (max-height: 600px) {
+  .party-setup-header {
+    padding: 0.375rem 0.5rem !important;
+  }
+  
+  .party-setup-header-info,
+  .party-setup-header-actions {
+    gap: 0.375rem !important;
+  }
+  
+  .party-setup-header-info .chakra-heading {
+    font-size: 0.875rem !important;
+  }
+  
+  .party-setup-header-gold,
+  .party-setup-header-alkahest,
+  .party-setup-header-metaxp {
+    padding: 0.25rem 0.5rem !important;
+  }
+  
+  .party-setup-header-actions button {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+}

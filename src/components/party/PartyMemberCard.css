@@ -1,0 +1,197 @@
+/* PartyMemberCard responsive styles */
+
+/* Portrait phones - make party cards more compact */
+@media (orientation: portrait) and (max-width: 768px) {
+  .party-member-card {
+    padding: 0.5rem !important;
+    border-width: 1.5px !important;
+  }
+
+  .party-member-card-content {
+    gap: 0.375rem !important;
+    padding: 0.25rem !important;
+  }
+
+  .party-member-card-equipment-pips {
+    min-height: 6px !important;
+    gap: 0.125rem !important;
+  }
+
+  .party-member-card-icon-section .chakra-icon {
+    font-size: 1.75rem !important; /* 28px */
+  }
+
+  .party-member-card-info {
+    gap: 0.25rem !important;
+  }
+
+  .party-member-card-header {
+    gap: 0.375rem !important;
+  }
+
+  .party-member-card-name {
+    font-size: 0.75rem !important;
+  }
+
+  .party-member-card-level {
+    font-size: 0.7rem !important;
+  }
+
+  /* Compact stat bars */
+  .party-member-card .stat-bar {
+    min-height: 16px !important;
+  }
+
+  .party-member-card .stat-bar .chakra-text {
+    font-size: 0.65rem !important;
+  }
+
+  /* Compact ability icons */
+  .party-member-card-info .chakra-stack > div[role="group"] {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .party-member-card-info .chakra-stack .chakra-icon {
+    font-size: 0.65rem !important;
+  }
+}
+
+/* Small portrait phones - more compact */
+@media (orientation: portrait) and (max-width: 480px) {
+  .party-member-card {
+    padding: 0.375rem !important;
+    border-width: 1px !important;
+  }
+
+  .party-member-card-content {
+    gap: 0.25rem !important;
+    padding: 0.125rem !important;
+  }
+
+  .party-member-card-equipment-pips {
+    min-height: 5px !important;
+  }
+
+  .party-member-card-icon-section .chakra-icon {
+    font-size: 1.5rem !important; /* 24px */
+  }
+
+  .party-member-card-info {
+    gap: 0.125rem !important;
+  }
+
+  .party-member-card-header {
+    gap: 0.25rem !important;
+  }
+
+  .party-member-card-name {
+    font-size: 0.7rem !important;
+  }
+
+  .party-member-card-level {
+    font-size: 0.65rem !important;
+  }
+
+  /* More compact stat bars */
+  .party-member-card .stat-bar {
+    min-height: 14px !important;
+  }
+
+  .party-member-card .stat-bar .chakra-text {
+    font-size: 0.6rem !important;
+  }
+
+  /* Smaller ability icons */
+  .party-member-card-info .chakra-stack > div[role="group"] {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .party-member-card-info .chakra-stack .chakra-icon {
+    font-size: 0.6rem !important;
+  }
+}
+
+/* Very small portrait phones - ultra compact */
+@media (orientation: portrait) and (max-width: 400px) {
+  .party-member-card {
+    padding: 0.25rem !important;
+  }
+
+  .party-member-card-content {
+    gap: 0.125rem !important;
+    padding: 0 !important;
+  }
+
+  .party-member-card-equipment-pips {
+    min-height: 4px !important;
+  }
+
+  .party-member-card-icon-section .chakra-icon {
+    font-size: 1.25rem !important; /* 20px */
+  }
+
+  .party-member-card-info {
+    gap: 0.125rem !important;
+  }
+
+  .party-member-card-header {
+    gap: 0.125rem !important;
+  }
+
+  .party-member-card-name {
+    font-size: 0.65rem !important;
+  }
+
+  .party-member-card-level {
+    font-size: 0.6rem !important;
+  }
+
+  /* Ultra compact stat bars */
+  .party-member-card .stat-bar {
+    min-height: 12px !important;
+  }
+
+  .party-member-card .stat-bar .chakra-text {
+    font-size: 0.55rem !important;
+  }
+
+  /* Tiny ability icons */
+  .party-member-card-info .chakra-stack > div[role="group"] {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .party-member-card-info .chakra-stack .chakra-icon {
+    font-size: 0.55rem !important;
+  }
+
+  /* Hide equipment pips on very small screens to save space */
+  .party-member-card-equipment-pips {
+    display: none !important;
+  }
+}
+
+/* Landscape - compact for short screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .party-member-card {
+    padding: 0.25rem 0.375rem !important;
+  }
+
+  .party-member-card-content {
+    gap: 0.25rem !important;
+  }
+
+  .party-member-card-icon-section .chakra-icon {
+    font-size: 1.5rem !important;
+  }
+
+  .party-member-card .stat-bar {
+    min-height: 12px !important;
+  }
+
+  .party-member-card .stat-bar .chakra-text {
+    font-size: 0.6rem !important;
+  }
+}

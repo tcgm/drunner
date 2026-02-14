@@ -39,6 +39,11 @@
     flex-direction: column !important;
   }
   
+  /* Party setup center takes full width */
+  .party-setup-screen-center {
+    width: 100% !important;
+  }
+  
   /* Touch-friendly button sizes */
   button {
     min-height: 44px;
@@ -132,6 +137,18 @@
   /* Compact party setup */
   .party-setup-slots {
     gap: 0.5rem !important;
+    padding: 0.5rem !important;
+  }
+  
+  .party-setup-header {
+    padding: 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .party-setup-header button {
+    font-size: 0.75rem !important;
+    padding: 0.375rem 0.625rem !important;
+    min-height: 36px !important;
   }
   
   /* Single column layouts */
@@ -294,6 +311,36 @@
   .dungeon-screen,
   .party-setup-screen {
     padding: 0.25rem !important;
+  }
+  
+  /* Compact sidebars for mobile landscape */
+  .hero-selection-sidebar {
+    width: clamp(180px, 18vw, 240px) !important;
+    min-width: 180px !important;
+    font-size: 0.875rem !important;
+    padding: 0.5rem !important;
+  }
+  
+  .equipment-panel {
+    width: clamp(180px, 18vw, 240px) !important;
+    min-width: 180px !important;
+    font-size: 0.875rem !important;
+    padding: 0.5rem !important;
+  }
+  
+  .party-setup-screen-center {
+    padding: 0.5rem !important;
+    min-width: 0 !important;
+  }
+  
+  .party-setup-header {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .party-setup-header button {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
   }
   
   /* More compact UI elements */

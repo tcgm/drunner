@@ -1,0 +1,76 @@
+/* ============================================================================
+   PARTY SETUP SLOTS RESPONSIVE STYLES
+   Component: PartySetupSlots.tsx
+   ============================================================================ */
+
+/* Portrait mode - 2x2 grid layout */
+@media (orientation: portrait) and (max-width: 768px) {
+  .party-setup-slots {
+    padding: 0.75rem !important;
+  }
+  
+  /* Make slots container a grid instead of horizontal */
+  .party-setup-slots .chakra-stack {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+    width: 100%;
+  }
+  
+  /* Header section - stack vertically */
+  .party-setup-slots .chakra-simple-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+    text-align: center !important;
+  }
+  
+  .party-setup-slots .chakra-simple-grid > * {
+    justify-self: center !important;
+  }
+  
+  /* Individual slot adjustments */
+  .party-slot {
+    min-height: 180px !important;
+    height: auto !important;
+  }
+}
+
+/* Very small portrait screens */
+@media (orientation: portrait) and (max-width: 400px) {
+  .party-setup-slots {
+    padding: 0.5rem !important;
+  }
+  
+  .party-setup-slots .chakra-stack {
+    gap: 0.5rem !important;
+  }
+  
+  .party-slot {
+    min-height: 160px !important;
+  }
+  
+  /* Further compact slot contents */
+  .party-slot .chakra-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+  
+  .party-slot .chakra-text {
+    font-size: 0.75rem !important;
+  }
+  
+  .party-slot .chakra-badge {
+    font-size: 0.625rem !important;
+  }
+}
+
+/* Landscape - keep horizontal but compact */
+@media (orientation: landscape) and (max-height: 600px) {
+  .party-setup-slots {
+    padding: 0.5rem !important;
+  }
+  
+  .party-slot {
+    padding: 0.5rem !important;
+  }
+}

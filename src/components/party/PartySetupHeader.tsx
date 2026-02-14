@@ -1,3 +1,4 @@
+import './PartySetupHeader.css'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { Box, HStack, Heading, Text, Button, Icon, Tooltip } from '@chakra-ui/react'
 import { GiShop, GiShoppingCart, GiChest, GiVikingLonghouse, GiTwoCoins, GiStarsStack, GiPowder } from 'react-icons/gi'
