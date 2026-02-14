@@ -33,21 +33,27 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
 /**
  * Select text from string or weighted text variations
  */
-function selectText(text: string | Array<{ weight: number; text: string }>): string {
+function selectText(text: string | string[] | Array<{ weight: number; text: string }>): string {
   if (typeof text === 'string') {
     return text
   }
-  const totalWeight = text.reduce((sum, item) => sum + item.weight, 0)
+  
+  // Convert string array to weighted format (equal weight)
+  const weighted = Array.isArray(text) && text.length > 0 && typeof text[0] === 'string'
+    ? (text as string[]).map(t => ({ weight: 1, text: t }))
+    : text as Array<{ weight: number; text: string }>
+  
+  const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0)
   let roll = Math.random() * totalWeight
   
-  for (const item of text) {
+  for (const item of weighted) {
     roll -= item.weight
     if (roll <= 0) {
       return item.text
     }
   }
   
-  return text[text.length - 1].text // Fallback to last option
+  return weighted[weighted.length - 1].text // Fallback to last option
 }
 
 export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice }: EventDisplayProps) {
@@ -237,7 +243,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
       </MotionBox>
 
       {/* Choices */}
-      <Heading className="event-display-choices-heading" size="sm" color="gray.400" fontSize="md" mb={1}>
+      <Heading className="event-display-choices-heading" size="sm" color="gray.400" fontSize="md" mb={0.5}>
         What will you do?
       </Heading>
       <VStack className="event-display-choices" spacing={2} align="stretch" flex={1} minH={0} overflowY="auto">

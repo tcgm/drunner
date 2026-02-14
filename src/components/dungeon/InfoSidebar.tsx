@@ -47,7 +47,7 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
       display={{ base: "none", lg: "block" }}
     >
       <VStack spacing={4} align="stretch">
-        <Heading size="md" color="orange.400">Info</Heading>
+        {/* <Heading size="md" color="orange.400">Info</Heading> */}
         
         <Box className="floor-stats-section">
           <FloorStats 

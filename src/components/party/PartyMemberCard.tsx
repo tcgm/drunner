@@ -101,7 +101,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
             ))}
           </AnimatePresence>
 
-          <VStack className="party-member-card-content" spacing={1} p={2} align="stretch">
+          <VStack className="party-member-card-content" spacing={0.5} p={0.1} align="stretch">
             {/* Equipment pips row across top */}
             <HStack className="party-member-card-equipment-pips" spacing={1} justify="center" minH="8px">
               <EquipmentPips 
@@ -111,7 +111,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               />
             </HStack>
             
-            <HStack spacing={2}>
+            <HStack spacing={0.5}>
               {/* Hero icon */}
               <motion.div
                 className="party-member-card-icon-section"

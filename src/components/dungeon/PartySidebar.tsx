@@ -20,9 +20,9 @@ export default function PartySidebar({ party, heroEffects = {} }: PartySidebarPr
       display={{ base: "none", lg: "block" }}
     >
       <VStack className="party-sidebar-content" spacing={3} align="stretch">
-        <Heading className="party-sidebar-title" size="sm" color="orange.400" px={1}>
+        {/* <Heading className="party-sidebar-title" size="sm" color="orange.400" px={1}>
           Party ({party.length})
-        </Heading>
+        </Heading> */}
         
         {party.map((hero) => (
           <PartyMemberCard 

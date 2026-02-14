@@ -32,8 +32,8 @@ export default function QuickStats({ totalAttack, totalDefense, totalSpeed, tota
 
   return (
     <>
-      <Text className="quick-stats-title" fontSize="sm" fontWeight="bold" mb={2}>Quick Stats</Text>
-      <VStack className="quick-stats" align="stretch" spacing={2} fontSize="xs">
+      <Text className="quick-stats-title" fontSize="sm" fontWeight="bold" mb={1}>Quick Stats</Text>
+      <VStack className="quick-stats" align="stretch" spacing={1} fontSize="sm">
         <HStack className="quick-stats-stat quick-stats-stat--attack">
           <Icon as={GiSwordman} color={GAME_CONFIG.colors.stats.attack} />
           <Text color="gray.400">ATK:</Text>
