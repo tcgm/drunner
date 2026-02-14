@@ -4,6 +4,7 @@
  * Styled similar to PartyMemberCard but optimized for combat view
  */
 
+import './CombatHeroCard.css'
 import { Box, HStack, VStack, Text, Badge, Icon, Tooltip } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'

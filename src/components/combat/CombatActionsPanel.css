@@ -1,0 +1,142 @@
+/* CombatActionsPanel responsive styles */
+
+/* Portrait phones - compact action panel */
+@media (orientation: portrait) and (max-width: 768px) {
+  .combat-actions-panel {
+    width: 100%;
+    padding: 0.5rem !important;
+  }
+
+  .combat-actions-panel .chakra-heading {
+    font-size: 0.875rem !important;
+  }
+
+  .combat-actions-panel button {
+    min-height: 2.75rem !important;
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .combat-actions-panel button .chakra-icon {
+    font-size: 1.125rem !important;
+  }
+
+  /* Grid layout for actions */
+  .combat-actions-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .combat-actions-grid button {
+    width: 100% !important;
+  }
+
+  /* Full width for important actions */
+  .combat-action-primary {
+    grid-column: 1 / -1 !important;
+  }
+
+  .combat-action-flee {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+/* Small portrait phones - more compact */
+@media (orientation: portrait) and (max-width: 480px) {
+  .combat-actions-panel {
+    padding: 0.375rem !important;
+  }
+
+  .combat-actions-panel .chakra-heading {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.375rem !important;
+  }
+
+  .combat-actions-panel button {
+    min-height: 2.5rem !important;
+    font-size: 0.8rem !important;
+    padding: 0.375rem 0.625rem !important;
+  }
+
+  .combat-actions-panel button .chakra-icon {
+    font-size: 1rem !important;
+  }
+
+  .combat-actions-grid {
+    gap: 0.375rem !important;
+  }
+
+  /* Ability buttons - show fewer or scroll */
+  .combat-abilities-container {
+    max-height: 120px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Very small portrait phones - ultra compact */
+@media (orientation: portrait) and (max-width: 400px) {
+  .combat-actions-panel {
+    padding: 0.25rem !important;
+  }
+
+  .combat-actions-panel .chakra-heading {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .combat-actions-panel button {
+    min-height: 2.25rem !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+
+  .combat-actions-panel button .chakra-icon {
+    font-size: 0.875rem !important;
+  }
+
+  .combat-actions-grid {
+    gap: 0.25rem !important;
+  }
+
+  .combat-abilities-container {
+    max-height: 100px;
+  }
+
+  /* Hide button text, keep only icons on very small screens */
+  .combat-actions-panel button span:not(.chakra-button__icon) {
+    display: none !important;
+  }
+
+  .combat-actions-panel button .chakra-icon {
+    margin: 0 !important;
+  }
+}
+
+/* Short portrait screens */
+@media (orientation: portrait) and (max-height: 600px) {
+  .combat-actions-panel {
+    padding: 0.375rem !important;
+  }
+
+  .combat-actions-panel button {
+    min-height: 2.25rem !important;
+  }
+
+  .combat-abilities-container {
+    max-height: 100px;
+  }
+}
+
+/* Landscape - keep compact for short screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .combat-actions-panel {
+    padding: 0.5rem !important;
+  }
+
+  .combat-actions-panel button {
+    min-height: 2rem !important;
+    font-size: 0.8rem !important;
+  }
+}

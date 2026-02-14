@@ -4,6 +4,7 @@
  * Displays all party members with health bars, effects, and positioning
  */
 
+import './PartyHealthDisplay.css'
 import { VStack, HStack, Text } from '@chakra-ui/react'
 import { useMemo } from 'react'
 import type { Hero, BossCombatState } from '@/types'

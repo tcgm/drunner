@@ -4,6 +4,7 @@
  * Action buttons for attack, defend, abilities, items, and flee
  */
 
+import './CombatActionsPanel.css'
 import {
     Box, HStack, VStack, Button, Text, Badge, Icon, Tooltip, SimpleGrid,
     Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter,

@@ -4,6 +4,7 @@
  * Large, prominent boss display with health bar, phase indicators, and effects
  */
 
+import './BossDisplay.css'
 import { Box, VStack, HStack, Text, Progress, Badge, Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useMemo, useEffect, useState } from 'react'

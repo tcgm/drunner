@@ -5,16 +5,20 @@
  */
 
 import './combat-animations.css'
-import { Box, VStack, HStack, Text, useToast } from '@chakra-ui/react'
+import './BossCombatScreen.css'
+import { Box, VStack, HStack, Text, useToast, Icon, IconButton, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, useDisclosure } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import type { DungeonEvent, Hero, BossCombatState } from '@/types'
+import type { ParticleEffect } from './CombatParticles'
+import * as GameIcons from 'react-icons/gi'
+import { GiSkullCrossedBones, GiSwordman, GiScrollUnfurled } from 'react-icons/gi'
 import BossDisplay from './BossDisplay'
 import PartyHealthDisplay from './PartyHealthDisplay'
 import TurnOrderDisplay from './TurnOrderDisplay'
 import CombatActionsPanel from './CombatActionsPanel'
 import CombatLog from './CombatLog'
-import CombatParticles, { ParticleEffect } from './CombatParticles'
+import CombatParticles from './CombatParticles'
 import {
     startCombatRound,
     processBossTurn,
@@ -63,6 +67,9 @@ export default function BossCombatScreen({
     const [particlePosition, setParticlePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
     const combatInitialized = useRef(false)
     const toast = useToast()
+    
+    // Combat log modal for portrait mode
+    const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure()
 
     // Add log entry helper
     const addLogEntry = (
@@ -549,6 +556,44 @@ export default function BossCombatScreen({
                     h="full"
                     minW={0}
                 >
+                    {/* Portrait Mode: Combat Info Header */}
+                    <HStack className="combat-info-header-portrait portrait-only" display="none">
+                        <Box>
+                            <Text>Round</Text>
+                            <Text>{combatState.combatDepth}</Text>
+                        </Box>
+                        <Box>
+                            <Text>Phase</Text>
+                            <Text>{combatState.currentPhase + 1}</Text>
+                        </Box>
+                    </HStack>
+
+                    {/* Portrait Mode: Horizontal Turn Order */}
+                    <HStack className="turn-order-horizontal-portrait portrait-only" display="none">
+                        {combatState.turnOrder && combatState.turnOrder.map((combatant, index) => {
+                            const isBoss = combatant.id === 'boss'
+                            const hero = isBoss ? null : activeHeroes.find(h => h.id === combatant.id)
+                            const isCurrent = index === (combatState.currentTurnIndex || 0)
+                            const isPast = index < (combatState.currentTurnIndex || 0)
+                            
+                            const CombatantIcon = isBoss 
+                                ? GiSkullCrossedBones 
+                                : hero 
+                                    ? (GameIcons as any)[hero.class.icon] || GiSwordman
+                                    : GiSwordman
+
+                            return (
+                                <Box
+                                    key={`turn-${combatant.id}-${index}`}
+                                    className={`turn-indicator-portrait ${isCurrent ? 'current' : ''} ${isPast ? 'past' : ''} ${isBoss ? 'boss' : 'hero'}`}
+                                >
+                                    <Icon as={CombatantIcon} />
+                                    <Text>{isBoss ? 'Boss' : hero?.name || '?'}</Text>
+                                </Box>
+                            )
+                        })}
+                    </HStack>
+
                     {/* Boss Display */}
                     <Box flex="0 0 auto">
                         <BossDisplay
@@ -614,6 +659,32 @@ export default function BossCombatScreen({
                 position={particlePosition}
                 onComplete={() => setParticleEffect(null)}
             />
+
+            {/* Floating Combat Log Button - Portrait Only */}
+            <Box className="combat-log-fab-container portrait-only" display="none">
+                <IconButton
+                    aria-label="View Combat Log"
+                    icon={<GiScrollUnfurled size={24} />}
+                    colorScheme="purple"
+                    size="lg"
+                    isRound
+                    onClick={onCombatLogOpen}
+                    boxShadow="0 4px 12px rgba(139, 92, 246, 0.5)"
+                    _active={{ transform: "scale(0.9)" }}
+                />
+            </Box>
+
+            {/* Combat Log Modal - Portrait Only */}
+            <Modal isOpen={isCombatLogOpen} onClose={onCombatLogClose} size="full" scrollBehavior="inside">
+                <ModalOverlay bg="blackAlpha.900" backdropFilter="blur(4px)" />
+                <ModalContent bg="gray.900" maxH="90vh" mx={2}>
+                    <ModalHeader color="purple.400">Combat Log</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody pb={6} px={2}>
+                        <CombatLog entries={combatLog} />
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
 
             {/* Victory/Defeat Overlay */}
             <AnimatePresence>

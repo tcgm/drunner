@@ -4,6 +4,7 @@
  * Scrolling log of combat actions and events
  */
 
+import './CombatLog.css'
 import { Box, VStack, HStack, Text, Icon } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef } from 'react'
