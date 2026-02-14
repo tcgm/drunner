@@ -1211,6 +1211,8 @@ button:focus-visible {
   /* Combat screen adjustments */
   .boss-combat-screen {
     flex-direction: column !important;
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
   }
   
   .boss-combat-screen > * {
@@ -1225,19 +1227,42 @@ button:focus-visible {
   
   /* Compact boss display on portrait */
   .boss-display {
-    max-height: 30vh;
+    max-height: 25vh !important;
+    padding: 0.75rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 3rem !important;
+  }
+  
+  .boss-display h2,
+  .boss-display .chakra-heading {
+    font-size: 1.5rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
   }
   
   /* Compact party health display */
   .party-health-display {
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
+    gap: 0.5rem !important;
   }
   
-  /* Make combat action panel full width */
+  .party-health-display > * {
+    gap: 0.5rem !important;
+  }
+  
+  /* Make combat action panel compact */
   .combat-actions-panel {
     width: 100%;
+    padding: 0.5rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2.5rem !important;
+    font-size: 0.875rem !important;
   }
 }
 
@@ -1299,6 +1324,127 @@ button:focus-visible {
   }
 }
 
+/* Short portrait screens - Ultra compact combat */
+@media (orientation: portrait) and (max-height: 700px) {
+  .boss-combat-screen {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  /* Super compact boss display */
+  .boss-display {
+    max-height: 20vh !important;
+    padding: 0.5rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2.5rem !important;
+  }
+  
+  .boss-display h2,
+  .boss-display .chakra-text {
+    font-size: 1.25rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.625rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+  
+  .boss-display .chakra-progress {
+    height: 1rem !important;
+  }
+  
+  /* Ultra compact party display */
+  .party-health-display {
+    gap: 0.25rem !important;
+  }
+  
+  .party-health-display > * {
+    gap: 0.25rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.375rem !important;
+  }
+  
+  /* Compact action panel */
+  .combat-actions-panel {
+    padding: 0.375rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2rem !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+  
+  .combat-actions-panel .chakra-icon {
+    font-size: 1rem !important;
+  }
+}
+
+/* Very short portrait screens - Extreme compacting */
+@media (orientation: portrait) and (max-height: 600px) {
+  .boss-combat-screen {
+    padding: 0.25rem !important;
+    gap: 0.125rem !important;
+  }
+  
+  /* Minimal boss display */
+  .boss-display {
+    max-height: 18vh !important;
+    padding: 0.375rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2rem !important;
+  }
+  
+  .boss-display h2,
+  .boss-display .chakra-text {
+    font-size: 1rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.5rem !important;
+    padding: 0.125rem 0.25rem !important;
+  }
+  
+  .boss-display .chakra-vstack,
+  .boss-display .chakra-hstack {
+    gap: 0.25rem !important;
+  }
+  
+  /* Minimal party display */
+  .party-health-display {
+    gap: 0.125rem !important;
+  }
+  
+  .party-health-display > * {
+    gap: 0.125rem !important;
+  }
+  
+  .party-health-display .chakra-text {
+    font-size: 0.625rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.25rem !important;
+  }
+  
+  /* Minimal action panel */
+  .combat-actions-panel {
+    padding: 0.25rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 1.75rem !important;
+    font-size: 0.625rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+}
+
 /* Landscape mobile/tablets - keep some horizontal layout */
 @media (orientation: landscape) and (max-height: 600px) {
   /* Reduce vertical padding */
@@ -1315,6 +1461,118 @@ button:focus-visible {
   /* Reduce modal heights */
   .chakra-modal__content {
     max-height: 90vh !important;
+  }
+  
+  /* Combat screen landscape compacting */
+  .boss-combat-screen {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .combat-left-sidebar,
+  .combat-right-sidebar {
+    flex: 0 0 180px !important;
+    font-size: 0.875rem !important;
+    padding: 0.5rem !important;
+  }
+  
+  .turn-order-display,
+  .combat-log {
+    font-size: 0.75rem !important;
+  }
+  
+  .turn-order-display .chakra-icon {
+    font-size: 1rem !important;
+  }
+  
+  .boss-display {
+    padding: 0.75rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2.5rem !important;
+  }
+  
+  .boss-display h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .party-health-display {
+    gap: 0.5rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.5rem !important;
+  }
+  
+  .combat-actions-panel {
+    padding: 0.5rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Very short landscape screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .boss-combat-screen {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  .combat-left-sidebar,
+  .combat-right-sidebar {
+    flex: 0 0 150px !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem !important;
+  }
+  
+  .turn-order-display,
+  .combat-log {
+    font-size: 0.625rem !important;
+  }
+  
+  .turn-order-display .chakra-icon {
+    font-size: 0.875rem !important;
+  }
+  
+  .combat-log-entry {
+    padding: 0.125rem !important;
+  }
+  
+  .boss-display {
+    padding: 0.5rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2rem !important;
+  }
+  
+  .boss-display h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.625rem !important;
+  }
+  
+  .party-health-display {
+    gap: 0.25rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.375rem !important;
+  }
+  
+  .combat-actions-panel {
+    padding: 0.375rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2rem !important;
+    font-size: 0.75rem !important;
   }
 }
 
