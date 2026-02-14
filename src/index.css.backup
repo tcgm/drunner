@@ -1,0 +1,2157 @@
+/* RPG Awesome Icon Font */
+@import 'rpg-awesome/css/rpg-awesome.min.css';
+
+/* Override RPG Awesome defaults for proper sizing */
+.ra::before {
+  font-size: 1em;
+  line-height: 1;
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Mobile-safe viewport height - set by JavaScript */
+    --vh: 1vh;
+
+  /* Responsive sizing variables */
+  --item-slot-sm: clamp(40px, 4vw, 60px);
+  --item-slot-md: clamp(50px, 5vw, 80px);
+  --item-slot-lg: clamp(60px, 6vw, 100px);
+  --item-slot-xl: clamp(80px, 8vw, 140px);
+  --icon-frame-size: clamp(70px, 7vw, 110px);
+  --icon-glow-size: clamp(90px, 9vw, 140px);
+  --corner-size: clamp(40px, 4vw, 60px);
+  --modal-padding: clamp(0.5rem, 1.5vw, 1rem);
+  --section-spacing: clamp(1rem, 2vw, 2rem);
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+
+h1 {
+  font-size: clamp(2em, 3.2vw, 3.2em);
+  line-height: 1.1;
+}
+
+button {
+  border-radius: clamp(6px, 0.8vw, 8px);
+  border: 1px solid transparent;
+  padding: clamp(0.4em, 0.6vw, 0.6em) clamp(0.8em, 1.2vw, 1.2em);
+  font-size: clamp(0.875em, 1vw, 1em);
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Boss event animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes danger-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(220, 38, 38, 0.8);
+  }
+}
+
+/* ============================================================================
+   ITEM SLOT OPTIMIZED STYLES - Performance Critical
+   ============================================================================ */
+
+/* Base item slot styles */
+.item-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 0.5rem;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.item-slot--clickable {
+  cursor: pointer;
+}
+
+.item-slot--icon-only {
+  padding: 0;
+}
+
+.item-slot--with-padding {
+  padding: 0.25rem;
+}
+
+/* Size variants */
+.item-slot--sm {
+  width: var(--item-slot-sm);
+  height: var(--item-slot-sm);
+}
+
+.item-slot--md {
+  width: var(--item-slot-md);
+  height: var(--item-slot-md);
+}
+
+.item-slot--lg {
+  width: var(--item-slot-lg);
+  height: var(--item-slot-lg);
+}
+
+.item-slot--xl {
+  width: var(--item-slot-xl);
+  height: var(--item-slot-xl);
+}
+
+/* Rarity backgrounds and borders */
+.item-slot--junk {
+  background-color: var(--rarity-junk-bg-color);
+  border-color: var(--rarity-junk-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-junk-glow-rgb), 0.125);
+}
+
+.item-slot--abundant {
+  background-color: var(--rarity-abundant-bg-color);
+  border-color: var(--rarity-abundant-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-abundant-glow-rgb), 0.125);
+}
+
+.item-slot--common {
+  background-color: var(--rarity-common-bg-color);
+  border-color: var(--rarity-common-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-common-glow-rgb), 0.125);
+}
+
+.item-slot--uncommon {
+  background-color: var(--rarity-uncommon-bg-color);
+  border-color: var(--rarity-uncommon-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-uncommon-glow-rgb), 0.125);
+}
+
+.item-slot--rare {
+  background-color: var(--rarity-rare-bg-color);
+  border-color: var(--rarity-rare-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-rare-glow-rgb), 0.125);
+}
+
+.item-slot--veryRare {
+  background-color: var(--rarity-veryRare-bg-color);
+  border-color: var(--rarity-veryRare-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-veryRare-glow-rgb), 0.125);
+}
+
+.item-slot--magical {
+  background-color: var(--rarity-magical-bg-color);
+  border-color: var(--rarity-magical-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-magical-glow-rgb), 0.125);
+}
+
+.item-slot--elite {
+  background-color: var(--rarity-elite-bg-color);
+  border-color: var(--rarity-elite-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-elite-glow-rgb), 0.125);
+}
+
+.item-slot--epic {
+  background-color: var(--rarity-epic-bg-color);
+  border-color: var(--rarity-epic-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-epic-glow-rgb), 0.125);
+}
+
+.item-slot--legendary {
+  background-color: var(--rarity-legendary-bg-color);
+  border-color: var(--rarity-legendary-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-legendary-glow-rgb), 0.125);
+}
+
+.item-slot--mythic {
+  background-color: var(--rarity-mythic-bg-color);
+  border-color: var(--rarity-mythic-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-mythic-glow-rgb), 0.125);
+}
+
+.item-slot--mythicc {
+  background-color: var(--rarity-mythicc-bg-color);
+  border-color: var(--rarity-mythicc-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-mythicc-glow-rgb), 0.125);
+}
+
+.item-slot--artifact {
+  background-color: var(--rarity-artifact-bg-color);
+  border-color: var(--rarity-artifact-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-artifact-glow-rgb), 0.125);
+}
+
+.item-slot--divine {
+  background-color: var(--rarity-divine-bg-color);
+  border-color: var(--rarity-divine-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-divine-glow-rgb), 0.125);
+}
+
+.item-slot--celestial {
+  background-color: var(--rarity-celestial-bg-color);
+  border-color: var(--rarity-celestial-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-celestial-glow-rgb), 0.125);
+}
+
+.item-slot--realityAnchor {
+  background-color: var(--rarity-realityAnchor-bg-color);
+  border-color: var(--rarity-realityAnchor-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-realityAnchor-glow-rgb), 0.125);
+}
+
+.item-slot--structural {
+  background-color: var(--rarity-structural-bg-color);
+  border-color: var(--rarity-structural-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-structural-glow-rgb), 0.125);
+}
+
+.item-slot--singularity {
+  background-color: var(--rarity-singularity-bg-color);
+  border-color: var(--rarity-singularity-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-singularity-glow-rgb), 0.125);
+}
+
+.item-slot--void {
+  background-color: var(--rarity-void-bg-color);
+  border-color: var(--rarity-void-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-void-glow-rgb), 0.125);
+}
+
+.item-slot--elder {
+  background-color: var(--rarity-elder-bg-color);
+  border-color: var(--rarity-elder-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-elder-glow-rgb), 0.125);
+}
+
+.item-slot--layer {
+  background-color: var(--rarity-layer-bg-color);
+  border-color: var(--rarity-layer-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-layer-glow-rgb), 0.125);
+}
+
+.item-slot--plane {
+  background-color: var(--rarity-plane-bg-color);
+  border-color: var(--rarity-plane-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-plane-glow-rgb), 0.125);
+}
+
+.item-slot--author {
+  background-color: var(--rarity-author-bg-color);
+  border-color: var(--rarity-author-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-author-glow-rgb), 0.125);
+}
+
+.item-slot--cursed {
+  background-color: var(--rarity-cursed-bg-color);
+  border-color: var(--rarity-cursed-border);
+  box-shadow: 0 0 8px rgba(var(--rarity-cursed-glow-rgb), 0.125);
+}
+
+.item-slot--set {
+  background-color: var(--rarity-set-bg-color);
+  border-color: var(--rarity-set-border);
+  border-width: 4px;
+  box-shadow: 0 0 12px rgba(var(--rarity-set-glow-rgb), 0.6), 0 0 20px rgba(var(--rarity-set-glow-rgb), 0.4);
+}
+
+/* Unique items */
+.item-slot--unique {
+  border-color: var(--rarity-unique-border) !important;
+  box-shadow: 0 0 12px rgba(var(--rarity-unique-glow-rgb), 0.5), 0 0 20px rgba(var(--rarity-unique-glow-rgb), 0.3) !important;
+}
+
+/* Selected state */
+.item-slot--selected {
+  border-color: var(--rarity-selected-border) !important;
+  box-shadow: 0 0 16px rgba(var(--rarity-selected-glow-rgb), 0.8), 0 0 24px rgba(var(--rarity-selected-glow-rgb), 0.5) !important;
+}
+
+/* Hover effects - only for clickable items */
+.item-slot--clickable:hover.item-slot--junk {
+  box-shadow: 0 0 24px rgba(var(--rarity-junk-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-junk-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--abundant {
+  box-shadow: 0 0 24px rgba(var(--rarity-abundant-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-abundant-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--common {
+  box-shadow: 0 0 24px rgba(var(--rarity-common-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-common-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--uncommon {
+  box-shadow: 0 0 24px rgba(var(--rarity-uncommon-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-uncommon-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--rare {
+  box-shadow: 0 0 24px rgba(var(--rarity-rare-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-rare-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--veryRare {
+  box-shadow: 0 0 24px rgba(var(--rarity-veryRare-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-veryRare-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--magical {
+  box-shadow: 0 0 24px rgba(var(--rarity-magical-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-magical-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--elite {
+  box-shadow: 0 0 24px rgba(var(--rarity-elite-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-elite-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--epic {
+  box-shadow: 0 0 24px rgba(var(--rarity-epic-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-epic-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--legendary {
+  box-shadow: 0 0 24px rgba(var(--rarity-legendary-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-legendary-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--mythic {
+  box-shadow: 0 0 24px rgba(var(--rarity-mythic-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-mythic-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--mythicc {
+  box-shadow: 0 0 24px rgba(var(--rarity-mythicc-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-mythicc-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--artifact {
+  box-shadow: 0 0 24px rgba(var(--rarity-artifact-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-artifact-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--divine {
+  box-shadow: 0 0 24px rgba(var(--rarity-divine-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-divine-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--celestial {
+  box-shadow: 0 0 24px rgba(var(--rarity-celestial-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-celestial-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--realityAnchor {
+  box-shadow: 0 0 24px rgba(var(--rarity-realityAnchor-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-realityAnchor-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--structural {
+  box-shadow: 0 0 24px rgba(var(--rarity-structural-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-structural-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--singularity {
+  box-shadow: 0 0 24px rgba(var(--rarity-singularity-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-singularity-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--void {
+  box-shadow: 0 0 24px rgba(var(--rarity-void-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-void-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--elder {
+  box-shadow: 0 0 24px rgba(var(--rarity-elder-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-elder-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--layer {
+  box-shadow: 0 0 24px rgba(var(--rarity-layer-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-layer-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--plane {
+  box-shadow: 0 0 24px rgba(var(--rarity-plane-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-plane-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--author {
+  box-shadow: 0 0 24px rgba(var(--rarity-author-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-author-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--cursed {
+  box-shadow: 0 0 24px rgba(var(--rarity-cursed-glow-rgb), 0.375), 0 0 40px rgba(var(--rarity-cursed-glow-rgb), 0.25);
+}
+
+.item-slot--clickable:hover.item-slot--set {
+  box-shadow: 0 0 32px rgba(var(--rarity-set-glow-rgb), 0.8), 0 0 48px rgba(var(--rarity-set-glow-rgb), 0.6), 0 0 64px rgba(var(--rarity-set-glow-rgb), 0.4);
+}
+
+.item-slot--clickable:hover.item-slot--unique {
+  box-shadow: 0 0 32px rgba(var(--rarity-unique-glow-rgb), 0.8), 0 0 48px rgba(var(--rarity-unique-glow-rgb), 0.5), 0 0 64px rgba(var(--rarity-unique-glow-rgb), 0.3) !important;
+}
+
+/* Set item inner border */
+.item-slot__inner-border {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 0.375rem;
+  border-width: 2px;
+  border-style: solid;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+.item-slot--junk .item-slot__inner-border {
+  border-color: var(--rarity-junk-border);
+}
+
+.item-slot--abundant .item-slot__inner-border {
+  border-color: var(--rarity-abundant-border);
+}
+
+.item-slot--common .item-slot__inner-border {
+  border-color: var(--rarity-common-border);
+}
+
+.item-slot--uncommon .item-slot__inner-border {
+  border-color: var(--rarity-uncommon-border);
+}
+
+.item-slot--rare .item-slot__inner-border {
+  border-color: var(--rarity-rare-border);
+}
+
+.item-slot--veryRare .item-slot__inner-border {
+  border-color: var(--rarity-veryRare-border);
+}
+
+.item-slot--magical .item-slot__inner-border {
+  border-color: var(--rarity-magical-border);
+}
+
+.item-slot--elite .item-slot__inner-border {
+  border-color: var(--rarity-elite-border);
+}
+
+.item-slot--epic .item-slot__inner-border {
+  border-color: var(--rarity-epic-border);
+}
+
+.item-slot--legendary .item-slot__inner-border {
+  border-color: var(--rarity-legendary-border);
+}
+
+.item-slot--mythic .item-slot__inner-border {
+  border-color: var(--rarity-mythic-border);
+}
+
+.item-slot--mythicc .item-slot__inner-border {
+  border-color: var(--rarity-mythicc-border);
+}
+
+.item-slot--artifact .item-slot__inner-border {
+  border-color: var(--rarity-artifact-border);
+}
+
+.item-slot--divine .item-slot__inner-border {
+  border-color: var(--rarity-divine-border);
+}
+
+.item-slot--celestial .item-slot__inner-border {
+  border-color: var(--rarity-celestial-border);
+}
+
+.item-slot--realityAnchor .item-slot__inner-border {
+  border-color: var(--rarity-realityAnchor-border);
+}
+
+.item-slot--structural .item-slot__inner-border {
+  border-color: var(--rarity-structural-border);
+}
+
+.item-slot--singularity .item-slot__inner-border {
+  border-color: var(--rarity-singularity-border);
+}
+
+.item-slot--void .item-slot__inner-border {
+  border-color: var(--rarity-void-border);
+}
+
+.item-slot--elder .item-slot__inner-border {
+  border-color: var(--rarity-elder-border);
+}
+
+.item-slot--layer .item-slot__inner-border {
+  border-color: var(--rarity-layer-border);
+}
+
+.item-slot--plane .item-slot__inner-border {
+  border-color: var(--rarity-plane-border);
+}
+
+.item-slot--author .item-slot__inner-border {
+  border-color: var(--rarity-author-border);
+}
+
+.item-slot--cursed .item-slot__inner-border {
+  border-color: var(--rarity-cursed-border);
+}
+
+/* Inner border rarity classes (for set items showing rarity border) */
+.item-slot__inner-border--junk {
+  border-color: var(--rarity-junk-border);
+}
+
+.item-slot__inner-border--abundant {
+  border-color: var(--rarity-abundant-border);
+}
+
+.item-slot__inner-border--common {
+  border-color: var(--rarity-common-border);
+}
+
+.item-slot__inner-border--uncommon {
+  border-color: var(--rarity-uncommon-border);
+}
+
+.item-slot__inner-border--rare {
+  border-color: var(--rarity-rare-border);
+}
+
+.item-slot__inner-border--veryRare {
+  border-color: var(--rarity-veryRare-border);
+}
+
+.item-slot__inner-border--magical {
+  border-color: var(--rarity-magical-border);
+}
+
+.item-slot__inner-border--elite {
+  border-color: var(--rarity-elite-border);
+}
+
+.item-slot__inner-border--epic {
+  border-color: var(--rarity-epic-border);
+}
+
+.item-slot__inner-border--legendary {
+  border-color: var(--rarity-legendary-border);
+}
+
+.item-slot__inner-border--mythic {
+  border-color: var(--rarity-mythic-border);
+}
+
+.item-slot__inner-border--mythicc {
+  border-color: var(--rarity-mythicc-border);
+}
+
+.item-slot__inner-border--artifact {
+  border-color: var(--rarity-artifact-border);
+}
+
+.item-slot__inner-border--divine {
+  border-color: var(--rarity-divine-border);
+}
+
+.item-slot__inner-border--celestial {
+  border-color: var(--rarity-celestial-border);
+}
+
+.item-slot__inner-border--realityAnchor {
+  border-color: var(--rarity-realityAnchor-border);
+}
+
+.item-slot__inner-border--structural {
+  border-color: var(--rarity-structural-border);
+}
+
+.item-slot__inner-border--singularity {
+  border-color: var(--rarity-singularity-border);
+}
+
+.item-slot__inner-border--void {
+  border-color: var(--rarity-void-border);
+}
+
+.item-slot__inner-border--elder {
+  border-color: var(--rarity-elder-border);
+}
+
+.item-slot__inner-border--layer {
+  border-color: var(--rarity-layer-border);
+}
+
+.item-slot__inner-border--plane {
+  border-color: var(--rarity-plane-border);
+}
+
+.item-slot__inner-border--author {
+  border-color: var(--rarity-author-border);
+}
+
+.item-slot__inner-border--cursed {
+  border-color: var(--rarity-cursed-border);
+}
+
+/* ============================================================================
+   ITEM DETAIL MODAL OPTIMIZED STYLES - Performance Critical
+   ============================================================================ */
+
+/* Modal decorative corners */
+.item-detail-modal__corner {
+  position: absolute;
+  width: var(--corner-size);
+  height: var(--corner-size);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+  border-style: solid;
+  border-width: 3px;
+  border-color: transparent;
+}
+
+.item-detail-modal__corner--top-left {
+  top: 0;
+  left: 0;
+}
+
+.item-detail-modal__corner--top-right {
+  top: 0;
+  right: 0;
+}
+
+.item-detail-modal__corner--bottom-left {
+  bottom: 0;
+  left: 0;
+}
+
+.item-detail-modal__corner--bottom-right {
+  bottom: 0;
+  right: 0;
+}
+
+/* Corner borders by rarity */
+.item-detail-modal--junk .item-detail-modal__corner { border-color: var(--rarity-junk-border); }
+.item-detail-modal--abundant .item-detail-modal__corner { border-color: var(--rarity-abundant-border); }
+.item-detail-modal--common .item-detail-modal__corner { border-color: var(--rarity-common-border); }
+.item-detail-modal--uncommon .item-detail-modal__corner { border-color: var(--rarity-uncommon-border); }
+.item-detail-modal--rare .item-detail-modal__corner { border-color: var(--rarity-rare-border); }
+.item-detail-modal--veryRare .item-detail-modal__corner { border-color: var(--rarity-veryRare-border); }
+.item-detail-modal--magical .item-detail-modal__corner { border-color: var(--rarity-magical-border); }
+.item-detail-modal--elite .item-detail-modal__corner { border-color: var(--rarity-elite-border); }
+.item-detail-modal--epic .item-detail-modal__corner { border-color: var(--rarity-epic-border); }
+.item-detail-modal--legendary .item-detail-modal__corner { border-color: var(--rarity-legendary-border); }
+.item-detail-modal--mythic .item-detail-modal__corner { border-color: var(--rarity-mythic-border); }
+.item-detail-modal--mythicc .item-detail-modal__corner { border-color: var(--rarity-mythicc-border); }
+.item-detail-modal--artifact .item-detail-modal__corner { border-color: var(--rarity-artifact-border); }
+.item-detail-modal--divine .item-detail-modal__corner { border-color: var(--rarity-divine-border); }
+.item-detail-modal--celestial .item-detail-modal__corner { border-color: var(--rarity-celestial-border); }
+.item-detail-modal--realityAnchor .item-detail-modal__corner { border-color: var(--rarity-realityAnchor-border); }
+.item-detail-modal--structural .item-detail-modal__corner { border-color: var(--rarity-structural-border); }
+.item-detail-modal--singularity .item-detail-modal__corner { border-color: var(--rarity-singularity-border); }
+.item-detail-modal--void .item-detail-modal__corner { border-color: var(--rarity-void-border); }
+.item-detail-modal--elder .item-detail-modal__corner { border-color: var(--rarity-elder-border); }
+.item-detail-modal--layer .item-detail-modal__corner { border-color: var(--rarity-layer-border); }
+.item-detail-modal--plane .item-detail-modal__corner { border-color: var(--rarity-plane-border); }
+.item-detail-modal--author .item-detail-modal__corner { border-color: var(--rarity-author-border); }
+.item-detail-modal--set .item-detail-modal__corner { border-color: var(--rarity-set-border); }
+.item-detail-modal--unique .item-detail-modal__corner { border-color: var(--rarity-unique-border); }
+
+.item-detail-modal__corner--top-left { border-left-color: inherit; border-top-color: inherit; }
+.item-detail-modal__corner--top-right { border-right-color: inherit; border-top-color: inherit; }
+.item-detail-modal__corner--bottom-left { border-left-color: inherit; border-bottom-color: inherit; }
+.item-detail-modal__corner--bottom-right { border-right-color: inherit; border-bottom-color: inherit; }
+
+/* Background gradient */
+.item-detail-modal__bg-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.item-detail-modal--junk .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-junk-glow-rgb), 0.2) 0%, transparent 70%);
+}
+
+.item-detail-modal--common .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-common-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-uncommon-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--rare .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-rare-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--epic .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-epic-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-legendary-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-mythic-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-artifact-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--set .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-set-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+/* Stat row */
+.item-detail-modal__stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.375rem;
+}
+
+/* Icon glow ring */
+.item-detail-modal__icon-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--icon-glow-size);
+  height: var(--icon-glow-size);
+  border-radius: 50%;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.item-detail-modal--junk .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-junk-glow-rgb), 0.4) 0%, transparent 70%);
+}
+
+.item-detail-modal--common .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-common-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-uncommon-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--rare .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-rare-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--epic .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-epic-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-legendary-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-mythic-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-artifact-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+/* Icon frame */
+.item-detail-modal__icon-frame {
+  position: relative;
+  width: var(--icon-frame-size);
+  height: var(--icon-frame-size);
+  border-radius: 0.75rem;
+  background-color: #1a202c;
+  border-width: 4px;
+  border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.item-detail-modal--junk .item-detail-modal__icon-frame {
+  border-color: var(--rarity-junk-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-junk-glow-rgb), 0.4);
+}
+
+.item-detail-modal--common .item-detail-modal__icon-frame {
+  border-color: var(--rarity-common-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-common-glow-rgb), 0.5);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__icon-frame {
+  border-color: var(--rarity-uncommon-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-uncommon-glow-rgb), 0.5);
+}
+
+.item-detail-modal--rare .item-detail-modal__icon-frame {
+  border-color: var(--rarity-rare-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-rare-glow-rgb), 0.5);
+}
+
+.item-detail-modal--epic .item-detail-modal__icon-frame {
+  border-color: var(--rarity-epic-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-epic-glow-rgb), 0.5);
+}
+
+.item-detail-modal--legendary .item-detail-modal__icon-frame {
+  border-color: var(--rarity-legendary-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-legendary-glow-rgb), 0.5);
+}
+
+.item-detail-modal--mythic .item-detail-modal__icon-frame {
+  border-color: var(--rarity-mythic-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-mythic-glow-rgb), 0.6);
+}
+
+.item-detail-modal--artifact .item-detail-modal__icon-frame {
+  border-color: var(--rarity-artifact-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-artifact-glow-rgb), 0.6);
+}
+
+.item-detail-modal--unique .item-detail-modal__icon-frame {
+  border-color: var(--rarity-unique-border) !important;
+}
+
+/* Shimmer effect */
+.item-detail-modal__shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  opacity: 0.2;
+  pointer-events: none;
+  animation: shimmer 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.item-detail-modal--junk .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-junk-glow-rgb), 0.4) 50%, transparent 100%);
+}
+
+.item-detail-modal--common .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-common-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-uncommon-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--rare .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-rare-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--epic .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-epic-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-legendary-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-mythic-glow-rgb), 0.6) 50%, transparent 100%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-artifact-glow-rgb), 0.6) 50%, transparent 100%);
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Description box */
+.item-detail-modal__description {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Rarity gem glow */
+.item-detail-modal__gem-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(25px, 2.5vw, 40px);
+  height: clamp(25px, 2.5vw, 40px);
+  border-radius: 50%;
+  opacity: 0.5;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.item-detail-modal--junk .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-junk-glow-rgb), 0.4) 0%, transparent 70%);
+}
+
+.item-detail-modal--common .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-common-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-uncommon-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--rare .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-rare-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--epic .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-epic-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-legendary-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-mythic-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-artifact-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+/* ============================================================================
+   RESPONSIVE UTILITY CLASSES
+   ============================================================================ */
+
+/* Show/hide based on orientation */
+.portrait-only {
+  display: none;
+}
+
+.landscape-only {
+  display: block;
+}
+
+@media (orientation: portrait) {
+  .portrait-only {
+    display: block;
+  }
+  
+  .landscape-only {
+    display: none;
+  }
+}
+
+/* Mobile-specific utilities */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Responsive flex direction */
+.flex-responsive {
+  display: flex;
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .flex-responsive {
+    flex-direction: column !important;
+  }
+}
+
+/* Mobile bottom navigation bar */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--chakra-colors-gray-900);
+  border-top: 2px solid var(--chakra-colors-gray-700);
+  padding: 0.5rem;
+  z-index: 1000;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  /* Add bottom padding to prevent content from being hidden */
+  .dungeon-screen,
+  .party-setup-screen {
+    padding-bottom: 70px !important;
+  }
+}
+
+/* Responsive sidebars - convert to drawer/modal on mobile */
+.responsive-sidebar {
+  transition: transform 0.3s ease-in-out;
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .responsive-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 80vw;
+    max-width: 300px;
+    transform: translateX(-100%);
+    z-index: 1001;
+    background: var(--chakra-colors-gray-900);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .responsive-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Backdrop for mobile sidebars */
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+  }
+  
+  .sidebar-backdrop.open {
+    display: block;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE MEDIA QUERIES
+   ============================================================================ */
+
+/* Extra small screens (mobile portrait) */
+@media (max-width: 480px) {
+  :root {
+    --item-slot-sm: 35px;
+    --item-slot-md: 45px;
+    --item-slot-lg: 55px;
+    --item-slot-xl: 70px;
+    --icon-frame-size: 60px;
+    --icon-glow-size: 80px;
+    --corner-size: 35px;
+  }
+  
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Small screens (mobile landscape / small tablets) */
+@media (min-width: 481px) and (max-width: 768px) {
+  :root {
+    --item-slot-sm: 45px;
+    --item-slot-md: 55px;
+    --item-slot-lg: 70px;
+    --item-slot-xl: 90px;
+    --icon-frame-size: 75px;
+    --icon-glow-size: 95px;
+    --corner-size: 45px;
+  }
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    --item-slot-sm: 50px;
+    --item-slot-md: 65px;
+    --item-slot-lg: 80px;
+    --item-slot-xl: 110px;
+    --icon-frame-size: 90px;
+    --icon-glow-size: 110px;
+    --corner-size: 50px;
+  }
+}
+
+/* Large screens (desktops) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  :root {
+    --item-slot-sm: 60px;
+    --item-slot-md: 80px;
+    --item-slot-lg: 100px;
+    --item-slot-xl: 140px;
+    --icon-frame-size: 110px;
+    --icon-glow-size: 140px;
+    --corner-size: 60px;
+  }
+}
+
+/* Extra large screens (large desktops) */
+@media (min-width: 1441px) {
+  :root {
+    --item-slot-sm: 60px;
+    --item-slot-md: 80px;
+    --item-slot-lg: 100px;
+    --item-slot-xl: 140px;
+    --icon-frame-size: 110px;
+    --icon-glow-size: 140px;
+    --corner-size: 60px;
+  }
+  
+  body {
+    font-size: 16px;
+  }
+}
+
+/* ============================================================================
+   PORTRAIT MODE & MOBILE LAYOUT OVERRIDES
+   ============================================================================ */
+
+/* Portrait orientation - Stack vertically */
+@media (orientation: portrait) and (max-width: 768px) {
+  /* Hide sidebars by default in portrait - show in modals/drawers instead */
+  .party-sidebar,
+  .info-sidebar,
+  .hero-selection-sidebar,
+  .equipment-panel {
+    display: none !important;
+  }
+  
+  /* Stack main content vertically */
+  .dungeon-screen,
+  .party-setup-screen-content {
+    flex-direction: column !important;
+  }
+  
+  /* Touch-friendly button sizes */
+  button {
+    min-height: 44px;
+  }
+  
+  /* Modal full screen on portrait mobile */
+  .chakra-modal__content {
+    max-height: 95vh !important;
+    max-width: 95vw !important;
+    margin: 2.5vh 2.5vw !important;
+  }
+  
+  /* Combat screen adjustments */
+  .boss-combat-screen {
+    flex-direction: column !important;
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .boss-combat-screen > * {
+    width: 100% !important;
+  }
+  
+  /* Stack combat elements vertically */
+  .boss-combat-screen .combat-left-sidebar,
+  .boss-combat-screen .combat-right-sidebar {
+    display: none !important;
+  }
+  
+  /* Compact boss display on portrait */
+  .boss-display {
+    max-height: 25vh !important;
+    padding: 0.75rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 3rem !important;
+  }
+  
+  .boss-display h2,
+  .boss-display .chakra-heading {
+    font-size: 1.5rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+  
+  /* Compact party health display */
+  .party-health-display {
+    gap: 0.5rem !important;
+  }
+  
+  .party-health-display > * {
+    gap: 0.5rem !important;
+  }
+  
+  /* Make combat action panel compact */
+  .combat-actions-panel {
+    width: 100%;
+    padding: 0.5rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Portrait phones - extreme vertical stacking */
+@media (orientation: portrait) and (max-width: 480px) {
+  /* Even more compact spacing */
+  .item-slot--sm,
+  .item-slot--md,
+  .item-slot--lg {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  /* Grid adjustments */
+  .chakra-simple-grid {
+    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)) !important;
+  }
+  
+  /* Hide decorative elements */
+  .main-menu-content .chakra-icon[aria-hidden="true"] {
+    display: none !important;
+  }
+  
+  /* Compact party setup */
+  .party-setup-slots {
+    gap: 0.5rem !important;
+  }
+  
+  /* Single column layouts */
+  .event-display,
+  .victory-screen,
+  .game-over-screen {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Compact inventory grids */
+  .inventory-grid,
+  .bank-inventory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)) !important;
+    gap: 0.25rem !important;
+  }
+  
+  /* Stack equipment slots vertically */
+  .equipment-slots {
+    flex-direction: column !important;
+  }
+  
+  /* Reduce hero card sizes */
+  .hero-card,
+  .party-member-card,
+  .combat-hero-card {
+    padding: 0.5rem !important;
+  }
+  
+  /* Compact stats display */
+  .stat-display,
+  .hero-stats {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Short portrait screens - Ultra compact combat */
+@media (orientation: portrait) and (max-height: 700px) {
+  .boss-combat-screen {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  /* Super compact boss display */
+  .boss-display {
+    max-height: 20vh !important;
+    padding: 0.5rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2.5rem !important;
+  }
+  
+  .boss-display h2,
+  .boss-display .chakra-text {
+    font-size: 1.25rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.625rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+  
+  .boss-display .chakra-progress {
+    height: 1rem !important;
+  }
+  
+  /* Ultra compact party display */
+  .party-health-display {
+    gap: 0.25rem !important;
+  }
+  
+  .party-health-display > * {
+    gap: 0.25rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.375rem !important;
+  }
+  
+  /* Compact action panel */
+  .combat-actions-panel {
+    padding: 0.375rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2rem !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+  
+  .combat-actions-panel .chakra-icon {
+    font-size: 1rem !important;
+  }
+}
+
+/* Very short portrait screens - Extreme compacting */
+@media (orientation: portrait) and (max-height: 600px) {
+  .boss-combat-screen {
+    padding: 0.25rem !important;
+    gap: 0.125rem !important;
+  }
+  
+  /* Minimal boss display */
+  .boss-display {
+    max-height: 18vh !important;
+    padding: 0.375rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2rem !important;
+  }
+  
+  .boss-display h2,
+  .boss-display .chakra-text {
+    font-size: 1rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.5rem !important;
+    padding: 0.125rem 0.25rem !important;
+  }
+  
+  .boss-display .chakra-vstack,
+  .boss-display .chakra-hstack {
+    gap: 0.25rem !important;
+  }
+  
+  /* Minimal party display */
+  .party-health-display {
+    gap: 0.125rem !important;
+  }
+  
+  .party-health-display > * {
+    gap: 0.125rem !important;
+  }
+  
+  .party-health-display .chakra-text {
+    font-size: 0.625rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.25rem !important;
+  }
+  
+  /* Minimal action panel */
+  .combat-actions-panel {
+    padding: 0.25rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 1.75rem !important;
+    font-size: 0.625rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+}
+
+/* Landscape mobile/tablets - keep some horizontal layout */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* Reduce vertical padding */
+  .dungeon-screen,
+  .party-setup-screen {
+    padding: 0.25rem !important;
+  }
+  
+  /* More compact UI elements */
+  h1 {
+    font-size: 1.5em !important;
+  }
+  
+  /* Reduce modal heights */
+  .chakra-modal__content {
+    max-height: 90vh !important;
+  }
+  
+  /* Combat screen landscape compacting */
+  .boss-combat-screen {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .combat-left-sidebar,
+  .combat-right-sidebar {
+    flex: 0 0 180px !important;
+    font-size: 0.875rem !important;
+    padding: 0.5rem !important;
+  }
+  
+  .turn-order-display,
+  .combat-log {
+    font-size: 0.75rem !important;
+  }
+  
+  .turn-order-display .chakra-icon {
+    font-size: 1rem !important;
+  }
+  
+  .boss-display {
+    padding: 0.75rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2.5rem !important;
+  }
+  
+  .boss-display h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .party-health-display {
+    gap: 0.5rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.5rem !important;
+  }
+  
+  .combat-actions-panel {
+    padding: 0.5rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Very short landscape screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .boss-combat-screen {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  .combat-left-sidebar,
+  .combat-right-sidebar {
+    flex: 0 0 150px !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem !important;
+  }
+  
+  .turn-order-display,
+  .combat-log {
+    font-size: 0.625rem !important;
+  }
+  
+  .turn-order-display .chakra-icon {
+    font-size: 0.875rem !important;
+  }
+  
+  .combat-log-entry {
+    padding: 0.125rem !important;
+  }
+  
+  .boss-display {
+    padding: 0.5rem !important;
+  }
+  
+  .boss-display .chakra-icon {
+    font-size: 2rem !important;
+  }
+  
+  .boss-display h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .boss-display .chakra-badge {
+    font-size: 0.625rem !important;
+  }
+  
+  .party-health-display {
+    gap: 0.25rem !important;
+  }
+  
+  .combat-hero-card {
+    padding: 0.375rem !important;
+  }
+  
+  .combat-actions-panel {
+    padding: 0.375rem !important;
+  }
+  
+  .combat-actions-panel button {
+    min-height: 2rem !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  .item-slot,
+  .equipment-slot,
+  .hero-slot,
+  .class-card {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Remove hover effects on touch */
+  .item-slot--clickable:hover {
+    box-shadow: inherit !important;
+  }
+  
+  /* Add active states instead */
+  .item-slot--clickable:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
+  }
+  
+  /* Larger tap targets for buttons */
+  button,
+  .chakra-button {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Scrollable areas need overscroll */
+  .chakra-modal__body,
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Small height screens - compact vertical spacing */
+@media (max-height: 700px) {
+  .party-setup-header,
+  .dungeon-header {
+    padding: 0.5rem !important;
+  }
+  
+  .chakra-vstack,
+  .chakra-stack {
+    gap: 0.5rem !important;
+  }
+}
+
+/* Very small screens - ultra compact */
+@media (max-width: 360px) {
+  :root {
+    --item-slot-sm: 32px;
+    --item-slot-md: 40px;
+    --item-slot-lg: 48px;
+    --item-slot-xl: 60px;
+  }
+  
+  body {
+    font-size: 12px;
+  }
+  
+  /* Ultra compact buttons */
+  button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+/* ============================================================================
+   MOBILE DRAWER/HAMBURGER MENU
+   ============================================================================ */
+
+/* Hamburger button - only visible on portrait mobile */
+.mobile-menu-button {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1002;
+  width: 44px;
+  height: 44px;
+  background: var(--chakra-colors-gray-800);
+  border: 2px solid var(--chakra-colors-gray-600);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .mobile-menu-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .mobile-menu-button span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    background: var(--chakra-colors-orange-400);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-menu-button.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  .mobile-menu-button.open span:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .mobile-menu-button.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
+}
+
+/* Floating action button container and buttons */
+.mobile-fab-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-fab {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.mobile-fab:hover {
+  transform: scale(1.05);
+}
+
+.mobile-fab:active {
+  transform: scale(0.95);
+}
+
+/* Party modal styling */
+.party-sidebar-modal {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Compact party bar - always visible on mobile */
+.compact-party-bar {
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.compact-party-bar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.compact-party-bar::-webkit-scrollbar-track {
+  background: var(--chakra-colors-gray-700);
+  border-radius: 2px;
+}
+
+.compact-party-bar::-webkit-scrollbar-thumb {
+  background: var(--chakra-colors-gray-600);
+  border-radius: 2px;
+}
+
+.compact-party-bar::-webkit-scrollbar-thumb:hover {
+  background: var(--chakra-colors-gray-500);
+}
+
+/* Hide FABs on desktop */
+@media (min-width: 1024px) {
+  .mobile-fab-container {
+    display: none !important;
+  }
+}
+
+/* Position FABs above action bar on small portrait */
+@media (orientation: portrait) and (max-width: 480px) {
+  .mobile-fab-container {
+    bottom: 5.5rem;
+    right: 0.5rem;
+  }
+  
+  .mobile-fab {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* ============================================================================
+   DUNGEON SCREEN RESPONSIVE BREAKPOINTS
+   ============================================================================ */
+
+/* --- Mobile Portrait (320-480px) --- */
+@media (orientation: portrait) and (max-width: 480px) {
+  .dungeon-screen {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .compact-party-bar {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .dungeon-header {
+    padding: 0.5rem !important;
+  }
+  
+  .dungeon-header-content {
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+  
+  .dungeon-header-stats {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem !important;
+  }
+  
+  .dungeon-action-bar {
+    padding: 0.5rem !important;
+  }
+  
+  .dungeon-action-bar-content {
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+  
+  .event-area {
+    padding: 0.75rem !important;
+  }
+}
+
+/* --- Mobile Landscape (481-768px wide, short height) --- */
+@media (orientation: landscape) and (max-width: 768px) and (max-height: 500px) {
+  /* Compact for short landscape phones */
+  .party-sidebar,
+  .info-sidebar {
+    width: clamp(150px, 15vw, 200px) !important;
+  }
+  
+  .dungeon-header,
+  .dungeon-action-bar {
+    padding: 0.5rem !important;
+  }
+  
+  .dungeon-action-bar button {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+/* --- Tablet Portrait (481-768px) --- */
+@media (orientation: portrait) and (min-width: 481px) and (max-width: 768px) {
+  /* Use standard spacing, just handle wrapping */
+  .dungeon-header-content {
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+  }
+  
+  .dungeon-header-stats {
+    flex-wrap: wrap;
+    gap: 1rem !important;
+  }
+  
+  .dungeon-action-bar-content {
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+    justify-content: center;
+  }
+}
+
+/* --- Tablet Landscape (769-1024px) --- */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Sidebars slightly narrower on tablets */
+  .party-sidebar {
+    width: clamp(180px, 18vw, 240px) !important;
+  }
+  
+  .info-sidebar {
+    width: clamp(180px, 18vw, 250px) !important;
+  }
+}
+
+/* --- Desktop XL (1921px+) --- */
+@media (min-width: 1921px) {
+  .dungeon-screen {
+    max-width: 2400px;
+    margin: 0 auto;
+  }
+}
+
+/* --- Ultra-wide considerations (21:9, 32:9 aspect ratios) --- */
+@media (min-aspect-ratio: 21/9) {
+  .dungeon-screen {
+    max-width: 2000px;
+    margin: 0 auto;
+  }
+  
+  .party-sidebar,
+  .info-sidebar {
+    max-width: 300px;
+  }
+}
+
+/* --- Short screens - Compact spacing only when needed --- */
+@media (max-height: 600px) {
+  /* Reduce gaps and padding to maximize content space */
+  .dungeon-screen {
+    gap: 0.25rem !important;
+  }
+  
+  .dungeon-screen-main {
+    gap: 0.25rem !important;
+  }
+  
+  .dungeon-header {
+    padding: 0.5rem !important;
+  }
+  
+  .dungeon-action-bar {
+    padding: 0.5rem 1rem !important;
+  }
+  
+  .dungeon-action-bar button {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+  
+  .party-sidebar,
+  .info-sidebar {
+    padding: 0.5rem !important;
+  }
+  
+  .party-sidebar-content {
+    gap: 0.5rem !important;
+  }
+  
+  .info-sidebar > .chakra-stack {
+    gap: 0.5rem !important;
+  }
+  
+  /* Compact info sidebar sections */
+  .quick-stats {
+    gap: 0.25rem !important;
+  }
+  
+  .quick-stats-title {
+    margin-bottom: 0.25rem !important;
+  }
+  
+  /* Reduce font sizes in sidebars */
+  .party-sidebar,
+  .info-sidebar {
+    font-size: 0.875rem !important;
+  }
+  
+  .party-sidebar .party-sidebar-title,
+  .info-sidebar .chakra-heading {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Compact party member cards */
+  .party-member-card {
+    padding: 0.375rem !important;
+  }
+  
+  .party-member-card-content {
+    gap: 0.375rem !important;
+  }
+  
+  .party-member-card-info {
+    gap: 0.25rem !important;
+  }
+  
+  .party-member-card-icon-section .chakra-icon {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* --- Very short screens (under 550px) - Aggressive compacting --- */
+@media (max-height: 550px) {
+  .dungeon-screen {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+  
+  .dungeon-screen-main {
+    gap: 0.25rem !important;
+  }
+  
+  .dungeon-header {
+    padding: 0.375rem 0.5rem !important;
+  }
+  
+  .dungeon-action-bar {
+    padding: 0.375rem 0.75rem !important;
+  }
+  
+  .dungeon-action-bar-content {
+    gap: 0.5rem !important;
+  }
+  
+  .dungeon-action-bar button {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    min-height: 36px !important;
+  }
+  
+  .party-sidebar,
+  .info-sidebar {
+    padding: 0.375rem !important;
+  }
+  
+  .party-sidebar-content {
+    gap: 0.25rem !important;
+  }
+  
+  .info-sidebar > .chakra-stack {
+    gap: 0.375rem !important;
+  }
+  
+  /* Ultra compact quick stats */
+  .quick-stats {
+    gap: 0.125rem !important;
+    font-size: 0.625rem !important;
+  }
+  
+  .quick-stats-title {
+    font-size: 0.625rem !important;
+    margin-bottom: 0.125rem !important;
+  }
+  
+  /* Hide some less critical info sections on very short screens */
+  .floor-stats-section {
+    display: none !important;
+  }
+  
+  .event-area {
+    padding: 0.75rem !important;
+  }
+  
+  /* Ultra compact party member cards */
+  .party-member-card {
+    padding: 0.25rem !important;
+  }
+  
+  .party-member-card-content {
+    gap: 0.25rem !important;
+  }
+  
+  .party-member-card-info {
+    gap: 0.125rem !important;
+  }
+  
+  .party-member-card-icon-section .chakra-icon {
+    font-size: 1.25rem !important;
+  }
+  
+  .party-member-card-header {
+    gap: 0.25rem !important;
+  }
+  
+  .party-member-card .stat-bar {
+    margin-top: 0 !important;
+  }
+}
+
+/* --- Event Area Responsive Sizing --- */
+@media (max-width: 480px) {
+  .event-display,
+  .outcome-display {
+    padding: 0.75rem !important;
+  }
+  
+  .event-display h2,
+  .outcome-display h2 {
+    font-size: 1.125rem !important;
+  }
+  
+  .event-display p,
+  .outcome-display p {
+    font-size: 0.875rem !important;
+  }
+  
+  .event-choices {
+    gap: 0.5rem !important;
+  }
+  
+  .event-choice-button {
+    padding: 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  .event-display-title {
+    font-size: 1.25rem !important;
+  }
+  
+  .event-display-description {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+  }
+  
+  .event-display-choice-text {
+    font-size: 0.875rem !important;
+  }
+  
+  .event-display-choice-requirements {
+    font-size: 0.75rem !important;
+  }
+  
+  .event-display-boss-badge {
+    font-size: 0.75rem !important;
+    top: -10px !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+  
+  .event-display-boss-icon {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .event-display,
+  .outcome-display {
+    padding: 1rem !important;
+  }
+  
+  .event-display-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .event-display-description {
+    font-size: 1rem !important;
+  }
+  
+  .event-display-boss-badge {
+    font-size: 0.875rem !important;
+  }
+}
+
+@media (min-width: 1367px) {
+  .event-display,
+  .outcome-display {
+    padding: 2rem !important;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .event-display-title {
+    font-size: 2rem !important;
+  }
+  
+  .event-display-description {
+    font-size: 1.125rem !important;
+    line-height: 1.8 !important;
+  }
+  
+  .event-display-choice-text {
+    font-size: 1rem !important;
+  }
+}

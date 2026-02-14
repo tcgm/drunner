@@ -1,0 +1,129 @@
+﻿/* ============================================================================
+   RESPONSIVE UTILITY CLASSES
+   ============================================================================ */
+
+/* Show/hide based on orientation */
+.portrait-only {
+  display: none;
+}
+
+.landscape-only {
+  display: block;
+}
+
+@media (orientation: portrait) {
+  .portrait-only {
+    display: block;
+  }
+  
+  .landscape-only {
+    display: none;
+  }
+}
+
+/* Mobile-specific utilities */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Responsive flex direction */
+.flex-responsive {
+  display: flex;
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .flex-responsive {
+    flex-direction: column !important;
+  }
+}
+
+/* Mobile bottom navigation bar */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--chakra-colors-gray-900);
+  border-top: 2px solid var(--chakra-colors-gray-700);
+  padding: 0.5rem;
+  z-index: 1000;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  /* Add bottom padding to prevent content from being hidden */
+  .dungeon-screen,
+  .party-setup-screen {
+    padding-bottom: 70px !important;
+  }
+}
+
+/* Responsive sidebars - convert to drawer/modal on mobile */
+.responsive-sidebar {
+  transition: transform 0.3s ease-in-out;
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .responsive-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 80vw;
+    max-width: 300px;
+    transform: translateX(-100%);
+    z-index: 1001;
+    background: var(--chakra-colors-gray-900);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .responsive-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Backdrop for mobile sidebars */
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+  }
+  
+  .sidebar-backdrop.open {
+    display: block;
+  }
+}
+
+/* ============================================================================

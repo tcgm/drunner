@@ -1,0 +1,337 @@
+﻿/* ============================================================================
+   ITEM DETAIL MODAL OPTIMIZED STYLES - Performance Critical
+   ============================================================================ */
+
+/* Modal decorative corners */
+.item-detail-modal__corner {
+  position: absolute;
+  width: var(--corner-size);
+  height: var(--corner-size);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+  border-style: solid;
+  border-width: 3px;
+  border-color: transparent;
+}
+
+.item-detail-modal__corner--top-left {
+  top: 0;
+  left: 0;
+}
+
+.item-detail-modal__corner--top-right {
+  top: 0;
+  right: 0;
+}
+
+.item-detail-modal__corner--bottom-left {
+  bottom: 0;
+  left: 0;
+}
+
+.item-detail-modal__corner--bottom-right {
+  bottom: 0;
+  right: 0;
+}
+
+/* Corner borders by rarity */
+.item-detail-modal--junk .item-detail-modal__corner { border-color: var(--rarity-junk-border); }
+.item-detail-modal--abundant .item-detail-modal__corner { border-color: var(--rarity-abundant-border); }
+.item-detail-modal--common .item-detail-modal__corner { border-color: var(--rarity-common-border); }
+.item-detail-modal--uncommon .item-detail-modal__corner { border-color: var(--rarity-uncommon-border); }
+.item-detail-modal--rare .item-detail-modal__corner { border-color: var(--rarity-rare-border); }
+.item-detail-modal--veryRare .item-detail-modal__corner { border-color: var(--rarity-veryRare-border); }
+.item-detail-modal--magical .item-detail-modal__corner { border-color: var(--rarity-magical-border); }
+.item-detail-modal--elite .item-detail-modal__corner { border-color: var(--rarity-elite-border); }
+.item-detail-modal--epic .item-detail-modal__corner { border-color: var(--rarity-epic-border); }
+.item-detail-modal--legendary .item-detail-modal__corner { border-color: var(--rarity-legendary-border); }
+.item-detail-modal--mythic .item-detail-modal__corner { border-color: var(--rarity-mythic-border); }
+.item-detail-modal--mythicc .item-detail-modal__corner { border-color: var(--rarity-mythicc-border); }
+.item-detail-modal--artifact .item-detail-modal__corner { border-color: var(--rarity-artifact-border); }
+.item-detail-modal--divine .item-detail-modal__corner { border-color: var(--rarity-divine-border); }
+.item-detail-modal--celestial .item-detail-modal__corner { border-color: var(--rarity-celestial-border); }
+.item-detail-modal--realityAnchor .item-detail-modal__corner { border-color: var(--rarity-realityAnchor-border); }
+.item-detail-modal--structural .item-detail-modal__corner { border-color: var(--rarity-structural-border); }
+.item-detail-modal--singularity .item-detail-modal__corner { border-color: var(--rarity-singularity-border); }
+.item-detail-modal--void .item-detail-modal__corner { border-color: var(--rarity-void-border); }
+.item-detail-modal--elder .item-detail-modal__corner { border-color: var(--rarity-elder-border); }
+.item-detail-modal--layer .item-detail-modal__corner { border-color: var(--rarity-layer-border); }
+.item-detail-modal--plane .item-detail-modal__corner { border-color: var(--rarity-plane-border); }
+.item-detail-modal--author .item-detail-modal__corner { border-color: var(--rarity-author-border); }
+.item-detail-modal--set .item-detail-modal__corner { border-color: var(--rarity-set-border); }
+.item-detail-modal--unique .item-detail-modal__corner { border-color: var(--rarity-unique-border); }
+
+.item-detail-modal__corner--top-left { border-left-color: inherit; border-top-color: inherit; }
+.item-detail-modal__corner--top-right { border-right-color: inherit; border-top-color: inherit; }
+.item-detail-modal__corner--bottom-left { border-left-color: inherit; border-bottom-color: inherit; }
+.item-detail-modal__corner--bottom-right { border-right-color: inherit; border-bottom-color: inherit; }
+
+/* Background gradient */
+.item-detail-modal__bg-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.item-detail-modal--junk .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-junk-glow-rgb), 0.2) 0%, transparent 70%);
+}
+
+.item-detail-modal--common .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-common-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-uncommon-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--rare .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-rare-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--epic .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-epic-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-legendary-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-mythic-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-artifact-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+.item-detail-modal--set .item-detail-modal__bg-gradient {
+  background: radial-gradient(circle at center, rgba(var(--rarity-set-glow-rgb), 0.1) 0%, transparent 70%);
+}
+
+/* Stat row */
+.item-detail-modal__stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 0.375rem;
+}
+
+/* Icon glow ring */
+.item-detail-modal__icon-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--icon-glow-size);
+  height: var(--icon-glow-size);
+  border-radius: 50%;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.item-detail-modal--junk .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-junk-glow-rgb), 0.4) 0%, transparent 70%);
+}
+
+.item-detail-modal--common .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-common-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-uncommon-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--rare .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-rare-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--epic .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-epic-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-legendary-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-mythic-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__icon-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-artifact-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+/* Icon frame */
+.item-detail-modal__icon-frame {
+  position: relative;
+  width: var(--icon-frame-size);
+  height: var(--icon-frame-size);
+  border-radius: 0.75rem;
+  background-color: #1a202c;
+  border-width: 4px;
+  border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.item-detail-modal--junk .item-detail-modal__icon-frame {
+  border-color: var(--rarity-junk-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-junk-glow-rgb), 0.4);
+}
+
+.item-detail-modal--common .item-detail-modal__icon-frame {
+  border-color: var(--rarity-common-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-common-glow-rgb), 0.5);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__icon-frame {
+  border-color: var(--rarity-uncommon-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-uncommon-glow-rgb), 0.5);
+}
+
+.item-detail-modal--rare .item-detail-modal__icon-frame {
+  border-color: var(--rarity-rare-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-rare-glow-rgb), 0.5);
+}
+
+.item-detail-modal--epic .item-detail-modal__icon-frame {
+  border-color: var(--rarity-epic-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-epic-glow-rgb), 0.5);
+}
+
+.item-detail-modal--legendary .item-detail-modal__icon-frame {
+  border-color: var(--rarity-legendary-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-legendary-glow-rgb), 0.5);
+}
+
+.item-detail-modal--mythic .item-detail-modal__icon-frame {
+  border-color: var(--rarity-mythic-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-mythic-glow-rgb), 0.6);
+}
+
+.item-detail-modal--artifact .item-detail-modal__icon-frame {
+  border-color: var(--rarity-artifact-border);
+  box-shadow: 0 0 20px rgba(var(--rarity-artifact-glow-rgb), 0.6);
+}
+
+.item-detail-modal--unique .item-detail-modal__icon-frame {
+  border-color: var(--rarity-unique-border) !important;
+}
+
+/* Shimmer effect */
+.item-detail-modal__shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  opacity: 0.2;
+  pointer-events: none;
+  animation: shimmer 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.item-detail-modal--junk .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-junk-glow-rgb), 0.4) 50%, transparent 100%);
+}
+
+.item-detail-modal--common .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-common-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-uncommon-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--rare .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-rare-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--epic .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-epic-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-legendary-glow-rgb), 0.5) 50%, transparent 100%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-mythic-glow-rgb), 0.6) 50%, transparent 100%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--rarity-artifact-glow-rgb), 0.6) 50%, transparent 100%);
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Description box */
+.item-detail-modal__description {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Rarity gem glow */
+.item-detail-modal__gem-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(25px, 2.5vw, 40px);
+  height: clamp(25px, 2.5vw, 40px);
+  border-radius: 50%;
+  opacity: 0.5;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.item-detail-modal--junk .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-junk-glow-rgb), 0.4) 0%, transparent 70%);
+}
+
+.item-detail-modal--common .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-common-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--uncommon .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-uncommon-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--rare .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-rare-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--epic .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-epic-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--legendary .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-legendary-glow-rgb), 0.5) 0%, transparent 70%);
+}
+
+.item-detail-modal--mythic .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-mythic-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+.item-detail-modal--artifact .item-detail-modal__gem-glow {
+  background: radial-gradient(circle, rgba(var(--rarity-artifact-glow-rgb), 0.6) 0%, transparent 70%);
+}
+
+/* ============================================================================

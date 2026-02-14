@@ -506,8 +506,7 @@ export default function BossCombatScreen({
                     flex="0 0 250px"
                     spacing={4}
                     align="stretch"
-                    maxH="100%"
-                    overflowY="auto"
+                    h="full"
                 >
                     <TurnOrderDisplay
                         combatState={combatState}
@@ -544,12 +543,10 @@ export default function BossCombatScreen({
                 {/* Center Column - Boss & Party */}
                 <VStack
                     flex="1"
-                    spacing={{ base: 2, md: 6 }}
+                    spacing={{ base: 2, md: 4 }}
                     justify="space-between"
                     align="stretch"
-                    maxH="100%"
-                    minH={0}
-                    overflowY="auto"
+                    h="full"
                     minW={0}
                 >
                     {/* Boss Display */}
@@ -590,8 +587,7 @@ export default function BossCombatScreen({
                     flex="0 0 250px"
                     spacing={1}
                     align="stretch"
-                    maxH="100%"
-                    minH={0}
+                    h="full"
                 >
                     {/* Combat Actions */}
                     <Box flex="0 0 auto">
