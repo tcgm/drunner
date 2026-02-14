@@ -2,78 +2,22 @@
    RESPONSIVE MEDIA QUERIES
    ============================================================================ */
 
-/* Extra small screens (mobile portrait) */
+/* Extra small screens (mobile portrait) - minimal font size adjustment */
 @media (max-width: 480px) {
-  :root {
-    --item-slot-sm: 35px;
-    --item-slot-md: 45px;
-    --item-slot-lg: 55px;
-    --item-slot-xl: 70px;
-    --icon-frame-size: 60px;
-    --icon-glow-size: 80px;
-    --corner-size: 35px;
-  }
-  
   body {
     font-size: 14px;
   }
 }
 
-/* Small screens (mobile landscape / small tablets) */
-@media (min-width: 481px) and (max-width: 768px) {
-  :root {
-    --item-slot-sm: 45px;
-    --item-slot-md: 55px;
-    --item-slot-lg: 70px;
-    --item-slot-xl: 90px;
-    --icon-frame-size: 75px;
-    --icon-glow-size: 95px;
-    --corner-size: 45px;
-  }
-}
-
-/* Medium screens (tablets) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  :root {
-    --item-slot-sm: 50px;
-    --item-slot-md: 65px;
-    --item-slot-lg: 80px;
-    --item-slot-xl: 110px;
-    --icon-frame-size: 90px;
-    --icon-glow-size: 110px;
-    --corner-size: 50px;
-  }
-}
-
-/* Large screens (desktops) */
-@media (min-width: 1025px) and (max-width: 1440px) {
-  :root {
-    --item-slot-sm: 60px;
-    --item-slot-md: 80px;
-    --item-slot-lg: 100px;
-    --item-slot-xl: 140px;
-    --icon-frame-size: 110px;
-    --icon-glow-size: 140px;
-    --corner-size: 60px;
-  }
-}
-
-/* Extra large screens (large desktops) */
+/* Extra large screens (large desktops) - font size */
 @media (min-width: 1441px) {
-  :root {
-    --item-slot-sm: 60px;
-    --item-slot-md: 80px;
-    --item-slot-lg: 100px;
-    --item-slot-xl: 140px;
-    --icon-frame-size: 110px;
-    --icon-glow-size: 140px;
-    --corner-size: 60px;
-  }
-  
   body {
     font-size: 16px;
   }
 }
+
+/* Item slot scaling now handled by clamp() values in base.css
+   This allows smooth responsive scaling instead of discrete breakpoint jumps */
 
 /* ============================================================================
    PORTRAIT MODE & MOBILE LAYOUT OVERRIDES
