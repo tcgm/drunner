@@ -234,7 +234,7 @@ export const GAME_CONFIG = {
         hp: 3, // 150% HP per danger point (fixed when combat begins)
         
         // Dynamic scaling during combat
-        attack: 0.02, // 2% attack per danger point (recalculated each turn)
+        attack: 0.05, // 5% attack per danger point (recalculated each turn)
         defense: 0.9, // 9% defense per danger point (recalculated each turn)
         speed: 1, // 1% speed per danger point (recalculated each turn)
         luck: 2.5, // 2.5% luck per danger point (recalculated each turn)
