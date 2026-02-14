@@ -36,11 +36,20 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
   const maxCharisma = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).charisma ?? 0)) : 0
 
   return (
-    <Box className="info-sidebar" w="250px" bg="gray.800" borderRadius="lg" p={4} overflowY="auto" maxH="100%">
+    <Box 
+      className="info-sidebar" 
+      w="clamp(200px, 20vw, 300px)"
+      bg="gray.800" 
+      borderRadius="lg" 
+      p={4}
+      overflowY="auto"
+      maxH="100%"
+      display={{ base: "none", lg: "block" }}
+    >
       <VStack spacing={4} align="stretch">
         <Heading size="md" color="orange.400">Info</Heading>
         
-        <Box>
+        <Box className="floor-stats-section">
           <FloorStats 
             eventsCleared={0} 
             enemiesDefeated={0} 

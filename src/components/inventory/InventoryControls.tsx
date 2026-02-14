@@ -36,7 +36,7 @@ export const InventoryControls = memo(function InventoryControls({
         bg="gray.800"
         borderColor="gray.700"
         _hover={{ borderColor: 'gray.600' }}
-        maxW="300px"
+        maxW="clamp(200px, 30vw, 350px)"
       />
       
       <Select
@@ -46,7 +46,7 @@ export const InventoryControls = memo(function InventoryControls({
         size="sm"
         bg="gray.800"
         borderColor="gray.700"
-        maxW="150px"
+        maxW="clamp(100px, 15vw, 180px)"
       >
         <option value="rarity">Sort: Rarity</option>
         <option value="name">Sort: Name</option>
@@ -62,7 +62,7 @@ export const InventoryControls = memo(function InventoryControls({
           size="sm"
           bg="gray.800"
           borderColor="gray.700"
-          maxW="150px"
+          maxW="clamp(100px, 15vw, 180px)"
         >
           <option value="all">All Items</option>
           <option value="weapon">Weapons</option>

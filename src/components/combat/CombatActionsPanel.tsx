@@ -97,7 +97,7 @@ export default function CombatActionsPanel({
                         isLoading={isProcessing}
                         onClick={onEndTurn}
                         leftIcon={<Icon as={GiSwordman} boxSize={5} />}
-                        h="50px"
+                        h="clamp(40px, 5vh, 55px)"
                         fontSize="lg"
                     >
                         Process Boss Turn
@@ -135,7 +135,7 @@ export default function CombatActionsPanel({
                                 colorScheme="gray"
                                 variant="solid"
                                 size="md"
-                                h="60px"
+                                h="clamp(50px, 6vh, 65px)"
                                 flexDirection="column"
                                 gap={0}
                                 isDisabled={isProcessing}
@@ -156,7 +156,7 @@ export default function CombatActionsPanel({
                                 colorScheme="red"
                                 variant="outline"
                                         size="md"
-                                        h="60px"
+                                        h="clamp(50px, 6vh, 65px)"
                                 flexDirection="column"
                                         gap={0}
                                 isDisabled={isProcessing}
@@ -178,7 +178,7 @@ export default function CombatActionsPanel({
                                 colorScheme="blue"
                                 variant="outline"
                                         size="md"
-                                        h="60px"
+                                        h="clamp(50px, 6vh, 65px)"
                                 flexDirection="column"
                                         gap={0}
                                 isDisabled={isProcessing}

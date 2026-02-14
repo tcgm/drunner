@@ -165,7 +165,7 @@ export const ItemSlot = memo(function ItemSlot({
  const gemColor = useMemo(() => (RARITY_COLORS[item.rarity]?.gem || '#6B7280'), [item.rarity])
   // Memoize tooltip content to avoid recreation on every render
   const tooltipContent = useMemo(() => (
-    <VStack align="start" spacing={1} maxW="300px">
+    <VStack align="start" spacing={1} maxW="clamp(250px, 35vw, 350px)">
       <HStack justify="space-between" w="full">
         <Text fontSize="sm" fontWeight="bold" color={RARITY_COLORS[item.rarity]?.text || '#9CA3AF'}>
           {displayName}
@@ -565,9 +565,9 @@ export const ItemSlot = memo(function ItemSlot({
               icon={ItemIcon}
               boxSize={iconOnly 
                 ? '100%'
-                : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
+                : (size === 'sm' ? 'clamp(16px, 2vw, 24px)' : size === 'md' ? 'clamp(22px, 2.5vw, 32px)' : size === 'xl' ? 'clamp(40px, 4vw, 56px)' : 'clamp(28px, 3vw, 40px)')
               }
-              fontSize={iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')}
+              fontSize={iconOnly ? '100%' : (size === 'sm' ? 'clamp(16px, 2vw, 24px)' : size === 'md' ? 'clamp(22px, 2.5vw, 32px)' : size === 'xl' ? 'clamp(40px, 4vw, 56px)' : 'clamp(28px, 3vw, 40px)')}
               color={item.isUnique ? '#FFFFFF' : RARITY_COLORS[item.rarity]?.gem || '#6B7280'}
               mb={iconOnly ? 0 : 0.5}
               style={item.isUnique ? {
@@ -659,7 +659,7 @@ export const ItemSlot = memo(function ItemSlot({
             >
               <Icon
                 as={GemIcon}
-                boxSize={size === 'sm' ? '12px' : size === 'md' ? '18px' : size === 'xl' ? '24px' : '20px'}
+                boxSize={size === 'sm' ? 'clamp(10px, 1vw, 14px)' : size === 'md' ? 'clamp(14px, 1.5vw, 20px)' : size === 'xl' ? 'clamp(20px, 2vw, 28px)' : 'clamp(16px, 1.8vw, 24px)'}
                 size={"xs"}
                 color={gemColor}
                 filter={`drop-shadow(0 0 4px ${gemColor}) drop-shadow(0 0 8px ${gemColor}80)`}

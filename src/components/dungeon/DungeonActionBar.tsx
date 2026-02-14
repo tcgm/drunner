@@ -16,7 +16,7 @@ interface DungeonActionBarProps {
 export default function DungeonActionBar({ showContinue, onContinue, onInventory, onJournal, onRetreat, onExit }: DungeonActionBarProps) {
   return (
     <Box className="dungeon-action-bar" bg="gray.800" borderRadius="lg" p={4}>
-      <HStack className="dungeon-action-bar-content" spacing={4}>
+      <HStack className="dungeon-action-bar-content" spacing={4} flexWrap="wrap">
         {showContinue && (
           <Button 
             className="dungeon-action-bar-continue"

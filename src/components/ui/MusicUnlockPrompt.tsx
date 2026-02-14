@@ -36,8 +36,8 @@ export const MusicUnlockPrompt = () => {
   return (
     <Box
       position="fixed"
-      bottom="20px"
-      right="20px"
+      bottom="clamp(10px, 2vh, 20px)"
+      right="clamp(10px, 2vw, 20px)"
       zIndex={9999}
     >
       <Button

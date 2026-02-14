@@ -179,8 +179,8 @@ export function EquipmentPanel({
           fontSize="2xs"
           borderRadius="full"
           minW="auto"
-          w="24px"
-          h="24px"
+          w="clamp(20px, 2vw, 28px)"
+          h="clamp(20px, 2vw, 28px)"
           p={0}
           zIndex={3}
         >
@@ -191,7 +191,7 @@ export function EquipmentPanel({
   }
 
   return (
-    <Box className="equipment-panel" w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={3} overflowY="auto">
+    <Box className="equipment-panel" w="clamp(250px, 25vw, 350px)" minW="250px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={3} overflowY="auto">
       <VStack spacing={2} h="full">
         <Text fontSize="sm" fontWeight="bold" color="orange.300">
           Equipment
@@ -210,7 +210,7 @@ export function EquipmentPanel({
                     colorScheme="orange"
                     onClick={() => onSelectHero(index)}
                     flex={1}
-                    minW="60px"
+                    minW="clamp(50px, 6vw, 70px)"
                   >
                     {hero.name.split(' ')[0]}
                   </Button>

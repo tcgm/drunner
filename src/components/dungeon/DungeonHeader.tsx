@@ -13,29 +13,29 @@ interface DungeonHeaderProps {
 export default function DungeonHeader({ floor, maxFloors, depth, gold }: DungeonHeaderProps) {
   return (
     <Box className="dungeon-header" bg="gray.800" borderRadius="lg" p={2}>
-      <HStack className="dungeon-header-content">
+      <HStack className="dungeon-header-content" spacing={2}>
         <HStack className="dungeon-header-floor" align="start" spacing={0}>
-          <Text fontSize="sm" color="gray.400">Current Location</Text>
+          <Text fontSize="sm" color="gray.400" whiteSpace="nowrap">Current Location</Text>
           <Spacer w={1} />
-          <Heading size="sm" color="orange.400">
+          <Heading size="sm" color="orange.400" whiteSpace="nowrap">
             Floor {floor}
           </Heading>
         </HStack>
         
         <Spacer />
         
-        <HStack className="dungeon-header-stats" spacing={6}>
+        <HStack className="dungeon-header-stats" spacing={6} flexWrap="wrap">
           <HStack className="dungeon-header-gold" spacing={0}>
-            <Text fontSize="sm" color="gray.400">Gold</Text>
+            <Text fontSize="sm" color="gray.400" whiteSpace="nowrap">Gold</Text>
             <Spacer w={1} />
-            <HStack>
+            <HStack spacing={1}>
               <Icon as={GiTwoCoins} color={GAME_CONFIG.colors.gold.light} />
-              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.gold.light} >{gold}</Text>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.gold.light}>{gold}</Text>
             </HStack>
           </HStack>
           
           <HStack className="dungeon-header-depth" spacing={0}>
-            <Text fontSize="sm" color="gray.400">Depth</Text>
+            <Text fontSize="sm" color="gray.400" whiteSpace="nowrap">Depth</Text>
             <Spacer w={1} />
             <Text fontSize="sm" fontWeight="bold">
               {depth}
@@ -43,7 +43,7 @@ export default function DungeonHeader({ floor, maxFloors, depth, gold }: Dungeon
           </HStack>
           
           <HStack className="dungeon-header-floor-progress" spacing={0}>
-            <Text fontSize="sm" color="gray.400">Floor Progress</Text>
+            <Text fontSize="sm" color="gray.400" whiteSpace="nowrap">Floor Progress</Text>
             <Spacer w={1} />
             <Text fontSize="sm" fontWeight="bold">
               {floor}/{maxFloors}

@@ -236,8 +236,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         top="0"
         left="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderLeft="3px solid"
         borderTop="3px solid"
         borderColor="orange.500"
@@ -258,8 +258,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         top="0"
         right="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderRight="3px solid"
         borderTop="3px solid"
         borderColor="orange.500"
@@ -280,8 +280,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         bottom="0"
         left="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderLeft="3px solid"
         borderBottom="3px solid"
         borderColor="orange.500"
@@ -302,8 +302,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         bottom="0"
         right="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderRight="3px solid"
         borderBottom="3px solid"
         borderColor="orange.500"
@@ -384,21 +384,21 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             Descend into Dorkness
           </Text>
           <Box 
-            width="300px" 
-            height="2px" 
+            width="clamp(200px, 30vw, 300px)" 
+            height="clamp(1px, 0.2vh, 3px)" 
             bgGradient="linear(to-r, transparent, orange.500, transparent)" 
             mt={2}
           />
         </VStack>
 
         {/* Menu Buttons */}
-        <VStack className="main-menu-buttons" spacing={4} width="300px">
+        <VStack className="main-menu-buttons" spacing={4} width="clamp(250px, 30vw, 350px)">
           <Button 
             className="btn-new-run" 
             colorScheme="orange" 
             size="lg" 
             width="100%"
-            height="60px"
+            height="clamp(50px, 6vh, 60px)"
             fontSize="xl"
             fontWeight="bold"
             letterSpacing="wide"
@@ -421,7 +421,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
               variant="outline"
               size="lg" 
               width="100%"
-              height="60px"
+              height="clamp(50px, 6vh, 60px)"
               fontSize="xl"
               fontWeight="bold"
               letterSpacing="wide"
@@ -443,7 +443,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             variant="outline"
             size="lg" 
             width="100%"
-            height="60px"
+            height="clamp(50px, 6vh, 60px)"
             fontSize="lg"
             fontWeight="semibold"
             letterSpacing="wide"
@@ -465,7 +465,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             variant="outline"
             size="lg" 
             width="100%"
-            height="60px"
+            height="clamp(50px, 6vh, 60px)"
             fontSize="lg"
             fontWeight="semibold"
             letterSpacing="wide"
@@ -500,7 +500,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
       {/* Save Management Modal */}
       <Modal className="save-management-modal" isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
         <ModalOverlay bg="blackAlpha.700" />
-        <ModalContent className="save-management-content" bg="gray.800" maxW="700px">
+        <ModalContent className="save-management-content" bg="gray.800" maxW="clamp(400px, 70vw, 800px)">
           <ModalHeader className="save-management-header" color="orange.400" fontSize="2xl" pb={3}>
             <HStack>
               <Icon as={GiSave} boxSize={6} />

@@ -1,8 +1,10 @@
-import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from '@chakra-ui/react'
+import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, IconButton, Box, VStack } from '@chakra-ui/react'
 import { useRef, useState, useEffect } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import PartySidebar from '@components/dungeon/PartySidebar'
+import CompactPartyBar from '@components/dungeon/CompactPartyBar'
+import PartyMemberCard from '@components/party/PartyMemberCard'
 import DungeonHeader from '@components/dungeon/DungeonHeader'
 import EventArea from '@components/dungeon/EventArea'
 import DungeonActionBar from '@components/dungeon/DungeonActionBar'
@@ -15,6 +17,7 @@ import { BossCombatScreen } from '@/components/combat'
 import { refreshPartyAbilities } from '@/utils/abilityUtils'
 import { initializeBossCombatState } from '@/systems/combat'
 import { MusicContext } from '@/types/audio'
+import { GiCardJackHearts, GiInfo } from 'react-icons/gi'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
@@ -39,6 +42,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
+  const { isOpen: isPartyOpen, onOpen: onPartyOpen, onClose: onPartyClose } = useDisclosure()
+  const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
   // const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure() // Disabled
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
@@ -176,10 +181,19 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }
 
   return (
-    <Flex className="dungeon-screen" h="100vh" gap={2} p={2}>
+    <Flex 
+      className="dungeon-screen flex-responsive" 
+      h="100vh"
+      gap={2}
+      p={2}
+      direction={{ base: "column", lg: "row" }}
+    >
       <PartySidebar party={activeParty} heroEffects={heroEffects} />
       
       <Flex className="dungeon-screen-main" direction="column" flex={1} gap={2} minH={0}>
+        {/* Compact Party Bar - Mobile/Portrait Only */}
+        <CompactPartyBar party={activeParty} onClick={onPartyOpen} />
+        
         <DungeonHeader 
           floor={dungeon.floor}
           maxFloors={GAME_CONFIG.dungeon.maxFloors}
@@ -256,6 +270,65 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
 
       {/* Combat Log Modal - Disabled (functionality merged into Journal, but component preserved for future use) */}
       {/* <CombatLogModal isOpen={isCombatLogOpen} onClose={onCombatLogClose} /> */}
+
+      {/* Party Modal - Mobile/Portrait Only */}
+      <Modal isOpen={isPartyOpen} onClose={onPartyClose} size="md" scrollBehavior="inside">
+        <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
+        <ModalContent bg="gray.800" maxH="90vh" mx={2}>
+          <ModalHeader color="orange.400">Party ({activeParty.length})</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6} px={2}>
+            <VStack className="party-sidebar-modal" spacing={2} align="stretch">
+              {activeParty.map((hero) => (
+                <PartyMemberCard 
+                  key={hero.id} 
+                  hero={hero} 
+                  floatingEffects={heroEffects[hero.id] || []}
+                  isDungeon={true}
+                />
+              ))}
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Info Modal - Mobile/Portrait Only */}
+      <Modal isOpen={isInfoOpen} onClose={onInfoClose} size="md" scrollBehavior="inside">
+        <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
+        <ModalContent bg="gray.800" maxH="90vh" mx={2}>
+          <ModalHeader color="orange.400">Info</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <InfoSidebar party={activeParty} activeRun={activeRun} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Floating Action Buttons - Mobile/Portrait Only */}
+      <Box className="mobile-fab-container" display={{ base: "flex", lg: "none" }} position="fixed" bottom={4} right={4} flexDirection="column" gap={2} zIndex={999}>
+        <IconButton
+          className="mobile-fab mobile-fab-party"
+          aria-label="View Party"
+          icon={<GiCardJackHearts size={24} />}
+          colorScheme="orange"
+          size="lg"
+          isRound
+          onClick={onPartyOpen}
+          boxShadow="0 4px 12px rgba(251, 146, 60, 0.5)"
+          _active={{ transform: "scale(0.9)" }}
+        />
+        <IconButton
+          className="mobile-fab mobile-fab-info"
+          aria-label="View Info"
+          icon={<GiInfo size={24} />}
+          colorScheme="purple"
+          size="lg"
+          isRound
+          onClick={onInfoOpen}
+          boxShadow="0 4px 12px rgba(139, 92, 246, 0.5)"
+          _active={{ transform: "scale(0.9)" }}
+        />
+      </Box>
     </Flex>
   )
 }

@@ -90,8 +90,8 @@ export default function VictoryHeader({ floor, depth }: VictoryHeaderProps) {
       </Heading>
       
       <Box 
-        width="300px" 
-        height="2px" 
+        width="clamp(200px, 30vw, 350px)" 
+        height="clamp(1px, 0.2vh, 3px)" 
         bgGradient="linear(to-r, transparent, yellow.500, transparent)" 
       />
       
@@ -100,7 +100,7 @@ export default function VictoryHeader({ floor, depth }: VictoryHeaderProps) {
         fontSize="xl" 
         textAlign="center"
         letterSpacing="wide"
-        maxW="400px"
+        maxW="clamp(300px, 40vw, 450px)"
       >
         You have conquered the dungeon and defeated the Dungeon Lord!
       </Text>

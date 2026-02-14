@@ -73,6 +73,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
           borderRadius="md"
           borderWidth="2px"
           borderColor={hero.isAlive ? 'orange.600' : 'red.900'}
+          opacity={hero.isAlive ? 1 : 0.6}
           cursor="pointer"
           onClick={() => openHeroModal(hero, isDungeon)}
           onMouseEnter={() => setIsHovered(true)}
@@ -100,9 +101,20 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
             ))}
           </AnimatePresence>
 
-          <HStack className="party-member-card-content" spacing={2} p={2}>
-            <HStack className="party-member-card-icon-section" spacing={1} opacity={hero.isAlive ? 1 : 0.6}>
+          <VStack className="party-member-card-content" spacing={1} p={2} align="stretch">
+            {/* Equipment pips row across top */}
+            <HStack className="party-member-card-equipment-pips" spacing={1} justify="center" minH="8px">
+              <EquipmentPips 
+                items={Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)}
+                layout="vertical"
+                size="sm"
+              />
+            </HStack>
+            
+            <HStack spacing={2}>
+              {/* Hero icon */}
               <motion.div
+                className="party-member-card-icon-section"
                 animate={isHovered ? {
                   rotate: [0, -5, 5, 0],
                   scale: [1, 1.1, 1]
@@ -115,17 +127,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
                 <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
               </motion.div>
               
-              {/* Equipment pips */}
-              <VStack className="party-member-card-equipment-pips" spacing={0.5} align="start">
-                <EquipmentPips 
-                  items={Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)}
-                  layout="vertical"
-                  size="sm"
-                />
-              </VStack>
-            </HStack>
-            
-            <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0} opacity={hero.isAlive ? 1 : 0.6}>
+              <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0}>
               <HStack className="party-member-card-header" spacing={2}>
                 <Text className="party-member-card-name" fontWeight="bold" fontSize="xs" noOfLines={1} flex={1}>
                   {hero.name}
@@ -147,7 +149,6 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
                 current={hero.xp}
                 max={calculateXpForLevel(hero.level)}
                 colorScheme="cyan"
-                height={0.5}
               />
 
               {/* Abilities row */}
@@ -277,6 +278,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               })}
             </VStack>
           </HStack>
+          </VStack>
         </MotionBox>
       </HeroTooltip>
     </>

@@ -492,6 +492,7 @@ export default function BossCombatScreen({
 
             {/* Main Combat Layout - Three Column Design */}
             <HStack
+                className="boss-combat-screen flex-responsive"
                 position="relative"
                 zIndex={1}
                 h="full"
@@ -501,6 +502,7 @@ export default function BossCombatScreen({
             >
                 {/* Left Sidebar - Turn Order & Combat Info */}
                 <VStack
+                    className="combat-left-sidebar landscape-only"
                     flex="0 0 250px"
                     spacing={4}
                     align="stretch"
@@ -564,10 +566,23 @@ export default function BossCombatScreen({
                             onUseConsumable={handleUseConsumableFromParty}
                         />
                     </Box>
+                    
+                    {/* Mobile Combat Actions - Portrait Only */}
+                    <Box className="portrait-only" flex="0 0 auto" w="full">
+                        <CombatActionsPanel
+                            party={activeHeroes}
+                            combatState={combatState}
+                            isProcessing={isProcessing}
+                            onAction={handleHeroAction}
+                            onEndTurn={handleEndTurn}
+                            onFlee={onFlee}
+                        />
+                    </Box>
                 </VStack>
 
                 {/* Right Sidebar - Combat Actions & Log */}
                 <VStack
+                    className="combat-right-sidebar landscape-only"
                     flex="0 0 250px"
                     spacing={1}
                     align="stretch"

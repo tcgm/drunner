@@ -154,7 +154,7 @@ export default function ClassCard({
             top={0}
             left={0}
             right={0}
-            h="2px"
+            h="clamp(1px, 0.2vh, 3px)"
             bg="orange.400"
             boxShadow="0 0 8px rgba(251, 146, 60, 0.8)"
           />

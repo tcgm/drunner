@@ -119,7 +119,7 @@ export default function QuantityInputModal({
                                     }}
                                     min={minValue}
                                     max={maxAmount}
-                                    w="140px"
+                                    w="clamp(120px, 15vw, 160px)"
                                     onWheel={(e) => {
                                         e.preventDefault()
                                         const delta = e.deltaY > 0 ? -100 : 100

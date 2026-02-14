@@ -200,7 +200,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
         overflow="hidden"
         position="relative"
         maxH="90%"
-        maxW="90%"
+        maxW="clamp(400px, 85vw, 95%)"
         boxShadow={`0 0 20px ${glowColor}`}
         sx={{
           willChange: 'opacity',
@@ -278,8 +278,8 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     {/* Icon */}
                     <MultIcon
                       icon={IconComponent}
-                      boxSize="65px"
-                      fontSize="65px"
+                      boxSize="clamp(50px, 5vw, 75px)"
+                      fontSize="clamp(50px, 5vw, 75px)"
                       color={(() => {
                         if (item.modifiers && item.modifiers.length > 0) {
                           const mod = getModifierById(item.modifiers[0]);
@@ -327,7 +327,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                   >
                     <Icon 
                       as={GemIcon} 
-                      boxSize="32px" 
+                      boxSize="clamp(24px, 2.5vw, 36px)" 
                       color={rarityTheme.gem}
                     />
                     <div className="item-detail-modal__gem-glow" />
@@ -385,7 +385,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 />
                 <VStack spacing={1} align="start" position="relative" zIndex={1}>
                   <HStack spacing={2}>
-                    <Icon as={GameIcons.GiCagedBall} color={RARITY_COLORS.set.text} boxSize="24px" />
+                    <Icon as={GameIcons.GiCagedBall} color={RARITY_COLORS.set.text} boxSize="clamp(20px, 2vw, 28px)" />
                     <Text fontSize="md" fontWeight="bold" color={RARITY_COLORS.set.text}>
                       {setName} Set
                     </Text>
@@ -443,7 +443,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 />
                 <VStack spacing={1} align="start" position="relative" zIndex={1}>
                   <HStack spacing={2}>
-                    <Icon as={GameIcons.GiSparkles} color="#FFD700" boxSize="24px" />
+                    <Icon as={GameIcons.GiSparkles} color="#FFD700" boxSize="clamp(20px, 2vw, 28px)" />
                     <Text fontSize="md" fontWeight="bold" color="#FFD700">
                       Unique Effect
                     </Text>
@@ -532,7 +532,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       borderRadius="md"
                       borderWidth="1px"
                       borderColor={showStorageFormat ? "purple.600" : "cyan.600"}
-                      maxH="300px"
+                      maxH="clamp(200px, 30vh, 400px)"
                       overflowY="auto"
                       w="full"
                     >

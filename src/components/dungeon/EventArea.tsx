@@ -50,7 +50,7 @@ export default function EventArea({
       minH={0}
       position="relative"
       backgroundImage={backgroundGradient}
-      overflow="hidden"
+      overflowY="auto"
       borderWidth={isZoneBoss ? '2px' : isFloorBoss ? '1px' : '0'}
       borderColor={isZoneBoss ? 'red.600' : isFloorBoss ? 'purple.600' : 'transparent'}
       boxShadow={

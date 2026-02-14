@@ -26,7 +26,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
   return (
     <Tooltip
       label={
-        <VStack className="hero-tooltip" spacing={2} align="stretch" p={2} minW="250px">
+        <VStack className="hero-tooltip" spacing={2} align="stretch" p={2} minW="clamp(200px, 25vw, 280px)">
           {/* Header */}
           <HStack className="hero-tooltip-header" spacing={3}>
             <Icon className="hero-tooltip-icon" as={IconComponent} boxSize={10} color="orange.400" />

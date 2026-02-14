@@ -158,8 +158,8 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
             fontSize="2xs"
             borderRadius="full"
             minW="auto"
-            w="24px"
-            h="24px"
+            w="clamp(20px, 2vw, 28px)"
+            h="clamp(20px, 2vw, 28px)"
             p={0}
             zIndex={3}
           >

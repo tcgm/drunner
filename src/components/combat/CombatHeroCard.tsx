@@ -53,8 +53,8 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
             boxShadow={isActive ? '0 0 20px rgba(250, 204, 21, 0.6)' : 'none'}
             overflow="hidden"
             flex={1}
-            minW="200px"
-            maxW="280px"
+            minW="clamp(150px, 20vw, 200px)"
+            maxW="clamp(220px, 28vw, 320px)"
             animate={isActive ? {
                 boxShadow: ['0 0 20px rgba(250, 204, 21, 0.6)', '0 0 30px rgba(250, 204, 21, 0.8)', '0 0 20px rgba(250, 204, 21, 0.6)']
             } : {}}
@@ -80,7 +80,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     top={0}
                     left={0}
                     right={0}
-                    h="2px"
+                    h="clamp(1px, 0.2vh, 3px)"
                     bgGradient="linear(to-r, yellow.400, orange.400, yellow.400)"
                     animation="shimmer 2s linear infinite"
                 />
@@ -175,7 +175,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                             )}
                         </HStack>
                     ) : (
-                        <Box h="16px" /> // Spacer to maintain consistent height
+                        <Box h="clamp(12px, 1.5vh, 18px)" /> // Spacer to maintain consistent height
                     )}
 
                     {/* Quick Stats */}
@@ -214,8 +214,8 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                             return (
                                 <Box
                                     key={slotId}
-                                    w="24px"
-                                    h="24px"
+                                    w="clamp(20px, 2vw, 28px)"
+                                    h="clamp(20px, 2vw, 28px)"
                                     bg="gray.900"
                                     borderRadius="md"
                                     borderWidth="1px"
@@ -233,8 +233,8 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                         return (
                             <Box
                                 key={slotId}
-                                w="24px"
-                                h="24px"
+                                w="clamp(20px, 2vw, 28px)"
+                                h="clamp(20px, 2vw, 28px)"
                                 cursor={canUse ? 'pointer' : 'not-allowed'}
                                 opacity={canUse ? 1 : 0.4}
                                 borderRadius="lg"

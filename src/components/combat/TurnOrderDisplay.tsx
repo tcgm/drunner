@@ -91,7 +91,7 @@ export default function TurnOrderDisplay({ combatState, party }: TurnOrderDispla
                                             top={0}
                                             left={0}
                                             right={0}
-                                            h="2px"
+                                            h="clamp(1px, 0.2vh, 3px)"
                                             bgGradient="linear(to-r, yellow.400, orange.400, yellow.400)"
                                             animation="shimmer 2s linear infinite"
                                         />
@@ -102,8 +102,8 @@ export default function TurnOrderDisplay({ combatState, party }: TurnOrderDispla
                                         <Badge
                                             colorScheme={isCurrent ? 'yellow' : isPast ? 'gray' : 'purple'}
                                             fontSize="xs"
-                                            w="24px"
-                                            h="24px"
+                                            w="clamp(20px, 2vw, 28px)"
+                                            h="clamp(20px, 2vw, 28px)"
                                             display="flex"
                                             alignItems="center"
                                             justifyContent="center"

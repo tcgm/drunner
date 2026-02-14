@@ -626,7 +626,7 @@ export default function DevTools() {
                             value={selectedMaterial}
                             onChange={(e) => setSelectedMaterial(e.target.value)}
                             bg="gray.900"
-                            maxH="200px"
+                            maxH="clamp(150px, 20vh, 250px)"
                           >
                             {filteredMaterials.map(mat => (
                               <option key={mat.id} value={mat.id}>{mat.prefix} ({mat.rarity}+)</option>
@@ -813,7 +813,7 @@ export default function DevTools() {
                       Load Backup List ({backups.length})
                     </Button>
                     {backups.length > 0 && (
-                      <VStack align="stretch" spacing={2} maxH="300px" overflowY="auto" bg="gray.900" p={2} borderRadius="md">
+                      <VStack align="stretch" spacing={2} maxH="clamp(200px, 30vh, 400px)" overflowY="auto" bg="gray.900" p={2} borderRadius="md">
                         {backups.map(backup => (
                           <HStack key={backup} spacing={2}>
                             <Button

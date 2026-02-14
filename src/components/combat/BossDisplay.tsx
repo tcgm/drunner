@@ -288,7 +288,7 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                             colorScheme={healthColor}
                             bg="gray.900"
                             borderRadius="full"
-                            h="40px"
+                            h="clamp(30px, 4vh, 45px)"
                             boxShadow="inset 0 2px 8px rgba(0, 0, 0, 0.8)"
                             sx={{
                                 '& > div': {

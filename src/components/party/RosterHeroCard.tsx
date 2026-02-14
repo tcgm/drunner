@@ -136,7 +136,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
             top={0}
             left={0}
             right={0}
-            h="3px"
+            h="clamp(2px, 0.3vh, 4px)"
             bg="blue.400"
             boxShadow="0 0 12px rgba(59, 130, 246, 0.8)"
           />

@@ -300,7 +300,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                         colorScheme={featuredItemPurchased ? 'gray' : bankGold >= getShopPrice(featuredItem) ? 'orange' : 'gray'}
                         onClick={handleFeaturedItemPurchase}
                         isDisabled={featuredItemPurchased || bankGold < getShopPrice(featuredItem)}
-                        width="200px"
+                        width="clamp(150px, 20vw, 220px)"
                         // leftIcon={<Icon as={GiGoldBar} />}
                       >
                         {featuredItemPurchased ? 'Bought' : (

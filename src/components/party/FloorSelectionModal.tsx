@@ -151,7 +151,7 @@ export default function FloorSelectionModal({
                   }}
                   min={0}
                   max={GAME_CONFIG.dungeon.maxFloors}
-                  w="120px"
+                  w="clamp(100px, 12vw, 140px)"
                   onWheel={(e) => {
                     e.preventDefault()
                     const delta = e.deltaY > 0 ? -1 : 1

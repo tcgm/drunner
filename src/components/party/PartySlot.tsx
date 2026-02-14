@@ -174,7 +174,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             top={0}
             left={0}
             right={0}
-            h="3px"
+            h="clamp(2px, 0.3vh, 4px)"
             bg="linear-gradient(90deg, transparent, orange.400, transparent)"
             boxShadow="0 0 10px rgba(251, 146, 60, 0.8)"
           />

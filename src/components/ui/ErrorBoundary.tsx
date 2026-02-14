@@ -92,7 +92,7 @@ class ErrorBoundary extends Component<Props, State> {
           p={4}
           overflow="auto"
         >
-          <VStack spacing={4} maxW="800px" w="100%" textAlign="center">
+          <VStack spacing={6} maxW="clamp(400px, 60vw, 700px)" textAlign="center">
             <Heading size="xl" color="red.400">
               Something went wrong
             </Heading>
@@ -111,9 +111,7 @@ class ErrorBoundary extends Component<Props, State> {
                 fontSize="sm"
                 fontFamily="monospace"
                 overflow="auto"
-                maxH="300px"
-                border="2px solid"
-                borderColor="red.500"
+                maxH="clamp(150px, 20vh, 250px)"
               >
                 <Text color="red.300" fontWeight="bold" mb={2}>
                   Main Error:
