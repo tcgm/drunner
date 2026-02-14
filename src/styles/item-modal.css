@@ -333,5 +333,3 @@
 .item-detail-modal--artifact .item-detail-modal__gem-glow {
   background: radial-gradient(circle, rgba(var(--rarity-artifact-glow-rgb), 0.6) 0%, transparent 70%);
 }
-
-/* ============================================================================
