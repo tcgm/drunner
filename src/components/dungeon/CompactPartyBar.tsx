@@ -1,3 +1,4 @@
+import './CompactPartyBar.css'
 import { HStack, Box, Text, Progress } from '@chakra-ui/react'
 import type { Hero } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'

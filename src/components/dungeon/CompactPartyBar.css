@@ -1,0 +1,45 @@
+/* ============================================================================
+   COMPACT PARTY BAR STYLES
+   Component: CompactPartyBar.tsx
+   ============================================================================ */
+
+/* Base compact party bar styles */
+.compact-party-bar {
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Ensure compact party bar displays as flex when visible in portrait */
+@media (orientation: portrait) {
+  .compact-party-bar {
+    display: flex !important;
+  }
+}
+
+/* Custom scrollbar styling */
+.compact-party-bar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.compact-party-bar::-webkit-scrollbar-track {
+  background: var(--chakra-colors-gray-700);
+  border-radius: 2px;
+}
+
+.compact-party-bar::-webkit-scrollbar-thumb {
+  background: var(--chakra-colors-gray-600);
+  border-radius: 2px;
+}
+
+.compact-party-bar::-webkit-scrollbar-thumb:hover {
+  background: var(--chakra-colors-gray-500);
+}
+
+/* Responsive adjustments for compact party bar */
+@media (orientation: portrait) and (max-width: 480px) {
+  .compact-party-bar {
+    padding: 0.5rem !important;
+    gap: 0.5rem !important;
+  }
+}

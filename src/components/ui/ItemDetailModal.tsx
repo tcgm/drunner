@@ -1,3 +1,4 @@
+import './ItemDetailModal.css'
 import { memo, useMemo, useState } from 'react'
 import {
   Modal,

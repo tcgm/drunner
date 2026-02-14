@@ -583,38 +583,6 @@
   overflow-y: auto;
 }
 
-/* Compact party bar - always visible on mobile */
-.compact-party-bar {
-  flex-shrink: 0;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-}
-
-/* Ensure compact party bar displays as flex when visible in portrait */
-@media (orientation: portrait) {
-  .compact-party-bar {
-    display: flex !important;
-  }
-}
-
-.compact-party-bar::-webkit-scrollbar {
-  height: 4px;
-}
-
-.compact-party-bar::-webkit-scrollbar-track {
-  background: var(--chakra-colors-gray-700);
-  border-radius: 2px;
-}
-
-.compact-party-bar::-webkit-scrollbar-thumb {
-  background: var(--chakra-colors-gray-600);
-  border-radius: 2px;
-}
-
-.compact-party-bar::-webkit-scrollbar-thumb:hover {
-  background: var(--chakra-colors-gray-500);
-}
-
 /* Hide FABs on desktop */
 @media (min-width: 1024px) {
   .mobile-fab-container {
@@ -643,11 +611,6 @@
 /* --- Mobile Portrait (320-480px) --- */
 @media (orientation: portrait) and (max-width: 480px) {
   .dungeon-screen {
-    padding: 0.5rem !important;
-    gap: 0.5rem !important;
-  }
-  
-  .compact-party-bar {
     padding: 0.5rem !important;
     gap: 0.5rem !important;
   }

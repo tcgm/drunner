@@ -1,3 +1,4 @@
+import './ItemSlot.css'
 import {
   Box,
   Text,
@@ -337,8 +338,6 @@ export const ItemSlot = memo(function ItemSlot({
       >
         <MotionBox
           className={slotClassName}
-          width={iconOnly ? '100%' : undefined}
-          height={iconOnly ? '100%' : undefined}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
           data-item-icon={item.icon?.length || 'unknown'}

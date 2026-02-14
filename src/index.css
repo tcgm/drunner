@@ -2,8 +2,8 @@
    DUNGEON RUNNER - MAIN STYLESHEET
    ============================================================================
    
-   This file imports all component-specific stylesheets.
-   Each stylesheet is organized by concern for maintainability.
+   This file imports global stylesheets only.
+   Component-specific styles are imported directly in their .tsx files.
    ============================================================================ */
 
 /* Base styles: fonts, variables, element resets */
@@ -11,12 +11,6 @@
 
 /* Animations: keyframes and transitions */
 @import './styles/animations.css';
-
-/* Item slots: rarity styling and variants */
-@import './styles/item-slots.css';
-
-/* Item modals: detail view decorations */
-@import './styles/item-modal.css';
 
 /* Utilities: orientation classes, mobile/desktop toggles */
 @import './styles/utilities.css';
