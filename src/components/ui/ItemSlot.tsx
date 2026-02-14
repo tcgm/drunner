@@ -316,7 +316,7 @@ export const ItemSlot = memo(function ItemSlot({
   // Build className string
   const slotClassName = [
     'item-slot',
-    `item-slot--${size}`,
+    !iconOnly && `item-slot--${size}`,
     setName ? 'item-slot--set' : `item-slot--${item.rarity}`,
     item.isUnique && 'item-slot--unique',
     isSelected && 'item-slot--selected',
@@ -548,8 +548,12 @@ export const ItemSlot = memo(function ItemSlot({
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
               width: iconOnly ? '100%' : undefined,
-              height: iconOnly ? '100%' : undefined
+              height: iconOnly ? '100%' : undefined,
+              maxWidth: iconOnly ? '100%' : undefined,
+              maxHeight: iconOnly ? '100%' : undefined,
+              overflow: 'hidden'
             }}
             animate={{
               scale: isHovered ? 1.1 : 1,
@@ -569,9 +573,16 @@ export const ItemSlot = memo(function ItemSlot({
               fontSize={iconOnly ? '100%' : (size === 'sm' ? 'clamp(16px, 2vw, 24px)' : size === 'md' ? 'clamp(22px, 2.5vw, 32px)' : size === 'xl' ? 'clamp(40px, 4vw, 56px)' : 'clamp(28px, 3vw, 40px)')}
               color={item.isUnique ? '#FFFFFF' : RARITY_COLORS[item.rarity]?.gem || '#6B7280'}
               mb={iconOnly ? 0 : 0.5}
-              style={item.isUnique ? {
-                filter: `drop-shadow(0 0 4px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 8px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 12px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'})`
-              } : undefined}
+              style={{
+                ...(item.isUnique ? {
+                  filter: `drop-shadow(0 0 4px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 8px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 12px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'})`
+                } : {}),
+                ...(iconOnly ? {
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain'
+                } : {})
+              }}
             />
           </motion.div>
           
