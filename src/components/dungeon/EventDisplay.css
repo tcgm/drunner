@@ -7,10 +7,20 @@
     flex-direction: column;
     height: 100%;
     gap: 1rem;
+    overflow: hidden;
   }
 
   .event-display-header {
     flex-shrink: 0;
+    max-height: 40%;
+    overflow: visible;
+  }
+
+  .event-display-description-container {
+    max-height: 120px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 0.5rem !important;
   }
 
   .event-display-choices {
@@ -56,6 +66,10 @@
     gap: 0.75rem;
   }
 
+  .event-display-description-container {
+    max-height: 100px !important;
+  }
+
   .event-display-title {
     font-size: 1.125rem !important;
   }
@@ -91,6 +105,10 @@
 @media (orientation: portrait) and (max-width: 400px) {
   .event-display {
     gap: 0.5rem;
+  }
+
+  .event-display-description-container {
+    max-height: 80px !important;
   }
 
   .event-display-title {

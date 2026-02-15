@@ -7,6 +7,9 @@
     min-height: 400px;
     max-height: calc(100vh - 280px);
     padding: 1rem !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -16,6 +19,9 @@
     min-height: 350px;
     max-height: calc(100vh - 250px);
     padding: 0.75rem !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -25,5 +31,8 @@
     min-height: 300px;
     max-height: calc(100vh - 220px);
     padding: 0.5rem !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 }
