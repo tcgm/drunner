@@ -1,5 +1,5 @@
 import './DungeonActionBar.css'
-import { Button, Box, HStack, Spacer, VStack, SimpleGrid } from '@chakra-ui/react'
+import { Button, Box, HStack, Spacer, VStack, SimpleGrid, Tooltip } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor, GiReturnArrow } from 'react-icons/gi'
 import { useOrientation } from '@/contexts/OrientationContext'
@@ -24,53 +24,59 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
       <Box className="dungeon-action-bar dungeon-action-bar-portrait" bg="gray.800" borderRadius="lg" p={2}>
         <VStack spacing={2} align="stretch">
           {showContinue && (
-            <Button 
-              colorScheme="orange" 
-              leftIcon={<Icon as={GiFootprint} />}
-              size="md"
-              onClick={onContinue}
-              w="full"
-            >
-              Continue
-            </Button>
+            <Tooltip label="Continue exploring the dungeon" placement="top">
+              <Button 
+                colorScheme="orange" 
+                leftIcon={<Icon as={GiFootprint} />}
+                size="md"
+                onClick={onContinue}
+                w="full"
+              >
+                Continue
+              </Button>
+            </Tooltip>
           )}
-          <SimpleGrid columns={2} spacing={2}>
-            <Button 
-              colorScheme="blue" 
-              variant="outline"
-              leftIcon={<Icon as={GiBackpack} />}
-              onClick={onInventory}
-              size="sm"
-            >
-              Inventory
-            </Button>
-            <Button 
-              colorScheme="purple" 
-              variant="outline"
-              leftIcon={<Icon as={GiBookCover} />}
-              onClick={onJournal}
-              size="sm"
-            >
-              Journal
-            </Button>
-            <Button 
-              colorScheme="yellow" 
-              variant="outline"
-              leftIcon={<Icon as={GiReturnArrow} />}
-              onClick={onRetreat}
-              size="sm"
-            >
-              Retreat
-            </Button>
-            <Button 
-              colorScheme="gray" 
-              variant="ghost"
-              onClick={onExit}
-              leftIcon={<Icon as={GiExitDoor} />}
-              size="sm"
-            >
-              Exit
-            </Button>
+          <SimpleGrid columns={4} spacing={2}>
+            <Tooltip label="Inventory" placement="top">
+              <Button 
+                colorScheme="blue" 
+                variant="outline"
+                onClick={onInventory}
+                size="md"
+              >
+                <Icon as={GiBackpack} boxSize={5} />
+              </Button>
+            </Tooltip>
+            <Tooltip label="Journal" placement="top">
+              <Button 
+                colorScheme="purple" 
+                variant="outline"
+                onClick={onJournal}
+                size="md"
+              >
+                <Icon as={GiBookCover} boxSize={5} />
+              </Button>
+            </Tooltip>
+            <Tooltip label="Retreat" placement="top">
+              <Button 
+                colorScheme="yellow" 
+                variant="outline"
+                onClick={onRetreat}
+                size="md"
+              >
+                <Icon as={GiReturnArrow} boxSize={5} />
+              </Button>
+            </Tooltip>
+            <Tooltip label="Exit to Menu" placement="top">
+              <Button 
+                colorScheme="gray" 
+                variant="ghost"
+                onClick={onExit}
+                size="md"
+              >
+                <Icon as={GiExitDoor} boxSize={5} />
+              </Button>
+            </Tooltip>
           </SimpleGrid>
         </VStack>
       </Box>
