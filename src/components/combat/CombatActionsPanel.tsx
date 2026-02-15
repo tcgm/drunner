@@ -14,9 +14,10 @@ import {
 import { motion } from 'framer-motion'
 import type { Hero, BossCombatState } from '@/types'
 import { GiSwordman, GiShield, GiSparkles, GiRunningNinja, GiMightySpanner } from 'react-icons/gi'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { useOrientation } from '@/contexts/OrientationContext'
 
 const MotionButton = motion.create(Button)
 
@@ -39,17 +40,7 @@ export default function CombatActionsPanel({
 }: CombatActionsPanelProps) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { isOpen: isAbilitiesOpen, onOpen: onAbilitiesOpen, onClose: onAbilitiesClose } = useDisclosure()
-    const [isPortrait, setIsPortrait] = useState(false)
-
-    // Detect orientation on mount and window resize
-    useMemo(() => {
-        const checkOrientation = () => {
-            setIsPortrait(window.innerWidth <= 768 && window.matchMedia('(orientation: portrait)').matches)
-        }
-        checkOrientation()
-        window.addEventListener('resize', checkOrientation)
-        return () => window.removeEventListener('resize', checkOrientation)
-    }, [])
+    const { isPortrait } = useOrientation()
 
     // Get current active hero
     const activeHero = useMemo(() => {
