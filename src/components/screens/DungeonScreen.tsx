@@ -106,16 +106,24 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
 
   // Boss combat handlers
   const handleBossVictory = () => {
-    // Apply victory rewards from boss event
-    if (bossEvent) {
-      applyBossVictoryRewards(bossEvent)
-    }
+    // Capture bossEvent before clearing it
+    const currentBossEvent = bossEvent
+    
+    // CRITICAL: Unmount combat screen FIRST to prevent re-renders during state updates
     setInBossCombat(false)
     setBossEvent(null)
-    // Continue to next event after rewards applied
-    advanceDungeon()
-    // Explicitly change music back to normal dungeon music
-    changeMusicContext(MusicContext.DUNGEON_NORMAL)
+    
+    // Process rewards in next tick to ensure component has unmounted
+    setTimeout(() => {
+      // Apply victory rewards from boss event
+      if (currentBossEvent) {
+        applyBossVictoryRewards(currentBossEvent)
+      }
+      // Continue to next event after rewards applied
+      advanceDungeon()
+      // Explicitly change music back to normal dungeon music
+      changeMusicContext(MusicContext.DUNGEON_NORMAL)
+    }, 0)
   }
 
   const handleBossDefeat = () => {

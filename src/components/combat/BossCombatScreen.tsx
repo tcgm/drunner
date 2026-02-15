@@ -67,10 +67,19 @@ export default function BossCombatScreen({
     const [particlePosition, setParticlePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
     const combatInitialized = useRef(false)
     const combatEnded = useRef(false)
+    const isUnmounting = useRef(false) // Prevent any actions after unmount starts
     const toast = useToast()
     
     // Combat log modal for portrait mode
     const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure()
+
+    // Cleanup on unmount - stop all processing
+    useEffect(() => {
+        return () => {
+            isUnmounting.current = true
+            combatEnded.current = true
+        }
+    }, [])
 
     // Add log entry helper
     const addLogEntry = (
@@ -79,6 +88,9 @@ export default function BossCombatScreen({
         target?: string,
         value?: number
     ) => {
+        // Don't add logs if unmounting
+        if (isUnmounting.current) return
+        
         const entry: CombatLogEntry = {
             id: `${Date.now()}-${Math.random()}`,
             type,
@@ -92,16 +104,22 @@ export default function BossCombatScreen({
 
     // Trigger particle effect helper
     const triggerParticles = (effect: ParticleEffect, position: { x: number; y: number } = { x: 50, y: 50 }) => {
+        // Don't trigger particles if unmounting
+        if (isUnmounting.current) return
+        
         setParticleEffect(effect)
         setParticlePosition(position)
     }
 
     // Helper to process boss turn with animations and delays
     const processBossTurnWithAnimations = async (bossTurnResult: any) => {
+        if (isUnmounting.current) return // Don't process if unmounting
+        
         setIsBossActing(true)
 
         // Passive healing animation
         if (bossTurnResult.passiveHealing) {
+            if (isUnmounting.current) return
             addLogEntry('heal', `Boss regenerates ${bossTurnResult.passiveHealing} HP`, 'boss', bossTurnResult.passiveHealing)
             triggerParticles('heal', { x: 50, y: 30 })
             setUpdateTrigger(prev => prev + 1)
@@ -110,6 +128,7 @@ export default function BossCombatScreen({
 
         // Phase transition animation
         if (bossTurnResult.phaseTransition) {
+            if (isUnmounting.current) return
             addLogEntry('phase', `Boss enters Phase ${bossTurnResult.phaseTransition.newPhase}!`)
             triggerParticles('phase', { x: 50, y: 30 })
             setUpdateTrigger(prev => prev + 1)
@@ -119,6 +138,7 @@ export default function BossCombatScreen({
         // Abilities animations
         if (bossTurnResult.abilitiesUsed.length > 0) {
             for (const abilityResult of bossTurnResult.abilitiesUsed) {
+                if (isUnmounting.current) return
                 addLogEntry('ability', `Boss uses ${abilityResult.ability.name}!`)
                 setUpdateTrigger(prev => prev + 1)
                 await new Promise(resolve => setTimeout(resolve, 500))
@@ -126,6 +146,7 @@ export default function BossCombatScreen({
                 // Show each effect with delay
                 if (abilityResult.effects) {
                     for (const effect of abilityResult.effects) {
+                        if (isUnmounting.current) return
                         if (effect.description) {
                             addLogEntry('action', effect.description)
                             setUpdateTrigger(prev => prev + 1)
@@ -138,6 +159,7 @@ export default function BossCombatScreen({
 
         // Attack animation
         if (bossTurnResult.attackResult) {
+            if (isUnmounting.current) return
             const pattern = bossTurnResult.attackResult.pattern
             if (pattern) {
                 addLogEntry('action', `Boss uses ${pattern.name}!`)
@@ -148,6 +170,7 @@ export default function BossCombatScreen({
             // Show damage with delays between each target
             if (bossTurnResult.attackResult.damage && bossTurnResult.attackResult.damage.length > 0) {
                 for (const dmg of bossTurnResult.attackResult.damage) {
+                    if (isUnmounting.current) return
                     if (dmg.isDodge) {
                         addLogEntry('action', `${dmg.heroName} dodged!`)
                         triggerParticles('dodge', { x: 50, y: 70 })
@@ -160,11 +183,13 @@ export default function BossCombatScreen({
                     await new Promise(resolve => setTimeout(resolve, 500))
                 }
             } else {
+                if (isUnmounting.current) return
                 addLogEntry('action', 'Boss attacks but misses!')
                 setUpdateTrigger(prev => prev + 1)
                 await new Promise(resolve => setTimeout(resolve, 500))
             }
         } else {
+            if (isUnmounting.current) return
             addLogEntry('action', 'Boss readies for the next attack...')
             setUpdateTrigger(prev => prev + 1)
             await new Promise(resolve => setTimeout(resolve, 500))
@@ -175,7 +200,7 @@ export default function BossCombatScreen({
 
     // Initialize combat on mount
     useEffect(() => {
-        if (event.combatState && !combatInitialized.current) {
+        if (event.combatState && !combatInitialized.current && !isUnmounting.current) {
             combatInitialized.current = true
             addLogEntry('turn', 'Combat begins!')
             // Start first round (modifies state in place)
@@ -185,6 +210,9 @@ export default function BossCombatScreen({
             const processInitialBossTurns = async () => {
                 let currentCombatant = getCurrentCombatant(event.combatState!)
                 while (currentCombatant && currentCombatant.type === 'boss') {
+                    // Check if combat ended or unmounting
+                    if (combatEnded.current || isUnmounting.current) break
+                    
                     await new Promise(resolve => setTimeout(resolve, 800))
                     addLogEntry('turn', 'Processing boss turn...')
                     setUpdateTrigger(prev => prev + 1)
@@ -210,25 +238,51 @@ export default function BossCombatScreen({
 
     // Check victory/defeat conditions
     useEffect(() => {
-        if (!event.combatState || isProcessing || combatEnded.current) return
+        if (!event.combatState || isProcessing || combatEnded.current || isUnmounting.current) return
 
         const victory = checkVictory(event.combatState)
         const defeat = checkDefeat(party.filter(h => h !== null) as Hero[])
 
         if (victory) {
             combatEnded.current = true
+            isUnmounting.current = true // Mark as unmounting immediately
             addLogEntry('phase', '🎉 Victory! The boss has been defeated!')
             triggerParticles('victory', { x: 50, y: 50 })
-            setTimeout(() => onVictory(), 2000)
+            
+            // Close combat log modal if open (important for mobile)
+            if (isCombatLogOpen) {
+                onCombatLogClose()
+            }
+            
+            const victoryTimer = setTimeout(() => {
+                if (!isUnmounting.current) return // Safety check
+                onVictory()
+            }, 1500) // Reduced from 2000ms for faster transition
+            
+            // Cleanup timer on unmount
+            return () => clearTimeout(victoryTimer)
         } else if (defeat) {
             combatEnded.current = true
+            isUnmounting.current = true // Mark as unmounting immediately
             addLogEntry('phase', '💀 Defeat... Your party has fallen...')
-            setTimeout(() => onDefeat(), 2000)
+            
+            // Close combat log modal if open (important for mobile)
+            if (isCombatLogOpen) {
+                onCombatLogClose()
+            }
+            
+            const defeatTimer = setTimeout(() => {
+                if (!isUnmounting.current) return // Safety check
+                onDefeat()
+            }, 1500)
+            
+            // Cleanup timer on unmount
+            return () => clearTimeout(defeatTimer)
         }
-    }, [updateTrigger, event.combatState, party, onVictory, onDefeat, isProcessing])
+    }, [updateTrigger, event.combatState, party, onVictory, onDefeat, isProcessing, isCombatLogOpen, onCombatLogClose])
 
     const handleHeroAction = async (heroId: string, action: string) => {
-        if (isProcessing || !event.combatState) return
+        if (isProcessing || !event.combatState || combatEnded.current || isUnmounting.current) return
 
         setIsProcessing(true)
 
@@ -327,6 +381,9 @@ export default function BossCombatScreen({
             // Process any consecutive boss turns until we reach the next hero turn or end of round
             let currentCombatant = getCurrentCombatant(event.combatState)
             while (currentCombatant && currentCombatant.type === 'boss') {
+                // Check if combat ended or unmounting
+                if (combatEnded.current || isUnmounting.current) break
+                
                 // Process boss turn
                 await new Promise(resolve => setTimeout(resolve, 800))
                 addLogEntry('turn', 'Processing boss turn...')
@@ -390,7 +447,7 @@ export default function BossCombatScreen({
     }
 
     const handleEndTurn = async () => {
-        if (isProcessing || !event.combatState) return
+        if (isProcessing || !event.combatState || combatEnded.current || isUnmounting.current) return
 
         setIsProcessing(true)
         addLogEntry('turn', 'Processing boss turn...')
@@ -398,11 +455,23 @@ export default function BossCombatScreen({
         await new Promise(resolve => setTimeout(resolve, 400))
 
         try {
+            // Check if combat ended or unmounting
+            if (combatEnded.current || isUnmounting.current) {
+                setIsProcessing(false)
+                return
+            }
+            
             // Process boss turn (returns result object)
             const bossTurnResult = processBossTurn(event.combatState, party.filter(h => h !== null) as Hero[])
 
             // Animate boss actions with delays
             await processBossTurnWithAnimations(bossTurnResult)
+
+            // Check if combat ended or unmounting
+            if (combatEnded.current || isUnmounting.current) {
+                setIsProcessing(false)
+                return
+            }
 
             // End round (modifies state in place, returns result object)
             const roundEndResult = processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
@@ -440,7 +509,7 @@ export default function BossCombatScreen({
     // Handler for using consumables from party display
     const handleUseConsumableFromParty = (heroId: string, slot: string) => {
         // Only allow consumable use during hero's turn and not during boss actions
-        if (isProcessing || isBossActing) return
+        if (isProcessing || isBossActing || isUnmounting.current) return
 
         const currentCombatant = getCurrentCombatant(event.combatState!)
         if (!currentCombatant || currentCombatant.id !== heroId) {
@@ -736,18 +805,20 @@ export default function BossCombatScreen({
                         alignItems="center"
                         justifyContent="center"
                         zIndex={10}
+                        pointerEvents="none"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <MotionBox
-                            fontSize="6xl"
+                            fontSize={{ base: "4xl", md: "6xl" }}
                             fontWeight="bold"
                             color={checkVictory(combatState) ? 'green.400' : 'red.400'}
                             textShadow="0 0 20px currentColor"
                             initial={{ scale: 0.5, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.5, ease: 'easeOut' }}
+                            transition={{ duration: 0.4, ease: 'easeOut' }}
                         >
                             {checkVictory(combatState) ? 'VICTORY!' : 'DEFEAT'}
                         </MotionBox>
