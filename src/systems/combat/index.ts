@@ -31,6 +31,14 @@ export {
     updateBossEventWithState,
 } from './combatState'
 
+// Combat manager (non-React state machine)
+export {
+    BossCombatManager,
+    createCombatManager,
+    type CombatStatus,
+    type CombatManagerCallbacks,
+} from './combatManager'
+
 // Turn order
 export {
     calculateTurnOrder,

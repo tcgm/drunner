@@ -396,16 +396,21 @@ export default function DevTools() {
     combatState.currentHp = 0
 
     // Update the state to trigger victory check
+    // Force a new object reference to trigger React updates
     useGameStore.setState({
       dungeon: {
         ...state.dungeon,
         currentEvent: {
           ...currentEvent,
-          combatState: { ...combatState }
+          combatState: { 
+            ...combatState,
+            currentHp: 0 // Explicitly set to ensure update
+          }
         }
       }
     })
 
+    console.log(`[DevTools] Instant kill dealt ${damageDealt} damage, boss HP now 0`)
     alert(`Dealt ${damageDealt} true damage to boss! Victory condition triggered.`)
   }
 

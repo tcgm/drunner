@@ -106,24 +106,25 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
 
   // Boss combat handlers
   const handleBossVictory = () => {
+    console.log('[DungeonScreen] handleBossVictory called')
     // Capture bossEvent before clearing it
     const currentBossEvent = bossEvent
     
-    // CRITICAL: Unmount combat screen FIRST to prevent re-renders during state updates
-    setInBossCombat(false)
-    setBossEvent(null)
+    // Apply rewards and advance dungeon FIRST 
+    if (currentBossEvent) {
+      console.log('[DungeonScreen] Applying boss victory rewards')
+      applyBossVictoryRewards(currentBossEvent)
+    }
+    console.log('[DungeonScreen] Advancing dungeon')
+    advanceDungeon()
+    changeMusicContext(MusicContext.DUNGEON_NORMAL)
     
-    // Process rewards in next tick to ensure component has unmounted
+    // THEN unmount combat screen in next tick after store updates have propagated
     setTimeout(() => {
-      // Apply victory rewards from boss event
-      if (currentBossEvent) {
-        applyBossVictoryRewards(currentBossEvent)
-      }
-      // Continue to next event after rewards applied
-      advanceDungeon()
-      // Explicitly change music back to normal dungeon music
-      changeMusicContext(MusicContext.DUNGEON_NORMAL)
-    }, 0)
+      console.log('[DungeonScreen] Unmounting combat screen')
+      setInBossCombat(false)
+      setBossEvent(null)
+    }, 50) // Small delay to ensure store updates have rendered
   }
 
   const handleBossDefeat = () => {
@@ -153,12 +154,32 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         )
       }
       const timer = setTimeout(() => {
+        // Update the store's currentEvent with combatState for DevTools visibility
+        useGameStore.setState((state) => ({
+          dungeon: {
+            ...state.dungeon,
+            currentEvent: eventWithCombatState
+          }
+        }))
         setBossEvent(eventWithCombatState)
         setInBossCombat(true)
       }, 0)
       return () => clearTimeout(timer)
     }
   }, [dungeon.currentEvent, dungeon, inBossCombat])
+
+  // Sync store updates (like DevTools instant kill) back to local bossEvent state
+  useEffect(() => {
+    if (inBossCombat && dungeon.currentEvent && dungeon.currentEvent.type === 'boss' && dungeon.currentEvent.combatState) {
+      console.log('[DungeonScreen] Syncing store combatState to bossEvent, HP:', dungeon.currentEvent.combatState.currentHp)
+      // Update local bossEvent if the store's combatState changes (e.g., DevTools instant kill)
+      // Force a new object reference to trigger React updates
+      setBossEvent({
+        ...dungeon.currentEvent,
+        combatState: { ...dungeon.currentEvent.combatState }
+      })
+    }
+  }, [inBossCombat, dungeon.currentEvent?.combatState?.currentHp])
 
   // Victory check - player completed max floors (check floor, not depth!)
   if (dungeon.floor > GAME_CONFIG.dungeon.maxFloors) {

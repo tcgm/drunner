@@ -238,14 +238,29 @@ export default function BossCombatScreen({
 
     // Check victory/defeat conditions
     useEffect(() => {
-        if (!event.combatState || isProcessing || combatEnded.current || isUnmounting.current) return
+        console.log('[BossCombatScreen] Victory check effect running, HP:', event.combatState?.currentHp, 'combatEnded:', combatEnded.current)
+        console.log('[BossCombatScreen] Early return checks - combatState:', !!event.combatState, 'isProcessing:', isProcessing)
+        
+        // Don't check isUnmounting here - victory check should always run when HP changes
+        if (!event.combatState || isProcessing) {
+            console.log('[BossCombatScreen] Early return triggered')
+            return
+        }
 
         const victory = checkVictory(event.combatState)
         const defeat = checkDefeat(party.filter(h => h !== null) as Hero[])
 
+        console.log('[BossCombatScreen] Victory:', victory, 'Defeat:', defeat, 'combatEnded.current:', combatEnded.current)
+
+        // Only process victory/defeat if not already ended (prevents duplicate processing)
+        if (combatEnded.current && !victory && !defeat) {
+            console.log('[BossCombatScreen] Skipping - combat already ended and no victory/defeat')
+            return
+        }
+
         if (victory) {
+            console.log('[BossCombatScreen] Processing victory!')
             combatEnded.current = true
-            isUnmounting.current = true // Mark as unmounting immediately
             addLogEntry('phase', '🎉 Victory! The boss has been defeated!')
             triggerParticles('victory', { x: 50, y: 50 })
             
@@ -254,16 +269,20 @@ export default function BossCombatScreen({
                 onCombatLogClose()
             }
             
+            console.log('[BossCombatScreen] Victory detected, calling onVictory in 1.5s')
+            
             const victoryTimer = setTimeout(() => {
-                if (!isUnmounting.current) return // Safety check
+                console.log('[BossCombatScreen] Victory timer fired, calling onVictory()')
                 onVictory()
-            }, 1500) // Reduced from 2000ms for faster transition
+            }, 1500)
             
             // Cleanup timer on unmount
-            return () => clearTimeout(victoryTimer)
+            return () => {
+                console.log('[BossCombatScreen] Victory effect cleanup')
+                clearTimeout(victoryTimer)
+            }
         } else if (defeat) {
             combatEnded.current = true
-            isUnmounting.current = true // Mark as unmounting immediately
             addLogEntry('phase', '💀 Defeat... Your party has fallen...')
             
             // Close combat log modal if open (important for mobile)
@@ -272,14 +291,13 @@ export default function BossCombatScreen({
             }
             
             const defeatTimer = setTimeout(() => {
-                if (!isUnmounting.current) return // Safety check
                 onDefeat()
             }, 1500)
             
             // Cleanup timer on unmount
             return () => clearTimeout(defeatTimer)
         }
-    }, [updateTrigger, event.combatState, party, onVictory, onDefeat, isProcessing, isCombatLogOpen, onCombatLogClose])
+    }, [updateTrigger, event.combatState, event.combatState?.currentHp, party, onVictory, onDefeat, isProcessing, isCombatLogOpen, onCombatLogClose])
 
     const handleHeroAction = async (heroId: string, action: string) => {
         if (isProcessing || !event.combatState || combatEnded.current || isUnmounting.current) return
