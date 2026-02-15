@@ -3,9 +3,7 @@
 /* Portrait phones - ensure event area is usable */
 @media (orientation: portrait) and (max-width: 768px) {
   .event-area {
-    /* Take full available height but allow scrolling */
-    min-height: 400px;
-    max-height: calc(100vh - 280px);
+    /* Let flex layout handle height, remove max-height constraint */
     padding: 1rem !important;
     overflow-y: auto;
     overflow-x: hidden;
@@ -16,8 +14,6 @@
 @media (orientation: portrait) and (max-width: 480px) {
   .event-area {
     /* More compact on small screens */
-    min-height: 350px;
-    max-height: calc(100vh - 250px);
     padding: 0.75rem !important;
     overflow-y: auto;
     overflow-x: hidden;
@@ -28,8 +24,6 @@
 /* Very small portrait phones */
 @media (orientation: portrait) and (max-width: 400px) {
   .event-area {
-    min-height: 300px;
-    max-height: calc(100vh - 220px);
     padding: 0.5rem !important;
     overflow-y: auto;
     overflow-x: hidden;

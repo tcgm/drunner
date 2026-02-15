@@ -74,7 +74,7 @@
   
   /* Add bottom padding to prevent content from being hidden */
   .dungeon-screen {
-    padding-bottom: 70px !important;
+    /* padding-bottom: 70px !important; */
   }
 }
 
