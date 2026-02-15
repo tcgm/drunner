@@ -1,103 +1,17 @@
-/* DungeonActionBar responsive styles */
+/* DungeonActionBar styles */
 
-/* Portrait phones - make action bar more compact */
-@media (orientation: portrait) and (max-width: 768px) {
-  .dungeon-action-bar {
-    padding: 0.5rem !important;
-  }
-
-  .dungeon-action-bar-content {
-    gap: 0.5rem !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-  }
-
-  .dungeon-action-bar button {
-    font-size: 0.85rem !important;
-    padding: 0.5rem 0.875rem !important;
-    min-height: 40px !important;
-  }
-
-  .dungeon-action-bar-continue {
-    flex-grow: 1 !important;
-    max-width: none !important;
-  }
+/* Base styles - layout handled by component logic */
+.dungeon-action-bar {
+  /* Base styles only */
 }
 
-/* Small portrait phones - even more compact */
-@media (orientation: portrait) and (max-width: 480px) {
-  .dungeon-action-bar {
-    padding: 0.375rem !important;
-  }
-
-  .dungeon-action-bar-content {
-    gap: 0.375rem !important;
-  }
-
-  .dungeon-action-bar button {
-    font-size: 0.8rem !important;
-    padding: 0.375rem 0.75rem !important;
-    min-height: 36px !important;
-  }
-
-  .dungeon-action-bar button .chakra-icon {
-    width: 14px !important;
-    height: 14px !important;
-  }
-
-  /* Stack buttons in 2 columns */
-  .dungeon-action-bar-content {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.375rem !important;
-  }
-
-  .dungeon-action-bar-continue {
-    grid-column: 1 / -1 !important;
-  }
-
-  .dungeon-action-bar-exit {
-    grid-column: 1 / -1 !important;
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.7rem !important;
-    min-height: 32px !important;
-  }
+.dungeon-action-bar-portrait {
+  /* Portrait mode - handled in component JSX */
 }
 
-/* Very small portrait phones - ultra compact */
-@media (orientation: portrait) and (max-width: 400px) {
-  .dungeon-action-bar {
-    padding: 0.25rem !important;
-  }
+.dungeon-action-bar-desktop {
+  /* Desktop mode - handled in component JSX */
 
-  .dungeon-action-bar-content {
-    gap: 0.25rem !important;
-  }
-
-  .dungeon-action-bar button {
-    font-size: 0.75rem !important;
-    padding: 0.25rem 0.625rem !important;
-    min-height: 32px !important;
-  }
-
-  .dungeon-action-bar button .chakra-icon {
-    width: 12px !important;
-    height: 12px !important;
-  }
-
-  .dungeon-action-bar-exit {
-    font-size: 0.65rem !important;
-    min-height: 28px !important;
-  }
-}
-
-/* Landscape - keep compact for short screens */
-@media (orientation: landscape) and (max-height: 500px) {
-  .dungeon-action-bar {
-    padding: 0.375rem 0.75rem !important;
-  }
-
-  .dungeon-action-bar-content {
     gap: 0.5rem !important;
   }
 
@@ -111,4 +25,3 @@
     width: 14px !important;
     height: 14px !important;
   }
-}

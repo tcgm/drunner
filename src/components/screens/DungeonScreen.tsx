@@ -137,12 +137,18 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     if (dungeon.currentEvent && dungeon.currentEvent.type === 'boss' && !inBossCombat) {
       // Always initialize fresh combat state for new boss encounter
       // (Events are reused from shared arrays, so old combatState may persist)
-      dungeon.currentEvent.combatState = initializeBossCombatState(
-        dungeon.currentEvent,
-        dungeon
-      )
-      setBossEvent(dungeon.currentEvent)
-      setInBossCombat(true)
+      const eventWithCombatState = {
+        ...dungeon.currentEvent,
+        combatState: initializeBossCombatState(
+          dungeon.currentEvent,
+          dungeon
+        )
+      }
+      const timer = setTimeout(() => {
+        setBossEvent(eventWithCombatState)
+        setInBossCombat(true)
+      }, 0)
+      return () => clearTimeout(timer)
     }
   }, [dungeon.currentEvent, dungeon, inBossCombat])
 

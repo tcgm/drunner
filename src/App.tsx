@@ -11,6 +11,7 @@ import { MusicManager } from '@components/ui/MusicManager'
 import { MigrationWarningDialog } from '@components/ui/MigrationWarningDialog'
 import { ItemDetailModalProvider } from '@/contexts/ItemDetailModalContext'
 import { HeroModalProvider } from '@/contexts/HeroModalContext'
+import { OrientationProvider } from '@/contexts/OrientationContext'
 import { useGameStore } from '@/core/gameStore'
 import type { Hero } from '@/types'
 
@@ -114,9 +115,10 @@ function App() {
   }
 
   return (
-    <ItemDetailModalProvider>
-      <HeroModalProvider>
-        <Box position="fixed" top={0} left={0} right={0} bottom={0} bg="gray.900" overflow="hidden" key={hmrCounter}>
+    <OrientationProvider>
+      <ItemDetailModalProvider>
+        <HeroModalProvider>
+          <Box position="fixed" top={0} left={0} right={0} bottom={0} bg="gray.900" overflow="hidden" key={hmrCounter}>
         {/* Centralized Music Manager */}
         <MusicManager currentScreen={currentScreen} />
 
@@ -218,9 +220,10 @@ function App() {
         <MusicControls />
 
         <DevTools />
-      </Box>
-      </HeroModalProvider>
-    </ItemDetailModalProvider>
+        </Box>
+        </HeroModalProvider>
+      </ItemDetailModalProvider>
+    </OrientationProvider>
   )
 }
 

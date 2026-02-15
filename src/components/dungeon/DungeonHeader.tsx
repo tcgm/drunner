@@ -3,7 +3,7 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { Heading, Text, Box, HStack, Spacer } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiTwoCoins } from 'react-icons/gi'
-import { useState, useEffect } from 'react'
+import { useOrientation } from '@/contexts/OrientationContext'
 
 interface DungeonHeaderProps {
   floor: number
@@ -13,17 +13,7 @@ interface DungeonHeaderProps {
 }
 
 export default function DungeonHeader({ floor, maxFloors, depth, gold }: DungeonHeaderProps) {
-  const [isPortrait, setIsPortrait] = useState(false)
-
-  // Detect orientation
-  useEffect(() => {
-    const checkOrientation = () => {
-      setIsPortrait(window.innerWidth <= 768 && window.matchMedia('(orientation: portrait)').matches)
-    }
-    checkOrientation()
-    window.addEventListener('resize', checkOrientation)
-    return () => window.removeEventListener('resize', checkOrientation)
-  }, [])
+  const { isPortrait } = useOrientation()
 
   if (isPortrait) {
     // Portrait Mode - Single compact line, values only

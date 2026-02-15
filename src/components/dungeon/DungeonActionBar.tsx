@@ -1,7 +1,8 @@
 import './DungeonActionBar.css'
-import { Button, Box, HStack, Spacer } from '@chakra-ui/react'
+import { Button, Box, HStack, Spacer, VStack, SimpleGrid } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor, GiReturnArrow } from 'react-icons/gi'
+import { useOrientation } from '@/contexts/OrientationContext'
 // import { GiSwordClash } from 'react-icons/gi' // Disabled - Combat Log merged into Journal
 
 interface DungeonActionBarProps {
@@ -15,9 +16,71 @@ interface DungeonActionBarProps {
 }
 
 export default function DungeonActionBar({ showContinue, onContinue, onInventory, onJournal, onRetreat, onExit }: DungeonActionBarProps) {
+  const { isPortrait } = useOrientation()
+
+  if (isPortrait) {
+    // Portrait Mode - Compact grid layout
+    return (
+      <Box className="dungeon-action-bar dungeon-action-bar-portrait" bg="gray.800" borderRadius="lg" p={2}>
+        <VStack spacing={2} align="stretch">
+          {showContinue && (
+            <Button 
+              colorScheme="orange" 
+              leftIcon={<Icon as={GiFootprint} />}
+              size="md"
+              onClick={onContinue}
+              w="full"
+            >
+              Continue
+            </Button>
+          )}
+          <SimpleGrid columns={2} spacing={2}>
+            <Button 
+              colorScheme="blue" 
+              variant="outline"
+              leftIcon={<Icon as={GiBackpack} />}
+              onClick={onInventory}
+              size="sm"
+            >
+              Inventory
+            </Button>
+            <Button 
+              colorScheme="purple" 
+              variant="outline"
+              leftIcon={<Icon as={GiBookCover} />}
+              onClick={onJournal}
+              size="sm"
+            >
+              Journal
+            </Button>
+            <Button 
+              colorScheme="yellow" 
+              variant="outline"
+              leftIcon={<Icon as={GiReturnArrow} />}
+              onClick={onRetreat}
+              size="sm"
+            >
+              Retreat
+            </Button>
+            <Button 
+              colorScheme="gray" 
+              variant="ghost"
+              onClick={onExit}
+              leftIcon={<Icon as={GiExitDoor} />}
+              size="sm"
+            >
+              Exit
+            </Button>
+          </SimpleGrid>
+        </VStack>
+      </Box>
+    )
+  }
+
+  // Desktop Mode - Horizontal layout
   return (
-    <Box className="dungeon-action-bar" bg="gray.800" borderRadius="lg" p={4}>
-      <HStack className="dungeon-action-bar-content" spacing={4} flexWrap="wrap">
+    <Box className="dungeon-action-bar dungeon-action-bar-desktop" bg="gray.800" borderRadius="lg" p={4}>
+      <HStack spacing={4} flexWrap="wrap">
         {showContinue && (
           <Button 
             className="dungeon-action-bar-continue"
