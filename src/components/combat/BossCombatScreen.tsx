@@ -66,6 +66,7 @@ export default function BossCombatScreen({
     const [particleEffect, setParticleEffect] = useState<ParticleEffect | null>(null)
     const [particlePosition, setParticlePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
     const combatInitialized = useRef(false)
+    const combatEnded = useRef(false)
     const toast = useToast()
     
     // Combat log modal for portrait mode
@@ -209,16 +210,18 @@ export default function BossCombatScreen({
 
     // Check victory/defeat conditions
     useEffect(() => {
-        if (!event.combatState || isProcessing) return
+        if (!event.combatState || isProcessing || combatEnded.current) return
 
         const victory = checkVictory(event.combatState)
         const defeat = checkDefeat(party.filter(h => h !== null) as Hero[])
 
         if (victory) {
+            combatEnded.current = true
             addLogEntry('phase', '🎉 Victory! The boss has been defeated!')
             triggerParticles('victory', { x: 50, y: 50 })
             setTimeout(() => onVictory(), 2000)
         } else if (defeat) {
+            combatEnded.current = true
             addLogEntry('phase', '💀 Defeat... Your party has fallen...')
             setTimeout(() => onDefeat(), 2000)
         }

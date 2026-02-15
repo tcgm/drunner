@@ -376,6 +376,39 @@ export default function DevTools() {
     })
   }
 
+  const handleInstantKillBoss = () => {
+    const state = useGameStore.getState()
+    const currentEvent = state.dungeon.currentEvent
+    
+    if (!currentEvent) {
+      alert('No active event!')
+      return
+    }
+
+    if (currentEvent.type !== 'boss' || !currentEvent.combatState) {
+      alert('Not in active boss combat!')
+      return
+    }
+
+    // Deal true damage equal to boss's current HP (instant kill)
+    const combatState = currentEvent.combatState
+    const damageDealt = combatState.currentHp
+    combatState.currentHp = 0
+
+    // Update the state to trigger victory check
+    useGameStore.setState({
+      dungeon: {
+        ...state.dungeon,
+        currentEvent: {
+          ...currentEvent,
+          combatState: { ...combatState }
+        }
+      }
+    })
+
+    alert(`Dealt ${damageDealt} true damage to boss! Victory condition triggered.`)
+  }
+
   const handleLoadBackups = () => {
     const availableBackups = listBackups()
     setBackups(availableBackups)
@@ -766,6 +799,11 @@ export default function DevTools() {
                         {(dungeon.currentEvent.type === 'combat' || dungeon.currentEvent.type === 'boss') && (
                           <Button size="sm" colorScheme="orange" onClick={handleKillEnemy}>
                             Kill Enemy (Fight Choice)
+                          </Button>
+                        )}
+                        {dungeon.currentEvent.type === 'boss' && dungeon.currentEvent.combatState && (
+                          <Button size="sm" colorScheme="red" onClick={handleInstantKillBoss}>
+                            ⚡ Instant Kill Boss (True Damage)
                           </Button>
                         )}
                         <Button size="sm" colorScheme="yellow" onClick={handleSkipEvent}>
