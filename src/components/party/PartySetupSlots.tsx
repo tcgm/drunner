@@ -16,6 +16,8 @@ interface PartySlotsProps {
   onClassSelect: (classId: string) => void
   onRosterHeroClick: (index: number) => void
   onAddHero: (index: number) => void
+  onAddHeroByClass?: (classId: string, slotIndex: number) => void
+  onAddHeroFromRoster?: (rosterIndex: number, slotIndex: number) => void
   onRemoveHero: (index: number) => void
   onSelectHero: (index: number) => void
   onSlotClick: (heroIndex: number, slotId: string) => void
@@ -35,6 +37,8 @@ export function PartySetupSlots({
   onClassSelect,
   onRosterHeroClick,
   onAddHero,
+  onAddHeroByClass,
+  onAddHeroFromRoster,
   onRemoveHero,
   onSelectHero,
   onSlotClick,
@@ -89,6 +93,8 @@ export function PartySetupSlots({
                   onClassSelect={onClassSelect}
                   onRosterHeroClick={onRosterHeroClick}
                   onAdd={() => onAddHero(index)}
+                  onAddByClass={onAddHeroByClass ? (classId) => onAddHeroByClass(classId, index) : undefined}
+                  onAddFromRoster={onAddHeroFromRoster ? (rosterIndex) => onAddHeroFromRoster(rosterIndex, index) : undefined}
                   onRemove={() => onRemoveHero(index)}
                   onSelect={() => onSelectHero(index)}
                   onSlotClick={onSlotClick}

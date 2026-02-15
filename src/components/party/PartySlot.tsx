@@ -35,7 +35,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
     <Box
       className={`party-slot ${isEmpty ? 'party-slot--empty' : 'party-slot--filled'}`}
       position="relative"
-      flex={1}
+      w="full"
       h="full"
       bg={isEmpty ? 'gray.800' : 'linear-gradient(135deg, rgba(26, 32, 44, 0.9) 0%, rgba(45, 55, 72, 0.9) 100%)'}
       borderRadius="xl"
@@ -142,7 +142,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
               </HStack>
               
               {/* Stats Grid - 3 columns for compact horizontal */}
-              <SimpleGrid className="party-slot-portrait-stats" columns={2} spacing={0.15} w="full" fontSize="2xs">
+              <SimpleGrid className="party-slot-portrait-stats" columns={3} spacing={0.15} w="full" fontSize="2xs">
                 <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
                   <Text color="gray.500">HP</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{calculateTotalStats(hero).maxHp}</Text>

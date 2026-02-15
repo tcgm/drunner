@@ -1,19 +1,18 @@
 /**
- * PartySlotPopover - Popover-based slot interaction for portrait mode
+ * PartySlotPopover - Modal-based slot interaction for portrait mode
  * 
- * Displays a popover when clicking a party slot in portrait mode that contains:
+ * Displays a modal when clicking a party slot in portrait mode that contains:
  * - For empty slots: Class selection and Roster tabs to add a hero
  * - For filled slots: Equipment panel and option to change/remove hero
  */
 
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverArrow,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
   Box,
   Tabs,
   TabList,
@@ -50,6 +49,8 @@ interface PartySlotPopoverProps {
   onClassSelect: (classId: string) => void
   onRosterHeroClick: (index: number) => void
   onAdd: () => void
+  onAddByClass?: (classId: string) => void
+  onAddFromRoster?: (rosterIndex: number) => void
   onRemove: () => void
   onSelect: () => void
   onSlotClick: (heroIndex: number, slotId: string) => void
@@ -71,6 +72,8 @@ export function PartySlotPopover({
   onClassSelect,
   onRosterHeroClick,
   onAdd,
+  onAddByClass,
+  onAddFromRoster,
   onRemove,
   onSelect,
   onSlotClick,
@@ -82,7 +85,6 @@ export function PartySlotPopover({
   const isEmpty = !hero
 
   const handleSlotClick = (e: React.MouseEvent) => {
-    e.preventDefault()
     e.stopPropagation()
     
     if (isEmpty) {
@@ -94,52 +96,52 @@ export function PartySlotPopover({
   }
 
   return (
-    <Popover
-      isOpen={isOpen}
-      onClose={onClose}
-      placement="auto"
-      closeOnBlur={true}
-      strategy="fixed"
-      isLazy
-    >
-      <PopoverTrigger>
-        <Box onClick={handleSlotClick} flex={1} h="full" cursor="pointer">
-          <PartySlot
-            hero={hero}
-            slotIndex={slotIndex}
-            onAdd={() => {}} // Disable default behavior - handled by popover
-            onRemove={(e?: React.MouseEvent) => {
-              if (e) {
-                e.stopPropagation()
-              }
-              onRemove()
-              onClose()
-            }}
-            onSelect={() => {}} // Disable default behavior - handled by popover
-          />
-        </Box>
-      </PopoverTrigger>
-      <PopoverContent
-        bg="gray.900"
-        borderColor="orange.500"
-        borderWidth="2px"
-        w="95vw"
-        maxW="500px"
-        maxH="85vh"
+    <>
+      <Box className="party-slot-popover-trigger" onClick={handleSlotClick} w="full" display="flex" flexDirection="column" cursor="pointer">
+        <PartySlot
+          hero={hero}
+          slotIndex={slotIndex}
+          onAdd={() => {}} // Disable default behavior - handled by modal
+          onRemove={(e?: React.MouseEvent) => {
+            if (e) {
+              e.stopPropagation()
+            }
+            onRemove()
+            onClose()
+          }}
+          onSelect={() => {}} // Disable default behavior - handled by modal
+        />
+      </Box>
+
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        size="lg"
+        scrollBehavior="inside"
       >
-        <PopoverArrow bg="gray.900" />
-        <PopoverCloseButton />
-        <PopoverHeader color="orange.400" fontWeight="bold">
-          {isEmpty ? `Party Slot ${slotIndex + 1}` : `${hero.name} - Slot ${slotIndex + 1}`}
-        </PopoverHeader>
-        <PopoverBody pb={4} px={2} overflowY="auto" maxH="75vh">
+        <ModalOverlay bg="blackAlpha.600" />
+        <ModalContent
+          className="party-slot-popover-content"
+          bg="gray.900"
+          borderColor="orange.500"
+          borderWidth="2px"
+          maxW="min(95vw, 500px)"
+          maxH="min(90vh, 600px)"
+        >
+          <ModalCloseButton />
+          <ModalHeader className="party-slot-popover-header" color="orange.400" fontWeight="bold">
+            {isEmpty ? `Party Slot ${slotIndex + 1}` : `${hero.name} - Slot ${slotIndex + 1}`}
+          </ModalHeader>
+          <ModalBody className="party-slot-popover-body" pb={4} px={3}>
           {isEmpty ? (
             // Empty Slot - Show Class Selection and Roster
-            <VStack align="stretch" spacing={2}>
+            <VStack className="party-slot-popover-empty" align="stretch" spacing={2}>
               <Text fontSize="sm" color="gray.400" textAlign="center">
                 Add a hero to this slot
               </Text>
               <Tabs
+                className="party-slot-popover-tabs"
                 size="sm"
                 colorScheme="orange"
                 isLazy
@@ -156,12 +158,13 @@ export function PartySlotPopover({
                     <ClassSelectionTab
                       selectedClass={selectedClass}
                       onClassSelect={(classId) => {
-                        onClassSelect(classId)
-                        // Auto-add when class is selected
-                        setTimeout(() => {
+                        if (onAddByClass) {
+                          onAddByClass(classId)
+                        } else {
+                          onClassSelect(classId)
                           onAdd()
-                          onClose()
-                        }, 100)
+                        }
+                        onClose()
                       }}
                     />
                   </TabPanel>
@@ -171,12 +174,13 @@ export function PartySlotPopover({
                       storedHeroes={storedHeroes}
                       selectedHeroFromRoster={selectedHeroFromRoster}
                       onRosterHeroClick={(index) => {
-                        onRosterHeroClick(index)
-                        // Auto-add when roster hero is selected
-                        setTimeout(() => {
+                        if (onAddFromRoster) {
+                          onAddFromRoster(index)
+                        } else {
+                          onRosterHeroClick(index)
                           onAdd()
-                          onClose()
-                        }, 100)
+                        }
+                        onClose()
                       }}
                     />
                   </TabPanel>
@@ -185,13 +189,13 @@ export function PartySlotPopover({
             </VStack>
           ) : (
             // Filled Slot - Show Equipment and Actions
-            <VStack align="stretch" spacing={4}>
+            <VStack className="party-slot-popover-filled" align="stretch" spacing={4}>
               {/* Equipment Section */}
-              <Box>
+              <Box className="party-slot-popover-equipment">
                 <Text fontSize="sm" color="gray.400" mb={2} fontWeight="bold">
                   Equipment
                 </Text>
-                <SimpleGrid columns={2} spacing={2}>
+                <SimpleGrid className="party-slot-popover-equipment-grid" columns={2} spacing={2}>
                   {getEquipmentSlotIds().map((slotId) => {
                     const item = hero.slots[slotId]
                     
@@ -200,7 +204,8 @@ export function PartySlotPopover({
                     }
                     
                     return (
-                      <Box 
+                      <Box
+                        className="party-slot-popover-equipment-item"
                         key={slotId} 
                         position="relative"
                         cursor="pointer"
@@ -216,6 +221,7 @@ export function PartySlotPopover({
                         />
                         {item && (
                           <Button
+                            className="party-slot-popover-unequip-btn"
                             position="absolute"
                             top="-6px"
                             right="-6px"
@@ -243,17 +249,18 @@ export function PartySlotPopover({
                 </SimpleGrid>
                 
                 {/* Consumables Row */}
-                <Box mt={3}>
+                <Box className="party-slot-popover-consumables" mt={3}>
                   <Text fontSize="xs" color="gray.500" mb={1}>
                     Consumables
                   </Text>
-                  <HStack spacing={2}>
+                  <HStack className="party-slot-popover-consumables-list" spacing={2}>
                     {getEquipmentSlotIds()
                       .filter(slotId => slotId.startsWith('consumable'))
                       .map((slotId) => {
                         const item = hero.slots[slotId]
                         return (
-                          <Box 
+                          <Box
+                            className="party-slot-popover-consumable-item"
                             key={slotId} 
                             position="relative" 
                             flex={1}
@@ -270,6 +277,7 @@ export function PartySlotPopover({
                             />
                             {item && (
                               <Button
+                                className="party-slot-popover-unequip-consumable-btn"
                                 position="absolute"
                                 top="-6px"
                                 right="-6px"
@@ -299,8 +307,9 @@ export function PartySlotPopover({
               </Box>
 
               {/* Actions */}
-              <Box>
+              <Box className="party-slot-popover-actions">
                 <Button
+                  className="party-slot-popover-remove-btn"
                   colorScheme="red"
                   variant="solid"
                   w="full"
@@ -316,8 +325,9 @@ export function PartySlotPopover({
               </Box>
             </VStack>
           )}
-        </PopoverBody>
-      </PopoverContent>
-    </Popover>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+    </>
   )
 }

@@ -145,6 +145,20 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     }
   }
 
+  const handleAddHeroByClassDirect = (classId: string, index: number) => {
+    const cls = CORE_CLASSES.find(c => c.id === classId)
+    if (cls) {
+      addHeroByClass(cls, index)
+    }
+  }
+
+  const handleAddHeroFromRosterDirect = (rosterIndex: number, slotIndex: number) => {
+    const hero = heroRoster[rosterIndex]
+    if (hero) {
+      addHero(hero, slotIndex)
+    }
+  }
+
   const handleRemoveHero = (index: number) => {
     const hero = party[index]
     if (hero) {
@@ -305,6 +319,8 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
                 onClassSelect={handleClassSelect}
                 onRosterHeroClick={handleRosterHeroClick}
                 onAddHero={handleAddHeroClick}
+                onAddHeroByClass={handleAddHeroByClassDirect}
+                onAddHeroFromRoster={handleAddHeroFromRosterDirect}
                 onRemoveHero={handleRemoveHero}
                 onSelectHero={setSelectedHeroIndex}
                 onSlotClick={handleOpenBankForSlot}
@@ -328,6 +344,8 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
                 onClassSelect={handleClassSelect}
                 onRosterHeroClick={handleRosterHeroClick}
                 onAddHero={handleAddHeroClick}
+                onAddHeroByClass={handleAddHeroByClassDirect}
+                onAddHeroFromRoster={handleAddHeroFromRosterDirect}
                 onRemoveHero={handleRemoveHero}
                 onSelectHero={setSelectedHeroIndex}
                 onSlotClick={handleOpenBankForSlot}
