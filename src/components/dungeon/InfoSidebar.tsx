@@ -9,9 +9,10 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 interface InfoSidebarProps {
   party: Hero[]
   activeRun: Run | null
+  isInModal?: boolean
 }
 
-export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
+export default function InfoSidebar({ party, activeRun, isInModal = false }: InfoSidebarProps) {
   const aliveCount = party.filter(h => h.isAlive).length
   const avgLevel = party.length > 0 
     ? Math.floor(party.reduce((sum, h) => sum + h.level, 0) / party.length) 
@@ -37,11 +38,11 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
 
   return (
     <Box 
-      className="info-sidebar landscape-only" 
-      w="clamp(200px, 20vw, 300px)"
-      bg="gray.800" 
+      className={isInModal ? "info-sidebar" : "info-sidebar landscape-only"}
+      w={isInModal ? "100%" : "clamp(200px, 20vw, 300px)"}
+      bg={isInModal ? "transparent" : "gray.800"}
       borderRadius="lg" 
-      p={4}
+      p={isInModal ? 0 : 4}
       overflowY="auto"
       maxH="100%"
     >

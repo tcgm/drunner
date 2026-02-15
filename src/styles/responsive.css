@@ -26,8 +26,8 @@
 /* Portrait orientation - Stack vertically */
 @media (orientation: portrait) and (max-width: 768px) {
   /* Hide sidebars by default in portrait - show in modals/drawers instead */
-  .party-sidebar,
-  .info-sidebar,
+  .party-sidebar.landscape-only,
+  .info-sidebar.landscape-only,
   .hero-selection-sidebar,
   .equipment-panel {
     display: none !important;

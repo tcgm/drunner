@@ -324,7 +324,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           <ModalHeader color="orange.400">Info</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <InfoSidebar party={activeParty} activeRun={activeRun} />
+            <InfoSidebar party={activeParty} activeRun={activeRun} isInModal={true} />
           </ModalBody>
         </ModalContent>
       </Modal>
