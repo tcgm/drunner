@@ -95,8 +95,9 @@ export class BossCombatManager {
      * This runs after every state update
      */
     private checkCombatEnd(): void {
-        // Don't check if already ended or processing
-        if (this.status !== 'active' || this.isProcessing) {
+        // Don't check if already ended
+        // NOTE: We DO check even when processing - the killing blow happens during processing!
+        if (this.status !== 'active') {
             return
         }
 
