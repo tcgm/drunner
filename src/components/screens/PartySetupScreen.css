@@ -4,22 +4,14 @@
    ============================================================================ */
 
 /* Mobile FAB buttons for accessing sidebars in portrait mode */
+/* NOTE: FABs are now deprecated in favor of popover-based slot interactions */
 .party-setup-fabs {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  z-index: 999;
-  display: none;
-  flex-direction: column;
-  gap: 0.75rem;
+  display: none !important;
 }
 
-/* Show FABs only in portrait mode */
+/* Show FABs only in portrait mode - DEPRECATED, now using popovers instead */
 @media (orientation: portrait) and (max-width: 768px) {
-  .party-setup-fabs {
-    display: flex;
-  }
-  
+  /* Hide sidebars in portrait mode */
   .hero-selection-sidebar,
   .equipment-panel {
     display: none !important;

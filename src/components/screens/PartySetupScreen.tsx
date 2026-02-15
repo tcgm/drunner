@@ -1,6 +1,5 @@
 import './PartySetupScreen.css'
-import { Box, Flex, useDisclosure, IconButton, Modal, ModalOverlay, ModalContent, ModalBody, ModalCloseButton } from '@chakra-ui/react'
-import { GiBackpack, GiSwordman } from 'react-icons/gi'
+import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../core/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
 import { GAME_CONFIG } from '../../config/gameConfig'
@@ -70,6 +69,17 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   const [tabIndex, setTabIndex] = useState(0)
   const [pendingSlotIndex, setPendingSlotIndex] = useState<number | null>(null)
   const [pendingSlot, setPendingSlot] = useState<string | null>(null)
+  const [isPortrait, setIsPortrait] = useState(false)
+
+  // Detect orientation
+  useEffect(() => {
+    const checkOrientation = () => {
+      setIsPortrait(window.innerWidth <= 768 && window.matchMedia('(orientation: portrait)').matches)
+    }
+    checkOrientation()
+    window.addEventListener('resize', checkOrientation)
+    return () => window.removeEventListener('resize', checkOrientation)
+  }, [])
 
   // Bank modal
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -94,12 +104,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Corrupted items modal
   const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
-
-  // Mobile hero selection modal (portrait only)
-  const { isOpen: isMobileHeroOpen, onOpen: onMobileHeroOpen, onClose: onMobileHeroClose } = useDisclosure()
-
-  // Mobile equipment modal (portrait only)
-  const { isOpen: isMobileEquipOpen, onOpen: onMobileEquipOpen, onClose: onMobileEquipClose } = useDisclosure()
 
   // Auto-open corrupted items modal if there are corrupted items (highest priority)
   useEffect(() => {
@@ -287,13 +291,53 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
         {/* Center - Party Slots */}
         <Box className="party-setup-screen-center" flex={1} minW={0} display="flex" flexDirection="column">
-          <PartySetupSlots
-            party={party}
-            onAddHero={handleAddHeroClick}
-            onRemoveHero={handleRemoveHero}
-            onSelectHero={setSelectedHeroIndex}
-          />
-          <PartySummary party={party.filter((h): h is Hero => h !== null)} />
+          {isPortrait ? (
+            // Portrait Layout - PartySummary outside scroll area
+            <>
+              <PartySummary party={party.filter((h): h is Hero => h !== null)} />
+              <PartySetupSlots
+                party={party}
+                selectedClass={selectedClass}
+                selectedHeroFromRoster={selectedHeroFromRoster}
+                storedHeroes={heroRoster}
+                bankInventory={bankInventory}
+                tabIndex={tabIndex}
+                onTabChange={setTabIndex}
+                onClassSelect={handleClassSelect}
+                onRosterHeroClick={handleRosterHeroClick}
+                onAddHero={handleAddHeroClick}
+                onRemoveHero={handleRemoveHero}
+                onSelectHero={setSelectedHeroIndex}
+                onSlotClick={handleOpenBankForSlot}
+                onUnequipItem={handleUnequipItem}
+                onEquipItem={handleEquipItemDirect}
+                isBankModalOpen={isOpen}
+              />
+            </>
+          ) : (
+            // Desktop Layout - PartySummary below slots
+            <>
+              <PartySetupSlots
+                party={party}
+                selectedClass={selectedClass}
+                selectedHeroFromRoster={selectedHeroFromRoster}
+                storedHeroes={heroRoster}
+                bankInventory={bankInventory}
+                tabIndex={tabIndex}
+                onTabChange={setTabIndex}
+                onClassSelect={handleClassSelect}
+                onRosterHeroClick={handleRosterHeroClick}
+                onAddHero={handleAddHeroClick}
+                onRemoveHero={handleRemoveHero}
+                onSelectHero={setSelectedHeroIndex}
+                onSlotClick={handleOpenBankForSlot}
+                onUnequipItem={handleUnequipItem}
+                onEquipItem={handleEquipItemDirect}
+                isBankModalOpen={isOpen}
+              />
+              <PartySummary party={party.filter((h): h is Hero => h !== null)} />
+            </>
+          )}
         </Box>
 
         {/* Right Sidebar - Equipment */}
@@ -393,71 +437,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         bankGold={bankGold}
         currentSlots={bankStorageSlots}
       />
-
-      {/* Mobile Portrait FAB Buttons */}
-      <Box className="party-setup-fabs">
-        <IconButton
-          className="mobile-fab"
-          aria-label="View Heroes"
-          icon={<GiSwordman size={24} />}
-          colorScheme="blue"
-          size="lg"
-          isRound
-          onClick={onMobileHeroOpen}
-          boxShadow="0 4px 12px rgba(66, 153, 225, 0.5)"
-          _active={{ transform: "scale(0.9)" }}
-        />
-        <IconButton
-          className="mobile-fab"
-          aria-label="View Equipment"
-          icon={<GiBackpack size={24} />}
-          colorScheme="purple"
-          size="lg"
-          isRound
-          onClick={onMobileEquipOpen}
-          boxShadow="0 4px 12px rgba(159, 122, 234, 0.5)"
-          _active={{ transform: "scale(0.9)" }}
-        />
-      </Box>
-
-      {/* Mobile Hero Selection Modal */}
-      <Modal isOpen={isMobileHeroOpen} onClose={onMobileHeroClose} size="full">
-        <ModalOverlay />
-        <ModalContent bg="gray.900" maxH="95vh">
-          <ModalCloseButton />
-          <ModalBody p={0} overflow="auto">
-            <HeroSelectionSidebar
-              tabIndex={tabIndex}
-              onTabChange={setTabIndex}
-              selectedClass={selectedClass}
-              selectedHeroFromRoster={selectedHeroFromRoster}
-              storedHeroes={heroRoster}
-              onClassSelect={handleClassSelect}
-              onRosterHeroClick={handleRosterHeroClick}
-            />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-
-      {/* Mobile Equipment Modal */}
-      <Modal isOpen={isMobileEquipOpen} onClose={onMobileEquipClose} size="full">
-        <ModalOverlay />
-        <ModalContent bg="gray.900" maxH="95vh">
-          <ModalCloseButton />
-          <ModalBody p={0} overflow="auto">
-            <EquipmentPanel
-              selectedHeroIndex={selectedHeroIndex}
-              party={party}
-              bankInventory={bankInventory}
-              onSelectHero={setSelectedHeroIndex}
-              onSlotClick={handleOpenBankForSlot}
-              onUnequipItem={handleUnequipItem}
-              onEquipItem={handleEquipItemDirect}
-              isBankModalOpen={isOpen}
-            />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
     </Box>
   )
 }

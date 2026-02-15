@@ -1,4 +1,5 @@
 import { Box, Flex, VStack, Text, Badge, Button, HStack, SimpleGrid, Icon } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
@@ -18,6 +19,17 @@ interface PartySlotProps {
 export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartySlotProps) {
   const isEmpty = !hero
   const IconComponent = hero ? ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType : null
+  const [isPortrait, setIsPortrait] = useState(false)
+
+  // Detect orientation
+  useEffect(() => {
+    const checkOrientation = () => {
+      setIsPortrait(window.innerWidth <= 768 && window.matchMedia('(orientation: portrait)').matches)
+    }
+    checkOrientation()
+    window.addEventListener('resize', checkOrientation)
+    return () => window.removeEventListener('resize', checkOrientation)
+  }, [])
   
   return (
     <Box
@@ -47,7 +59,119 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
           </Text>
           <Text color="gray.600" fontSize="xs" mt={1}>Slot {slotIndex + 1}</Text>
         </Flex>
+      ) : isPortrait ? (
+        // Portrait Horizontal Layout
+        <>
+          {/* Background Icon Effect */}
+          <Box
+            position="absolute"
+            top="-10px"
+            right="-10px"
+            opacity={0.06}
+            transform="rotate(-15deg)"
+          >
+            {IconComponent && <Icon as={IconComponent} boxSize={32} color="orange.400" />}
+          </Box>
+          
+          <HStack spacing={2} p={2} position="relative" zIndex={1} h="full" align="stretch">
+            {/* Left: Main Icon */}
+            <Box flexShrink={0}>
+              <Box
+                bg="linear-gradient(135deg, rgba(194, 65, 12, 0.3) 0%, rgba(234, 88, 12, 0.3) 100%)"
+                borderRadius="lg"
+                p={1.5}
+                borderWidth="2px"
+                borderColor="orange.700"
+                boxShadow="0 0 20px rgba(234, 88, 12, 0.2)"
+                position="relative"
+                w="50px"
+                h="50px"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+              >
+                {IconComponent && <Icon as={IconComponent} boxSize={8} color="orange.300" />}
+                {/* Glow effect */}
+                <Box
+                  position="absolute"
+                  inset={0}
+                  borderRadius="lg"
+                  bg="orange.500"
+                  opacity={0.1}
+                  filter="blur(10px)"
+                />
+                {/* Equipment pips */}
+                <EquipmentPips 
+                  items={Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)}
+                  layout="circular"
+                  radius={25}
+                />
+              </Box>
+            </Box>
+            
+            {/* Middle: Hero Info */}
+            <VStack spacing={0.5} flex={1} align="start" justify="center" minW={0}>
+              <HStack spacing={1.5} w="full">
+                <Text fontWeight="bold" fontSize="xs" color="orange.200" isTruncated flex={1}>
+                  {hero.name}
+                </Text>
+                <Badge colorScheme="orange" fontSize="2xs" px={1.5}>
+                  Lv{hero.level}
+                </Badge>
+              </HStack>
+              
+              {/* Stats Grid - 3 columns for compact horizontal */}
+              <SimpleGrid columns={3} spacing={0.5} w="full" fontSize="2xs">
+                <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
+                  <Text color="gray.500">HP</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{calculateTotalStats(hero).maxHp}</Text>
+                </HStack>
+                <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
+                  <Text color="gray.500">ATK</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text>
+                </HStack>
+                <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
+                  <Text color="gray.500">DEF</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{calculateTotalStats(hero).defense}</Text>
+                </HStack>
+                <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
+                  <Text color="gray.500">SPD</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text>
+                </HStack>
+                <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
+                  <Text color="gray.500">WIS</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
+                </HStack>
+                <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
+                  <Text color="gray.500">CHA</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{calculateTotalStats(hero).charisma ?? 0}</Text>
+                </HStack>
+              </SimpleGrid>
+            </VStack>
+            
+            {/* Right: Remove Button */}
+            <Box flexShrink={0} display="flex" alignItems="center">
+              <Button
+                size="xs"
+                colorScheme="red"
+                variant="solid"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRemove()
+                }}
+                fontSize="xs"
+                px={1.5}
+                h="auto"
+                py={1.5}
+                minW="auto"
+              >
+                <Icon as={GameIcons.GiCancel} boxSize={3.5} />
+              </Button>
+            </Box>
+          </HStack>
+        </>
       ) : (
+        // Desktop Vertical Layout
         <>
           {/* Background Icon Effect */}
           <Box
@@ -146,12 +270,16 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
               Remove
             </Button>
           </VStack>
-          
-          {/* Slot Number Badge */}
+        </>
+      )}
+      
+      {/* Slot Number Badge - shown for filled slots */}
+      {!isEmpty && (
+        <>
           <Box
             position="absolute"
-            top={2}
-            right={2}
+            top={0}
+            left={0}
             bg="gray.900"
             borderRadius="full"
             w={7}
@@ -164,6 +292,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             color="gray.400"
             borderWidth="2px"
             borderColor="gray.700"
+            zIndex={10}
           >
             {slotIndex + 1}
           </Box>
