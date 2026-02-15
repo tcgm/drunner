@@ -356,7 +356,7 @@ export default function CombatActionsPanel({
                                                                         <VStack spacing={0}>
                                                                             <ItemSlot
                                                                                 item={item}
-                                                                                size="xs"
+                                                                                size="sm"
                                                                                 isClickable={false}
                                                                                 iconOnly={true}
                                                                             />
