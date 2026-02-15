@@ -57,14 +57,14 @@ export function PartySetupSlots({
   
   return (
     <Box className="party-setup-slots" flex={1} minW={0} display="flex" flexDirection="column" bg="gray.950" p={isPortrait ? 2 : 3} overflow="hidden">
-      <VStack spacing={2} h="full" overflow="hidden">
+      <VStack className="party-setup-slots-container" spacing={2} h="full" overflow="hidden">
         {isPortrait ? (
           // Portrait Layout - Header above slots, slots in vertical column
           <>
-            <VStack spacing={0.5} w="full" flexShrink={0} pb={1}>
-              <Heading size="sm" color="orange.300">
+            <VStack className="party-setup-slots-portrait-header" spacing={0.5} w="full" flexShrink={0} pb={1}>
+              {/* <Heading size="sm" color="orange.300">
                 Your Party
-              </Heading>
+              </Heading> */}
               <Text fontSize="xs" color="gray.400" textAlign="center">
                 Tap a slot to add or manage heroes
               </Text>
@@ -73,7 +73,7 @@ export function PartySetupSlots({
               </Badge>
             </VStack>
             
-            <VStack spacing={2} w="full" flex={1} minH={0} py={1} overflowY="auto" overflowX="hidden">
+            <VStack className="party-setup-slots-portrait-list" spacing={2} w="full" flex={1} minH={0} py={1} overflowY="auto" overflowX="hidden">
               {party.map((hero, index) => (
                 <PartySlotPopover
                   key={index}
@@ -102,7 +102,7 @@ export function PartySetupSlots({
         ) : (
           // Desktop Layout - Header in grid, slots horizontal
           <>
-            <SimpleGrid columns={3} w="full" flexShrink={0} gap={4} alignItems="center">
+            <SimpleGrid className="party-setup-slots-desktop-header" columns={3} w="full" flexShrink={0} gap={4} alignItems="center">
               <Heading size="sm" color="orange.300">
                 Your Party
               </Heading>
@@ -114,7 +114,7 @@ export function PartySetupSlots({
               </Badge>
             </SimpleGrid>
             
-            <HStack spacing={4} w="full" flex={1} minH={0}>
+            <HStack className="party-setup-slots-desktop-list" spacing={4} w="full" flex={1} minH={0}>
               {party.map((hero, index) => (
                 <PartySlot
                   key={index}

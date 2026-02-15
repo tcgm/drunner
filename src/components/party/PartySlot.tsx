@@ -52,18 +52,38 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
       boxShadow={isEmpty ? 'none' : '0 4px 16px rgba(0,0,0,0.4)'}
     >
       {isEmpty ? (
-        <Flex h="full" align="center" justify="center" direction="column">
-          <Icon as={GameIcons.GiCircle} boxSize={12} color="gray.600" mb={2} />
-          <Text color="gray.500" fontSize="sm" fontWeight="bold" textAlign="center" px={2}>
-            Empty Slot
-          </Text>
-          <Text color="gray.600" fontSize="xs" mt={1}>Slot {slotIndex + 1}</Text>
+        <Flex className="party-slot-empty-content" h="full" align="center" justify={isPortrait ? "start" : "center"} direction={isPortrait ? "row" : "column"} w="full" px={isPortrait ? 2 : 0}>
+          <Box
+            className="party-slot-empty-icon-box"
+            bg="gray.700"
+            borderRadius="lg"
+            p={isPortrait ? 1.5 : 2}
+            borderWidth="2px"
+            borderColor="gray.600"
+            flexShrink={0}
+            w={isPortrait ? "50px" : "auto"}
+            h={isPortrait ? "50px" : "auto"}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mr={isPortrait ? 3 : 0}
+            mb={isPortrait ? 0 : 2}
+          >
+            <Icon className="party-slot-empty-icon" as={GameIcons.GiCircle} boxSize={isPortrait ? 8 : 12} color="gray.600" />
+          </Box>
+          <Flex className="party-slot-empty-text" direction="column" align={isPortrait ? "start" : "center"}>
+            <Text className="party-slot-empty-label" color="gray.500" fontSize="sm" fontWeight="bold" textAlign={isPortrait ? "left" : "center"} px={isPortrait ? 0 : 2}>
+              Empty Slot
+            </Text>
+            <Text className="party-slot-empty-number" color="gray.600" fontSize="xs" mt={1}>Slot {slotIndex + 1}</Text>
+          </Flex>
         </Flex>
       ) : isPortrait ? (
         // Portrait Horizontal Layout
         <>
           {/* Background Icon Effect */}
           <Box
+            className="party-slot-bg-icon"
             position="absolute"
             top="-10px"
             right="-10px"
@@ -73,10 +93,11 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             {IconComponent && <Icon as={IconComponent} boxSize={32} color="orange.400" />}
           </Box>
           
-          <HStack spacing={2} p={2} position="relative" zIndex={1} h="full" align="stretch">
+          <HStack className="party-slot-portrait-content" spacing={1} p={1} position="relative" zIndex={1} h="full" align="stretch">
             {/* Left: Main Icon */}
-            <Box flexShrink={0}>
+            <Box className="party-slot-portrait-icon-wrapper" flexShrink={0}>
               <Box
+                className="party-slot-portrait-icon-box"
                 bg="linear-gradient(135deg, rgba(194, 65, 12, 0.3) 0%, rgba(234, 88, 12, 0.3) 100%)"
                 borderRadius="lg"
                 p={1.5}
@@ -110,18 +131,18 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             </Box>
             
             {/* Middle: Hero Info */}
-            <VStack spacing={0.5} flex={1} align="start" justify="center" minW={0}>
-              <HStack spacing={1.5} w="full">
-                <Text fontWeight="bold" fontSize="xs" color="orange.200" isTruncated flex={1}>
+            <VStack className="party-slot-portrait-info" spacing={0.5} flex={1} align="start" justify="center" minW={0}>
+              <HStack className="party-slot-portrait-header" spacing={1.5} w="full">
+                <Text className="party-slot-portrait-name" fontWeight="bold" fontSize="xs" color="orange.200" isTruncated flex={1}>
                   {hero.name}
                 </Text>
-                <Badge colorScheme="orange" fontSize="2xs" px={1.5}>
+                <Badge className="party-slot-portrait-level" colorScheme="orange" fontSize="2xs" px={1}>
                   Lv{hero.level}
                 </Badge>
               </HStack>
               
               {/* Stats Grid - 3 columns for compact horizontal */}
-              <SimpleGrid columns={3} spacing={0.5} w="full" fontSize="2xs">
+              <SimpleGrid className="party-slot-portrait-stats" columns={2} spacing={0.15} w="full" fontSize="2xs">
                 <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
                   <Text color="gray.500">HP</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{calculateTotalStats(hero).maxHp}</Text>
@@ -150,8 +171,9 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             </VStack>
             
             {/* Right: Remove Button */}
-            <Box flexShrink={0} display="flex" alignItems="center">
+            <Box className="party-slot-portrait-remove-wrapper" flexShrink={0} display="flex" alignItems="center">
               <Button
+                className="party-slot-portrait-remove-btn"
                 size="xs"
                 colorScheme="red"
                 variant="solid"
@@ -175,6 +197,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
         <>
           {/* Background Icon Effect */}
           <Box
+            className="party-slot-desktop-bg-icon"
             position="absolute"
             top="-20px"
             right="-20px"
@@ -184,9 +207,10 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             {IconComponent && <Icon as={IconComponent} boxSize={40} color="orange.400" />}
           </Box>
           
-          <VStack spacing={1} p={3} position="relative" zIndex={1} h="full">
+          <VStack className="party-slot-desktop-content" spacing={1} p={3} position="relative" zIndex={1} h="full">
             {/* Main Icon */}
             <Box
+              className="party-slot-desktop-icon-box"
               bg="linear-gradient(135deg, rgba(194, 65, 12, 0.3) 0%, rgba(234, 88, 12, 0.3) 100%)"
               borderRadius="lg"
               p={2}
@@ -214,16 +238,16 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             </Box>
             
             {/* Hero Info */}
-            <VStack spacing={0.5} w="full" flex={1}>
-              <Text fontWeight="bold" fontSize="sm" color="orange.200" w="full" textAlign="center" isTruncated>
+            <VStack className="party-slot-desktop-info" spacing={0.5} w="full" flex={1}>
+              <Text className="party-slot-desktop-name" fontWeight="bold" fontSize="sm" color="orange.200" w="full" textAlign="center" isTruncated>
                 {hero.name}
               </Text>
-              <Badge colorScheme="orange" fontSize="xs">
+              <Badge className="party-slot-desktop-level" colorScheme="orange" fontSize="xs">
                 Lv{hero.level}
               </Badge>
               
               {/* Stats Grid */}
-              <SimpleGrid columns={2} spacing={1} w="full" pt={1} fontSize="xs">
+              <SimpleGrid className="party-slot-desktop-stats" columns={2} spacing={1} w="full" pt={1} fontSize="xs">
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">HP</Text>
                   <Text fontWeight="bold" color={GAME_CONFIG.colors.hp.base}>{calculateTotalStats(hero).maxHp}</Text>
@@ -255,6 +279,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             
             {/* Remove Button */}
             <Button
+              className="party-slot-desktop-remove-btn"
               size="sm"
               colorScheme="red"
               variant="solid"
@@ -277,6 +302,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
       {!isEmpty && (
         <>
           <Box
+            className="party-slot-number-badge"
             position="absolute"
             top={0}
             left={0}
@@ -299,6 +325,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
           
           {/* Selected glow */}
           <Box
+            className="party-slot-selected-glow"
             position="absolute"
             top={0}
             left={0}

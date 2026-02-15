@@ -3,43 +3,36 @@
    Component: PartySummary.tsx
    ============================================================================ */
 
-/* Portrait mode - wrap or stack stats */
+/* Portrait mode - compact single row */
 @media (orientation: portrait) and (max-width: 768px) {
   .party-summary {
-    padding: 0.75rem !important;
-    margin: 0.5rem 0.75rem !important;
+    padding: 0.375rem 0.5rem !important;
+    margin: 0 0.375rem 0.5rem 0.375rem !important;
+    border-radius: 0.375rem !important;
   }
   
   .party-summary-stats {
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-    justify-content: space-between !important;
-  }
-  
-  .party-summary-stats > * {
-    flex: 1 1 45% !important;
-    justify-content: center !important;
-  }
-}
-
-/* Very small portrait screens - full stack */
-@media (orientation: portrait) and (max-width: 400px) {
-  .party-summary {
-    padding: 0.5rem !important;
-    margin: 0.5rem !important;
-  }
-  
-  .party-summary-stats {
-    flex-direction: column !important;
-    gap: 0.375rem !important;
-  }
-  
-  .party-summary-stats > * {
-    flex: none !important;
-    width: 100% !important;
+    gap: 0.25rem !important;
+    font-size: 0.65rem !important;
   }
   
   .party-summary-stats .chakra-text {
-    font-size: 0.75rem !important;
+    font-size: 0.6rem !important;
+  }
+}
+
+/* Very small portrait screens - keep compact row */
+@media (orientation: portrait) and (max-width: 400px) {
+  .party-summary {
+    padding: 0.25rem 0.375rem !important;
+    margin: 0 0.25rem 0.375rem 0.25rem !important;
+  }
+  
+  .party-summary-stats {
+    gap: 0.125rem !important;
+  }
+  
+  .party-summary-stats .chakra-text {
+    font-size: 0.55rem !important;
   }
 }

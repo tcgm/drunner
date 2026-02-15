@@ -73,8 +73,7 @@
   }
   
   /* Add bottom padding to prevent content from being hidden */
-  .dungeon-screen,
-  .party-setup-screen {
+  .dungeon-screen {
     padding-bottom: 70px !important;
   }
 }

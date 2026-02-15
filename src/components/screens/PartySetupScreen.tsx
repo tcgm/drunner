@@ -290,11 +290,10 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         />
 
         {/* Center - Party Slots */}
-        <Box className="party-setup-screen-center" flex={1} minW={0} display="flex" flexDirection="column">
+        <Box className="party-setup-screen-center" flex={1} minW={0} minH={0} display="flex" flexDirection="column">
           {isPortrait ? (
             // Portrait Layout - PartySummary outside scroll area
             <>
-              <PartySummary party={party.filter((h): h is Hero => h !== null)} />
               <PartySetupSlots
                 party={party}
                 selectedClass={selectedClass}
@@ -313,6 +312,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
                 onEquipItem={handleEquipItemDirect}
                 isBankModalOpen={isOpen}
               />
+              <PartySummary party={party.filter((h): h is Hero => h !== null)} />
             </>
           ) : (
             // Desktop Layout - PartySummary below slots
@@ -341,7 +341,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         </Box>
 
         {/* Right Sidebar - Equipment */}
-        <EquipmentPanel
+        {isPortrait? null : <EquipmentPanel
           selectedHeroIndex={selectedHeroIndex}
           party={party}
           bankInventory={bankInventory}
@@ -351,6 +351,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
           onEquipItem={handleEquipItemDirect}
           isBankModalOpen={isOpen}
         />
+        }
       </Flex>
 
       {/* Bank Inventory Modal */}
