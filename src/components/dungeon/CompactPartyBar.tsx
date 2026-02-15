@@ -1,6 +1,6 @@
 import './CompactPartyBar.css'
 import { HStack, Box, VStack, Text, Progress, Spacer, Icon, Tooltip, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody, Button, Badge } from '@chakra-ui/react'
-import { useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import type { Hero, Consumable, Item } from '@/types'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
@@ -20,6 +20,7 @@ interface CompactPartyBarProps {
 
 export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps) {
   const { updateHero, dungeon, useAbility: activateAbility } = useGameStore()
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null)
 
   const handleUseConsumable = (hero: Hero, slotId: string, event: React.MouseEvent) => {
     event.stopPropagation()
@@ -49,7 +50,7 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
       overflowX="auto"
       cursor={onClick ? "pointer" : "default"}
       onClick={onClick}
-      _hover={onClick ? { bg: "gray.750" } : undefined}
+      // _hover={onClick ? { bg: "gray.750" } : undefined}
       transition="background 0.2s"
     >
       {party.map((hero) => {
@@ -76,8 +77,6 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
           <VStack
             key={hero.id}
             className="compact-party-card"
-            minW="100px"
-            maxW="140px"
             flex="1 1 0"
             bg={isAlive ? "gray.800" : "gray.900"}
             borderRadius="md"
@@ -87,6 +86,7 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
             opacity={isAlive ? 1 : 0.6}
             spacing={1}
             position="relative"
+            zIndex={openPopoverId === hero.id ? 10 : 1}
             onClick={(e) => {
               // Only trigger parent onClick if not clicking on consumable/ability
               if ((e.target as HTMLElement).closest('.compact-action-button')) {
@@ -95,30 +95,31 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
               onClick?.()
             }}
           >
-            {/* Hero Icon */}
-            <Icon 
-              as={IconComponent} 
-              boxSize={8} 
-              color={isAlive ? "orange.400" : "gray.500"}
-              mb={0.5}
-            />
 
             {/* Name and Level */}
             <HStack spacing={1} justify="center" w="full">
+              
+              {/* Hero Icon */}
+              <Icon 
+                as={IconComponent} 
+                boxSize={4} 
+                color={isAlive ? "orange.400" : "gray.500"}
+              />
               <Text
-                fontSize="xs"
-                fontWeight="bold"
-                color={isAlive ? "orange.300" : "gray.500"}
-                isTruncated
-                flex={1}
-                textAlign="center"
-              >
-                {hero.name}
+                  fontSize="xs"
+                  fontWeight="bold"
+                  color={isAlive ? "orange.300" : "gray.500"}
+                  flex={1}
+                  textAlign="center"
+                >
+                  {hero.name}
+                </Text>
+                <Spacer/>
+                <Text fontSize="2xs" color="gray.400">
+                Lv{hero.level}
               </Text>
             </HStack>
-            <Text fontSize="2xs" color="gray.400" mb={0.5}>
-              Lv{hero.level}
-            </Text>
+            
 
             {/* HP Bar and Status */}
             {isAlive ? (
@@ -137,13 +138,12 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
               </>
             ) : (
               <Text fontSize="2xs" color="red.400" textAlign="center" fontWeight="bold">
-                💀 KO
+                K/O
               </Text>
             )}
 
             {/* Consumables and Abilities Row */}
-            <HStack spacing={0.5} w="full" justify="center" mt={1}>
-              {/* Consumable Slots */}
+            <HStack spacing={0.5} w="full" justify="center" h={"20px"}>
               {consumableSlots.map(slotId => {
                 const item = hero.slots[slotId] ? restoreItemIcon(hero.slots[slotId]) : null
                 const consumable = item && 'consumableType' in item ? item as Consumable : null
@@ -157,6 +157,8 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
                       className="compact-action-button"
                       w="20px"
                       h="20px"
+                      minW="20px"
+                      minH="20px"
                       bg="gray.900"
                       borderRadius="sm"
                       borderWidth="1px"
@@ -177,6 +179,8 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
                     className="compact-action-button"
                     w="20px"
                     h="20px"
+                    minW="20px"
+                    minH="20px"
                     cursor={canUse ? 'pointer' : 'not-allowed'}
                     opacity={canUse ? 1 : 0.5}
                     borderRadius="sm"
@@ -194,13 +198,22 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
               })}
 
               {/* Abilities Button */}
-              <Popover placement="top" closeOnBlur={true} strategy="fixed">
+              <Popover 
+                placement="bottom-start" 
+                closeOnBlur={true} 
+                strategy="fixed"
+                isLazy
+                onOpen={() => setOpenPopoverId(hero.id)}
+                onClose={() => setOpenPopoverId(null)}
+              >
                 <PopoverTrigger>
                   <Box
                     className="compact-action-button"
                     as="button"
                     w="20px"
                     h="20px"
+                    minW="20px"
+                    minH="20px"
                     bg={usableAbilities.length > 0 ? 'purple.900' : 'gray.800'}
                     borderRadius="sm"
                     borderWidth="1px"
@@ -208,6 +221,7 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
+                    p={0}
                     cursor={usableAbilities.length > 0 && isAlive ? 'pointer' : 'not-allowed'}
                     opacity={usableAbilities.length > 0 && isAlive ? 1 : 0.5}
                     position="relative"
@@ -238,6 +252,7 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
                   borderColor="purple.500"
                   borderWidth="2px"
                   maxW="280px"
+                  zIndex="popover"
                   onClick={(e: React.MouseEvent) => e.stopPropagation()}
                 >
                   <PopoverArrow bg="gray.900" />
