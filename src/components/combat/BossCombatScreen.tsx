@@ -279,6 +279,19 @@ export default function BossCombatScreen({
         }
     }, [party])
 
+    // Sync store changes (like DevTools instant kill) to manager
+    useEffect(() => {
+        if (managerRef.current && event.combatState) {
+            const storeHp = event.combatState.currentHp
+            const managerHp = managerRef.current.getState().currentHp
+            
+            if (storeHp !== managerHp) {
+                console.log('[BossCombatScreen] Syncing store HP to manager:', storeHp)
+                managerRef.current.updateState(event.combatState)
+            }
+        }
+    }, [event.combatState?.currentHp])
+
     const handleHeroAction = async (heroId: string, action: string) => {
         const manager = managerRef.current
         if (!manager || manager.isCurrentlyProcessing() || manager.getStatus() !== 'active') return

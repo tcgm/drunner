@@ -168,18 +168,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     }
   }, [dungeon.currentEvent, dungeon, inBossCombat])
 
-  // Sync store updates (like DevTools instant kill) back to local bossEvent state
-  useEffect(() => {
-    if (inBossCombat && dungeon.currentEvent && dungeon.currentEvent.type === 'boss' && dungeon.currentEvent.combatState) {
-      console.log('[DungeonScreen] Syncing store combatState to bossEvent, HP:', dungeon.currentEvent.combatState.currentHp)
-      // Update local bossEvent if the store's combatState changes (e.g., DevTools instant kill)
-      // Force a new object reference to trigger React updates
-      setBossEvent({
-        ...dungeon.currentEvent,
-        combatState: { ...dungeon.currentEvent.combatState }
-      })
-    }
-  }, [inBossCombat, dungeon.currentEvent?.combatState?.currentHp])
+  // Note: Store sync removed - CombatManager now handles all combat state
+  // DevTools or other external updates should go through the manager's updateState method
 
   // Victory check - player completed max floors (check floor, not depth!)
   if (dungeon.floor > GAME_CONFIG.dungeon.maxFloors) {
