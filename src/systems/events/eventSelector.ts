@@ -41,6 +41,14 @@ export function selectRandomEvent(
       bossEvents = bossEvents.filter(e => !(e as any).isFinalBoss)
     }
     
+    // Floor 1: Prefer intro bosses designed for teaching combat
+    if (floor === 1) {
+      const introBosses = bossEvents.filter(e => (e as any).isIntroBoss)
+      if (introBosses.length > 0) {
+        return introBosses[Math.floor(Math.random() * introBosses.length)]
+      }
+    }
+    
     // For major bosses (every 10 floors), look for zone-specific boss
     if (isMajorBoss && !isFinalFloor) {
       const zoneBoss = bossEvents.find(e => (e as any).zoneBossFloor === floor)

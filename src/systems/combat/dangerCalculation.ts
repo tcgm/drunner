@@ -39,18 +39,40 @@ export function calculateDanger(
 }
 
 /**
- * Apply first boss scaling reduction for tutorial boss
+ * Apply early boss scaling reduction with tapering from floors 1-10
  * 
  * @param danger - Base danger level
  * @param floor - Current floor
- * @returns Modified danger level (reduced if floor 1)
+ * @returns Modified danger level (reduced for early floors with linear taper)
+ * 
+ * @example
+ * // Floor 1: 60% reduction
+ * applyEarlyBossScaling(10, 1) // 10 * (1 - 0.60) = 4.0
+ * 
+ * // Floor 5: 36% reduction (60% - 4*6%)
+ * applyEarlyBossScaling(10, 5) // 10 * (1 - 0.36) = 6.4
+ * 
+ * // Floor 10: 6% reduction (60% - 9*6%)
+ * applyEarlyBossScaling(10, 10) // 10 * (1 - 0.06) = 9.4
+ * 
+ * // Floor 11+: No reduction
+ * applyEarlyBossScaling(10, 11) // 10.0
  */
-export function applyFirstBossScaling(danger: number, floor: number): number {
-    const config = GAME_CONFIG.combat.turnBased.firstBossScaling
+export function applyEarlyBossScaling(danger: number, floor: number): number {
+    const config = GAME_CONFIG.combat.turnBased.earlyBossScaling
 
-    if (!config.enabled || floor > config.floorThreshold) {
+    if (!config.enabled || floor > config.maxFloor) {
         return danger
     }
 
-    return danger * (1 - config.dangerReduction)
+    // Calculate reduction: baseReduction - (floor - 1) * taperPerFloor
+    // Floor 1: 0.60 - 0 * 0.06 = 0.60
+    // Floor 5: 0.60 - 4 * 0.06 = 0.36
+    // Floor 10: 0.60 - 9 * 0.06 = 0.06
+    const reduction = Math.max(0, config.baseReduction - (floor - 1) * config.taperPerFloor)
+
+    return danger * (1 - reduction)
 }
+
+// Legacy alias for backward compatibility
+export const applyFirstBossScaling = applyEarlyBossScaling

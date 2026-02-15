@@ -360,6 +360,7 @@ export interface DungeonEvent {
   isFinalBoss?: boolean // True for the Floor 100 final boss only
   isZoneBoss?: boolean // True for major milestone bosses (floors 10, 20, 30, etc.)
   zoneBossFloor?: number // The specific floor this zone boss appears on
+  isIntroBoss?: boolean // True for floor 1 intro bosses designed to teach combat
   
   // Combat system fields
   combatState?: BossCombatState // Multi-turn combat state (for bosses)

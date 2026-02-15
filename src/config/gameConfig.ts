@@ -220,12 +220,15 @@ export const GAME_CONFIG = {
         combatDepth: 0.05, // Combat turns contribute same as events to danger
       },
       
-      // First boss tutorial scaling (reduced difficulty)
-      firstBossScaling: {
+      // Early boss scaling (reduced difficulty for floors 1-10, tapering)
+      earlyBossScaling: {
         enabled: true,
-        floorThreshold: 1, // Only applies to floor 1 bosses
-        dangerReduction: 0.5, // Reduce effective danger by 50%
-        description: 'First boss is easier to teach combat mechanics',
+        maxFloor: 10, // Scaling applies up to floor 10 (zone boss)
+        // Danger reduction per floor (linear taper from floor 1 to 10)
+        // Floor 1: 60% reduction, Floor 2: 50%, Floor 3: 40%, ..., Floor 10: 0%
+        baseReduction: 0.60, // Starting reduction at floor 1 (60%)
+        taperPerFloor: 0.06, // Reduction decreases by 6% per floor (reaches 0% at floor 10)
+        description: 'Early bosses are easier, tapering off until the first zone boss',
       },
       
       // Stat scaling per danger point
