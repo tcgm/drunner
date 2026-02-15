@@ -207,6 +207,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     return (
       <BossCombatScreen
         event={bossEvent}
+        dungeon={dungeon}
         party={refreshedParty}
         onVictory={handleBossVictory}
         onDefeat={handleBossDefeat}

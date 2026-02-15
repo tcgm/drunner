@@ -31,12 +31,15 @@ import {
     useConsumable,
     advanceTurn,
     getCurrentCombatant,
+    createCombatManager,
+    type BossCombatManager,
 } from '@/systems/combat'
 
 const MotionBox = motion.create(Box)
 
 interface BossCombatScreenProps {
     event: DungeonEvent
+    dungeon: import('@/types').Dungeon
     party: (Hero | null)[]
     onVictory: () => void
     onDefeat: () => void
@@ -54,32 +57,25 @@ export interface CombatLogEntry {
 
 export default function BossCombatScreen({
     event,
+    dungeon,
     party,
     onVictory,
     onDefeat,
     onFlee
 }: BossCombatScreenProps) {
+    const [combatState, setCombatState] = useState<BossCombatState>(event.combatState!)
     const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
     const [updateTrigger, setUpdateTrigger] = useState(0)
     const [isBossActing, setIsBossActing] = useState(false)
     const [particleEffect, setParticleEffect] = useState<ParticleEffect | null>(null)
     const [particlePosition, setParticlePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
+    const managerRef = useRef<BossCombatManager | null>(null)
     const combatInitialized = useRef(false)
-    const combatEnded = useRef(false)
-    const isUnmounting = useRef(false) // Prevent any actions after unmount starts
     const toast = useToast()
     
     // Combat log modal for portrait mode
     const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure()
-
-    // Cleanup on unmount - stop all processing
-    useEffect(() => {
-        return () => {
-            isUnmounting.current = true
-            combatEnded.current = true
-        }
-    }, [])
 
     // Add log entry helper
     const addLogEntry = (
@@ -88,9 +84,6 @@ export default function BossCombatScreen({
         target?: string,
         value?: number
     ) => {
-        // Don't add logs if unmounting
-        if (isUnmounting.current) return
-        
         const entry: CombatLogEntry = {
             id: `${Date.now()}-${Math.random()}`,
             type,
@@ -104,22 +97,16 @@ export default function BossCombatScreen({
 
     // Trigger particle effect helper
     const triggerParticles = (effect: ParticleEffect, position: { x: number; y: number } = { x: 50, y: 50 }) => {
-        // Don't trigger particles if unmounting
-        if (isUnmounting.current) return
-        
         setParticleEffect(effect)
         setParticlePosition(position)
     }
 
     // Helper to process boss turn with animations and delays
     const processBossTurnWithAnimations = async (bossTurnResult: any) => {
-        if (isUnmounting.current) return // Don't process if unmounting
-        
         setIsBossActing(true)
 
         // Passive healing animation
         if (bossTurnResult.passiveHealing) {
-            if (isUnmounting.current) return
             addLogEntry('heal', `Boss regenerates ${bossTurnResult.passiveHealing} HP`, 'boss', bossTurnResult.passiveHealing)
             triggerParticles('heal', { x: 50, y: 30 })
             setUpdateTrigger(prev => prev + 1)
@@ -128,7 +115,6 @@ export default function BossCombatScreen({
 
         // Phase transition animation
         if (bossTurnResult.phaseTransition) {
-            if (isUnmounting.current) return
             addLogEntry('phase', `Boss enters Phase ${bossTurnResult.phaseTransition.newPhase}!`)
             triggerParticles('phase', { x: 50, y: 30 })
             setUpdateTrigger(prev => prev + 1)
@@ -138,7 +124,6 @@ export default function BossCombatScreen({
         // Abilities animations
         if (bossTurnResult.abilitiesUsed.length > 0) {
             for (const abilityResult of bossTurnResult.abilitiesUsed) {
-                if (isUnmounting.current) return
                 addLogEntry('ability', `Boss uses ${abilityResult.ability.name}!`)
                 setUpdateTrigger(prev => prev + 1)
                 await new Promise(resolve => setTimeout(resolve, 500))
@@ -146,7 +131,6 @@ export default function BossCombatScreen({
                 // Show each effect with delay
                 if (abilityResult.effects) {
                     for (const effect of abilityResult.effects) {
-                        if (isUnmounting.current) return
                         if (effect.description) {
                             addLogEntry('action', effect.description)
                             setUpdateTrigger(prev => prev + 1)
@@ -159,7 +143,6 @@ export default function BossCombatScreen({
 
         // Attack animation
         if (bossTurnResult.attackResult) {
-            if (isUnmounting.current) return
             const pattern = bossTurnResult.attackResult.pattern
             if (pattern) {
                 addLogEntry('action', `Boss uses ${pattern.name}!`)
@@ -170,7 +153,6 @@ export default function BossCombatScreen({
             // Show damage with delays between each target
             if (bossTurnResult.attackResult.damage && bossTurnResult.attackResult.damage.length > 0) {
                 for (const dmg of bossTurnResult.attackResult.damage) {
-                    if (isUnmounting.current) return
                     if (dmg.isDodge) {
                         addLogEntry('action', `${dmg.heroName} dodged!`)
                         triggerParticles('dodge', { x: 50, y: 70 })
@@ -183,13 +165,11 @@ export default function BossCombatScreen({
                     await new Promise(resolve => setTimeout(resolve, 500))
                 }
             } else {
-                if (isUnmounting.current) return
                 addLogEntry('action', 'Boss attacks but misses!')
                 setUpdateTrigger(prev => prev + 1)
                 await new Promise(resolve => setTimeout(resolve, 500))
             }
         } else {
-            if (isUnmounting.current) return
             addLogEntry('action', 'Boss readies for the next attack...')
             setUpdateTrigger(prev => prev + 1)
             await new Promise(resolve => setTimeout(resolve, 500))
@@ -198,110 +178,112 @@ export default function BossCombatScreen({
         setIsBossActing(false)
     }
 
-    // Initialize combat on mount
+    // Initialize combat manager on mount
     useEffect(() => {
-        if (event.combatState && !combatInitialized.current && !isUnmounting.current) {
+        console.log('[BossCombatScreen] Initializing combat manager')
+        
+        const manager = createCombatManager(
+            event,
+            dungeon,
+            party,
+            {
+                onVictory: () => {
+                    console.log('[CombatManager] Victory callback fired')
+                    // Trigger victory particles
+                    triggerParticles('victory', { x: 50, y: 50 })
+                    // Close combat log modal if open (important for mobile)
+                    if (isCombatLogOpen) {
+                        onCombatLogClose()
+                    }
+                    onVictory()
+                },
+                onDefeat: () => {
+                    console.log('[CombatManager] Defeat callback fired')
+                    // Close combat log modal if open (important for mobile)
+                    if (isCombatLogOpen) {
+                        onCombatLogClose()
+                    }
+                    onDefeat()
+                },
+                onStateUpdate: (newState) => {
+                    console.log('[CombatManager] State updated, HP:', newState.currentHp)
+                    setCombatState(newState)
+                    setUpdateTrigger(prev => prev + 1)
+                },
+                onLog: (type, message) => {
+                    // Adapter to match manager's simpler signature
+                    addLogEntry(type as CombatLogEntry['type'], message)
+                }
+            }
+        )
+        
+        managerRef.current = manager
+        
+        // Initialize combat
+        if (!combatInitialized.current) {
             combatInitialized.current = true
             addLogEntry('turn', 'Combat begins!')
-            // Start first round (modifies state in place)
-            startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
+            
+            // Start first round
+            startCombatRound(combatState, party.filter(h => h !== null) as Hero[])
+            
+            // Update manager with initial state
+            manager.updateState(combatState)
 
             // Process boss turns if boss goes first
             const processInitialBossTurns = async () => {
-                let currentCombatant = getCurrentCombatant(event.combatState!)
+                manager.setProcessing(true)
+                let currentCombatant = getCurrentCombatant(combatState)
+                
                 while (currentCombatant && currentCombatant.type === 'boss') {
-                    // Check if combat ended or unmounting
-                    if (combatEnded.current || isUnmounting.current) break
+                    if (manager.getStatus() !== 'active') break
                     
                     await new Promise(resolve => setTimeout(resolve, 800))
                     addLogEntry('turn', 'Processing boss turn...')
-                    setUpdateTrigger(prev => prev + 1)
                     await new Promise(resolve => setTimeout(resolve, 400))
 
-                    const bossTurnResult = processBossTurn(event.combatState!, party.filter(h => h !== null) as Hero[])
+                    const bossTurnResult = processBossTurn(combatState, party.filter(h => h !== null) as Hero[])
+                    
+                    // Update manager with new state
+                    manager.updateState(combatState)
 
                     // Animate boss actions with delays
                     await processBossTurnWithAnimations(bossTurnResult)
 
                     // Advance turn
-                    const continues = advanceTurn(event.combatState!)
+                    const continues = advanceTurn(combatState)
                     if (!continues) {
                         break
                     }
-                    currentCombatant = getCurrentCombatant(event.combatState!)
+                    currentCombatant = getCurrentCombatant(combatState)
                 }
+                
+                manager.setProcessing(false)
             }
 
             processInitialBossTurns()
         }
+        
+        // Cleanup on unmount
+        return () => {
+            console.log('[BossCombatScreen] Cleaning up combat manager')
+            manager.destroy()
+        }
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Check victory/defeat conditions
+    // Update manager when party changes (hero death/revival)
     useEffect(() => {
-        console.log('[BossCombatScreen] Victory check effect running, HP:', event.combatState?.currentHp, 'combatEnded:', combatEnded.current)
-        console.log('[BossCombatScreen] Early return checks - combatState:', !!event.combatState, 'isProcessing:', isProcessing)
-        
-        // Don't check isUnmounting here - victory check should always run when HP changes
-        if (!event.combatState || isProcessing) {
-            console.log('[BossCombatScreen] Early return triggered')
-            return
+        if (managerRef.current) {
+            console.log('[BossCombatScreen] Updating manager party')
+            managerRef.current.updateParty(party)
         }
-
-        const victory = checkVictory(event.combatState)
-        const defeat = checkDefeat(party.filter(h => h !== null) as Hero[])
-
-        console.log('[BossCombatScreen] Victory:', victory, 'Defeat:', defeat, 'combatEnded.current:', combatEnded.current)
-
-        // Only process victory/defeat if not already ended (prevents duplicate processing)
-        if (combatEnded.current && !victory && !defeat) {
-            console.log('[BossCombatScreen] Skipping - combat already ended and no victory/defeat')
-            return
-        }
-
-        if (victory) {
-            console.log('[BossCombatScreen] Processing victory!')
-            combatEnded.current = true
-            addLogEntry('phase', '🎉 Victory! The boss has been defeated!')
-            triggerParticles('victory', { x: 50, y: 50 })
-            
-            // Close combat log modal if open (important for mobile)
-            if (isCombatLogOpen) {
-                onCombatLogClose()
-            }
-            
-            console.log('[BossCombatScreen] Victory detected, calling onVictory in 1.5s')
-            
-            const victoryTimer = setTimeout(() => {
-                console.log('[BossCombatScreen] Victory timer fired, calling onVictory()')
-                onVictory()
-            }, 1500)
-            
-            // Cleanup timer on unmount
-            return () => {
-                console.log('[BossCombatScreen] Victory effect cleanup')
-                clearTimeout(victoryTimer)
-            }
-        } else if (defeat) {
-            combatEnded.current = true
-            addLogEntry('phase', '💀 Defeat... Your party has fallen...')
-            
-            // Close combat log modal if open (important for mobile)
-            if (isCombatLogOpen) {
-                onCombatLogClose()
-            }
-            
-            const defeatTimer = setTimeout(() => {
-                onDefeat()
-            }, 1500)
-            
-            // Cleanup timer on unmount
-            return () => clearTimeout(defeatTimer)
-        }
-    }, [updateTrigger, event.combatState, event.combatState?.currentHp, party, onVictory, onDefeat, isProcessing, isCombatLogOpen, onCombatLogClose])
+    }, [party])
 
     const handleHeroAction = async (heroId: string, action: string) => {
-        if (isProcessing || !event.combatState || combatEnded.current || isUnmounting.current) return
+        const manager = managerRef.current
+        if (!manager || manager.isCurrentlyProcessing() || manager.getStatus() !== 'active') return
 
+        manager.setProcessing(true)
         setIsProcessing(true)
 
         try {
@@ -312,7 +294,7 @@ export default function BossCombatScreen({
 
             // Parse action type
             if (action === 'attack') {
-                const result = executeAttack(hero, event.combatState)
+                const result = executeAttack(hero, combatState)
                 if (result.success) {
                     addLogEntry('damage', `${hero.name} attacks for ${result.damage} damage!`, 'boss', result.damage)
                     triggerParticles('damage', { x: 50, y: 30 })
@@ -320,7 +302,7 @@ export default function BossCombatScreen({
                     addLogEntry('action', result.message)
                 }
             } else if (action === 'defend') {
-                const result = executeDefend(hero, event.combatState)
+                const result = executeDefend(hero, combatState)
                 addLogEntry('buff', `${hero.name} takes a defensive stance!`)
             } else if (action.startsWith('ability:')) {
                 const abilityId = action.split(':')[1]
@@ -329,7 +311,7 @@ export default function BossCombatScreen({
                     const result = executeHeroAbility(
                         hero,
                         ability,
-                        event.combatState,
+                        combatState,
                         party.filter(h => h !== null) as Hero[]
                     )
                     // Log the ability effects
@@ -361,69 +343,76 @@ export default function BossCombatScreen({
                     hero,
                     consumable,
                     slot,
-                    event.combatState,
+                    combatState,
                     party.filter(h => h !== null) as Hero[]
                 )
                 addLogEntry('heal', result.message)
                 triggerParticles('heal', { x: 50, y: 70 })
             } else if (action === 'flee') {
                 // Handled by parent component
+                manager.setProcessing(false)
+                setIsProcessing(false)
                 return
             }
 
-            // Force update to check victory
-            setUpdateTrigger(prev => prev + 1)
+            // Update manager with new state (will auto-check victory)
+            manager.updateState(combatState)
 
-            // Check if boss is defeated before advancing turn
-            if (checkVictory(event.combatState)) {
+            // Check if combat ended (victory/defeat)
+            if (manager.getStatus() !== 'active') {
+                manager.setProcessing(false)
                 setIsProcessing(false)
                 return
             }
 
             // Advance to next turn
-            const roundContinues = advanceTurn(event.combatState)
-            if (checkVictory(event.combatState)) {
+            const roundContinues = advanceTurn(combatState)
+            manager.updateState(combatState) // Update after advancing turn
+            
+            // Check again if combat ended
+            if (manager.getStatus() !== 'active') {
+                manager.setProcessing(false)
                 setIsProcessing(false)
                 return
             }
 
             // If round ended after hero turn, start new round
             if (!roundContinues) {
-                processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
-                addLogEntry('turn', `Round ${event.combatState.combatDepth} complete`)
+                processRoundEnd(combatState, party.filter(h => h !== null) as Hero[])
+                addLogEntry('turn', `Round ${combatState.combatDepth} complete`)
                 await new Promise(resolve => setTimeout(resolve, 400))
-                startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
-                setUpdateTrigger(prev => prev + 1)
+                startCombatRound(combatState, party.filter(h => h !== null) as Hero[])
+                manager.updateState(combatState)
             }
 
             // Process any consecutive boss turns until we reach the next hero turn or end of round
-            let currentCombatant = getCurrentCombatant(event.combatState)
-            while (currentCombatant && currentCombatant.type === 'boss') {
-                // Check if combat ended or unmounting
-                if (combatEnded.current || isUnmounting.current) break
-                
+            let currentCombatant = getCurrentCombatant(combatState)
+            while (currentCombatant && currentCombatant.type === 'boss' && manager.getStatus() === 'active') {
                 // Process boss turn
                 await new Promise(resolve => setTimeout(resolve, 800))
                 addLogEntry('turn', 'Processing boss turn...')
-                setUpdateTrigger(prev => prev + 1)
                 await new Promise(resolve => setTimeout(resolve, 400))
 
-                const bossTurnResult = processBossTurn(event.combatState, party.filter(h => h !== null) as Hero[])
+                const bossTurnResult = processBossTurn(combatState, party.filter(h => h !== null) as Hero[])
+                
+                // Update manager with new state
+                manager.updateState(combatState)
 
                 // Animate boss actions with delays
                 await processBossTurnWithAnimations(bossTurnResult)
 
-                // Check for hero defeat after boss turn
-                if (checkDefeat(party.filter(h => h !== null) as Hero[])) {
-                    setIsProcessing(false)
-                    return
+                // Check if combat ended
+                if (manager.getStatus() !== 'active') {
+                    break
                 }
 
                 // Advance to next turn
-                const continues = advanceTurn(event.combatState)
+                const continues = advanceTurn(combatState)
+                manager.updateState(combatState)
+                
                 if (!continues) {
                     // End of round - process round end and start new round
-                    const roundEndResult = processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+                    const roundEndResult = processRoundEnd(combatState, party.filter(h => h !== null) as Hero[])
                     
                     // Log status effects (HoTs, DoTs, etc.)
                     if (roundEndResult.effectsProcessed && roundEndResult.effectsProcessed.length > 0) {
@@ -436,21 +425,18 @@ export default function BossCombatScreen({
                         }
                     }
                     
-                    addLogEntry('turn', `Round ${event.combatState.combatDepth} complete`)
-                    startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
-                    setUpdateTrigger(prev => prev + 1)
+                    addLogEntry('turn', `Round ${combatState.combatDepth} complete`)
+                    startCombatRound(combatState, party.filter(h => h !== null) as Hero[])
+                    manager.updateState(combatState)
                     // Update currentCombatant to reflect the new round
-                    currentCombatant = getCurrentCombatant(event.combatState)
+                    currentCombatant = getCurrentCombatant(combatState)
                     // Continue loop to check if boss goes first in new round
                     continue
                 }
 
                 // Check next combatant
-                currentCombatant = getCurrentCombatant(event.combatState)
+                currentCombatant = getCurrentCombatant(combatState)
             }
-
-            // Note: Round end is now handled inside the while loop
-            // No need for duplicate round-end-processing here
         } catch (error) {
             console.error('Hero action error:', error)
             toast({
@@ -461,38 +447,41 @@ export default function BossCombatScreen({
             })
         }
 
+        manager.setProcessing(false)
         setIsProcessing(false)
     }
 
     const handleEndTurn = async () => {
-        if (isProcessing || !event.combatState || combatEnded.current || isUnmounting.current) return
+        const manager = managerRef.current
+        if (!manager || manager.isCurrentlyProcessing() || manager.getStatus() !== 'active') return
 
+        manager.setProcessing(true)
         setIsProcessing(true)
         addLogEntry('turn', 'Processing boss turn...')
-        setUpdateTrigger(prev => prev + 1)
         await new Promise(resolve => setTimeout(resolve, 400))
 
         try {
-            // Check if combat ended or unmounting
-            if (combatEnded.current || isUnmounting.current) {
-                setIsProcessing(false)
-                return
-            }
-            
             // Process boss turn (returns result object)
-            const bossTurnResult = processBossTurn(event.combatState, party.filter(h => h !== null) as Hero[])
+            const bossTurnResult = processBossTurn(combatState, party.filter(h => h !== null) as Hero[])
+            
+            // Update manager with new state
+            manager.updateState(combatState)
 
             // Animate boss actions with delays
             await processBossTurnWithAnimations(bossTurnResult)
 
-            // Check if combat ended or unmounting
-            if (combatEnded.current || isUnmounting.current) {
+            // Check if combat ended
+            if (manager.getStatus() !== 'active') {
+                manager.setProcessing(false)
                 setIsProcessing(false)
                 return
             }
 
             // End round (modifies state in place, returns result object)
-            const roundEndResult = processRoundEnd(event.combatState, party.filter(h => h !== null) as Hero[])
+            const roundEndResult = processRoundEnd(combatState, party.filter(h => h !== null) as Hero[])
+            
+            // Update manager after round end
+            manager.updateState(combatState)
 
             // Log status effects (HoTs, DoTs, etc.)
             if (roundEndResult.effectsProcessed && roundEndResult.effectsProcessed.length > 0) {
@@ -507,10 +496,11 @@ export default function BossCombatScreen({
                 }
             }
 
-            addLogEntry('turn', `Round ${event.combatState.combatDepth} complete`)
+            addLogEntry('turn', `Round ${combatState.combatDepth} complete`)
 
             // Start next round (modifies state in place)
-            startCombatRound(event.combatState, party.filter(h => h !== null) as Hero[])
+            startCombatRound(combatState, party.filter(h => h !== null) as Hero[])
+            manager.updateState(combatState)
         } catch (error) {
             console.error('Combat processing error:', error)
             toast({
@@ -521,15 +511,17 @@ export default function BossCombatScreen({
             })
         }
 
+        manager.setProcessing(false)
         setIsProcessing(false)
     }
 
     // Handler for using consumables from party display
     const handleUseConsumableFromParty = (heroId: string, slot: string) => {
+        const manager = managerRef.current
         // Only allow consumable use during hero's turn and not during boss actions
-        if (isProcessing || isBossActing || isUnmounting.current) return
+        if (!manager || manager.isCurrentlyProcessing() || isBossActing || manager.getStatus() !== 'active') return
 
-        const currentCombatant = getCurrentCombatant(event.combatState!)
+        const currentCombatant = getCurrentCombatant(combatState)
         if (!currentCombatant || currentCombatant.id !== heroId) {
             // Not this hero's turn
             return
@@ -539,7 +531,7 @@ export default function BossCombatScreen({
         handleHeroAction(heroId, `item:${slot}`)
     }
 
-    if (!event.combatState) {
+    if (!combatState) {
         return (
             <Box w="full" h="100vh" display="flex" alignItems="center" justifyContent="center">
                 <Box>Loading combat...</Box>
@@ -547,7 +539,6 @@ export default function BossCombatScreen({
         )
     }
 
-    const combatState = event.combatState
     const activeHeroes = party.filter(h => h !== null) as Hero[]
 
     return (
