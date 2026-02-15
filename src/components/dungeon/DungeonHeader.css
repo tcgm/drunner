@@ -1,127 +1,15 @@
-/* DungeonHeader responsive styles */
+/* DungeonHeader styles */
 
-/* Portrait phones - make header ultra compact */
-@media (orientation: portrait) and (max-width: 768px) {
-  .dungeon-header {
-    padding: 0.5rem !important;
-  }
-
-  .dungeon-header-content {
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-    align-items: center !important;
-  }
-
-  .dungeon-header-floor {
-    flex-shrink: 0;
-  }
-
-  .dungeon-header-floor .chakra-text {
-    font-size: 0.75rem !important;
-  }
-
-  .dungeon-header-floor .chakra-heading {
-    font-size: 0.95rem !important;
-  }
-
-  .dungeon-header-stats {
-    flex-wrap: wrap !important;
-    gap: 0.75rem !important;
-    justify-content: flex-end !important;
-    width: 100%;
-  }
-
-  .dungeon-header-gold,
-  .dungeon-header-depth,
-  .dungeon-header-floor-progress {
-    flex-shrink: 0;
-  }
-
-  .dungeon-header-stats .chakra-text {
-    font-size: 0.75rem !important;
-  }
-
-  .dungeon-header-stats .chakra-icon {
-    width: 14px !important;
-    height: 14px !important;
-  }
+/* Base styles - layout handled by component logic */
+.dungeon-header {
+  /* Base styles only */
 }
 
-/* Small portrait phones - even more compact */
-@media (orientation: portrait) and (max-width: 480px) {
-  .dungeon-header {
-    padding: 0.375rem !important;
-  }
-
-  .dungeon-header-content {
-    gap: 0.375rem !important;
-  }
-
-  .dungeon-header-floor .chakra-text {
-    font-size: 0.7rem !important;
-  }
-
-  .dungeon-header-floor .chakra-heading {
-    font-size: 0.875rem !important;
-  }
-
-  .dungeon-header-stats {
-    gap: 0.5rem !important;
-  }
-
-  .dungeon-header-stats .chakra-text {
-    font-size: 0.7rem !important;
-  }
-
-  .dungeon-header-stats .chakra-icon {
-    width: 12px !important;
-    height: 12px !important;
-  }
+.dungeon-header-portrait {
+  /* Portrait mode - handled in component JSX */
 }
 
-/* Very small portrait phones - ultra compact */
-@media (orientation: portrait) and (max-width: 400px) {
-  .dungeon-header {
-    padding: 0.25rem 0.5rem !important;
-  }
-
-  .dungeon-header-content {
-    gap: 0.25rem !important;
-  }
-
-  .dungeon-header-floor .chakra-text {
-    display: none !important; /* Hide "Current Location" label */
-  }
-
-  .dungeon-header-floor .chakra-heading {
-    font-size: 0.8rem !important;
-  }
-
-  .dungeon-header-stats {
-    gap: 0.375rem !important;
-  }
-
-  .dungeon-header-stats .chakra-text {
-    font-size: 0.65rem !important;
-  }
-
-  /* Stack stats if needed */
-  .dungeon-header-floor-progress {
-    display: none !important; /* Hide redundant floor progress on tiny screens */
-  }
+.dungeon-header-desktop {
+  /* Desktop mode - handled in component JSX */
 }
 
-/* Landscape - keep compact for short screens */
-@media (orientation: landscape) and (max-height: 500px) {
-  .dungeon-header {
-    padding: 0.375rem 0.75rem !important;
-  }
-
-  .dungeon-header-content {
-    gap: 0.5rem !important;
-  }
-
-  .dungeon-header-stats .chakra-text {
-    font-size: 0.8rem !important;
-  }
-}
