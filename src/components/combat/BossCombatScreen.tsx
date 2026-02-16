@@ -10,7 +10,6 @@ import { Box, VStack, HStack, Text, useToast, Icon, IconButton, Modal, ModalOver
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import type { DungeonEvent, Hero, BossCombatState } from '@/types'
-import type { ParticleEffect } from './CombatParticles'
 import * as GameIcons from 'react-icons/gi'
 import { GiSkullCrossedBones, GiSwordman, GiScrollUnfurled } from 'react-icons/gi'
 import BossDisplay from './BossDisplay'
@@ -18,7 +17,8 @@ import PartyHealthDisplay from './PartyHealthDisplay'
 import TurnOrderDisplay from './TurnOrderDisplay'
 import CombatActionsPanel from './CombatActionsPanel'
 import CombatLog from './CombatLog'
-import CombatParticles from './CombatParticles'
+import LightweightParticles from './LightweightParticles'
+import type { ParticleEffect } from './LightweightParticles'
 import {
     startCombatRound,
     processBossTurn,
@@ -66,7 +66,6 @@ export default function BossCombatScreen({
     const [combatState, setCombatState] = useState<BossCombatState>(event.combatState!)
     const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
-    const [updateTrigger, setUpdateTrigger] = useState(0)
     const [isBossActing, setIsBossActing] = useState(false)
     const [particleEffect, setParticleEffect] = useState<ParticleEffect | null>(null)
     const [particlePosition, setParticlePosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 })
@@ -109,32 +108,28 @@ export default function BossCombatScreen({
         if (bossTurnResult.passiveHealing) {
             addLogEntry('heal', `Boss regenerates ${bossTurnResult.passiveHealing} HP`, 'boss', bossTurnResult.passiveHealing)
             triggerParticles('heal', { x: 50, y: 30 })
-            setUpdateTrigger(prev => prev + 1)
-            await new Promise(resolve => setTimeout(resolve, 600))
+            await new Promise(resolve => setTimeout(resolve, 400))
         }
 
         // Phase transition animation
         if (bossTurnResult.phaseTransition) {
             addLogEntry('phase', `Boss enters Phase ${bossTurnResult.phaseTransition.newPhase}!`)
             triggerParticles('phase', { x: 50, y: 30 })
-            setUpdateTrigger(prev => prev + 1)
-            await new Promise(resolve => setTimeout(resolve, 1000))
+            await new Promise(resolve => setTimeout(resolve, 600))
         }
 
         // Abilities animations
         if (bossTurnResult.abilitiesUsed.length > 0) {
             for (const abilityResult of bossTurnResult.abilitiesUsed) {
                 addLogEntry('ability', `Boss uses ${abilityResult.ability.name}!`)
-                setUpdateTrigger(prev => prev + 1)
-                await new Promise(resolve => setTimeout(resolve, 500))
+                await new Promise(resolve => setTimeout(resolve, 350))
 
                 // Show each effect with delay
                 if (abilityResult.effects) {
                     for (const effect of abilityResult.effects) {
                         if (effect.description) {
                             addLogEntry('action', effect.description)
-                            setUpdateTrigger(prev => prev + 1)
-                            await new Promise(resolve => setTimeout(resolve, 400))
+                            await new Promise(resolve => setTimeout(resolve, 250))
                         }
                     }
                 }
@@ -146,8 +141,7 @@ export default function BossCombatScreen({
             const pattern = bossTurnResult.attackResult.pattern
             if (pattern) {
                 addLogEntry('action', `Boss uses ${pattern.name}!`)
-                setUpdateTrigger(prev => prev + 1)
-                await new Promise(resolve => setTimeout(resolve, 700))
+                await new Promise(resolve => setTimeout(resolve, 400))
             }
 
             // Show damage with delays between each target
@@ -161,18 +155,15 @@ export default function BossCombatScreen({
                         addLogEntry('damage', `${dmg.heroName} takes ${dmg.damage} damage${critText}`, dmg.heroId, dmg.damage)
                         triggerParticles(dmg.isCrit ? 'critical' : 'damage', { x: 50, y: 70 })
                     }
-                    setUpdateTrigger(prev => prev + 1)
-                    await new Promise(resolve => setTimeout(resolve, 500))
+                    await new Promise(resolve => setTimeout(resolve, 300))
                 }
             } else {
                 addLogEntry('action', 'Boss attacks but misses!')
-                setUpdateTrigger(prev => prev + 1)
-                await new Promise(resolve => setTimeout(resolve, 500))
+                await new Promise(resolve => setTimeout(resolve, 300))
             }
         } else {
             addLogEntry('action', 'Boss readies for the next attack...')
-            setUpdateTrigger(prev => prev + 1)
-            await new Promise(resolve => setTimeout(resolve, 500))
+            await new Promise(resolve => setTimeout(resolve, 300))
         }
 
         setIsBossActing(false)
@@ -208,7 +199,6 @@ export default function BossCombatScreen({
                 onStateUpdate: (newState) => {
                     console.log('[CombatManager] State updated, HP:', newState.currentHp)
                     setCombatState(newState)
-                    setUpdateTrigger(prev => prev + 1)
                 },
                 onLog: (type, message) => {
                     // Adapter to match manager's simpler signature
@@ -781,7 +771,7 @@ export default function BossCombatScreen({
             </HStack>
 
             {/* Particle Effects */}
-            <CombatParticles
+            <LightweightParticles
                 effect={particleEffect}
                 position={particlePosition}
                 onComplete={() => setParticleEffect(null)}

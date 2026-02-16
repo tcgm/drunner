@@ -52,7 +52,7 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
         return (combatState.currentHp / combatState.maxHp) * 100
     }, [combatState.currentHp, combatState.maxHp])
 
-    // Calculate current scaled stats for display
+    // Calculate current scaled stats for display - only recalc on round change
     const scaledStats = useMemo(() => {
         const stats = recalculateDynamicBossStats(
             {
@@ -69,7 +69,7 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
             combatState.maxHp
         )
         return stats
-    }, [combatState.baseStats, combatState.floor, combatState.depth, combatState.combatDepth, combatState.currentHp, combatState.maxHp])
+    }, [combatState.baseStats.attack, combatState.baseStats.defense, combatState.baseStats.speed, combatState.baseStats.luck, combatState.floor, combatState.depth, combatState.combatDepth])
 
     // Determine boss tier based on dungeon generation flags
     // isFinalBoss: Floor 100 final boss
@@ -110,7 +110,7 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
             p={6}
             boxShadow={
                 isActing
-                    ? `0 0 40px rgba(249, 115, 22, 0.8), inset 0 0 30px rgba(249, 115, 22, 0.6)`
+                    ? `0 0 30px rgba(249, 115, 22, 0.6), inset 0 0 20px rgba(249, 115, 22, 0.4)`
                     : `0 0 40px ${glowColor}, inset 0 0 30px ${glowColor}`
             }
             position="relative"
@@ -121,9 +121,9 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                     : isActing
                         ? {
                             boxShadow: [
-                                `0 0 40px rgba(249, 115, 22, 0.8), inset 0 0 30px rgba(249, 115, 22, 0.6)`,
-                                `0 0 60px rgba(249, 115, 22, 1), inset 0 0 40px rgba(249, 115, 22, 0.8)`,
-                                `0 0 40px rgba(249, 115, 22, 0.8), inset 0 0 30px rgba(249, 115, 22, 0.6)`
+                                `0 0 30px rgba(249, 115, 22, 0.6), inset 0 0 20px rgba(249, 115, 22, 0.4)`,
+                                `0 0 40px rgba(249, 115, 22, 0.8), inset 0 0 25px rgba(249, 115, 22, 0.5)`,
+                                `0 0 30px rgba(249, 115, 22, 0.6), inset 0 0 20px rgba(249, 115, 22, 0.4)`
                             ]
                         }
                         : {}
@@ -133,11 +133,11 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                 shake
                     ? { duration: 0.5 }
                     : isActing
-                        ? { repeat: Infinity, duration: 1.5 }
+                        ? { repeat: Infinity, duration: 2 }
                         : {}
             }
         >
-            {/* Background Glow Effect */}
+            {/* Background Glow Effect - Removed infinite animation for performance */}
             <Box
                 position="absolute"
                 top="-50%"
@@ -145,9 +145,8 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                 right="-50%"
                 bottom="-50%"
                 bgGradient={`radial-gradient(circle at 50% 50%, ${glowColor} 0%, transparent 70%)`}
-                opacity={0.3}
+                opacity={0.25}
                 pointerEvents="none"
-                animation="pulse 3s ease-in-out infinite"
             />
 
             <VStack spacing={4} position="relative" zIndex={1}>
@@ -304,11 +303,11 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                             }}
                             animate={{
                                 boxShadow: healthPercent < 30
-                                    ? ['0 0 10px rgba(239, 68, 68, 0.5)', '0 0 20px rgba(239, 68, 68, 0.8)', '0 0 10px rgba(239, 68, 68, 0.5)']
+                                    ? ['0 0 10px rgba(239, 68, 68, 0.5)', '0 0 15px rgba(239, 68, 68, 0.7)', '0 0 10px rgba(239, 68, 68, 0.5)']
                                     : 'none'
                             }}
                             // @ts-ignore - framer motion types
-                            transition={healthPercent < 30 ? { repeat: Infinity, duration: 1.5 } : {}}
+                            transition={healthPercent < 30 ? { repeat: Infinity, duration: 2.5 } : {}}
                         />
 
                         {/* Percentage Text Overlay */}

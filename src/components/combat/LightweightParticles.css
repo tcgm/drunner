@@ -1,0 +1,5 @@
+/* Lightweight particles - minimal CSS */
+.lightweight-particle {
+    will-change: transform, opacity;
+    pointer-events: none;
+}
