@@ -63,7 +63,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
             transition={isActive ? { repeat: Infinity, duration: 2 } : {}}
         >
             {/* Position Badge */}
-            <Badge
+            {/* <Badge
                 position="absolute"
                 top={1}
                 right={1}
@@ -72,7 +72,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                 zIndex={1}
             >
                 {position === 'frontline' ? '⚔️ Front' : '🏹 Back'}
-            </Badge>
+            </Badge> */}
 
             {/* Active Turn Indicator */}
             {isActive && (
@@ -98,13 +98,13 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     />
 
                     {/* Equipment pips */}
-                    <VStack spacing={0.5} align="start">
+                    {/* <VStack spacing={0.5} align="start">
                         <EquipmentPips
                             items={Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)}
                             layout="vertical"
                             size="sm"
                         />
-                    </VStack>
+                    </VStack> */}
                 </HStack>
 
                 {/* Middle: Hero Info */}
