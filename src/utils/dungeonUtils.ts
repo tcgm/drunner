@@ -2,13 +2,20 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import type { Hero } from '@/types/hero'
 
 /**
+ * Calculate the party's average level
+ */
+export function calculatePartyAverageLevel(party: (Hero | null)[]): number {
+  const activeHeroes = party.filter((h): h is Hero => h !== null)
+  return activeHeroes.length > 0
+    ? Math.floor(activeHeroes.reduce((sum, h) => sum + h.level, 0) / activeHeroes.length)
+    : 1
+}
+
+/**
  * Calculate the free floor threshold based on party average level
  */
 export function calculateFreeFloorThreshold(party: (Hero | null)[]): number {
-  const activeHeroes = party.filter((h): h is Hero => h !== null)
-  const partyAvgLevel = activeHeroes.length > 0
-    ? Math.floor(activeHeroes.reduce((sum, h) => sum + h.level, 0) / activeHeroes.length)
-    : 1
+  const partyAvgLevel = calculatePartyAverageLevel(party)
   return Math.floor(partyAvgLevel * GAME_CONFIG.dungeon.floorUnlockFraction)
 }
 

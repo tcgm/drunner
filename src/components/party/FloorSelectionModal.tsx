@@ -22,7 +22,7 @@ import {
 import { Gi3dStairs, GiPowder } from 'react-icons/gi'
 import { useState, useMemo, useEffect } from 'react'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
+import { calculateFreeFloorThreshold, calculateFloorSkipCost, calculatePartyAverageLevel } from '@/utils/dungeonUtils'
 import type { Hero } from '@/types'
 
 interface FloorSelectionModalProps {
@@ -41,6 +41,9 @@ export default function FloorSelectionModal({
   alkahest,
 }: FloorSelectionModalProps) {
   const [selectedFloor, setSelectedFloor] = useState(0)
+
+  // Calculate party average level using shared utility
+  const partyAvgLevel = useMemo(() => calculatePartyAverageLevel(party), [party])
 
   // Calculate free floor threshold using shared utility
   const freeFloorThreshold = useMemo(() => calculateFreeFloorThreshold(party), [party])
