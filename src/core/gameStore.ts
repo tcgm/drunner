@@ -83,21 +83,33 @@ const initialState: GameState = {
  */
 function dehydrateGameState(state: GameState): GameState {
   const dehydrateHeroItems = (hero: Hero | null): Hero | null => {
-    if (!hero || !hero.equipment) return hero
+    if (!hero) return hero
 
-    const dehydratedEquipment: Equipment = {
-      weapon: hero.equipment.weapon ? dehydrateItem(hero.equipment.weapon) as any : null,
-      armor: hero.equipment.armor ? dehydrateItem(hero.equipment.armor) as any : null,
-      helmet: hero.equipment.helmet ? dehydrateItem(hero.equipment.helmet) as any : null,
-      boots: hero.equipment.boots ? dehydrateItem(hero.equipment.boots) as any : null,
-      accessory1: hero.equipment.accessory1 ? dehydrateItem(hero.equipment.accessory1) as any : null,
-      accessory2: hero.equipment.accessory2 ? dehydrateItem(hero.equipment.accessory2) as any : null,
+    const result: any = { ...hero }
+
+    // Handle new slots format (current system)
+    if (hero.slots) {
+      const dehydratedSlots: Record<string, any> = {}
+      for (const [slotId, item] of Object.entries(hero.slots)) {
+        dehydratedSlots[slotId] = item ? dehydrateItem(item) : null
+      }
+      result.slots = dehydratedSlots
     }
 
-    return {
-      ...hero,
-      equipment: dehydratedEquipment,
+    // Handle legacy equipment format (for backwards compatibility)
+    if (hero.equipment) {
+      const dehydratedEquipment: Equipment = {
+        weapon: hero.equipment.weapon ? dehydrateItem(hero.equipment.weapon) as any : null,
+        armor: hero.equipment.armor ? dehydrateItem(hero.equipment.armor) as any : null,
+        helmet: hero.equipment.helmet ? dehydrateItem(hero.equipment.helmet) as any : null,
+        boots: hero.equipment.boots ? dehydrateItem(hero.equipment.boots) as any : null,
+        accessory1: hero.equipment.accessory1 ? dehydrateItem(hero.equipment.accessory1) as any : null,
+        accessory2: hero.equipment.accessory2 ? dehydrateItem(hero.equipment.accessory2) as any : null,
+      }
+      result.equipment = dehydratedEquipment
     }
+
+    return result
   }
 
   return {
@@ -106,6 +118,10 @@ function dehydrateGameState(state: GameState): GameState {
     heroRoster: state.heroRoster.map(dehydrateHeroItems) as Hero[],
     bankInventory: dehydrateItems(state.bankInventory) as any,
     overflowInventory: dehydrateItems(state.overflowInventory) as any,
+    dungeon: {
+      ...state.dungeon,
+      inventory: dehydrateItems(state.dungeon.inventory) as any,
+    },
     // Don't save v2Items - it's regenerated from bank scan on load
   }
 }
@@ -149,6 +165,9 @@ export const useGameStore = create<GameStore>()(
             // Access the actual nested state
             const actualState = parsedData?.state
             if (!actualState) return parsedData
+
+            // Log critical values immediately after loading
+            console.log(`[GameStore] Loaded state - alkahest: ${actualState.alkahest}, bankGold: ${actualState.bankGold}`)
 
             // Recovery: Fix negative alkahest by converting to positive
             if (actualState.alkahest !== undefined && actualState.alkahest < 0) {
@@ -432,6 +451,9 @@ export const useGameStore = create<GameStore>()(
             const compressedOutput = LZString.compressToUTF16(json)
             localStorage.setItem(name, compressedOutput)
 
+            // Log critical values before returning from getItem
+            console.log(`[GameStore] Returning state - alkahest: ${state?.state?.alkahest}, bankGold: ${state?.state?.bankGold}`)
+
             return state
           } catch (error) {
             console.error('Error loading game state:', error)
@@ -445,11 +467,17 @@ export const useGameStore = create<GameStore>()(
             return
           }
 
+          // Log critical values before dehydration
+          console.log(`[Storage] Saving - alkahest: ${value?.state?.alkahest}, bankGold: ${value?.state?.bankGold}`)
+
           // Dehydrate the state to strip computed item data
           const dehydratedValue = {
             ...value,
             state: value.state ? dehydrateGameState(value.state) : value.state
           }
+
+          // Log critical values after dehydration
+          console.log(`[Storage] After dehydration - alkahest: ${dehydratedValue?.state?.alkahest}, bankGold: ${dehydratedValue?.state?.bankGold}`)
 
           // Custom replacer to strip out icon functions that shouldn't be serialized
           const replacer = (key: string, val: unknown) => {
