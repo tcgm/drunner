@@ -258,7 +258,7 @@ export const useGameStore = create<GameStore>()(
                 if (hero.slots) {
                   const newSlots = { ...hero.slots }
                   for (const slotId in newSlots) {
-                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                    if (newSlots[slotId] !== null) {
                       const { valid, corrupted } = hydrateItemsWithCorrupted([newSlots[slotId] as ItemStorage])
                       newSlots[slotId] = valid[0] || null
                       allCorrupted.push(...corrupted)
@@ -349,7 +349,7 @@ export const useGameStore = create<GameStore>()(
                 if (hero.slots) {
                   const newSlots = { ...hero.slots }
                   for (const slotId in newSlots) {
-                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
+                    if (newSlots[slotId] !== null) {
                       const { valid, corrupted } = hydrateItemsWithCorrupted([newSlots[slotId] as ItemStorage])
                       newSlots[slotId] = valid[0] || null
                       allCorrupted.push(...corrupted)
