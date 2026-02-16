@@ -59,6 +59,8 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
   const [hasInitialized, setHasInitialized] = useState(false)
   const [purchasedPotionIds, setPurchasedPotionIds] = useState<Set<string>>(new Set())
   const [featuredItemPurchased, setFeaturedItemPurchased] = useState(false)
+  const [isRefreshOnCooldown, setIsRefreshOnCooldown] = useState(false)
+  const [cooldownRemaining, setCooldownRemaining] = useState(0)
 
   // Calculate effective floor based on party's average level
   const getEffectiveFloor = () => {
@@ -93,6 +95,14 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, hasInitialized])
 
+  // Reset cooldown when modal closes
+  useEffect(() => {
+    if (!isOpen && (isRefreshOnCooldown || cooldownRemaining > 0)) {
+      setIsRefreshOnCooldown(false)
+      setCooldownRemaining(0)
+    }
+  }, [isOpen, isRefreshOnCooldown, cooldownRemaining])
+
   const generateShopInventory = () => {
     const floor = getEffectiveFloor()
     const newPotions: Consumable[] = []
@@ -117,11 +127,40 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
   }
 
   const handleRefresh = () => {
+    if (isRefreshOnCooldown) return
+    
     const refreshCost = getRefreshCost()
     if (bankGold >= refreshCost && onSpendGold(refreshCost)) {
       generateShopInventory()
+      
+      // Start cooldown
+      setIsRefreshOnCooldown(true)
+      setCooldownRemaining(GAME_CONFIG.shop.refreshCooldown)
     }
   }
+
+  // Handle cooldown timer
+  useEffect(() => {
+    if (!isRefreshOnCooldown || cooldownRemaining <= 0) {
+      if (isRefreshOnCooldown) {
+        setIsRefreshOnCooldown(false)
+        setCooldownRemaining(0)
+      }
+      return
+    }
+
+    const interval = setInterval(() => {
+      setCooldownRemaining(prev => {
+        const next = Math.max(0, prev - 100)
+        if (next === 0) {
+          setIsRefreshOnCooldown(false)
+        }
+        return next
+      })
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [isRefreshOnCooldown, cooldownRemaining])
 
   const handlePurchase = (potion: Consumable) => {
     const shopPrice = getShopPrice(potion)
@@ -189,7 +228,10 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
             </HStack>
             <HStack spacing={4}>
               <Tooltip 
-                label={canAffordRefresh ? `Refresh shop for ${getRefreshCost()} gold` : 'Not enough gold'} 
+                label={
+                  isRefreshOnCooldown ? `Cooldown: ${(cooldownRemaining / 1000).toFixed(1)}s` :
+                  canAffordRefresh ? `Refresh shop for ${getRefreshCost()} gold` : 'Not enough gold'
+                } 
                 placement="left"
               >
                 <Button
@@ -197,9 +239,9 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                   leftIcon={<Icon as={GiCycle} />}
                   colorScheme="purple"
                   onClick={handleRefresh}
-                  isDisabled={!canAffordRefresh}
+                  isDisabled={!canAffordRefresh || isRefreshOnCooldown}
                 >
-                  Refresh ({getRefreshCost()}g)
+                  {isRefreshOnCooldown ? `Cooldown (${(cooldownRemaining / 1000).toFixed(1)}s)` : `Refresh (${getRefreshCost()}g)`}
                 </Button>
               </Tooltip>
               <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">

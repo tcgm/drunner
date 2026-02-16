@@ -64,6 +64,8 @@ export function MarketHallModal({
   const [stalls, setStalls] = useState<Stall[]>([])
   const [hasInitialized, setHasInitialized] = useState(false)
   const [purchasedItemIds, setPurchasedItemIds] = useState<Set<string>>(new Set())
+  const [isRefreshOnCooldown, setIsRefreshOnCooldown] = useState(false)
+  const [cooldownRemaining, setCooldownRemaining] = useState(0)
 
   // Generate stall inventory using market generator
   const generateStalls = () => {
@@ -105,6 +107,14 @@ export function MarketHallModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, hasInitialized])
 
+  // Reset cooldown when modal closes
+  useEffect(() => {
+    if (!isOpen && (isRefreshOnCooldown || cooldownRemaining > 0)) {
+      setIsRefreshOnCooldown(false)
+      setCooldownRemaining(0)
+    }
+  }, [isOpen, isRefreshOnCooldown, cooldownRemaining])
+
   // Calculate market price based on stall type
   const getMarketPrice = (item: Consumable, stallId: string) => {
     const multiplier = stallId === 'food' ? GAME_CONFIG.market.priceMultipliers.food :
@@ -114,11 +124,40 @@ export function MarketHallModal({
   }
 
   const handleRefresh = () => {
+    if (isRefreshOnCooldown) return
+    
     const refreshCost = getRefreshCost()
     if (bankGold >= refreshCost && onSpendGold(refreshCost)) {
       generateStalls()
+      
+      // Start cooldown
+      setIsRefreshOnCooldown(true)
+      setCooldownRemaining(GAME_CONFIG.market.refreshCooldown)
     }
   }
+
+  // Handle cooldown timer
+  useEffect(() => {
+    if (!isRefreshOnCooldown || cooldownRemaining <= 0) {
+      if (isRefreshOnCooldown) {
+        setIsRefreshOnCooldown(false)
+        setCooldownRemaining(0)
+      }
+      return
+    }
+
+    const interval = setInterval(() => {
+      setCooldownRemaining(prev => {
+        const next = Math.max(0, prev - 100)
+        if (next === 0) {
+          setIsRefreshOnCooldown(false)
+        }
+        return next
+      })
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [isRefreshOnCooldown, cooldownRemaining])
 
   const handlePurchase = (item: Consumable, stallId: string) => {
     const marketPrice = getMarketPrice(item, stallId)
@@ -180,7 +219,10 @@ export function MarketHallModal({
             </HStack>
             <HStack spacing={4}>
               <Tooltip 
-                label={canAffordRefresh ? `Refresh market for ${getRefreshCost()} gold` : 'Not enough gold'} 
+                label={
+                  isRefreshOnCooldown ? `Cooldown: ${(cooldownRemaining / 1000).toFixed(1)}s` :
+                  canAffordRefresh ? `Refresh market for ${getRefreshCost()} gold` : 'Not enough gold'
+                } 
                 placement="left"
               >
                 <Button
@@ -189,9 +231,9 @@ export function MarketHallModal({
                   colorScheme="green"
                   variant="solid"
                   onClick={handleRefresh}
-                  isDisabled={!canAffordRefresh}
+                  isDisabled={!canAffordRefresh || isRefreshOnCooldown}
                 >
-                  Refresh ({getRefreshCost()}g)
+                  {isRefreshOnCooldown ? `Cooldown (${(cooldownRemaining / 1000).toFixed(1)}s)` : `Refresh (${getRefreshCost()}g)`}
                 </Button>
               </Tooltip>
               <HStack spacing={2} bg="green.900" px={4} py={2} borderRadius="md" borderWidth="1px" borderColor="green.700">
