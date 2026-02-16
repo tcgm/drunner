@@ -42,6 +42,7 @@ import { TITAN_SET_UNIQUE_EFFECT } from '@/data/items/sets/titan/effects'
 import { ARCANE_SET_UNIQUE_EFFECT } from '@/data/items/sets/arcane/effects'
 import { DRACONIC_SET_UNIQUE_EFFECT } from '@/data/items/sets/draconic/effects'
 import { SHADOW_SET_UNIQUE_EFFECT } from '@/data/items/sets/shadow/effects'
+import { BUNNY_SET_UNIQUE_EFFECT } from '@/data/items/sets/bunny/effects'
 
 export type UniqueEffectTrigger =
   | 'onBossDefeat'        // After defeating a boss (before wipe check)
@@ -211,6 +212,9 @@ export const UNIQUE_SET_EFFECTS: Record<string, UniqueEffectDefinition> = {
   
   // Shadow set effect
   'Shadow': SHADOW_SET_UNIQUE_EFFECT,
+  
+  // Bunny set effect
+  'Bunny': BUNNY_SET_UNIQUE_EFFECT,
 }
 
 /**

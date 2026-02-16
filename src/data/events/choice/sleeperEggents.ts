@@ -1,5 +1,6 @@
 import type { DungeonEvent } from '@/types'
 import { GiEggClutch, GiEgyptianBird } from 'react-icons/gi'
+import { BLAHAJ_COMPANION } from '@/data/items/uniques/accessories/blahajCompanion'
 
 export const SLEEPER_EGGENTS: DungeonEvent = {
     id: 'sleeper-eggents',
@@ -13,7 +14,14 @@ export const SLEEPER_EGGENTS: DungeonEvent = {
                 text: 'The eggents spring into action! Their artifacts glow with rainbow light as they transform, revealing their true power. They gift you powerful items and share ancient wisdom about becoming who you truly are.',
                 effects: [
                     { type: 'xp', value: 200 },
-                    { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 15 },
+                    { 
+                        type: 'item', 
+                        itemChoices: [
+                            { weight: 62, setId: 'bunny' },
+                            { weight: 28, itemType: 'random', minRarity: 'epic', rarityBoost: 15 },
+                            { weight: 10, uniqueItem: BLAHAJ_COMPANION },
+                        ]
+                    },
                     { type: 'heal', target: 'all', value: 40 },
                     { type: 'gold', value: 150 },
                 ],
@@ -25,7 +33,14 @@ export const SLEEPER_EGGENTS: DungeonEvent = {
                 text: 'The eggents nod in understanding! The artifacts crack open, releasing waves of transformative energy. The agents embrace their awakening and shower your party with blessings and rare treasures.',
                 effects: [
                     { type: 'xp', value: 200 },
-                    { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 15 },
+                    { 
+                        type: 'item', 
+                        itemChoices: [
+                            { weight: 62, setId: 'bunny' },
+                            { weight: 28, itemType: 'random', minRarity: 'epic', rarityBoost: 15 },
+                            { weight: 10, uniqueItem: BLAHAJ_COMPANION },
+                        ]
+                    },
                     { type: 'heal', target: 'all', value: 40 },
                     { type: 'gold', value: 150 },
                 ],
