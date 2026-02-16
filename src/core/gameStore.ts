@@ -112,7 +112,7 @@ function dehydrateGameState(state: GameState): GameState {
     return result
   }
 
-  return {
+  const dehydrated = {
     ...state,
     party: state.party.map(dehydrateHeroItems) as (Hero | null)[],
     heroRoster: state.heroRoster.map(dehydrateHeroItems) as Hero[],
@@ -124,6 +124,12 @@ function dehydrateGameState(state: GameState): GameState {
     },
     // Don't save v2Items - it's regenerated from bank scan on load
   }
+
+  // Ensure critical fields are preserved
+  console.log(`[dehydrateGameState] Input - saveVersion: ${state.saveVersion}, alkahest: ${state.alkahest}`)
+  console.log(`[dehydrateGameState] Output - saveVersion: ${dehydrated.saveVersion}, alkahest: ${dehydrated.alkahest}`)
+
+  return dehydrated
 }
 
 export const useGameStore = create<GameStore>()(
@@ -167,7 +173,8 @@ export const useGameStore = create<GameStore>()(
             if (!actualState) return parsedData
 
             // Log critical values immediately after loading
-            console.log(`[GameStore] Loaded state - alkahest: ${actualState.alkahest}, bankGold: ${actualState.bankGold}`)
+            console.log(`[GameStore] Loaded state - saveVersion: ${actualState.saveVersion}, alkahest: ${actualState.alkahest}, bankGold: ${actualState.bankGold}`)
+            console.log(`[GameStore] needsMigration check - CURRENT_SAVE_VERSION: ${CURRENT_SAVE_VERSION}, needs migration: ${needsMigration(actualState)}`)
 
             // Recovery: Fix negative alkahest by converting to positive
             if (actualState.alkahest !== undefined && actualState.alkahest < 0) {
@@ -399,12 +406,15 @@ export const useGameStore = create<GameStore>()(
             // Check if migration is needed BEFORE applying it
             // But skip if we're already in pending migration state (to avoid loop)
             if (needsMigration(actualState) && !actualState.pendingMigration) {
-              console.log('[Migration] Save file needs migration, setting pending state and prompting user')
+              console.log('[Migration] Save file needs migration (saveVersion: ' + actualState.saveVersion + '), setting pending state and prompting user')
               // Return pending state but DON'T save to localStorage yet
               // User must approve first
+              // IMPORTANT: Preserve critical fields like alkahest and bankGold from existing save
               return {
                 state: {
                   ...initialState,
+                  alkahest: actualState.alkahest ?? 0,
+                  bankGold: actualState.bankGold ?? 0,
                   pendingMigration: true,
                   pendingMigrationData: compressed, // Store the compressed data for later
                 }
