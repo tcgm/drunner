@@ -44,7 +44,7 @@ export function getRemainingCooldown(
 ): number {
     const cooldownType = ability.cooldownType || 'depth' // Default to depth
 
-    console.log('[CD Debug]', ability.name, '- Type:', cooldownType, 'Floor:', currentFloor, 'Depth:', currentDepth, 'LastUsedFloor:', ability.lastUsedFloor, 'LastUsedDepth:', ability.lastUsedDepth)
+    // console.log('[CD Debug]', ability.name, '- Type:', cooldownType, 'Floor:', currentFloor, 'Depth:', currentDepth, 'LastUsedFloor:', ability.lastUsedFloor, 'LastUsedDepth:', ability.lastUsedDepth)
 
     if (cooldownType === 'depth') {
         if (ability.lastUsedDepth === undefined || currentDepth === undefined) {
@@ -164,7 +164,7 @@ export function useAbility(
         abilities: updatedAbilities
     }
 
-    console.log('[CD Debug] Updated hero abilities:', updatedHero.abilities.find(a => a.id === abilityId))
+    // console.log('[CD Debug] Updated hero abilities:', updatedHero.abilities.find(a => a.id === abilityId))
 
     return {
         hero: updatedHero,

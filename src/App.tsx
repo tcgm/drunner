@@ -13,7 +13,8 @@ import { ItemDetailModalProvider } from '@/contexts/ItemDetailModalContext'
 import { HeroModalProvider } from '@/contexts/HeroModalContext'
 import { OrientationProvider } from '@/contexts/OrientationContext'
 import { useGameStore } from '@/core/gameStore'
-import type { Hero } from '@/types'
+import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
+import type { Hero } from '@/types/hero'
 
 const MotionBox = motion.create(Box)
 
@@ -74,18 +75,14 @@ function App() {
   }, [])
   
   const handleStartDungeon = (startingFloor: number = 0) => {
-    // Calculate alkahest cost
-    const activeHeroes = party.filter((h): h is Hero => h !== null)
-    const partyAvgLevel = activeHeroes.length > 0
-      ? Math.floor(activeHeroes.reduce((sum, h) => sum + h.level, 0) / activeHeroes.length)
-      : 1
-    const freeFloorThreshold = Math.floor(partyAvgLevel * 0.5) // Using the config value
+    // Calculate alkahest cost using shared utility
+    const freeFloorThreshold = calculateFreeFloorThreshold(party)
+    const alkahestCost = calculateFloorSkipCost(startingFloor, freeFloorThreshold)
     
-    let alkahestCost = 0
-    if (startingFloor > freeFloorThreshold) {
-      const floorsSkipped = startingFloor - freeFloorThreshold
-      alkahestCost = Math.floor(100 * Math.pow(1.5, floorsSkipped - 1))
-    }
+    const activeHeroes = party.filter((h): h is Hero => h !== null)
+    console.log(`[HandleStartDungeon] activeHeroes:`, activeHeroes.map(h => ({ name: h.name, level: h.level })))
+    console.log(`[HandleStartDungeon] freeFloorThreshold: ${freeFloorThreshold}, startingFloor: ${startingFloor}`)
+    console.log(`[HandleStartDungeon] alkahestCost: ${alkahestCost}${alkahestCost === 0 ? ' (FREE)' : ''}`)
     
     startDungeon(startingFloor, alkahestCost) // Actually start the dungeon in the game store
     setCurrentScreen('dungeon')

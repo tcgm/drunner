@@ -35,7 +35,7 @@ export const createDungeonActions: StateCreator<
 > = (set, get) => ({
   startDungeon: (startingFloor = 0, alkahestCost = 0) =>
     set((state) => {
-
+      console.log(`[StartDungeon] Current alkahest: ${state.alkahest}, alkahestCost: ${alkahestCost}, floor: ${startingFloor}`)
 
       // Penalty should already be applied by endGame
       // Revive all party members, full heal, and reset ability cooldowns at dungeon start
@@ -100,10 +100,12 @@ export const createDungeonActions: StateCreator<
       ) + GAME_CONFIG.dungeon.minEventsPerFloor
 
       const event = getNextEvent(startingFloor, startingFloor, false, false, [])
+      const newAlkahest = alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest
+      console.log(`[StartDungeon] Setting alkahest to: ${newAlkahest} (was: ${state.alkahest})`)
       return {
         party: healedParty,
         heroRoster: updatedRoster,
-        alkahest: alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest,
+        alkahest: newAlkahest,
         dungeon: {
           depth: startingFloor,
           floor: startingFloor,
@@ -302,6 +304,7 @@ export const createDungeonActions: StateCreator<
       } : null
 
       return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         party: updatedParty,
         heroRoster: updatedRoster,
         dungeon: {
@@ -357,6 +360,7 @@ export const createDungeonActions: StateCreator<
             } : null
 
             return {
+              alkahest: state.alkahest, // Explicitly preserve alkahest
               party: partyForCombat,
               dungeon: {
                 ...state.dungeon,
@@ -643,6 +647,7 @@ export const createDungeonActions: StateCreator<
       }
 
       const resultState = {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         metaXp: state.metaXp + metaXpGained,
         party: isWiped ? penalizedParty : updatedParty,
         heroRoster: updatedRoster,
@@ -658,6 +663,8 @@ export const createDungeonActions: StateCreator<
         activeRun: completedRun || updatedRun,
         hasPendingPenalty: false
       }
+
+      console.log(`[ResolveEvent] Before return - alkahest: ${state.alkahest}, resultState.alkahest: ${resultState.alkahest}`)
 
       // Save completed run to separate storage
       if (completedRun) {
@@ -720,6 +727,7 @@ export const createDungeonActions: StateCreator<
       saveRunHistory([completedRun, ...history])
 
       return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         party: penalizedParty,
         heroRoster: updatedRoster,
         isGameOver: true,
@@ -766,6 +774,7 @@ export const createDungeonActions: StateCreator<
             inventory: [],
             isNextEventBoss: false,
           },
+          alkahest: state.alkahest, // Explicitly preserve alkahest
           bankGold: state.bankGold + goldToBank,
           bankInventory: [...state.bankInventory, ...itemsToBank],
           overflowInventory: [...state.overflowInventory, ...itemsToOverflow],
@@ -785,6 +794,8 @@ export const createDungeonActions: StateCreator<
 
   retreatFromDungeon: () =>
     set((state) => {
+      console.log(`[Retreat] Starting retreat - alkahest: ${state.alkahest}, bankGold: ${state.bankGold}`)
+      
       // Complete the active run as retreat (no death penalty)
       if (state.activeRun) {
         const completedRun: Run = {
@@ -812,6 +823,10 @@ export const createDungeonActions: StateCreator<
         const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
         const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
 
+        const newAlkahest = state.alkahest
+        const newBankGold = state.bankGold + goldToBank
+        console.log(`[Retreat] Returning - alkahest: ${newAlkahest}, bankGold: ${newBankGold} (was: ${state.bankGold})`)
+
         return {
           dungeon: {
             depth: 0,
@@ -825,7 +840,8 @@ export const createDungeonActions: StateCreator<
             inventory: [],
             isNextEventBoss: false,
           },
-          bankGold: state.bankGold + goldToBank,
+          alkahest: newAlkahest, // Explicitly preserve alkahest
+          bankGold: newBankGold,
           bankInventory: [...state.bankInventory, ...itemsToBank],
           overflowInventory: itemsToOverflow,
           isGameOver: false,
@@ -846,6 +862,7 @@ export const createDungeonActions: StateCreator<
         return penalizedVersion || rosterHero
       })
       return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         party: penalizedParty,
         heroRoster: updatedRoster,
         hasPendingPenalty: false,
@@ -982,6 +999,7 @@ export const createDungeonActions: StateCreator<
       } : null
 
       return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         party: finalParty,
         heroRoster: updatedRoster,
         dungeon: {

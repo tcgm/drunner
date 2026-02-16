@@ -50,7 +50,7 @@ export function EquipmentSlot({
 
   // Debug logging
   if (showSwapButton) {
-    console.log('[EquipmentSlot]', slot, '- canSwap:', canSwap, 'availableItems:', availableItems.length, 'showSwapButton:', showSwapButton, 'onSwapClick:', !!onSwapClick)
+    // console.log('[EquipmentSlot]', slot, '- canSwap:', canSwap, 'availableItems:', availableItems.length, 'showSwapButton:', showSwapButton, 'onSwapClick:', !!onSwapClick)
   }
 
   if (isEmpty) {

@@ -26,7 +26,7 @@ export const createAbilityActions: StateCreator<
     }
 
     // Use the current floor and depth for cooldown tracking
-    console.log('[CD Debug] useAbility - Floor:', state.dungeon.floor, 'Depth:', state.dungeon.depth)
+    // console.log('[CD Debug] useAbility - Floor:', state.dungeon.floor, 'Depth:', state.dungeon.depth)
     const result = applyAbility(hero, abilityId, state.dungeon.floor, state.party, state.dungeon.depth)
 
     if (result.success) {

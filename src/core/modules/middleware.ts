@@ -51,14 +51,32 @@ export const sanitizeMiddleware = <T extends GameState>(config: StateCreator<T>)
   (set, get, api) => {
     return config(
       (args) => {
+        const stateBefore = get() as GameState
+        const alkahestBefore = stateBefore.alkahest
+        
         set(args)
+        
+        const stateAfter = get() as GameState
+        const alkahestAfter = stateAfter.alkahest
+        
+        if (alkahestBefore !== alkahestAfter) {
+          console.warn(`[SanitizeMiddleware] alkahest changed from ${alkahestBefore} to ${alkahestAfter}`)
+          console.trace('Stack trace:')
+        }
+        
         const state = get() as GameState
         if (state.party?.length > 0) {
           const needsSanitization = state.party.some(hero =>
             hero !== null && (isNaN(hero.stats.hp) || isNaN(hero.stats.maxHp) || !hero.activeEffects)
           )
           if (needsSanitization) {
+            const alkahestBeforeSanitize = state.alkahest
             set({ party: state.party.map(h => h !== null ? sanitizeHeroStats({ ...h, stats: { ...h.stats }, activeEffects: h.activeEffects || [] }) : null) } as Partial<T>)
+            const alkahestAfterSanitize = (get() as GameState).alkahest
+            
+            if (alkahestBeforeSanitize !== alkahestAfterSanitize) {
+              console.error(`[SanitizeMiddleware] SANITIZATION RESET ALKAHEST! ${alkahestBeforeSanitize} -> ${alkahestAfterSanitize}`)
+            }
           }
         }
       },
