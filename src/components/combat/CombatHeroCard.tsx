@@ -185,7 +185,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     )}
 
                     {/* Quick Stats */}
-                    <HStack spacing={1} fontSize="xs" justify="space-between">
+                    <HStack spacing={1} fontSize="xs" justify="center">
                         <Tooltip label="Attack">
                             <HStack spacing={0}>
                                 <Icon as={GiCrossedSwords} boxSize={3} color={GAME_CONFIG.colors.stats.attack.icon} />
