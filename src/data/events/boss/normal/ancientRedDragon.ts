@@ -86,13 +86,14 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
       requirements: {
         class: 'Bard',
       },
+      skipsCombat: true, // Diplomatic solution - flattery avoids full combat
       possibleOutcomes: [
         {
           weight: 80,
           outcome: {
             text: 'Your flattery appeals to its vanity! The dragon grants passage for tribute!',
             effects: [
-              { type: 'damage', target: 'all', value: 145 },
+              { type: 'damage', target: 'all', value: 0 },
               { type: 'xp', value: 1300 },
               { type: 'gold', value: 2450 },
               { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 28 },
@@ -104,7 +105,7 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Your flattery appeals to its vanity! The dragon grants passage and a gift from its ancient hoard!',
             effects: [
-              { type: 'damage', target: 'all', value: 145 },
+              { type: 'damage', target: 'all', value: 0 },
               { type: 'xp', value: 1300 },
               { type: 'gold', value: 2450 },
               { 

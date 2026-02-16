@@ -124,13 +124,14 @@ export const PLAGUE_DRAGON: DungeonEvent = {
       requirements: {
         class: 'Bard',
       },
+      skipsCombat: true, // Compassionate resolution - dragon surrenders peacefully
       possibleOutcomes: [
         {
           weight: 85,
           outcome: {
             text: 'Your songs of comfort reach through the corruption! The dragon\'s ancient heart softens, and it peacefully surrenders its treasure before passing!',
             effects: [
-              { type: 'damage', target: 'all', value: 200 },
+              { type: 'damage', target: 'all', value: 0 },
               { type: 'xp', value: 1350 },
               { type: 'gold', value: 2050 },
               { type: 'item', itemType: 'accessory1', minRarity: 'legendary', rarityBoost: 31 },
@@ -142,7 +143,7 @@ export const PLAGUE_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Your songs of comfort reach through the corruption! The dragon\'s ancient heart softens. Before passing, it gifts you its most precious draconic heirloom!',
             effects: [
-              { type: 'damage', target: 'all', value: 200 },
+              { type: 'damage', target: 'all', value: 0 },
               { type: 'xp', value: 1350 },
               { type: 'gold', value: 2050 },
               { 

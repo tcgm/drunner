@@ -40,10 +40,11 @@ export const BANDIT_KING: DungeonEvent = {
       requirements: {
         class: 'Bard',
       },
+      skipsCombat: true, // Diplomatic solution - avoids the boss fight
       outcome: {
         text: 'Your silver tongue convinces them to split the loot! You walk away rich!',
         effects: [
-          { type: 'damage', target: 'all', value: 5 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 200 },
           { type: 'gold', value: 450 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 10 },

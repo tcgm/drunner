@@ -854,8 +854,12 @@ export const createDungeonActions: StateCreator<
 
   applyBossVictoryRewards: (bossEvent) =>
     set((state) => {
-      if (!bossEvent || !bossEvent.choices[0] || !bossEvent.choices[0].outcome) {
-        console.error('Invalid boss event for rewards')
+      // Determine which choice to use for rewards
+      const choiceIndex = bossEvent.selectedChoiceIndex ?? 0
+      const rewardChoice = bossEvent.choices[choiceIndex]
+      
+      if (!bossEvent || !rewardChoice || !rewardChoice.outcome) {
+        console.error('Invalid boss event for rewards', { bossEvent, choiceIndex, rewardChoice })
         return state
       }
 
@@ -866,8 +870,8 @@ export const createDungeonActions: StateCreator<
         isAlive: hero.isAlive
       } : null)
 
-      // Use first choice's outcome as victory rewards
-      const victoryOutcome = bossEvent.choices[0].outcome
+      // Use selected choice's outcome as victory rewards
+      const victoryOutcome = rewardChoice.outcome
 
       // Process rewards using event resolver
       const { updatedParty, updatedGold, metaXpGained, resolvedOutcome } = resolveEventOutcome(

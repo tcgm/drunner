@@ -40,10 +40,11 @@ export const GOBLIN_CHIEF: DungeonEvent = {
       requirements: {
         class: 'Barbarian',
       },
+      skipsCombat: true, // Intimidation - goblins flee in terror
       outcome: {
         text: 'You roar and beat your chest! The goblins scatter in terror!',
         effects: [
-          { type: 'damage', target: 'all', value: 6 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 170 },
           { type: 'gold', value: 210 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 9 },

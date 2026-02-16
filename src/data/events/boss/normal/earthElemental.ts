@@ -40,10 +40,11 @@ export const EARTH_ELEMENTAL: DungeonEvent = {
       requirements: {
         class: 'Druid',
       },
+      skipsCombat: true, // Peaceful druidic resolution - elemental returns to earth
       outcome: {
         text: 'You speak to the elemental\'s essence! It returns to the earth peacefully!',
         effects: [
-          { type: 'damage', target: 'all', value: 12 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 230 },
           { type: 'gold', value: 310 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 13 },

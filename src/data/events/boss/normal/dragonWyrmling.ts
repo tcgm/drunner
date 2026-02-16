@@ -37,6 +37,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
       requirements: {
         gold: 200,
       },
+      skipsCombat: true, // Pay tribute to avoid the fight
       outcome: {
         text: 'The dragon is amused but demands tribute.',
         effects: [
@@ -61,6 +62,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
     },
     {
       text: 'Attempt to hug the dragon',
+      skipsCombat: true, // Unconventional diplomatic approach - skips combat
       possibleOutcomes: [
         {
           weight: 85,

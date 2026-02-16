@@ -24,10 +24,11 @@ export const CORRUPTED_TREANT: DungeonEvent = {
       requirements: {
         class: 'Druid',
       },
+      skipsCombat: true, // Druidic purification - treant returns to peaceful rest
       outcome: {
         text: 'You cleanse the corruption! The treant returns to peaceful slumber!',
         effects: [
-          { type: 'damage', target: 'all', value: 51 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 370 },
           { type: 'gold', value: 485 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 18 },

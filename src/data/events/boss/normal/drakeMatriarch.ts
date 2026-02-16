@@ -24,10 +24,11 @@ export const DRAKE_MATRIARCH: DungeonEvent = {
       requirements: {
         class: 'Ranger',
       },
+      skipsCombat: true, // Peaceful animal handling - drake allows passage
       outcome: {
         text: 'You show no threat to her eggs! She allows you to pass peacefully!',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 380 },
           { type: 'gold', value: 500 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 20 },

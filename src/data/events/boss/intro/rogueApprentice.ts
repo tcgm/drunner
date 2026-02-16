@@ -40,10 +40,11 @@ export const ROGUE_APPRENTICE: DungeonEvent = {
       requirements: {
         class: 'Bard',
       },
+      skipsCombat: true, // Persuasion - they flee without a real fight
       outcome: {
         text: 'You convince them this life isn\'t worth it! They drop their coin purse and flee!',
         effects: [
-          { type: 'damage', target: 'all', value: 5 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 160 },
           { type: 'gold', value: 230 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 10 },

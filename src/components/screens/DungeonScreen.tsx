@@ -91,7 +91,31 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }, [lastOutcome])
   
   const handleSelectChoice = (choice: EventChoice) => {
-    selectChoice(choice)
+    // Capture current event before selectChoice clears it
+    const currentEvent = dungeon.currentEvent
+    const shouldInitiateCombat = currentEvent && currentEvent.type === 'boss' && !choice.skipsCombat
+    
+    // If this choice initiates combat, don't resolve it yet - just store it for after combat victory
+    if (shouldInitiateCombat && currentEvent) {
+      // Find which choice index this is
+      const choiceIndex = currentEvent.choices.findIndex(c => c === choice)
+      
+      // Initialize combat state and store the selected choice index
+      const eventWithCombatState = {
+        ...currentEvent,
+        combatState: initializeBossCombatState(currentEvent, dungeon),
+        selectedChoiceIndex: choiceIndex // Store which choice was selected
+      }
+      
+      // Small delay to show choice feedback before combat
+      setTimeout(() => {
+        setBossEvent(eventWithCombatState)
+        setInBossCombat(true)
+      }, 100)
+    } else {
+      // Non-combat choice or choice that skips combat - resolve normally
+      selectChoice(choice)
+    }
   }
   
   const handleContinue = () => {
@@ -141,32 +165,9 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     onExit()
   }
 
-  // Initialize boss combat state when boss event is encountered
-  useEffect(() => {
-    if (dungeon.currentEvent && dungeon.currentEvent.type === 'boss' && !inBossCombat) {
-      // Always initialize fresh combat state for new boss encounter
-      // (Events are reused from shared arrays, so old combatState may persist)
-      const eventWithCombatState = {
-        ...dungeon.currentEvent,
-        combatState: initializeBossCombatState(
-          dungeon.currentEvent,
-          dungeon
-        )
-      }
-      const timer = setTimeout(() => {
-        // Update the store's currentEvent with combatState for DevTools visibility
-        useGameStore.setState((state) => ({
-          dungeon: {
-            ...state.dungeon,
-            currentEvent: eventWithCombatState
-          }
-        }))
-        setBossEvent(eventWithCombatState)
-        setInBossCombat(true)
-      }, 0)
-      return () => clearTimeout(timer)
-    }
-  }, [dungeon.currentEvent, dungeon, inBossCombat])
+  // Boss combat is now initiated after choice selection in handleSelectChoice
+  // This allows showing the boss event narrative and choices first
+  // Combat only triggers if the choice doesn't have skipsCombat: true
 
   // Note: Store sync removed - CombatManager now handles all combat state
   // DevTools or other external updates should go through the manager's updateState method

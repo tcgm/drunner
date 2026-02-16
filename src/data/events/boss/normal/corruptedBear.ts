@@ -40,10 +40,11 @@ export const CORRUPTED_BEAR: DungeonEvent = {
       requirements: {
         class: 'Ranger',
       },
+      skipsCombat: true, // Animal empathy - bear shakes off corruption and retreats
       outcome: {
         text: 'You speak to the bear\'s true nature! It shakes off the corruption and retreats!',
         effects: [
-          { type: 'damage', target: 'all', value: 10 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 240 },
           { type: 'gold', value: 340 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 14 },

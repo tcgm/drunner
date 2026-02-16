@@ -307,6 +307,8 @@ export interface EventChoice {
   statModifier?: keyof Stats // Stat that affects success (adds bonus to chance)
   successOutcome?: EventOutcome // On success
   failureOutcome?: EventOutcome // On failure
+  // Boss event combat control
+  skipsCombat?: boolean // For boss events: if true, this choice skips the combat phase (e.g., negotiation, bribery). If false/undefined, combat occurs after choosing.
 }
 
 export interface EventOutcome {
@@ -376,6 +378,7 @@ export interface DungeonEvent {
     baseLuck?: number
   }
   phases?: BossPhase[] // Optional phase transitions at HP thresholds
+  selectedChoiceIndex?: number // Track which choice was selected for boss combat (used for victory rewards)
 }
 
 export interface EventLogEntry {
