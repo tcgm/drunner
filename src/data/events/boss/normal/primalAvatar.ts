@@ -24,10 +24,11 @@ export const PRIMAL_AVATAR: DungeonEvent = {
       requirements: {
         class: 'Druid',
       },
+      skipsCombat: true, // Druidic communion - avatar recognizes kindred spirit
       outcome: {
         text: 'You speak to nature\'s heart! The avatar recognizes a kindred spirit!',
         effects: [
-          { type: 'damage', target: 'all', value: 335 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 1755 },
           { type: 'gold', value: 2633 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 40 },

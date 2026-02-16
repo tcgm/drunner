@@ -55,10 +55,11 @@ export const VALKYRIE_HUNTRESS: DungeonEvent = {
       requirements: {
         class: 'Bard',
       },
+      skipsCombat: true, // Charmed by music and words - she sheathes her weapon
       outcome: {
         text: 'Your silver tongue and winning smile captivate her! She sheathes her spear, enchanted by your words and music!',
         effects: [
-          { type: 'damage', target: 'all', value: 75 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 580 },
           { type: 'gold', value: 760 },
           { type: 'item', itemType: 'accessory1', minRarity: 'epic', rarityBoost: 27 },

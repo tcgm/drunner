@@ -40,10 +40,11 @@ export const WILD_BOAR: DungeonEvent = {
       requirements: {
         class: 'Ranger',
       },
+      skipsCombat: true, // Animal handling - boar calms and leaves peacefully
       outcome: {
         text: 'You speak to the animal\'s instincts! The boar calms and trots away!',
         effects: [
-          { type: 'damage', target: 'all', value: 8 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 170 },
           { type: 'gold', value: 210 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 11 },

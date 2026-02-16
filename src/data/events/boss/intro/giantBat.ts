@@ -40,10 +40,11 @@ export const GIANT_BAT: DungeonEvent = {
       requirements: {
         class: 'Rogue',
       },
+      skipsCombat: true, // Clever trickery - bat flees in fear without fighting
       outcome: {
         text: 'You cleverly guide the bat toward a crack of light! It flees in fear!',
         effects: [
-          { type: 'damage', target: 'all', value: 7 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 165 },
           { type: 'gold', value: 205 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 10 },

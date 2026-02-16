@@ -40,10 +40,11 @@ export const RABID_WOLF: DungeonEvent = {
       requirements: {
         class: 'Ranger',
       },
+      skipsCombat: true, // Animal handling - wolf backs down peacefully
       outcome: {
         text: 'You soothe the wolf with your connection to nature. It backs down!',
         effects: [
-          { type: 'damage', target: 'all', value: 5 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 165 },
           { type: 'gold', value: 205 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 10 },
