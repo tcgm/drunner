@@ -319,7 +319,7 @@ export const GAME_CONFIG = {
     priceMultiplier: 2.0, // Shop items cost 2x their base value
     refreshBaseCost: 50, // Base cost to refresh shop inventory
     refreshCostMultiplier: 0.25, // Multiplier of remaining unpurchased items value for refresh cost
-    refreshCooldown: 2000, // Cooldown in milliseconds before refresh button can be used again
+    refreshCooldown: 300, // Cooldown in milliseconds before refresh button can be used again
     inventorySize: 6, // Number of potions in shop
     floorScaling: 3, // Multiplier for converting party level to effective floor for potion quality
   },
@@ -355,7 +355,7 @@ export const GAME_CONFIG = {
     },
     refreshBaseCost: 50, // Base cost to refresh market inventory (more stalls = higher cost)
     refreshCostMultiplier: 0.05, // Multiplier of remaining unpurchased items value for refresh cost
-    refreshCooldown: 2000, // Cooldown in milliseconds before refresh button can be used again
+    refreshCooldown: 300, // Cooldown in milliseconds before refresh button can be used again
     stallSize: 7, // Number of items per stall
     stallCount: 3, // Number of stalls in the market
     floorScaling: 3, // Multiplier for converting party level to effective floor for item quality
