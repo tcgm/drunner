@@ -10,13 +10,14 @@ import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
-import { GiHeartPlus, GiSwordWound, GiSkullCrossedBones, GiSparkles } from 'react-icons/gi'
+import { GiHeartPlus, GiSwordWound, GiSkullCrossedBones, GiSparkles, GiCrossedSwords, GiShield, GiSprint, GiBowArrow } from 'react-icons/gi'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import StatBar from '@/components/ui/StatBar'
 import { EquipmentPips } from '@/components/party/EquipmentPips'
 import type { Item, Consumable } from '@/types'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionBox = motion.create(Box)
 
@@ -70,8 +71,12 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                 colorScheme={position === 'frontline' ? 'red' : 'blue'}
                 fontSize="2xs"
                 zIndex={1}
+                display="flex"
+                alignItems="center"
+                gap={1}
             >
-                {position === 'frontline' ? '⚔️ Front' : '🏹 Back'}
+                <Icon as={position === 'frontline' ? GiCrossedSwords : GiBowArrow} boxSize={2} />
+                {position === 'frontline' ? 'Front' : 'Back'}
             </Badge> */}
 
             {/* Active Turn Indicator */}
@@ -180,23 +185,29 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     )}
 
                     {/* Quick Stats */}
-                    <HStack spacing={3} fontSize="xs" justify="space-between">
+                    <HStack spacing={1} fontSize="xs" justify="space-between">
                         <Tooltip label="Attack">
-                            <HStack spacing={1}>
-                                <Text color="gray.500">⚔️</Text>
-                                <Text color="red.300" fontWeight="bold">{totalStats.attack}</Text>
+                            <HStack spacing={0}>
+                                <Icon as={GiCrossedSwords} boxSize={3} color={GAME_CONFIG.colors.stats.attack.icon} />
+                                <Text color={GAME_CONFIG.colors.stats.attack.text} fontWeight="bold">{totalStats.attack}</Text>
                             </HStack>
                         </Tooltip>
                         <Tooltip label="Defense">
-                            <HStack spacing={1}>
-                                <Text color="gray.500">🛡️</Text>
-                                <Text color="blue.300" fontWeight="bold">{totalStats.defense}</Text>
+                            <HStack spacing={0}>
+                                <Icon as={GiShield} boxSize={3} color={GAME_CONFIG.colors.stats.defense.icon} />
+                                <Text color={GAME_CONFIG.colors.stats.defense.text} fontWeight="bold">{totalStats.defense}</Text>
                             </HStack>
                         </Tooltip>
                         <Tooltip label="Speed">
-                            <HStack spacing={1}>
-                                <Text color="gray.500">⚡</Text>
-                                <Text color="green.300" fontWeight="bold">{totalStats.speed}</Text>
+                            <HStack spacing={0}>
+                                <Icon as={GiSprint} boxSize={3} color={GAME_CONFIG.colors.stats.speed.icon} />
+                                <Text color={GAME_CONFIG.colors.stats.speed.text} fontWeight="bold">{totalStats.speed}</Text>
+                            </HStack>
+                        </Tooltip>
+                        <Tooltip label="Luck">
+                            <HStack spacing={0}>
+                                <Icon as={GameIcons.GiClover} boxSize={3} color={GAME_CONFIG.colors.stats.luck.icon} />
+                                <Text color={GAME_CONFIG.colors.stats.luck.text} fontWeight="bold">{totalStats.luck}</Text>
                             </HStack>
                         </Tooltip>
                     </HStack>

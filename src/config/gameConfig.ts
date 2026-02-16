@@ -51,15 +51,43 @@ export const GAME_CONFIG = {
       glow: 'rgba(72, 187, 120, 0.8)', // #48bb78
       hex: '#48bb78',
     },
-    // Stat colors
+    // Stat colors (for consistent stat display across UI)
     stats: {
-      attack: 'red.400',
-      defense: 'blue.400',
-      speed: 'yellow.400',
-      luck: 'purple.400',
-      magicPower: 'purple.400',
-      wisdom: 'cyan.400',
-      charisma: 'pink.400',
+      attack: {
+        icon: 'red.500',
+        text: 'red.300',
+        base: 'red.400',
+      },
+      defense: {
+        icon: 'blue.500',
+        text: 'blue.300',
+        base: 'blue.400',
+      },
+      speed: {
+        icon: 'green.500',
+        text: 'green.300',
+        base: 'green.400',
+      },
+      luck: {
+        icon: 'yellow.500',
+        text: 'yellow.300',
+        base: 'yellow.400',
+      },
+      magicPower: {
+        icon: 'purple.500',
+        text: 'purple.300',
+        base: 'purple.400',
+      },
+      wisdom: {
+        icon: 'cyan.500',
+        text: 'cyan.300',
+        base: 'cyan.400',
+      },
+      charisma: {
+        icon: 'pink.500',
+        text: 'pink.300',
+        base: 'pink.400',
+      },
     },
     // Rarity colors (Chakra tokens - map to closest Chakra colors)
     rarity: {

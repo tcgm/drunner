@@ -5,13 +5,14 @@
  */
 
 import './BossDisplay.css'
-import { Box, VStack, HStack, Text, Progress, Badge, Icon } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Progress, Badge, Icon, Tooltip } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useMemo, useEffect, useState } from 'react'
 import type { DungeonEvent, BossCombatState } from '@/types'
 import * as GameIcons from 'react-icons/gi'
-import { GiSkullCrossedBones, GiCrownedSkull, GiDragonHead } from 'react-icons/gi'
+import { GiSkullCrossedBones, GiCrownedSkull, GiDragonHead, GiCrossedSwords, GiShield, GiSprint, GiClover, GiCrown } from 'react-icons/gi'
 import { recalculateDynamicBossStats } from '@/systems/combat/bossStats'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionBox = motion.create(Box)
 const MotionProgress = motion.create(Progress)
@@ -217,36 +218,48 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                                 fontSize="sm"
                                 textTransform="uppercase"
                                 letterSpacing="wider"
+                                display="flex"
+                                alignItems="center"
+                                gap={1}
                             >
-                                {isFinalBoss ? '👑 ' : isZoneBoss ? '⚔️ ' : '🛡️ '}{tierLabel}
+                                <Icon as={isFinalBoss ? GiCrown : isZoneBoss ? GiCrossedSwords : GiShield} boxSize={3} />
+                                {tierLabel}
                             </Badge>
 
                             {/* Boss Stats */}
                             <HStack spacing={6} mt={1}>
-                                <HStack spacing={1}>
-                                    <Text fontSize="sm" color="gray.400">ATK:</Text>
-                                    <Text fontSize="sm" fontWeight="bold" color="red.300">
-                                        {scaledStats.attack}
-                                    </Text>
-                                </HStack>
-                                <HStack spacing={1}>
-                                    <Text fontSize="sm" color="gray.400">DEF:</Text>
-                                    <Text fontSize="sm" fontWeight="bold" color="blue.300">
-                                        {scaledStats.defense}
-                                    </Text>
-                                </HStack>
-                                <HStack spacing={1}>
-                                    <Text fontSize="sm" color="gray.400">SPD:</Text>
-                                    <Text fontSize="sm" fontWeight="bold" color="green.300">
-                                        {scaledStats.speed}
-                                    </Text>
-                                </HStack>
-                                <HStack spacing={1}>
-                                    <Text fontSize="sm" color="gray.400">LCK:</Text>
-                                    <Text fontSize="sm" fontWeight="bold" color="yellow.300">
-                                        {scaledStats.luck}
-                                    </Text>
-                                </HStack>
+                                <Tooltip label="Attack">
+                                    <HStack spacing={1}>
+                                        <Icon as={GiCrossedSwords} boxSize={4} color={GAME_CONFIG.colors.stats.attack.icon} />
+                                        <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>
+                                            {scaledStats.attack}
+                                        </Text>
+                                    </HStack>
+                                </Tooltip>
+                                <Tooltip label="Defense">
+                                    <HStack spacing={1}>
+                                        <Icon as={GiShield} boxSize={4} color={GAME_CONFIG.colors.stats.defense.icon} />
+                                        <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>
+                                            {scaledStats.defense}
+                                        </Text>
+                                    </HStack>
+                                </Tooltip>
+                                <Tooltip label="Speed">
+                                    <HStack spacing={1}>
+                                        <Icon as={GiSprint} boxSize={4} color={GAME_CONFIG.colors.stats.speed.icon} />
+                                        <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>
+                                            {scaledStats.speed}
+                                        </Text>
+                                    </HStack>
+                                </Tooltip>
+                                <Tooltip label="Luck">
+                                    <HStack spacing={1}>
+                                        <Icon as={GiClover} boxSize={4} color={GAME_CONFIG.colors.stats.luck.icon} />
+                                        <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck.text}>
+                                            {scaledStats.luck}
+                                        </Text>
+                                    </HStack>
+                                </Tooltip>
                             </HStack>
                         </VStack>
                     </HStack>
