@@ -1346,77 +1346,105 @@ export const GAME_CONFIG = {
 
 ## Implementation Phases
 
-### Phase 1: Config & Types
-- Add boss combat config to gameConfig.ts
-- Add firstBossScaling config for tutorial/easy first boss
-- Add BossCombatState interface to types (include healPerTurn, cooldown maps, activeEffects, turnOrder, phases, currentPhase, Combatant type)
-- Add CombatEffect interface for buff/debuff/status tracking
-- Add EffectBehavior interface for flexible status effects
-- Add Combatant interface for turn order
-- Add BossAbility and BossAttackPattern types to types
-- Add BossPhase interface for phase transitions
-- Add combatState, bossAbilities, attackPatterns, combatChoices, healPerTurn, customBaseStats, phases, and position fields to DungeonEvent/Hero types
-- Support title/description as string | string[] for variance
-- Support choice text/outcome text as string | string[] for variance
-- Create file structure for boss abilities and attack patterns
-- Add flee action type to choices
+### ✅ Phase 1: Config & Types (COMPLETE)
+- ✅ Add boss combat config to gameConfig.ts
+- ✅ Add firstBossScaling config for tutorial/easy first boss
+- ✅ Add BossCombatState interface to types (include healPerTurn, cooldown maps, activeEffects, turnOrder, phases, currentPhase, Combatant type)
+- ✅ Add CombatEffect interface for buff/debuff/status tracking
+- ✅ Add EffectBehavior interface for flexible status effects
+- ✅ Add Combatant interface for turn order
+- ✅ Add BossAbility and BossAttackPattern types to types
+- ✅ Add BossPhase interface for phase transitions
+- ✅ Add combatState, bossAbilities, attackPatterns, combatChoices, healPerTurn, customBaseStats, phases, and position fields to DungeonEvent/Hero types
+- ✅ Support title/description as string | string[] for variance
+- ✅ Support choice text/outcome text as string | string[] for variance
+- ✅ Create file structure for boss abilities and attack patterns
+- ✅ Add flee action type to choices
 
-### Phase 2: Boss Stats Calculator & Abilities
-- Create `calculateBossStats()` function
-- Implement scaling formula with floor + combat depth
-- Add support for customBaseStats override on boss events
-- Add first boss scaling reduction (floor 1 danger reduction)
-- Create helper to initialize boss combat state
-- Define initial boss abilities in separate files (enrage, slam, regenerate)
-- Define initial boss attack patterns in separate files (heavy strike, whirlwind, execute)
-- Create index files for importing abilities and patterns
+### ✅ Phase 2: Boss Stats Calculator & Abilities (COMPLETE)
+- ✅ Create `calculateBossStats()` function
+- ✅ Implement scaling formula with floor + combat depth
+- ✅ Add support for customBaseStats override on boss events
+- ✅ Add first boss scaling reduction (floor 1 danger reduction)
+- ✅ Create helper to initialize boss combat state
+- ✅ Define initial boss abilities in separate files (enrage, slam, regenerate)
+- ✅ Define initial boss attack patterns in separate files (heavy strike, whirlwind, execute)
+- ✅ Create index files for importing abilities and patterns
 
-### Phase 3: Combat Event Loop
-- Implement speed-based turn order calculation (with random tiebreaker)
-- Modify event resolver to detect boss combat
-- Add combat state tracking to dungeon
-- Add combat state persistence (save/load during combat)
-- Implement "stay in event" logic with individual hero turns
-- Add boss turn resolution with ability checks
-- Implement boss phase transition system (HP threshold triggers)
-- Implement boss ability execution (including healing abilities)
-- Implement passive boss healing (healPerTurn)
-- Implement boss attack pattern system and selection logic
-- Implement intelligent boss targeting (danger-scaled, frontline guard system with slot-based positioning)
-- Add flee action handler (keep gold and equipped, lose inventory)
-- Track item and ability cooldowns during combat
-- Implement flexible status effect system (poison, stun, burn, regen, custom behaviors)
-- Implement buff/debuff system with duration tracking (floor stats at 0, no caps)
-- Process effects at end of round (status effects like poison/regen)
-- Recalculate turn order each round
+### ✅ Phase 3: Combat Event Loop (COMPLETE)
+- ✅ Implement speed-based turn order calculation (with random tiebreaker)
+- ✅ Modify event resolver to detect boss combat
+- ✅ Add combat state tracking to dungeon
+- ✅ Add combat state persistence (save/load during combat)
+- ✅ Implement "stay in event" logic with individual hero turns
+- ✅ Add boss turn resolution with ability checks
+- ✅ Implement boss phase transition system (HP threshold triggers)
+- ✅ Implement boss ability execution (including healing abilities)
+- ✅ Implement passive boss healing (healPerTurn)
+- ✅ Implement boss attack pattern system and selection logic
+- ✅ Implement intelligent boss targeting (danger-scaled, frontline guard system with slot-based positioning)
+- ✅ Add flee action handler (keep gold and equipped, lose inventory)
+- ✅ Track item and ability cooldowns during combat
+- ✅ Implement flexible status effect system (poison, stun, burn, regen, custom behaviors)
+- ✅ Implement buff/debuff system with duration tracking (floor stats at 0, no caps)
+- ✅ Process effects at end of round (status effects like poison/regen)
+- ✅ Recalculate turn order each round
 
-### Phase 4: Hero Abilities & Items Integration
-- Add combat trigger types to abilities
-- Implement ability resolution in combat (works with turn order)
-- Track ability usage as turn actions (1 hero action)
-- Implement ability cooldown tracking during combat (rounds)
-- Add item cooldown tracking during combat (rounds)
-- Implement revive consumables as 1 full turn action
-- Implement other consumables as 1/3 turn action (up to 3 per turn)
-- Allow action overflow (consumables + other actions)
-- Ensure consumables work same as outside combat (instant vs duration-based)
-- Handle hero death and revival during combat
+### ✅ Phase 4: Hero Abilities & Items Integration (COMPLETE)
+- ✅ Add combat trigger types to abilities
+- ✅ Implement ability resolution in combat (works with turn order)
+- ✅ Track ability usage as turn actions (1 hero action)
+- ✅ Implement ability cooldown tracking during combat (rounds)
+- ✅ Add item cooldown tracking during combat (rounds)
+- ✅ Implement revive consumables as 1 full turn action
+- ✅ Implement other consumables as 1/3 turn action (up to 3 per turn)
+- ✅ Allow action overflow (consumables + other actions)
+- ✅ Ensure consumables work same as outside combat (instant vs duration-based)
+- ✅ Handle hero death and revival during combat
 
-### Phase 5: UI & Polish
-- Create combat UI showing boss HP/stats
-- Show turn counter (rounds) and combatDepth
-- Display stat changes per round
-- Show boss phase indicator and phase transitions
-- Show turn order visualization (speed-based queue)
-- Highlight active combatant's turn
-- Display active buffs/debuffs/status effects with durations
-- Show status effect icons and descriptions (poison, stun, etc.)
-- Show cooldown timers for abilities and items
-- Add combat animations
-- Show consumable action economy (1/3 indicators)
-- Display frontline/backline positioning (slot 1-2 vs 3-4)
-- Show boss target selection visually
-- Add phase transition animations and messages
+### ✅ Phase 5: UI & Polish (COMPLETE)
+- ✅ Create combat UI showing boss HP/stats
+- ✅ Show turn counter (rounds) and combatDepth
+- ✅ Display stat changes per round
+- ✅ Show boss phase indicator and phase transitions
+- ✅ Show turn order visualization (speed-based queue)
+- ✅ Highlight active combatant's turn
+- ✅ Display active buffs/debuffs/status effects with durations
+- ✅ Show status effect icons and descriptions (poison, stun, etc.)
+- ✅ Show cooldown timers for abilities and items
+- ✅ Add combat animations
+- ✅ Show consumable action economy (1/3 indicators)
+- ✅ Display frontline/backline positioning (slot 1-2 vs 3-4)
+- ✅ Show boss target selection visually
+- ✅ Add phase transition animations and messages
+
+### ✅ Phase 6: Integration & Architecture (COMPLETE)
+- ✅ Integrate BossCombatScreen with DungeonScreen
+- ✅ Boss event detection and combat initialization
+- ✅ CombatManager architecture (non-React state machine)
+- ✅ Victory/defeat/flee handler integration
+- ✅ Reward distribution system (applyBossVictoryRewards)
+- ✅ Combat state persistence via manager
+- ✅ Item stack depletion on use
+- ✅ Full hero action execution (attack, defend, abilities, items)
+
+### ⏳ Phase 7: Boss Content (IN PROGRESS - 1% Complete)
+- ✅ Update 2 bosses with combat properties (Berserker King, Bound Demon)
+- ⏳ Update remaining ~190 boss events with combat properties
+  - Add `bossAbilities` array
+  - Add `attackPatterns` array
+  - Add `phases` with HP thresholds
+- 🔄 Create more boss-specific abilities
+- 🔄 Create more attack patterns
+- 🔄 Balance tuning (HP, damage, rewards)
+
+### 🔮 Phase 8: Polish & Enhancement (FUTURE)
+- Sound effects for combat actions
+- Enhanced particle effects
+- Combat tutorials
+- Boss-specific visual themes
+- Boss intro/outro animations
+- Advanced boss mechanics
 
 ## Design Decisions
 

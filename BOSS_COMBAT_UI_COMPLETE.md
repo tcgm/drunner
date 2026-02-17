@@ -338,38 +338,23 @@ Edit `combat-animations.css`:
 
 ---
 
-## TODO: Wiring Up Hero Actions
+## ✅ Hero Actions - COMPLETE
 
-The `handleHeroAction` function in `BossCombatScreen.tsx` needs to be connected to the hero turn system:
+The `handleHeroAction` function in `BossCombatScreen.tsx` has been fully implemented and connected:
 
-```tsx
-const handleHeroAction = async (heroId: string, action: string) => {
-  if (isProcessing || !event.combatState) return
-  
-  setIsProcessing(true)
-  addLogEntry('action', `Hero performs: ${action}`)
+**Implemented Actions:**
+- ✅ Attack - Direct damage to boss with crit calculation
+- ✅ Defend - Temporary defense buff for the round
+- ✅ Abilities - Hero ability execution with cooldown tracking
+- ✅ Items/Consumables - Item usage with stack depletion
+- ✅ Flee - Exit dungeon via retreatFromDungeon()
 
-  // Parse action type
-  if (action === 'attack') {
-    const result = executeAttack(hero, event.combatState)
-    addLogEntry('damage', result.message, 'boss', result.damage)
-  } else if (action === 'defend') {
-    const result = executeDefend(hero, event.combatState)
-    addLogEntry('buff', result.message)
-  } else if (action.startsWith('ability:')) {
-    const abilityId = action.split(':')[1]
-    const ability = hero.abilities.find(a => a.id === abilityId)
-    const result = executeHeroAbility(hero, ability, event.combatState, party)
-    addLogEntry('ability', result.message)
-  } else if (action.startsWith('item:')) {
-    const slot = action.split(':')[1]
-    const result = useConsumable(hero, slot, event.combatState, party)
-    addLogEntry('heal', result.message)
-  }
-
-  setIsProcessing(false)
-}
-```
+**Integration Complete:**
+- ✅ Combat state updates via CombatManager
+- ✅ Victory/defeat detection via manager callbacks
+- ✅ Turn advancement and boss AI processing
+- ✅ Combat log updates with visual feedback
+- ✅ Particle effects for actions
 
 ---
 
@@ -386,10 +371,10 @@ const handleHeroAction = async (heroId: string, action: string) => {
 ## Known Limitations
 
 1. **Module Resolution Errors** - Import statements may show red until TypeScript compiler recognizes new files (restart TS server if needed)
-2. **Hero Action Wiring** - `handleHeroAction` needs full integration with hero turn system
-3. **Combat State Persistence** - State changes should be saved to game state
-4. **Ability Cooldowns** - Visual indicators created but full system needs wiring
-5. **Item Stack Depletion** - Remove items from hero inventory on use
+2. ✅ ~~Hero Action Wiring~~ - COMPLETE
+3. ✅ ~~Combat State Persistence~~ - COMPLETE (via CombatManager)
+4. ✅ ~~Ability Cooldowns~~ - COMPLETE (tracked in combat system)
+5. ✅ ~~Item Stack Depletion~~ - COMPLETE (implemented in itemUsage.ts)
 
 ---
 

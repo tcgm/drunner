@@ -1,8 +1,8 @@
-# Boss Combat System - Phase 3 Complete
+# Boss Combat System - Fully Integrated ✅
 
 ## Overview
 
-The combat system is now fully functional for turn-based boss battles with:
+The combat system is **fully functional and integrated** for turn-based boss battles with:
 
 - ✅ **Speed-based turn order** - Fastest acts first, recalculated each round
 - ✅ **Boss targeting intelligence** - Danger-scaled targeting (random → low HP → priority targets)
@@ -13,6 +13,10 @@ The combat system is now fully functional for turn-based boss battles with:
 - ✅ **Effect tracking** - Buffs/debuffs/status effects with duration management
 - ✅ **Passive healing** - Boss regeneration per turn
 - ✅ **Cooldown system** - Abilities and items tracked separately during combat
+- ✅ **Hero actions** - Attack, defend, abilities, items fully implemented
+- ✅ **CombatManager** - Non-React state machine for reliable lifecycle management
+- ✅ **UI Integration** - Full-screen epic boss battle interface
+- ✅ **Reward system** - Victory rewards distributed from boss event choices
 
 ## Module Structure
 
@@ -21,6 +25,7 @@ src/systems/combat/
 ├── dangerCalculation.ts   # Danger level calculation (floor + depth + combat depth)
 ├── bossStats.ts          # Boss stat scaling and recalculation
 ├── combatState.ts        # Combat state initialization
+├── combatManager.ts      # CombatManager class (non-React state machine)
 ├── turnOrder.ts          # Speed-based turn order calculation
 ├── targeting.ts          # Intelligent boss targeting system
 ├── attackPatterns.ts     # Attack pattern selection and execution
@@ -28,10 +33,51 @@ src/systems/combat/
 ├── phases.ts             # Phase transition system
 ├── effects.ts            # Buff/debuff/status effects and cooldowns
 ├── combatFlow.ts         # Main combat loop orchestration
+├── heroActions.ts        # Hero combat actions (attack, defend)
+├── heroAbilities.ts      # Hero ability execution in combat
+├── itemUsage.ts          # Consumable usage during combat
 ├── examples.ts           # Usage examples
 └── index.ts              # Public API exports
 ```
+ createCombatManager } from '@/systems/combat'
 
+// Modern usage via CombatManager (recommended)
+const manager = createCombatManager(
+    bossEvent,
+    dungeon,
+    party,
+    {
+        onVictory: () => {
+            // Handle victory
+            applyRewards()
+        },
+        onDefeat: () => {
+            // Handle defeat
+            endGame()
+        },
+        onStateUpdate: (newState) => {
+            // Update UI
+            setCombatState(newState)
+        },
+        onLog: (type, message) => {
+            // Add to combat log
+            addLogEntry(type, message)
+        }
+    }
+)
+
+// Process hero action
+const result = executeAttack(hero, combatState)
+manager.updateState(combatState) // Auto-checks victory/defeat
+
+// Cleanup
+manager.destroy()
+```
+
+### Direct API Usage (for manual control)
+
+```typescript
+import {
 ## Usage Example
 
 ```typescript
@@ -193,21 +239,31 @@ Abilities have triggers and cooldowns:
 - `always` - Every turn (respecting cooldown)
 - `onTurnStart` - At start of boss turn
 - `onHpThreshold` - When HP crosses threshold (once)
-- `onPhaseChange` - When entering a specific phase
-- `onPlayerAction` - TODO: Implement
+- `Implementation Status
 
-## Cooldown System
+### ✅ Complete (Phases 1-6)
+- Core combat system (stats, turn order, targeting)
+- Boss abilities and attack patterns
+- Phase transitions
+- Effect system (buffs/debuffs/status effects)
+- Hero actions (attack, defend, abilities, items)
+- CombatManager architecture
+- Full UI integration
+- Victory/defeat/flee handling
+- Reward distribution
 
-Cooldowns are tracked separately:
-- `combatState.abilityCooldowns` - Boss ability cooldowns
-- `combatState.itemCooldowns` - Item usage cooldowns during combat
-- Decremented every round end
-- Value of 0 = ready to use
+### ⏳ In Progress (Phase 7)
+- Boss event content (2/192 bosses have combat properties)
+- More boss-specific abilities
+- More attack patterns
+- Balance tuning
 
-## Status Effects
-
-Flexible system supporting custom behaviors:
-
+### 🔮 Future Enhancements (Phase 8)
+- Sound effects
+- Enhanced particle effects
+- Combat tutorials
+- Boss-specific visual themes
+- Advanced mechanics
 ```typescript
 {
     id: 'poison-1',
@@ -219,15 +275,36 @@ Flexible system supporting custom behaviors:
         type: 'damagePerTurn',
         damageAmount: 10,
         onRoundEnd: (combatant, state) => {
-            // Custom logic here
-        }
-    }
-}
-```
+### Core Systems
+- `createCombatManager` - Create combat manager instance (recommended)
+- `BossCombatManager` - Combat manager class
 
-### Behavior Types
-- `damagePerTurn` - Deal true damage each round (ignores defense)
-- `healPerTurn` - Heal each round
+### State Management
+- `initializeBossCombatState` - Initialize combat state
+- `updateBossEventWithState` - Persist state to event
+
+### Combat Flow
+- `startCombatRound` - Begin new round
+- `processBossTurn` - Execute boss turn
+- `processRoundEnd` - Process end-of-round effects  
+- `getCurrentCombatant` - Get active combatant
+- `advanceTurn` - Move to next turn
+- `checkVictory` / `checkDefeat` - Check end conditions
+
+### Hero Actions
+- `executeAttack` - Hero basic attack
+- `executeDefend` - Hero defensive stance
+- `executeHeroAbility` - Use hero ability
+- `useConsumable` - Use item/consumable
+
+### Boss Systems
+- Danger calculation
+- Boss stats (initial + dynamic recalculation)
+- Turn order calculation
+- Attack pattern execution
+- Ability execution
+- Phase transitions
+- Effect processing round
 - `skipTurn` - Skip turns (stun effect)
 - `custom` - Fully custom behavior
 
