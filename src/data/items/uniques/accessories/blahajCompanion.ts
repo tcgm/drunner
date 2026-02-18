@@ -1,4 +1,4 @@
-import { GiFishMonster } from 'react-icons/gi'
+import Shork from '@/assets/icons/items/Shork.svg'
 import type { Item } from '@/types'
 
 /**
@@ -12,7 +12,7 @@ export const BLAHAJ_COMPANION: Omit<Item, 'id'> = {
   rarity: 'legendary',
   minRarity: 'rare',
   maxRarity: 'mythic',
-  icon: GiFishMonster,
+  icon: Shork,
   stats: {
     maxHp: 100,
     defense: 40,
