@@ -93,21 +93,21 @@ export const MATERIALS_BY_RARITY: Record<ItemRarity, Material[]> = {
   rare: [MITHRIL, DRAGONSCALE, ENCHANTED],
   veryRare: [OBSIDIAN, CRYSTAL, MOONSTONE],
   magical: [ARCANE, SPECTRAL, ETHEREAL],
-  elite: [],
+  elite: [ARCANE, SPECTRAL, ETHEREAL, ADAMANTINE],
   epic: [ADAMANTINE, CELESTIAL, DEMON],
   legendary: [DIVINE, ANCIENT, VOIDSTONE],
   mythic: [PRIMORDIAL, COSMIC, ETERNAL, ADAMANTIUM],
-  mythicc: [ASCENDED],
-  artifact: [],
-  divine: [GODFORGED],
-  celestial: [],
-  realityAnchor: [],
-  structural: [],
-  singularity: [],
-  void: [NULLSPACE],
-  elder: [],
-  layer: [],
-  plane: [],
+  mythicc: [ASCENDED, PRIMORDIAL, COSMIC, ETERNAL],
+  artifact: [ASCENDED, ADAMANTIUM, PRIMORDIAL, COSMIC],
+  divine: [GODFORGED, ASCENDED],
+  celestial: [GODFORGED, ASCENDED, CELESTIAL, DIVINE],
+  realityAnchor: [ASCENDED, GODFORGED, COSMIC, ETERNAL],
+  structural: [ASCENDED, GODFORGED, NULLSPACE],
+  singularity: [ASCENDED, NULLSPACE, GODFORGED],
+  void: [NULLSPACE, ASCENDED],
+  elder: [NULLSPACE, ASCENDED, GODFORGED],
+  layer: [NULLSPACE, GODFORGED, ASCENDED, NARRATIVE],
+  plane: [NARRATIVE, NULLSPACE, GODFORGED],
   author: [NARRATIVE]
 }
 
@@ -144,7 +144,24 @@ export function getMaterialsByRarity(rarity: ItemRarity): Material[] {
 export function getRandomMaterial(rarity: ItemRarity): Material {
   const materials = getMaterialsByRarity(rarity)
   if (materials.length === 0) {
-    // Fallback to common
+    // Fallback: find the highest available material from lower rarities
+    const rarityOrder: ItemRarity[] = [
+      'author', 'plane', 'layer', 'elder', 'void', 'singularity', 'structural', 
+      'realityAnchor', 'celestial', 'divine', 'artifact', 'mythicc', 'mythic',
+      'legendary', 'epic', 'elite', 'magical', 'veryRare', 'rare', 'uncommon', 'common', 'abundant', 'junk'
+    ]
+    const currentIndex = rarityOrder.indexOf(rarity)
+    
+    // Search for materials in progressively lower rarities
+    for (let i = currentIndex + 1; i < rarityOrder.length; i++) {
+      const fallbackMaterials = getMaterialsByRarity(rarityOrder[i])
+      if (fallbackMaterials.length > 0) {
+        console.warn(`[Material] No materials for rarity ${rarity}, falling back to ${rarityOrder[i]}`)
+        return fallbackMaterials[Math.floor(Math.random() * fallbackMaterials.length)]
+      }
+    }
+    
+    // Last resort fallback
     return IRON
   }
   return materials[Math.floor(Math.random() * materials.length)]
