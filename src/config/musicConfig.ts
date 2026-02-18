@@ -19,6 +19,8 @@ import combatMusic6 from '@/assets/audio/music/combat6.mp3?url';
 import combatMusic7 from '@/assets/audio/music/combat7.mp3?url';
 import combatMusic8 from '@/assets/audio/music/combat8.mp3?url';
 
+import finalBoss1 from '@/assets/audio/music/finalBoss1.mp3?url';
+
 /**
  * Music playlists for different game contexts
  * 
@@ -170,11 +172,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
   [MusicContext.FINAL_BOSS]: {
     context: MusicContext.FINAL_BOSS,
     tracks: [
-      // {
-      //   name: 'Final Confrontation',
-      //   path: partyMusic2, // Placeholder - add your final boss music
-      //   volume: 0.95
-      // }
+      {
+        name: 'Final Confrontation 1',
+        path: finalBoss1,
+        volume: 0.95
+      }
     ],
     shuffle: true,
     loop: 'all',

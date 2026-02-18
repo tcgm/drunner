@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiDragonHead } from 'react-icons/gi'
+import { GiCrownedSkull, GiDragonHead, GiLaurelCrown } from 'react-icons/gi'
 
 export const FINAL_BOSS: DungeonEvent = {
   id: 'final-boss',
@@ -93,5 +93,5 @@ export const FINAL_BOSS: DungeonEvent = {
     },
   ],
   depth: 100,
-  icon: GiDragonHead,
+  icon: GiLaurelCrown,
 }

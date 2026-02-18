@@ -81,10 +81,8 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
     const tierColor = isFinalBoss ? 'red' : isZoneBoss ? 'purple' : 'pink'
     const tierLabel = isFinalBoss ? 'FINAL BOSS' : isZoneBoss ? 'ZONE BOSS' : 'FLOOR BOSS'
 
-    // Boss icon - safely get from GameIcons
-    const iconName = typeof event.icon === 'string' ? event.icon : event.icon?.name
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const BossIcon = iconName && (GameIcons as any)[iconName] ? (GameIcons as any)[iconName] : GiSkullCrossedBones
+    // Boss icon - use the icon directly from the boss event
+    const BossIcon = event.icon || GiSkullCrossedBones
     const TierIcon = isFinalBoss ? GiDragonHead : isZoneBoss ? GiCrownedSkull : GiSkullCrossedBones
 
     // Dynamic color scheme based on health
