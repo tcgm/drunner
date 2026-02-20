@@ -23,6 +23,7 @@ import { generateItem } from '@/systems/loot/lootGenerator'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { GiShoppingCart, GiCycle, GiShop, GiBarbedSun, GiGoldBar } from 'react-icons/gi'
 import { ItemSlot } from '@/components/ui/ItemSlot'
+import './PotionShopModal.css'
 import { restoreItemIcon } from '@/utils/itemUtils'
 
 interface PotionShopModalProps {
@@ -217,9 +218,9 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
   const canAfford = (potion: Consumable) => bankGold >= getShopPrice(potion)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="5xl" isCentered scrollBehavior="inside">
+    <Modal isOpen={isOpen} onClose={onClose} size="5xl" isCentered scrollBehavior="outside">
       <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
-      <ModalContent bg="gray.900" color="white" borderWidth="2px" borderColor="purple.500" h="95vh" maxH="95vh">
+      <ModalContent bg="gray.900" color="white" borderWidth="2px" borderColor="purple.500" h="95vh" maxH="95vh" display="flex" flexDirection="column">
         <ModalHeader color="purple.400" borderBottom="1px solid" borderColor="gray.700">
           <HStack justify="space-between">
             <HStack>
@@ -252,10 +253,10 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
           </HStack>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody py={2} px={3}>
-          <Grid templateColumns="1fr 2fr 1fr" gap={2}>
+        <ModalBody py={2} px={3} flex="1" minH="0" overflow="hidden" display="flex" flexDirection="column">
+          <Grid templateColumns="1fr 2fr 1fr" gap={2} flex="1" minH="0">
             {/* Left Column - Potions */}
-            <VStack spacing={1.5}>
+            <VStack spacing={1.5} h="100%" overflow="hidden">
               {potions.slice(0, Math.ceil(potions.length / 2)).map((potion) => {
                 const isPurchased = purchasedPotionIds.has(potion.id)
                 const affordable = canAfford(potion) && !isPurchased
@@ -282,13 +283,20 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                     transition="all 0.2s"
                     opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
                     w="100%"
+                    flex="1"
+                    minH="0"
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
                   >
                     <VStack spacing={0.5}>
-                      <ItemSlot
-                        item={potionWithIcon}
-                        isClickable={true}
-                        size="sm"
-                      />
+                      <Box className="shop-item-slot">
+                        <ItemSlot
+                          item={potionWithIcon}
+                          isClickable={true}
+                          size="sm"
+                        />
+                      </Box>
                       <Button
                         size="xs"
                         colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}
@@ -328,11 +336,13 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                     <Text fontSize="sm" fontWeight="bold" color="orange.400" textTransform="uppercase">
                       Featured Item
                     </Text>
-                    <ItemSlot
-                      item={featuredItem}
-                      isClickable={true}
-                      size="xl"
-                    />
+                    <Box className="shop-featured-slot">
+                      <ItemSlot
+                        item={featuredItem}
+                        isClickable={true}
+                        size="xl"
+                      />
+                    </Box>
                     <Tooltip 
                       label={bankGold < getShopPrice(featuredItem) && !featuredItemPurchased ? `Need ${getShopPrice(featuredItem) - bankGold} more gold` : ''}
                       isDisabled={bankGold >= getShopPrice(featuredItem) || featuredItemPurchased}
@@ -362,7 +372,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
             </Box>
 
             {/* Right Column - More Potions */}
-            <VStack spacing={1.5}>
+            <VStack spacing={1.5} h="100%" overflow="hidden">
               {potions.slice(Math.ceil(potions.length / 2)).map((potion) => {
                 const isPurchased = purchasedPotionIds.has(potion.id)
                 const affordable = canAfford(potion) && !isPurchased
@@ -389,13 +399,20 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                     transition="all 0.2s"
                     opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
                     w="100%"
+                    flex="1"
+                    minH="0"
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
                   >
                     <VStack spacing={0.5}>
-                      <ItemSlot
-                        item={potionWithIcon}
-                        isClickable={true}
-                        size="sm"
-                      />
+                      <Box className="shop-item-slot">
+                        <ItemSlot
+                          item={potionWithIcon}
+                          isClickable={true}
+                          size="sm"
+                        />
+                      </Box>
                       <Button
                         size="xs"
                         colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}

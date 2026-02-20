@@ -667,11 +667,12 @@ export const ItemSlot = memo(function ItemSlot({
           {!iconOnly && (
             <Box
               position="absolute"
-              bottom="-25%"
+              bottom="0"
               left="0"
               right="0"
               display="flex"
               justifyContent="center"
+              transform="translateY(50%)"
               zIndex={20}
               pointerEvents="none"
             >

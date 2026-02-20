@@ -523,6 +523,7 @@
     --item-slot-md: 40px;
     --item-slot-lg: 48px;
     --item-slot-xl: 60px;
+    --item-slot-xl2: 90px;
   }
   
   body {

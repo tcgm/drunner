@@ -32,6 +32,7 @@ import {
   GiTwoCoins
 } from 'react-icons/gi'
 import { ItemSlot } from '@/components/ui/ItemSlot'
+import './MarketHallModal.css'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { generateMarketInventory } from '@/systems/market/marketGenerator'
 import type { IconType } from 'react-icons'
@@ -301,11 +302,13 @@ export function MarketHallModal({
                         position="relative"
                       >
                         <VStack spacing={1}>
-                          <ItemSlot
-                            item={itemWithIcon}
-                            isClickable={false}
-                            size="md"
-                          />
+                          <Box className="market-item-slot">
+                            <ItemSlot
+                              item={itemWithIcon}
+                              isClickable={false}
+                              size="md"
+                            />
+                          </Box>
                           <Divider borderColor="gray.600" />
                           <Button
                             size="xs"

@@ -28,6 +28,7 @@
   --item-slot-md: clamp(50px, 5vw, 80px);
   --item-slot-lg: clamp(60px, 6vw, 100px);
   --item-slot-xl: clamp(80px, 8vw, 140px);
+  --item-slot-xl2: clamp(120px, 14vw, 200px);
   --icon-frame-size: clamp(70px, 7vw, 110px);
   --icon-glow-size: clamp(90px, 9vw, 140px);
   --corner-size: clamp(40px, 4vw, 60px);
