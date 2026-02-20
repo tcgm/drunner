@@ -20,6 +20,7 @@ import combatMusic7 from '@/assets/audio/music/combat7.mp3?url';
 import combatMusic8 from '@/assets/audio/music/combat8.mp3?url';
 
 import finalBoss1 from '@/assets/audio/music/finalBoss1.mp3?url';
+import finalBoss2 from '@/assets/audio/music/finalBoss2.mp3?url';
 
 /**
  * Music playlists for different game contexts
@@ -175,6 +176,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Final Confrontation 1',
         path: finalBoss1,
+        volume: 0.95
+      },
+      {
+        name: 'Final Confrontation 2',
+        path: finalBoss2,
         volume: 0.95
       }
     ],
