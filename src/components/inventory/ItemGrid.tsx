@@ -104,8 +104,12 @@ export const ItemGrid = memo(function ItemGrid({
   const [slotSize, setSlotSize] = useState(120)
   const [containerWidth, setContainerWidth] = useState(0)
 
-  // Measure actual rendered slot size and container width via ResizeObserver
+  // Measure actual rendered slot size and container width
   useLayoutEffect(() => {
+    // Read synchronously on first layout so initial render is correct
+    if (measureRef.current) setSlotSize(measureRef.current.offsetWidth || 120)
+    if (scrollRef.current) setContainerWidth(scrollRef.current.offsetWidth || 0)
+
     const obs = new ResizeObserver(() => {
       if (measureRef.current) setSlotSize(measureRef.current.offsetWidth || 120)
       if (scrollRef.current) setContainerWidth(scrollRef.current.offsetWidth || 0)
