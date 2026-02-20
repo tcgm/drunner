@@ -12,6 +12,7 @@
   border-radius: 0.5rem;
   border-width: 2px;
   border-style: solid;
+  box-sizing: border-box;
 }
 
 .item-slot--clickable {

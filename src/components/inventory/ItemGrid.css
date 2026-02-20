@@ -1,0 +1,24 @@
+/* Item Grid Styles */
+
+/* Grid slot container - constrains the ItemSlot inside */
+.item-grid-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Make ItemSlot inside grid slots fill the container */
+.item-grid-slot .item-slot {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Override size variants when in grid - fill container instead */
+.item-grid-slot .item-slot.item-slot--sm,
+.item-grid-slot .item-slot.item-slot--md,
+.item-grid-slot .item-slot.item-slot--lg,
+.item-grid-slot .item-slot.item-slot--xl {
+  width: 100%;
+  height: 100%;
+}

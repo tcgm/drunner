@@ -383,6 +383,22 @@ export const ItemSlot = memo(function ItemSlot({
             />
           )}
 
+          {/* Unique persistent glow - fills slot with radial gradient */}
+          {item.isUnique && (
+            <motion.div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '8px',
+                background: `radial-gradient(circle, ${RARITY_GLOW_COLORS[item.rarity] || 'rgba(255, 215, 0, 0.5)'} 0%, transparent 75%)`,
+                pointerEvents: 'none',
+                zIndex: 0
+              }}
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+
           {/* Rarity Glow Animation */}
           <AnimatePresence>
             {isHovered && (
@@ -412,10 +428,10 @@ export const ItemSlot = memo(function ItemSlot({
             <motion.div
               style={{
                 position: 'absolute',
-                top: '4px',
-                left: '4px',
-                bottom: '4px',
-                right: '4px',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
                 zIndex: 0,
                 pointerEvents: 'none'
               }}
@@ -553,7 +569,7 @@ export const ItemSlot = memo(function ItemSlot({
               height: iconOnly ? '100%' : undefined,
               maxWidth: iconOnly ? '100%' : undefined,
               maxHeight: iconOnly ? '100%' : undefined,
-              overflow: 'hidden'
+              overflow: iconOnly ? 'hidden' : 'visible'
             }}
             animate={{
               scale: isHovered ? 1.1 : 1,
@@ -575,7 +591,7 @@ export const ItemSlot = memo(function ItemSlot({
               mb={iconOnly ? 0 : 0.5}
               style={{
                 ...(item.isUnique ? {
-                  filter: `drop-shadow(0 0 4px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 8px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 12px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'})`
+                  filter: `drop-shadow(0 0 4px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 8px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'})`
                 } : {}),
                 ...(iconOnly ? {
                   maxWidth: '100%',
@@ -649,32 +665,37 @@ export const ItemSlot = memo(function ItemSlot({
 
           {/* Rarity Gem Icon - Bottom Center (Card Game style) */}
           {!iconOnly && (
-            <MotionBox
+            <Box
               position="absolute"
-              bottom="-20%"
-              left="50%"
-              marginLeft={size === 'sm' ? '-6px' : size === 'md' ? '-9px' : size === 'xl' ? '-12px' : '-10px'}
+              bottom="-25%"
+              left="0"
+              right="0"
+              display="flex"
+              justifyContent="center"
               zIndex={20}
               pointerEvents="none"
-              animate={{
-                scale: isHovered ? [1, 1.15, 1] : 1,
-              }}
-              transition={{
-                scale: {
-                  duration: 0.6,
-                  repeat: isHovered ? Infinity : 0,
-                  ease: "easeInOut"
-                }
-              }}
             >
-              <Icon
-                as={GemIcon}
-                boxSize={size === 'sm' ? 'clamp(10px, 1vw, 14px)' : size === 'md' ? 'clamp(14px, 1.5vw, 20px)' : size === 'xl' ? 'clamp(20px, 2vw, 28px)' : 'clamp(16px, 1.8vw, 24px)'}
-                size={"xs"}
-                color={gemColor}
-                filter={`drop-shadow(0 0 4px ${gemColor}) drop-shadow(0 0 8px ${gemColor}80)`}
-              />
-            </MotionBox>
+              <MotionBox
+                animate={{
+                  scale: isHovered ? [1, 1.15, 1] : 1,
+                }}
+                transition={{
+                  scale: {
+                    duration: 0.6,
+                    repeat: isHovered ? Infinity : 0,
+                    ease: "easeInOut"
+                  }
+                }}
+              >
+                <Icon
+                  as={GemIcon}
+                  boxSize={size === 'sm' ? 'clamp(10px, 1vw, 14px)' : size === 'md' ? 'clamp(14px, 1.5vw, 20px)' : size === 'xl' ? 'clamp(20px, 2vw, 28px)' : 'clamp(16px, 1.8vw, 24px)'}
+                  size={"xs"}
+                  color={gemColor}
+                  filter={`drop-shadow(0 0 4px ${gemColor}) drop-shadow(0 0 8px ${gemColor}80)`}
+                />
+              </MotionBox>
+            </Box>
           )}
         </MotionBox>
       </Tooltip>

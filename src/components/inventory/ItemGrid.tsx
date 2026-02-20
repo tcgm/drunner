@@ -1,3 +1,4 @@
+import './ItemGrid.css'
 import { Box } from '@chakra-ui/react'
 import { useMemo, memo, useCallback } from 'react'
 import type { Item } from '@/types'
@@ -53,15 +54,15 @@ const ItemGridSlot = memo(function ItemGridSlot({
       borderColor={isSelected ? 'blue.400' : 'transparent'}
       borderRadius="sm"
       cursor={isClickable ? 'pointer' : 'default'}
-      w="var(--item-slot-md)"
-      h="var(--item-slot-md)"
+      w="var(--item-slot-xl)"
+      h="var(--item-slot-xl)"
       display="flex"
       alignItems="center"
       justifyContent="center"
     >
       <ItemSlot
         item={item}
-        size="md"
+        size="xl"
         onClick={onItemClick ? handleItemClick : undefined}
         isClickable={isClickable}
         showCheckbox={showCheckbox}
@@ -100,7 +101,7 @@ export const ItemGrid = memo(function ItemGrid({
     <Box
       className="item-grid"
       display="grid"
-      gridTemplateColumns="repeat(auto-fill, 80px)"
+      gridTemplateColumns="repeat(auto-fill, var(--item-slot-xl))"
       gap="8px"
       justifyContent="start"
     >
