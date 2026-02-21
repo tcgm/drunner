@@ -282,6 +282,7 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
   const material = getMaterialById(item.materialId)
 
   // Support both variantName (current) and baseName (legacy) field names
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const storedVariantName = item.variantName || (item as any).baseName || ''
 
   // Extract item type from baseTemplateId for getBasesByType
