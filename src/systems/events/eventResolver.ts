@@ -1,8 +1,8 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { generateItem } from '@/systems/loot/lootGenerator'
+import { generateItem, generateSetItemFromTemplate } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem, canUpgradeMaterial, canUpgradeRarity } from '@/systems/loot/itemUpgrader'
-import { ALL_SET_ITEMS, getRandomSetItemBySetId, getSetIdFromItemName } from '@/data/items/sets'
+import { ALL_SET_ITEMS, getRandomSetItemBySetId } from '@/data/items/sets'
 import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
@@ -162,12 +162,13 @@ function generateItemFromSpec(spec: {
   if (spec.setId) {
     const setItemTemplate = getRandomSetItemBySetId(spec.setId)
     if (setItemTemplate) {
-      const setId = getSetIdFromItemName(setItemTemplate.name) || spec.setId.toLowerCase()
-      return {
-        ...setItemTemplate,
-        id: uuidv4(),
-        setId,
-      }
+      return generateSetItemFromTemplate(
+        setItemTemplate,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
     }
     // If set not found, log warning and fall through to random generation
     console.warn(`[Item Generation] setId "${spec.setId}" not found. Generating random item instead.`)
@@ -188,10 +189,13 @@ function generateItemFromSpec(spec: {
       item.name.toLowerCase() === uniqueItemName.toLowerCase()
     )
     if (matchedItem) {
-      return {
-        ...matchedItem,
-        id: uuidv4(),
-      }
+      return generateSetItemFromTemplate(
+        matchedItem,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
     }
     // If no match found, log warning and fall through to normal generation
     console.warn(`[Item Generation] uniqueItem string "${spec.uniqueItem}" not found in set items catalog. Generating random item instead.`)

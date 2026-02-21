@@ -3,6 +3,7 @@ import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3 } from '@/t
 import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
+import type { BaseItemTemplate } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
 import { getRandomUnique, ALL_UNIQUE_ITEMS, getUniqueItemRarityConstraints } from '@data/items/uniques'
 import { getRandomSetItem, ALL_SET_ITEMS, getSetIdFromItemName, getSetItemRarityConstraints } from '@data/items/sets'
@@ -425,7 +426,7 @@ export function generateItem(
   
   // Determine if we have a forced base template or material
   let material: Material | undefined
-  let baseTemplate: BaseTemplate | undefined
+  let baseTemplate: BaseTemplate | BaseItemTemplate | undefined
 
   if (forceMaterialOrBase) {
     // Check if it's a BaseTemplate (has 'description' and 'stats')
@@ -483,7 +484,7 @@ export function generateItem(
 
   // Select random variant from baseNames array if available
   let variantName: string
-  if (baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+  if ('baseNames' in baseTemplate && Array.isArray(baseTemplate.baseNames) && baseTemplate.baseNames.length > 0) {
     const randomIndex = Math.floor(Math.random() * baseTemplate.baseNames.length)
     variantName = baseTemplate.baseNames[randomIndex]
   } else {
@@ -493,7 +494,9 @@ export function generateItem(
   }
   
   // Construct baseTemplateId in new dot format: "type.id"
-  const baseTemplateId = `${baseTemplate.type}.${baseTemplate.id}`
+  const baseTemplateId = 'id' in baseTemplate
+    ? `${baseTemplate.type}.${baseTemplate.id}`
+    : generateBaseTemplateId(baseTemplate as Omit<Item, 'id' | 'name' | 'rarity' | 'value'>)
   
   // Create V3 procedural item
   const v3Item: ProceduralItemV3 = {
@@ -517,6 +520,39 @@ export function generateItem(
  */
 export function generateItems(count: number, depth: number): Item[] {
   return Array.from({ length: count }, () => generateItem(depth))
+}
+
+/**
+ * Generate a specific set item from a template with proper rarity rolling and V3 generation.
+ * Used by event systems that need to create a guaranteed set item with correct rarity variance.
+ */
+export function generateSetItemFromTemplate(
+  setTemplate: Omit<Item, 'id'>,
+  depth: number,
+  overrideMinRarity?: ItemRarity,
+  overrideMaxRarity?: ItemRarity,
+  modifiers: string[] = []
+): Item {
+  const { minRarity: templateMin, maxRarity: templateMax } = getSetItemRarityConstraints(setTemplate)
+  const itemRarity = selectRarity(
+    depth,
+    overrideMinRarity || templateMin,
+    overrideMaxRarity || templateMax
+  )
+  const templateId = setTemplate.name.toUpperCase().replace(/['\s]/g, '_')
+  const rollAsUnique = Math.random() < LOOT_CONFIG.setUniqueChance
+
+  const v3Item: SetItemV3 = {
+    version: 3,
+    id: uuidv4(),
+    itemType: 'set',
+    templateId,
+    rarity: itemRarity,
+    isUniqueRoll: rollAsUnique,
+    modifiers: modifiers.length > 0 ? modifiers : undefined
+  }
+
+  return hydrateItem(v3Item)
 }
 
 /**
