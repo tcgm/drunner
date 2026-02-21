@@ -215,6 +215,7 @@ export const GAME_CONFIG = {
     // Turn-based boss combat
     turnBased: {
       enabled: true, // Feature flag for turn-based combat
+      floorBossesHaveCombat: false, // If false, only zone bosses and the final boss trigger turn-based combat
       
       // Boss base stats by tier
       bossStats: {

@@ -93,7 +93,11 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const handleSelectChoice = (choice: EventChoice) => {
     // Capture current event before selectChoice clears it
     const currentEvent = dungeon.currentEvent
-    const shouldInitiateCombat = currentEvent && currentEvent.type === 'boss' && !choice.skipsCombat
+    // If floorBossesHaveCombat is disabled, only zone bosses and the final boss engage turn-based combat
+    const bossNeedsCombat = !currentEvent
+      ? false
+      : (currentEvent.isZoneBoss || currentEvent.isFinalBoss || GAME_CONFIG.combat.turnBased.floorBossesHaveCombat)
+    const shouldInitiateCombat = currentEvent && currentEvent.type === 'boss' && !choice.skipsCombat && bossNeedsCombat
     
     // If this choice initiates combat, don't resolve it yet - just store it for after combat victory
     if (shouldInitiateCombat && currentEvent) {
