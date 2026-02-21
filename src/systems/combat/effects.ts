@@ -5,6 +5,7 @@
  */
 
 import type { Hero, BossCombatState, CombatEffect } from '@/types'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 /**
  * Decrement all cooldowns (abilities and items)
@@ -85,31 +86,29 @@ export function processStatusEffects(
 
     // Process boss status effects
     for (const effect of combatState.activeEffects.filter(e => e.type === 'status')) {
-        if (effect.behavior?.onRoundEnd) {
-            // Execute custom behavior
-            const combatant = {
-                id: 'boss',
-                type: 'boss' as const,
-                speed: 0,
-                isAlive: true,
-            }
+        if (!effect.behavior) continue
 
+        const combatant = {
+            id: 'boss',
+            type: 'boss' as const,
+            speed: 0,
+            isAlive: true,
+        }
+
+        // Fire custom callback if present
+        if (effect.behavior.onRoundEnd) {
             effect.behavior.onRoundEnd(combatant, combatState)
+        }
 
-            // Track damage/healing for display
-            if (effect.behavior.type === 'damagePerTurn' && effect.behavior.damageAmount) {
-                results.push({
-                    effectName: effect.name,
-                    target: 'boss',
-                    damage: effect.behavior.damageAmount,
-                })
-            } else if (effect.behavior.type === 'healPerTurn' && effect.behavior.healAmount) {
-                results.push({
-                    effectName: effect.name,
-                    target: 'boss',
-                    healing: effect.behavior.healAmount,
-                })
-            }
+        // Apply damage/healing to boss HP and track for display
+        if (effect.behavior.type === 'damagePerTurn' && effect.behavior.damageAmount) {
+            const damage = effect.behavior.damageAmount
+            combatState.currentHp = Math.max(0, combatState.currentHp - damage)
+            results.push({ effectName: effect.name, target: 'boss', damage })
+        } else if (effect.behavior.type === 'healPerTurn' && effect.behavior.healAmount) {
+            const healing = effect.behavior.healAmount
+            combatState.currentHp = Math.min(combatState.maxHp, combatState.currentHp + healing)
+            results.push({ effectName: effect.name, target: 'boss', healing })
         }
     }
 
@@ -120,40 +119,32 @@ export function processStatusEffects(
         }
 
         for (const effect of hero.combatEffects.filter(e => e.type === 'status')) {
-            if (effect.behavior?.onRoundEnd) {
-                const combatant = {
-                    id: hero.id,
-                    type: 'hero' as const,
-                    speed: hero.stats.speed,
-                    isAlive: hero.isAlive,
-                }
+            if (!effect.behavior) continue
 
+            const combatant = {
+                id: hero.id,
+                type: 'hero' as const,
+                speed: hero.stats.speed,
+                isAlive: hero.isAlive,
+            }
+
+            // Fire custom callback if present
+            if (effect.behavior.onRoundEnd) {
                 effect.behavior.onRoundEnd(combatant, combatState)
+            }
 
-                // Track damage/healing for display
-                if (effect.behavior.type === 'damagePerTurn' && effect.behavior.damageAmount) {
-                    // Apply damage to hero
-                    const damage = effect.behavior.damageAmount
-                    hero.stats.hp = Math.max(0, hero.stats.hp - damage)
-                    if (hero.stats.hp === 0) {
-                        hero.isAlive = false
-                    }
-
-                    results.push({
-                        effectName: effect.name,
-                        target: hero.name,
-                        damage,
-                    })
-                } else if (effect.behavior.type === 'healPerTurn' && effect.behavior.healAmount) {
-                    const healing = effect.behavior.healAmount
-                    hero.stats.hp = Math.min(hero.stats.hp + healing, hero.stats.maxHp)
-
-                    results.push({
-                        effectName: effect.name,
-                        target: hero.name,
-                        healing,
-                    })
+            if (effect.behavior.type === 'damagePerTurn' && effect.behavior.damageAmount) {
+                const damage = effect.behavior.damageAmount
+                hero.stats.hp = Math.max(0, hero.stats.hp - damage)
+                if (hero.stats.hp === 0) {
+                    hero.isAlive = false
                 }
+                results.push({ effectName: effect.name, target: hero.name, damage })
+            } else if (effect.behavior.type === 'healPerTurn' && effect.behavior.healAmount) {
+                const healing = effect.behavior.healAmount
+                const maxHp = calculateTotalStats(hero).maxHp
+                hero.stats.hp = Math.min(hero.stats.hp + healing, maxHp)
+                results.push({ effectName: effect.name, target: hero.name, healing })
             }
         }
     }
@@ -172,7 +163,7 @@ export function processStatusEffects(
 export function applyStatModifiers(
     baseStat: number,
     effects: CombatEffect[] | undefined,
-    statName: 'attack' | 'defense' | 'speed' | 'luck'
+    statName: string
 ): number {
     if (!effects || effects.length === 0) {
         return baseStat

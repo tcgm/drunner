@@ -20,7 +20,7 @@ export const LUCK_ELIXIR: Consumable = {
       target: 'self',
     }
   ],
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
   stackable: true,
   stackCount: 1,

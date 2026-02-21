@@ -17,7 +17,7 @@ export const HOLY_LIGHT: Ability = {
         target: 'enemy',
         scaling: {
             stat: 'magicPower',
-            ratio: 0.6
+            ratio: 3
         }
     },
     icon: GiSunbeams,

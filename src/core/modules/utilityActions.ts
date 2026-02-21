@@ -105,7 +105,10 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
   recalculateHeroStats: () =>
     set((state) => {
       const recalculateHero = (hero: Hero): Hero => {
-        const updatedHero = { ...hero }
+        // Always re-attach the live class definition so new fields (e.g. primaryStats)
+        // added after a save was created are available without a full migration pass.
+        const liveClass = getClassById(hero.class.id)
+        const updatedHero = liveClass ? { ...hero, class: liveClass } : { ...hero }
         updatedHero.stats = calculateStatsWithEquipment(updatedHero)
         return updatedHero
       }
@@ -113,7 +116,7 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
       const newParty = state.party.map(h => h !== null ? recalculateHero(h) : null)
       const newRoster = state.heroRoster.map(h => recalculateHero(h))
 
-      console.log('[Recalculate] Hero stats recalculated with equipment bonuses')
+      console.log('[Recalculate] Hero stats recalculated with equipment bonuses (class definitions refreshed)')
       return {
         party: newParty,
         heroRoster: newRoster

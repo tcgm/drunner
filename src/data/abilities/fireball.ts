@@ -17,7 +17,7 @@ export const FIREBALL: Ability = {
         target: 'enemy',
         scaling: {
             stat: 'magicPower',
-            ratio: 0.7
+            ratio: 1.7
         }
     },
     icon: GiFireball,

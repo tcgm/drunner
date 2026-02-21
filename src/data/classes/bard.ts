@@ -24,6 +24,7 @@ export const BARD: HeroClass = {
     charisma: 8,
     magicPower: 6,
   },
+  primaryStats: ['charisma', 'luck'],
   abilities: BARD_ABILITIES,
   icon: 'GiMusicalNotes',
 }

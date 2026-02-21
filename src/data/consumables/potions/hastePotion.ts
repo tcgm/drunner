@@ -20,7 +20,7 @@ export const HASTE_POTION: Consumable = {
       target: 'self',
     }
   ],
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
   stackable: true,
   stackCount: 1,

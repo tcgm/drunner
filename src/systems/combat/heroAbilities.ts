@@ -40,11 +40,13 @@ export function executeHeroAbility(
     const heroStats = calculateTotalStats(hero)
 
     // Calculate effective value with scaling
+    // heroStats already includes combatEffects (via calculateTotalStats), so scaling
+    // automatically benefits from active buffs without a separate applyStatModifiers call.
     let effectiveValue = effect.value
     if (effect.scaling) {
-        const scalingStat = heroStats[effect.scaling.stat as keyof Stats]
-        const scalingValue = (typeof scalingStat === 'number' ? scalingStat : 0)
-        effectiveValue += Math.round(scalingValue * effect.scaling.ratio)
+        const rawStat = heroStats[effect.scaling.stat as keyof Stats]
+        const baseStatValue = (typeof rawStat === 'number' ? rawStat : 0)
+        effectiveValue += Math.round(baseStatValue * effect.scaling.ratio)
     }
 
     // Process effect based on type
@@ -91,12 +93,15 @@ export function executeHeroAbility(
             break
 
         case 'special':
-            // Special abilities handled case-by-case
-            result.effects.push({
-                type: 'special',
-                target: hero.id,
-                description: ability.description,
-            })
+            processSpecialEffect(
+                hero,
+                effectiveValue,
+                effect,
+                ability,
+                combatState,
+                party,
+                result
+            )
             break
     }
 
@@ -285,7 +290,8 @@ function processDebuffEffect(
         combatState.activeEffects.push({
             id: `debuff-${Date.now()}`,
             type: 'debuff',
-            name: `Debuff`,
+            name: effect.stat ? `${effect.stat} debuff` : 'Debuff',
+            stat: effect.stat,
             value: -value,
             duration,
             target: 'boss',
@@ -295,7 +301,9 @@ function processDebuffEffect(
             type: 'debuff',
             target: 'boss',
             value,
-            description: `Boss was debuffed!`,
+            description: effect.stat
+                ? `Boss's ${effect.stat} reduced by ${value} for ${duration} turns!`
+                : `Boss was debuffed for ${duration} turns!`,
         })
     }
 }
@@ -361,5 +369,187 @@ function selectBuffTargets(
 
         default:
             return [hero]
+    }
+}
+
+/**
+ * Process special ability effects (case-by-case per ability id)
+ */
+function processSpecialEffect(
+    hero: Hero,
+    value: number,
+    effect: AbilityEffect,
+    ability: Ability,
+    combatState: BossCombatState,
+    _party: (Hero | null)[],
+    result: HeroActionResult
+): void {
+    const heroStats = calculateTotalStats(hero)
+
+    switch (ability.id) {
+        case 'taunt': {
+            // Scale duration and defense bonus from hero's primary stat
+            // Fall back gracefully if primaryStats isn't present (old save not yet migrated)
+            const primaryStat = (hero.class.primaryStats?.[0]) ?? 'defense'
+            const primaryStatValue = (heroStats[primaryStat as keyof Stats] as number) ?? 0
+
+            // Base 2 turns, +1 per 20 points of primary stat above 10
+            const duration = 2 + Math.max(0, Math.floor((primaryStatValue - 10) / 20))
+            // Defense bonus: 20% of primary stat value
+            const defenseBonus = Math.round(primaryStatValue * 0.2)
+
+            if (!hero.combatEffects) hero.combatEffects = []
+            // Replace any existing taunt so it doesn't stack
+            hero.combatEffects = hero.combatEffects.filter(e => e.name !== 'Taunting')
+
+            hero.combatEffects.push({
+                id: `taunt-${Date.now()}-${hero.id}`,
+                type: 'buff',
+                name: 'Taunting',
+                stat: 'defense',
+                value: defenseBonus,
+                duration,
+                target: hero.id,
+            })
+
+            result.effects.push({
+                type: 'buff',
+                target: hero.id,
+                value: defenseBonus,
+                description: `${hero.name} taunts the boss! Boss will focus attacks on them for ${duration} turns! (+${defenseBonus} defense)`,
+            })
+            break
+        }
+
+        case 'drain-life': {
+            // Damage boss, then heal self for 50% of damage dealt
+            const scaledBossStats = recalculateDynamicBossStats(
+                {
+                    baseHp: 0,
+                    baseAttack: combatState.baseStats.attack,
+                    baseDefense: combatState.baseStats.defense,
+                    baseSpeed: combatState.baseStats.speed,
+                    baseLuck: combatState.baseStats.luck,
+                },
+                combatState.floor,
+                combatState.depth,
+                combatState.combatDepth,
+                combatState.currentHp,
+                combatState.maxHp,
+                combatState.activeEffects
+            )
+            const finalDamage = applyDefenseReduction(value, scaledBossStats.defense)
+            const actualDamage = Math.max(1, finalDamage)
+            combatState.currentHp = Math.max(0, combatState.currentHp - actualDamage)
+            result.damage = (result.damage ?? 0) + actualDamage
+
+            // Heal self for 50% of damage dealt
+            const healAmount = Math.round(actualDamage * 0.5)
+            const maxPossibleHeal = Math.max(0, heroStats.maxHp - hero.stats.hp)
+            const actualHeal = Math.min(healAmount, maxPossibleHeal)
+            hero.stats.hp += actualHeal
+            result.healing = (result.healing ?? 0) + actualHeal
+
+            result.effects.push({
+                type: 'damage',
+                target: 'boss',
+                value: actualDamage,
+                description: `${hero.name} drains ${actualDamage} life from the boss, healing for ${actualHeal} HP!`,
+            })
+            break
+        }
+
+        case 'summon-skeleton': {
+            // Buff caster's attack (skeleton fights alongside)
+            const atkBonus = Math.max(5, value)
+            const duration = effect.duration || 5
+
+            if (!hero.combatEffects) hero.combatEffects = []
+            // Replace existing skeleton aid (no stacking)
+            hero.combatEffects = hero.combatEffects.filter(e => e.name !== 'Skeletal Aid')
+
+            hero.combatEffects.push({
+                id: `skeleton-${Date.now()}-${hero.id}`,
+                type: 'buff',
+                name: 'Skeletal Aid',
+                stat: 'attack',
+                value: atkBonus,
+                duration,
+                target: hero.id,
+            })
+
+            result.effects.push({
+                type: 'buff',
+                target: hero.id,
+                value: atkBonus,
+                description: `${hero.name} summons a skeleton to fight alongside! +${atkBonus} attack for ${duration} turns!`,
+            })
+            break
+        }
+
+        case 'track': {
+            // Expose boss weakness — apply a defense debuff
+            const weaknessAmount = Math.max(3, Math.round(value) || 5)
+            const duration = 2
+
+            combatState.activeEffects.push({
+                id: `track-${Date.now()}`,
+                type: 'debuff',
+                name: 'Exposed',
+                stat: 'defense',
+                value: -weaknessAmount,
+                duration,
+                target: 'boss',
+            })
+
+            result.effects.push({
+                type: 'debuff',
+                target: 'boss',
+                value: weaknessAmount,
+                description: `${hero.name} tracks the boss's weakness! Boss defense -${weaknessAmount} for ${duration} turns!`,
+            })
+            break
+        }
+
+        case 'poison-blade': {
+            // Apply a poison DoT status to the boss
+            const poisonDamage = Math.max(3, value)
+            const poisonDuration = effect.duration || 3
+
+            // Remove existing poison stack from this source
+            combatState.activeEffects = combatState.activeEffects.filter(
+                e => !(e.name === 'Poisoned' && e.target === 'boss')
+            )
+
+            combatState.activeEffects.push({
+                id: `poison-${Date.now()}`,
+                type: 'status',
+                name: 'Poisoned',
+                duration: poisonDuration,
+                target: 'boss',
+                behavior: {
+                    type: 'damagePerTurn',
+                    damageAmount: poisonDamage,
+                    onRoundEnd: () => {
+                        // HP deduction handled by processStatusEffects in effects.ts
+                    },
+                },
+            })
+
+            result.effects.push({
+                type: 'status',
+                target: 'boss',
+                value: poisonDamage,
+                description: `${hero.name} poisons the boss! ${poisonDamage} damage per turn for ${poisonDuration} turns!`,
+            })
+            break
+        }
+
+        default:
+            result.effects.push({
+                type: 'special',
+                target: hero.id,
+                description: `${hero.name} uses ${ability.name}!`,
+            })
     }
 }

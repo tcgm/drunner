@@ -53,7 +53,7 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
         return (combatState.currentHp / combatState.maxHp) * 100
     }, [combatState.currentHp, combatState.maxHp])
 
-    // Calculate current scaled stats for display - only recalc on round change
+    // Calculate current scaled stats for display - recalc on round change or effect changes
     const scaledStats = useMemo(() => {
         const stats = recalculateDynamicBossStats(
             {
@@ -67,10 +67,12 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
             combatState.depth,
             combatState.combatDepth,
             combatState.currentHp,
-            combatState.maxHp
+            combatState.maxHp,
+            combatState.activeEffects
         )
         return stats
-    }, [combatState.baseStats.attack, combatState.baseStats.defense, combatState.baseStats.speed, combatState.baseStats.luck, combatState.floor, combatState.depth, combatState.combatDepth])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [combatState.baseStats.attack, combatState.baseStats.defense, combatState.baseStats.speed, combatState.baseStats.luck, combatState.floor, combatState.depth, combatState.combatDepth, combatState.activeEffects.length])
 
     // Determine boss tier based on dungeon generation flags
     // isFinalBoss: Floor 100 final boss

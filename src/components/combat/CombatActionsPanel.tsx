@@ -18,6 +18,89 @@ import { useMemo } from 'react'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { useOrientation } from '@/contexts/OrientationContext'
+import type { Ability } from '@/types'
+
+/**
+ * Compute a live power-text string for an ability that shows actual scaled numbers.
+ */
+function computePowerText(ability: Ability, hero: Hero): string {
+    const heroStats = calculateTotalStats(hero)
+    const effect = ability.effect
+    let effectValue = effect.value
+    if (effect.scaling) {
+        const scalingStat = heroStats[effect.scaling.stat as keyof typeof heroStats]
+        const bonus = Math.round((typeof scalingStat === 'number' ? scalingStat : 0) * effect.scaling.ratio)
+        effectValue += bonus
+    }
+    const duration = effect.duration
+
+    switch (effect.type) {
+        case 'damage':
+            return `${effectValue} DMG`
+        case 'heal':
+            return duration && duration > 1
+                ? `${effectValue} HP/turn × ${duration} turns`
+                : `${effectValue} HP`
+        case 'buff': {
+            const statLabel = effect.stat ?? 'stat'
+            const dur = duration ? ` for ${duration}t` : ''
+            return `+${effectValue} ${statLabel}${dur}`
+        }
+        case 'debuff': {
+            const statLabel = effect.stat ?? 'stat'
+            const dur = duration ? ` for ${duration}t` : ''
+            return `-${effectValue} boss ${statLabel}${dur}`
+        }
+        case 'special': {
+            switch (ability.id) {
+                case 'taunt': {
+                    const primaryStat = (hero.class.primaryStats?.[0]) ?? 'defense'
+                    const primaryVal = (heroStats[primaryStat as keyof typeof heroStats] as number) ?? 0
+                    const turns = 2 + Math.max(0, Math.floor((primaryVal - 10) / 20))
+                    const defBonus = Math.round(primaryVal * 0.2)
+                    return `Boss focus: ${turns} turns · +${defBonus} DEF`
+                }
+                case 'drain-life': {
+                    const heal = Math.round(effectValue * 0.5)
+                    return `${effectValue} DMG → +${heal} HP`
+                }
+                case 'summon-skeleton': {
+                    const atkBonus = Math.max(5, effectValue)
+                    return `+${atkBonus} ATK for ${duration ?? 5} turns`
+                }
+                case 'track': {
+                    const amount = Math.max(3, Math.round(effectValue) || 5)
+                    return `-${amount} boss DEF for 2 turns`
+                }
+                case 'poison-blade': {
+                    const dmg = Math.max(3, effectValue)
+                    return `${dmg} DMG/turn × ${duration ?? 3} turns`
+                }
+                default:
+                    return ability.description
+            }
+        }
+        default:
+            return ability.description
+    }
+}
+
+/**
+ * Build the full tooltip label for an ability button.
+ * Shows description, scaled numbers, and cooldown.
+ */
+function buildAbilityTooltip(ability: Ability, hero: Hero): string {
+    const powerText = computePowerText(ability, hero)
+    const lines: string[] = []
+    lines.push(ability.description)
+    if (powerText && powerText !== ability.description) {
+        lines.push(`→ ${powerText}`)
+    }
+    if (ability.cooldown > 0) {
+        lines.push(`Cooldown: ${ability.cooldown} turn${ability.cooldown !== 1 ? 's' : ''}`)
+    }
+    return lines.join('\n')
+}
 
 const MotionButton = motion.create(Button)
 
@@ -244,18 +327,7 @@ export default function CombatActionsPanel({
                                                             ABILITIES
                                                         </Text>
                                                         {allAbilities.map(({ ability, isUsable, remainingCooldown, hasCharges }) => {
-                                                            const heroStats = calculateTotalStats(activeHero)
-                                                            let effectValue = ability.effect.value
-                                                            if (ability.effect.scaling) {
-                                                                const scalingStat = heroStats[ability.effect.scaling.stat as keyof typeof heroStats]
-                                                                const bonus = Math.round((typeof scalingStat === 'number' ? scalingStat : 0) * ability.effect.scaling.ratio)
-                                                                effectValue += bonus
-                                                            }
-                                                            const duration = ability.effect.duration
-
-                                                            const powerText = ability.effect.type === 'heal' ?
-                                                                (duration && duration > 1 ? `${effectValue} HP/turn × ${duration}` : `${effectValue} HP`) :
-                                                                ability.effect.type === 'damage' ? `${effectValue} DMG` : ''
+                                                            const powerText = computePowerText(ability, activeHero)
 
                                                             const abilityColor = ability.effect.type === 'heal' ? 'green' :
                                                                 ability.effect.type === 'damage' ? 'orange' :
@@ -299,8 +371,13 @@ export default function CombatActionsPanel({
                                                                             {ability.description}
                                                                         </Text>
                                                                         {powerText && (
-                                                                            <Text fontSize="xs" color={abilityColor + '.300'}>
-                                                                                {powerText}
+                                                                            <Text fontSize="xs" color={abilityColor + '.300'} fontWeight="semibold">
+                                                                                → {powerText}
+                                                                            </Text>
+                                                                        )}
+                                                                        {ability.cooldown > 0 && (
+                                                                            <Text fontSize="2xs" color="gray.500">
+                                                                                Cooldown: {ability.cooldown} turn{ability.cooldown !== 1 ? 's' : ''}
                                                                             </Text>
                                                                         )}
                                                                     </VStack>
@@ -598,19 +675,7 @@ export default function CombatActionsPanel({
                         </Text>
                         <VStack spacing={1}>
                             {allAbilities.map(({ ability, isUsable, remainingCooldown, hasCharges }) => {
-                                // Calculate ability power preview
-                                const heroStats = calculateTotalStats(activeHero)
-                                let effectValue = ability.effect.value
-                                if (ability.effect.scaling) {
-                                    const scalingStat = heroStats[ability.effect.scaling.stat as keyof typeof heroStats]
-                                    const bonus = Math.round((typeof scalingStat === 'number' ? scalingStat : 0) * ability.effect.scaling.ratio)
-                                    effectValue += bonus
-                                }
-                                const duration = ability.effect.duration
-
-                                const powerText = ability.effect.type === 'heal' ?
-                                    (duration && duration > 1 ? `${effectValue} HP/turn × ${duration}` : `${effectValue} HP`) :
-                                    ability.effect.type === 'damage' ? `${effectValue} DMG` : ''
+                                const powerText = computePowerText(ability, activeHero)
 
                                 // Color-code by ability type
                                 const abilityColor = ability.effect.type === 'heal' ? 'green' :
@@ -624,44 +689,51 @@ export default function CombatActionsPanel({
                                             ability.effect.type === 'debuff' ? 'red.200' : 'cyan.200'
 
                                 return (
-                                    <MotionButton
+                                    <Tooltip
                                         key={ability.id}
-                                        colorScheme={abilityColor}
-                                        variant="outline"
-                                        size="sm"
-                                        w="full"
-                                        h="auto"
-                                        py={1}
-                                        isDisabled={isProcessing || !activeHero.isAlive || !isUsable}
-                                        onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
-                                        opacity={isUsable ? 1 : 0.5}
-                                        whileHover={{ scale: isUsable ? 1.02 : 1 }}
-                                        whileTap={{ scale: isUsable ? 0.98 : 1 }}
+                                        label={buildAbilityTooltip(ability, activeHero)}
+                                        hasArrow
+                                        placement="left"
+                                        whiteSpace="pre-line"
                                     >
-                                        <HStack w="full" justify="space-between" px={1}>
-                                            <HStack spacing={2}>
-                                                <Icon as={ability.icon || GiSparkles} boxSize={5} />
-                                                <VStack align="start" spacing={0}>
-                                                    <Text fontSize="xs" fontWeight="bold">{ability.name}</Text>
-                                                    <Text fontSize="2xs" color={textColor} fontStyle="italic" noOfLines={1}>
-                                                        {powerText || ability.description}
-                                                    </Text>
-                                                </VStack>
+                                        <MotionButton
+                                            colorScheme={abilityColor}
+                                            variant="outline"
+                                            size="sm"
+                                            w="full"
+                                            h="auto"
+                                            py={1}
+                                            isDisabled={isProcessing || !activeHero.isAlive || !isUsable}
+                                            onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
+                                            opacity={isUsable ? 1 : 0.5}
+                                            whileHover={{ scale: isUsable ? 1.02 : 1 }}
+                                            whileTap={{ scale: isUsable ? 0.98 : 1 }}
+                                        >
+                                            <HStack w="full" justify="space-between" px={1}>
+                                                <HStack spacing={2}>
+                                                    <Icon as={ability.icon || GiSparkles} boxSize={5} />
+                                                    <VStack align="start" spacing={0}>
+                                                        <Text fontSize="xs" fontWeight="bold">{ability.name}</Text>
+                                                        <Text fontSize="2xs" color={textColor} fontStyle="italic" noOfLines={1}>
+                                                            {powerText || ability.description}
+                                                        </Text>
+                                                    </VStack>
+                                                </HStack>
+                                                <HStack spacing={1}>
+                                                    {remainingCooldown > 0 && (
+                                                        <Badge colorScheme="red" fontSize="2xs">{remainingCooldown} turn{remainingCooldown !== 1 ? 's' : ''}</Badge>
+                                                    )}
+                                                    {!hasCharges && (
+                                                        <Badge colorScheme="gray" fontSize="2xs">No Charges</Badge>
+                                                    )}
+                                                    {remainingCooldown === 0 && ability.cooldown > 0 && (
+                                                        <Badge colorScheme={abilityColor} fontSize="2xs" opacity={0.6}>CD:{ability.cooldown}</Badge>
+                                                    )}
+                                                    <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
+                                                </HStack>
                                             </HStack>
-                                            <HStack spacing={1}>
-                                                {remainingCooldown > 0 && (
-                                                    <Badge colorScheme="red" fontSize="2xs">{remainingCooldown} turn{remainingCooldown !== 1 ? 's' : ''}</Badge>
-                                                )}
-                                                {!hasCharges && (
-                                                    <Badge colorScheme="gray" fontSize="2xs">No Charges</Badge>
-                                                )}
-                                                {remainingCooldown === 0 && ability.cooldown > 0 && (
-                                                    <Badge colorScheme={abilityColor} fontSize="2xs" opacity={0.6}>CD:{ability.cooldown}</Badge>
-                                                )}
-                                                <Badge colorScheme="orange" fontSize="2xs">{actionCost}</Badge>
-                                            </HStack>
-                                        </HStack>
-                                    </MotionButton>
+                                        </MotionButton>
+                                    </Tooltip>
                                 )
                             })}
                         </VStack>

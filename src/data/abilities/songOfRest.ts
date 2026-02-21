@@ -18,7 +18,7 @@ export const SONG_OF_REST: Ability = {
         duration: 3,
         scaling: {
             stat: 'charisma',
-            ratio: 0.4
+            ratio: 2
         }
     },
     icon: GiMusicalScore,

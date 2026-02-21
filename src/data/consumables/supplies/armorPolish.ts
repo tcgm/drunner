@@ -17,6 +17,6 @@ export const ARMOR_POLISH_BASE: ConsumableBase = {
   ],
   icon: GiArmorUpgrade,
   baseGoldValue: 22,
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
 }

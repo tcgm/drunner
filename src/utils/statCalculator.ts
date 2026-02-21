@@ -12,21 +12,32 @@ export function calculateTotalStats(hero: Hero): Stats {
   // Add equipment bonuses
   const equipmentStats = calculateEquipmentStats(hero)
   
-  // Add effect modifiers
+  // Add out-of-combat timed effect modifiers (activeEffects)
   const effectModifiers = calculateEffectModifiers(hero)
+
+  // Add in-combat buff/debuff modifiers (combatEffects)
+  // Values are already signed: buffs store positive values, debuffs store negative values.
+  // No sign flip needed — just sum them directly.
+  const combatModifiers: Partial<Stats> = {}
+  for (const effect of (hero.combatEffects || [])) {
+    if ((effect.type === 'buff' || effect.type === 'debuff') && effect.stat && effect.value !== undefined) {
+      const key = effect.stat as keyof Stats
+      combatModifiers[key] = ((combatModifiers[key] as number) || 0) + effect.value
+    }
+  }
   
   // Combine all stat sources
   return {
     hp: baseStats.hp, // HP is not modified by equipment or effects
-    maxHp: baseStats.maxHp + (equipmentStats.maxHp || 0) + (effectModifiers.maxHp || 0),
-    attack: baseStats.attack + (equipmentStats.attack || 0) + (effectModifiers.attack || 0),
-    defense: baseStats.defense + (equipmentStats.defense || 0) + (effectModifiers.defense || 0),
-    speed: baseStats.speed + (equipmentStats.speed || 0) + (effectModifiers.speed || 0),
-    luck: baseStats.luck + (equipmentStats.luck || 0) + (effectModifiers.luck || 0),
-    wisdom: baseStats.wisdom + (equipmentStats.wisdom || 0) + (effectModifiers.wisdom || 0),
-    charisma: baseStats.charisma + (equipmentStats.charisma || 0) + (effectModifiers.charisma || 0),
+    maxHp: baseStats.maxHp + (equipmentStats.maxHp || 0) + (effectModifiers.maxHp || 0) + (combatModifiers.maxHp || 0),
+    attack: baseStats.attack + (equipmentStats.attack || 0) + (effectModifiers.attack || 0) + (combatModifiers.attack || 0),
+    defense: baseStats.defense + (equipmentStats.defense || 0) + (effectModifiers.defense || 0) + (combatModifiers.defense || 0),
+    speed: baseStats.speed + (equipmentStats.speed || 0) + (effectModifiers.speed || 0) + (combatModifiers.speed || 0),
+    luck: baseStats.luck + (equipmentStats.luck || 0) + (effectModifiers.luck || 0) + (combatModifiers.luck || 0),
+    wisdom: baseStats.wisdom + (equipmentStats.wisdom || 0) + (effectModifiers.wisdom || 0) + (combatModifiers.wisdom || 0),
+    charisma: baseStats.charisma + (equipmentStats.charisma || 0) + (effectModifiers.charisma || 0) + (combatModifiers.charisma || 0),
     magicPower: baseStats.magicPower 
-      ? baseStats.magicPower + (equipmentStats.magicPower || 0) + (effectModifiers.magicPower || 0)
+      ? baseStats.magicPower + (equipmentStats.magicPower || 0) + (effectModifiers.magicPower || 0) + (combatModifiers.magicPower || 0)
       : undefined,
   }
 }

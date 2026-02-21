@@ -23,6 +23,7 @@ export const RANGER: HeroClass = {
     charisma: 4,
     magicPower: 2,
   },
+  primaryStats: ['speed', 'attack'],
   abilities: RANGER_ABILITIES,
   icon: 'GiBowArrow',
 }

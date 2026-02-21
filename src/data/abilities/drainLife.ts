@@ -17,7 +17,7 @@ export const DRAIN_LIFE: Ability = {
         target: 'enemy',
         scaling: {
             stat: 'magicPower',
-            ratio: 0.5
+            ratio: 1.5
         }
     },
     icon: GiVampireDracula,

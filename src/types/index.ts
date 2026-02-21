@@ -30,14 +30,16 @@ export interface Ability {
   icon?: IconType // react-icons icon component
 }
 
+export type PrimaryStat = 'attack' | 'defense' | 'speed' | 'luck' | 'wisdom' | 'charisma' | 'magicPower'
+
 export interface AbilityEffect {
   type: 'damage' | 'heal' | 'buff' | 'debuff' | 'special'
   value: number // Base value
   target: 'self' | 'ally' | 'enemy' | 'all-allies' | 'all-enemies'
   duration?: number // For buffs/debuffs
-  stat?: 'attack' | 'defense' | 'speed' | 'luck' // Which stat to buff/debuff
+  stat?: PrimaryStat // Which stat to buff/debuff
   scaling?: { // Optional stat scaling
-    stat: 'attack' | 'defense' | 'wisdom' | 'magicPower' | 'charisma' | 'luck'
+    stat: PrimaryStat
     ratio: number // Multiplier (e.g., 0.5 = 50% of stat added to base value)
   }
 }
@@ -48,6 +50,7 @@ export interface HeroClass {
   description: string
   baseStats: Omit<Stats, 'hp' | 'maxHp'>
   statGains: Omit<Stats, 'hp'> // Stat increases per level (includes maxHp but not current hp)
+  primaryStats: [PrimaryStat, PrimaryStat] // Top 2 stats by per-level gain — used for ability scaling
   abilities: Ability[]
   icon: string // react-icons/gi name
 }
@@ -204,7 +207,7 @@ export interface CombatEffect {
   id: string
   type: 'buff' | 'debuff' | 'status'
   name: string // Display name (e.g., "Poison", "Stunned", "Burning")
-  stat?: 'attack' | 'defense' | 'speed' | 'luck' | 'hp' // For buff/debuff only
+  stat?: PrimaryStat | 'hp' // For buff/debuff only
   value?: number // Modifier value (for buffs/debuffs)
   duration: number // Rounds remaining (999 = permanent/until combat ends)
   target: 'self' | 'all' | 'boss' | string // Target identifier

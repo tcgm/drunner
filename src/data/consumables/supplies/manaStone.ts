@@ -17,6 +17,6 @@ export const MANA_STONE_BASE: ConsumableBase = {
   ],
   icon: GiFloatingCrystal,
   baseGoldValue: 25,
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
 }

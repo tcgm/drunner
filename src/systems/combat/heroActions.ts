@@ -8,7 +8,6 @@ import type { Hero, BossCombatState, Ability, Consumable } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { recalculateDynamicBossStats } from './bossStats'
-import { applyStatModifiers } from './effects'
 
 export type HeroActionType =
     | 'attack'
@@ -52,10 +51,10 @@ export function executeAttack(
 ): HeroActionResult {
     const heroStats = calculateTotalStats(hero)
     
-    // Apply combat effects to hero stats
-    const effectiveAttack = applyStatModifiers(heroStats.attack, hero.combatEffects, 'attack')
-    const effectiveSpeed = applyStatModifiers(heroStats.speed, hero.combatEffects, 'speed')
-    const effectiveLuck = applyStatModifiers(heroStats.luck, hero.combatEffects, 'luck')
+    // calculateTotalStats already includes combatEffects (buff/debuff) — use directly
+    const effectiveAttack = heroStats.attack
+    const effectiveSpeed = heroStats.speed
+    const effectiveLuck = heroStats.luck
 
     // Get boss's current scaled stats
     const scaledBossStats = recalculateDynamicBossStats(

@@ -24,6 +24,7 @@ export const PALADIN: HeroClass = {
     charisma: 6,
     magicPower: 5,
   },
+  primaryStats: ['defense', 'charisma'],
   abilities: PALADIN_ABILITIES,
   icon: 'GiTemplarShield',
 }

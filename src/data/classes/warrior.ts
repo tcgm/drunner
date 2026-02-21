@@ -23,6 +23,7 @@ export const WARRIOR: HeroClass = {
     charisma: 4,
     magicPower: 2,
   },
+  primaryStats: ['defense', 'attack'],
   abilities: WARRIOR_ABILITIES,
   icon: 'GiSwordman',
 }

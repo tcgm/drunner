@@ -143,7 +143,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     ) : effects.length > 0 ? (
                         <HStack spacing={1} flexWrap="wrap">
                             {buffs.slice(0, 2).map((effect) => (
-                                <Tooltip key={effect.id} label={`${effect.name}: +${effect.value} (${effect.duration})`}>
+                                <Tooltip key={effect.id} label={`${effect.name}: +${effect.value} ${effect.stat ?? 'stat'} — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`} hasArrow>
                                     <Badge colorScheme="green" fontSize="2xs" display="flex" alignItems="center">
                                         <Icon as={GiHeartPlus} boxSize={2} mr={1} />
                                         {effect.stat?.slice(0, 3).toUpperCase()}
@@ -151,7 +151,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                                 </Tooltip>
                             ))}
                             {debuffs.slice(0, 2).map((effect) => (
-                                <Tooltip key={effect.id} label={`${effect.name}: ${effect.value} (${effect.duration})`}>
+                                <Tooltip key={effect.id} label={`${effect.name}: ${effect.value} ${effect.stat ?? 'stat'} — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`} hasArrow>
                                     <Badge colorScheme="red" fontSize="2xs" display="flex" alignItems="center">
                                         <Icon as={GiSwordWound} boxSize={2} mr={1} />
                                         {effect.stat?.slice(0, 3).toUpperCase()}
@@ -159,14 +159,18 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                                 </Tooltip>
                             ))}
                             {statusEffects.slice(0, 2).map((effect) => {
-                                // Determine badge color and icon based on effect behavior
                                 const isHeal = effect.behavior?.type === 'healPerTurn'
                                 const isDamage = effect.behavior?.type === 'damagePerTurn'
                                 const colorScheme = isHeal ? 'cyan' : isDamage ? 'orange' : 'purple'
                                 const icon = isHeal ? GiHeartPlus : isDamage ? GiSwordWound : GiSparkles
-                                
+                                const tooltipLabel = isHeal
+                                    ? `${effect.name}: +${effect.behavior?.healAmount ?? '?'} HP/turn — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
+                                    : isDamage
+                                    ? `${effect.name}: ${effect.behavior?.damageAmount ?? '?'} damage/turn — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
+                                    : `${effect.name} — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
+
                                 return (
-                                    <Tooltip key={effect.id} label={`${effect.name} (${effect.duration} turns)`}>
+                                    <Tooltip key={effect.id} label={tooltipLabel} hasArrow>
                                         <Badge colorScheme={colorScheme} fontSize="2xs" display="flex" alignItems="center">
                                             <Icon as={icon} boxSize={2} mr={1} />
                                             {effect.name.slice(0, 5)}
@@ -175,9 +179,21 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                                 )
                             })}
                             {effects.length > 4 && (
-                                <Badge colorScheme="gray" fontSize="2xs">
-                                    +{effects.length - 4}
-                                </Badge>
+                                <Tooltip
+                                    hasArrow
+                                    whiteSpace="pre-line"
+                                    label={effects.slice(4).map(e =>
+                                        e.type === 'buff' ? `${e.name}: +${e.value} ${e.stat ?? ''} (${e.duration}t)` :
+                                        e.type === 'debuff' ? `${e.name}: ${e.value} ${e.stat ?? ''} (${e.duration}t)` :
+                                        e.behavior?.type === 'healPerTurn' ? `${e.name}: +${e.behavior.healAmount} HP/turn (${e.duration}t)` :
+                                        e.behavior?.type === 'damagePerTurn' ? `${e.name}: ${e.behavior.damageAmount} dmg/turn (${e.duration}t)` :
+                                        `${e.name} (${e.duration}t)`
+                                    ).join('\n')}
+                                >
+                                    <Badge colorScheme="gray" fontSize="2xs" cursor="default">
+                                        +{effects.length - 4}
+                                    </Badge>
+                                </Tooltip>
                             )}
                         </HStack>
                     ) : (

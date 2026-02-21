@@ -24,6 +24,7 @@ export const MAGE: HeroClass = {
     charisma: 4,
     magicPower: 10,
   },
+  primaryStats: ['magicPower', 'wisdom'],
   abilities: MAGE_ABILITIES,
   icon: 'GiWizardStaff',
 }

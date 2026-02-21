@@ -142,7 +142,8 @@ function processHealEffect(
     const healAmount = effect.value || 0
 
     for (const target of targets) {
-        const maxPossibleHeal = Math.max(0, target.stats.maxHp - target.stats.hp)
+        const targetStats = calculateTotalStats(target)
+        const maxPossibleHeal = Math.max(0, targetStats.maxHp - target.stats.hp)
         const actualHeal = Math.min(healAmount, maxPossibleHeal)
         target.stats.hp += actualHeal
 
@@ -223,7 +224,7 @@ function processBuffEffect(
                 id: `buff-${Date.now()}-${target.id}`,
                 type: 'buff',
                 name: `${effect.stat} boost`,
-                stat: effect.stat as 'attack' | 'defense' | 'speed' | 'luck' | 'hp',
+                stat: effect.stat as import('@/types').PrimaryStat,
                 value: buffValue,
                 duration,
                 target: target.id,
@@ -261,10 +262,11 @@ function processReviveEffect(
 
     // Revive the first dead hero (or specific target logic)
     const target = deadHeroes[0]
-    const reviveHp = effect.value || Math.round(target.stats.maxHp * 0.5)
+    const targetMaxHp = calculateTotalStats(target).maxHp
+    const reviveHp = effect.value || Math.round(targetMaxHp * 0.5)
 
     target.isAlive = true
-    target.stats.hp = Math.min(reviveHp, target.stats.maxHp)
+    target.stats.hp = Math.min(reviveHp, targetMaxHp)
 
     result.effects.push({
         type: 'revive',

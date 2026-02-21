@@ -9,7 +9,6 @@ import { checkPatternCondition, selectBossTarget } from './targeting'
 import { recalculateDynamicBossStats } from './bossStats'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
-import { applyStatModifiers } from './effects'
 
 /**
  * Select attack pattern from available patterns using weights
@@ -118,9 +117,9 @@ export function executeAttackPattern(
     for (const target of targets) {
         const heroStats = calculateTotalStats(target)
         
-        // Apply combat effects to hero defense
-        const effectiveDefense = applyStatModifiers(heroStats.defense, target.combatEffects, 'defense')
-        const effectiveLuck = applyStatModifiers(heroStats.luck, target.combatEffects, 'luck')
+        // calculateTotalStats already includes combatEffects (buff/debuff) — use directly
+        const effectiveDefense = heroStats.defense
+        const effectiveLuck = heroStats.luck
 
         // Base damage = boss attack * pattern multiplier
         let baseDamage = Math.round(bossStats.attack * pattern.damageMultiplier)

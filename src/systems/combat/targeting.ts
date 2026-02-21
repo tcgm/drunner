@@ -26,9 +26,30 @@ export function selectBossTarget(
         return null
     }
 
-    // AOE: Target all alive heroes
+    // AOE: Target all alive heroes (taunt has no effect)
     if (pattern.attackType === 'aoe') {
         return aliveHeroes
+    }
+
+    // Taunt override: if any alive hero has an active 'Taunting' effect, force focus on them
+    const tauntedHero = aliveHeroes.find(h =>
+        h.combatEffects?.some(e => e.name === 'Taunting')
+    )
+    if (tauntedHero) {
+        // Multi: fill all slots with the taunted hero
+        if (pattern.attackType === 'multi') {
+            const targetCount = pattern.targetCount || 3
+            return Array(targetCount).fill(tauntedHero) as Hero[]
+        }
+        // Cleave: taunted hero + their row partners (or just them if alone)
+        if (pattern.attackType === 'cleave') {
+            const row = tauntedHero.position === 'frontline'
+                ? aliveHeroes.filter(h => h.position === 'frontline')
+                : aliveHeroes.filter(h => h.position === 'backline')
+            return row.length > 0 ? row : [tauntedHero]
+        }
+        // Single: return the taunted hero directly
+        return tauntedHero
     }
 
     // Cleave: Target frontline heroes

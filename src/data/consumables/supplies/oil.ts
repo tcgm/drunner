@@ -17,6 +17,6 @@ export const OIL_BASE: ConsumableBase = {
   ],
   icon: GiSquareBottle,
   baseGoldValue: 18,
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
 }

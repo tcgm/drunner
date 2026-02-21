@@ -17,7 +17,7 @@ export const MAGIC_MISSILE: Ability = {
         target: 'enemy',
         scaling: {
             stat: 'magicPower',
-            ratio: 0.5
+            ratio: 1.75
         }
     },
     icon: GiMagicSwirl,

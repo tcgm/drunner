@@ -213,6 +213,11 @@ export default function BossCombatScreen({
         if (!combatInitialized.current) {
             combatInitialized.current = true
             addLogEntry('turn', 'Combat begins!')
+
+            // Clear any stale combat effects from a previous fight
+            party.forEach(h => {
+                if (h) h.combatEffects = []
+            })
             
             // Start first round
             startCombatRound(combatState, party.filter(h => h !== null) as Hero[])
@@ -349,7 +354,22 @@ export default function BossCombatScreen({
                     combatState,
                     party.filter(h => h !== null) as Hero[]
                 )
-                addLogEntry('heal', result.message)
+                // Determine primary log type from effects
+                const hasHeal = result.effects.some(e => e.type === 'heal' || e.type === 'hot')
+                const hasBuff = result.effects.some(e => e.type === 'buff')
+                const primaryLogType: CombatLogEntry['type'] = hasHeal ? 'heal' : hasBuff ? 'buff' : 'action'
+                addLogEntry(primaryLogType, result.message)
+                // Log each individual effect with appropriate type
+                for (const effect of result.effects) {
+                    if (effect.description) {
+                        const effectLogType: CombatLogEntry['type'] =
+                            effect.type === 'heal' || effect.type === 'hot' ? 'heal' :
+                            effect.type === 'buff' ? 'buff' :
+                            effect.type === 'damage' ? 'damage' :
+                            'action'
+                        addLogEntry(effectLogType, effect.description)
+                    }
+                }
                 triggerParticles('heal', { x: 50, y: 70 })
             } else if (action === 'flee') {
                 // Handled by parent component
