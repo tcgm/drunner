@@ -39,15 +39,15 @@ export default function PartySummary({ party }: PartySummaryProps) {
           </HStack>
           <HStack spacing={0.5} flex={1} justify="center">
             <Text color="gray.500" fontSize="2xs">ATK</Text>
-            <Text color={GAME_CONFIG.colors.stats.attack} fontWeight="bold" fontSize="xs">{avgAttack}</Text>
+            <Text color={GAME_CONFIG.colors.stats.attack.text} fontWeight="bold" fontSize="xs">{avgAttack}</Text>
           </HStack>
           <HStack spacing={0.5} flex={1} justify="center">
             <Text color="gray.500" fontSize="2xs">DEF</Text>
-            <Text color={GAME_CONFIG.colors.stats.defense} fontWeight="bold" fontSize="xs">{avgDefense}</Text>
+            <Text color={GAME_CONFIG.colors.stats.defense.text} fontWeight="bold" fontSize="xs">{avgDefense}</Text>
           </HStack>
           <HStack spacing={0.5} flex={1} justify="center">
             <Text color="gray.500" fontSize="2xs">SPD</Text>
-            <Text color={GAME_CONFIG.colors.stats.speed} fontWeight="bold" fontSize="xs">{avgSpeed}</Text>
+            <Text color={GAME_CONFIG.colors.stats.speed.text} fontWeight="bold" fontSize="xs">{avgSpeed}</Text>
           </HStack>
         </HStack>
       </Box>
@@ -64,15 +64,15 @@ export default function PartySummary({ party }: PartySummaryProps) {
         </HStack>
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Avg ATK</Text>
-          <Text color={GAME_CONFIG.colors.stats.attack} fontWeight="bold">{avgAttack}</Text>
+          <Text color={GAME_CONFIG.colors.stats.attack.text} fontWeight="bold">{avgAttack}</Text>
         </HStack>
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Avg DEF</Text>
-          <Text color={GAME_CONFIG.colors.stats.defense} fontWeight="bold">{avgDefense}</Text>
+          <Text color={GAME_CONFIG.colors.stats.defense.text} fontWeight="bold">{avgDefense}</Text>
         </HStack>
         <HStack spacing={1}>
           <Text color="gray.400" fontSize="xs">Avg SPD</Text>
-          <Text color={GAME_CONFIG.colors.stats.speed} fontWeight="bold">{avgSpeed}</Text>
+          <Text color={GAME_CONFIG.colors.stats.speed.text} fontWeight="bold">{avgSpeed}</Text>
         </HStack>
       </HStack>
     </Box>

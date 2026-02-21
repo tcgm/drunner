@@ -174,11 +174,11 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
 
   const getStatColor = (stat: string) => {
     if (stat === 'hp' || stat === 'maxHp') return GAME_CONFIG.colors.hp.light
-    if (stat === 'attack') return GAME_CONFIG.colors.stats.attack
-    if (stat === 'defense') return GAME_CONFIG.colors.stats.defense
-    if (stat === 'speed') return GAME_CONFIG.colors.stats.speed
-    if (stat === 'luck') return GAME_CONFIG.colors.stats.luck
-    if (stat === 'magicPower') return GAME_CONFIG.colors.stats.magicPower
+    if (stat === 'attack') return GAME_CONFIG.colors.stats.attack.text
+    if (stat === 'defense') return GAME_CONFIG.colors.stats.defense.text
+    if (stat === 'speed') return GAME_CONFIG.colors.stats.speed.text
+    if (stat === 'luck') return GAME_CONFIG.colors.stats.luck.text
+    if (stat === 'magicPower') return GAME_CONFIG.colors.stats.magicPower.text
     return 'green.300'
   }
 

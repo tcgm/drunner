@@ -68,45 +68,45 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
           {/* Stats Grid */}
           <HStack className="hero-tooltip-stats" spacing={3} justify="space-around" pt={1}>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--attack" spacing={0}>
-              <Icon as={GameIcons.GiSwordman} color={GAME_CONFIG.colors.stats.attack} boxSize={4} />
+              <Icon as={GameIcons.GiSwordman} color={GAME_CONFIG.colors.stats.attack.icon} boxSize={4} />
               <Text fontSize="xs" color="gray.400">ATK</Text>
-              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>
                 {calculateTotalStats(hero).attack}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--defense" spacing={0}>
-              <Icon as={GameIcons.GiShield} color={GAME_CONFIG.colors.stats.defense} boxSize={4} />
+              <Icon as={GameIcons.GiShield} color={GAME_CONFIG.colors.stats.defense.icon} boxSize={4} />
               <Text fontSize="xs" color="gray.400">DEF</Text>
-              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>
                 {calculateTotalStats(hero).defense}
               </Text>
               <Text fontSize="2xs" color="gray.500">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--speed" spacing={0}>
-              <Icon as={GameIcons.GiRun} color={GAME_CONFIG.colors.stats.speed} boxSize={4} />
+              <Icon as={GameIcons.GiRun} color={GAME_CONFIG.colors.stats.speed.icon} boxSize={4} />
               <Text fontSize="xs" color="gray.400">SPD</Text>
-              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>
                 {calculateTotalStats(hero).speed}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--luck" spacing={0}>
-              <Icon as={GameIcons.GiClover} color={GAME_CONFIG.colors.stats.luck} boxSize={4} />
+              <Icon as={GameIcons.GiClover} color={GAME_CONFIG.colors.stats.luck.icon} boxSize={4} />
               <Text fontSize="xs" color="gray.400">LCK</Text>
-              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck.text}>
                 {calculateTotalStats(hero).luck}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--wisdom" spacing={0}>
-              <Icon as={GameIcons.GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom} boxSize={4} />
+              <Icon as={GameIcons.GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom.icon} boxSize={4} />
               <Text fontSize="xs" color="gray.400">WIS</Text>
-              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>
                 {calculateTotalStats(hero).wisdom ?? 0}
               </Text>
             </VStack>
             <VStack className="hero-tooltip-stat hero-tooltip-stat--charisma" spacing={0}>
-              <Icon as={GameIcons.GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma} boxSize={4} />
+              <Icon as={GameIcons.GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma.icon} boxSize={4} />
               <Text fontSize="xs" color="gray.400">CHA</Text>
-              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>
+              <Text fontSize="sm" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>
                 {calculateTotalStats(hero).charisma ?? 0}
               </Text>
             </VStack>

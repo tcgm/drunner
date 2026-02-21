@@ -149,23 +149,23 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
                 </HStack>
                 <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
                   <Text color="gray.500">ATK</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>{calculateTotalStats(hero).attack}</Text>
                 </HStack>
                 <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
                   <Text color="gray.500">DEF</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{calculateTotalStats(hero).defense}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>{calculateTotalStats(hero).defense}</Text>
                 </HStack>
                 <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
                   <Text color="gray.500">SPD</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>{calculateTotalStats(hero).speed}</Text>
                 </HStack>
                 <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
                   <Text color="gray.500">WIS</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
                 </HStack>
                 <HStack spacing={0.5} bg="gray.900" borderRadius="sm" px={1} py={0.5}>
                   <Text color="gray.500">CHA</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{calculateTotalStats(hero).charisma ?? 0}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>{calculateTotalStats(hero).charisma ?? 0}</Text>
                 </HStack>
               </SimpleGrid>
             </VStack>
@@ -254,25 +254,25 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">ATK</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>{calculateTotalStats(hero).attack}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">DEF</Text>
-                  <Text fontWeight="bold" textAlign="center" color={GAME_CONFIG.colors.stats.defense}>
+                  <Text fontWeight="bold" textAlign="center" color={GAME_CONFIG.colors.stats.defense.text}>
                     {calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text>
                   </Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">SPD</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>{calculateTotalStats(hero).speed}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">WIS</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
                 </VStack>
                 <VStack spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">CHA</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{calculateTotalStats(hero).charisma ?? 0}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>{calculateTotalStats(hero).charisma ?? 0}</Text>
                 </VStack>
               </SimpleGrid>
             </VStack>

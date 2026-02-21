@@ -306,22 +306,22 @@ export function EquipmentPanel({
                     return (
                       <SimpleGrid columns={2} spacing={0.5} fontSize="2xs">
                         {equipmentBonuses.attack > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.attack}>
+                          <Text color={GAME_CONFIG.colors.stats.attack.text}>
                             ATK: +{equipmentBonuses.attack}
                           </Text>
                         )}
                         {equipmentBonuses.defense > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.defense}>
+                          <Text color={GAME_CONFIG.colors.stats.defense.text}>
                             DEF: +{equipmentBonuses.defense}
                           </Text>
                         )}
                         {equipmentBonuses.speed > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.speed}>
+                          <Text color={GAME_CONFIG.colors.stats.speed.text}>
                             SPD: +{equipmentBonuses.speed}
                           </Text>
                         )}
                         {equipmentBonuses.luck > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.luck}>
+                          <Text color={GAME_CONFIG.colors.stats.luck.text}>
                             LUCK: +{equipmentBonuses.luck}
                           </Text>
                         )}
@@ -331,17 +331,17 @@ export function EquipmentPanel({
                           </Text>
                         )}
                         {equipmentBonuses.magicPower > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.magicPower}>
+                          <Text color={GAME_CONFIG.colors.stats.magicPower.text}>
                             MP: +{equipmentBonuses.magicPower}
                           </Text>
                         )}
                         {equipmentBonuses.wisdom > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.wisdom}>
+                          <Text color={GAME_CONFIG.colors.stats.wisdom.text}>
                             WIS: +{equipmentBonuses.wisdom}
                           </Text>
                         )}
                         {equipmentBonuses.charisma > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.charisma}>
+                          <Text color={GAME_CONFIG.colors.stats.charisma.text}>
                             CHA: +{equipmentBonuses.charisma}
                           </Text>
                         )}
