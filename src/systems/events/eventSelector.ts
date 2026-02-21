@@ -41,8 +41,9 @@ export function selectRandomEvent(
       bossEvents = bossEvents.filter(e => !(e as any).isFinalBoss)
     }
     
-    // Floor 1: Prefer intro bosses designed for teaching combat
-    if (floor === 1) {
+    // Floors 1-9: Prefer intro bosses designed for early-game pacing
+    // (zone boss is at floor 10, so floors 1-9 are the intro window)
+    if (floor < GAME_CONFIG.dungeon.majorBossInterval) {
       const introBosses = bossEvents.filter(e => (e as any).isIntroBoss)
       if (introBosses.length > 0) {
         return introBosses[Math.floor(Math.random() * introBosses.length)]
