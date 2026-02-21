@@ -75,6 +75,12 @@ interface Tier {
   nonAllDmgMultiplier: number
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// BOOST MULTIPLIERS for special boss types (applied on top of tier targetNetHpPct)
+// ─────────────────────────────────────────────────────────────────────────────
+const ZONE_BOSS_BOOST  = 2.0   // zone bosses deal 2× the tier net HP target
+const FINAL_BOSS_BOOST = 3.5   // final boss deals 3.5× the tier net HP target
+
 const TIERS: Tier[] = [
   { label: 'F1-9',   minFloor:  1, maxFloor:  9, targetNetHpPct: 0.15, gearDefensePct: 0.000, nonAllDmgMultiplier: 0.75 },
   { label: 'F10-19', minFloor: 10, maxFloor: 19, targetNetHpPct: 0.18, gearDefensePct: 0.005, nonAllDmgMultiplier: 0.75 },
@@ -182,11 +188,7 @@ function parseDamageEffects(src: string): DamageHit[] {
 
 interface Change { old: number; new: number; target: string }
 
-function rewriteDamageValues(src: string, floor: number): { newSrc: string; changes: Change[] } {
-  const tier       = tierForFloor(floor)
-  const allBase    = calcBaseValue(floor, tier.targetNetHpPct, tier.gearDefensePct)
-  const singleBase = calcBaseValue(floor, tier.targetNetHpPct * tier.nonAllDmgMultiplier, tier.gearDefensePct)
-
+function rewriteDamageValues(src: string, allBase: number, singleBase: number): { newSrc: string; changes: Change[] } {
   const effects = parseDamageEffects(src)
   const changes: Change[] = []
   let newSrc = src
@@ -221,6 +223,7 @@ function loadBossFiles(): BossData {
   const dirs = [
     path.join(ROOT, 'src/data/events/boss/normal'),
     path.join(ROOT, 'src/data/events/boss/intro'),
+    path.join(ROOT, 'src/data/events/boss/zone'),
   ]
   const idToFile = new Map<string, string>()
   const events: DungeonEvent[] = []
@@ -260,101 +263,150 @@ const normalOnly = args.includes('--normal')
 
 const { idToFile, events: ALL_BOSS_EVENTS } = loadBossFiles()
 
-// Filter boss events from game data
-const bosses: DungeonEvent[] = ALL_BOSS_EVENTS.filter(e => {
-  if (e.isZoneBoss  === true) return false
-  if (e.isFinalBoss === true) return false
-  if (introOnly  && !e.isIntroBoss) return false
-  if (normalOnly &&  e.isIntroBoss) return false
-  return true
-})
+type BossKind = 'intro' | 'normal' | 'zone' | 'final'
+
+interface Row {
+  kind:       BossKind
+  file:       string
+  title:      string
+  floor:      number
+  label:      string
+  allBase:    number
+  singleBase: number
+  /** Floor scale multiplier at this floor: 1 + (floor-1) * floorBossDamageScaling */
+  scale:      number
+  /** allBase × scale (before defense) */
+  scaledAll:  number
+  /** Net damage (all targets) after floor scaling + estimated defense */
+  netDmgAll:  number
+  /** netDmgAll as fraction of typical hero HP at this floor */
+  netHpPct:   number
+  changes:    Change[]
+}
+
+function computeRow(event: DungeonEvent, kind: BossKind): Row | null {
+  const floor    = event.depth ?? 100
+  const filePath = idToFile.get(event.id)
+  if (!filePath) { console.warn(`  ⚠  No source file for event id: ${event.id}`); return null }
+
+  const tier   = tierForFloor(floor)
+  const boost  = kind === 'final' ? FINAL_BOSS_BOOST : kind === 'zone' ? ZONE_BOSS_BOOST : 1.0
+  const allBase    = calcBaseValue(floor, tier.targetNetHpPct * boost, tier.gearDefensePct)
+  const singleBase = calcBaseValue(floor, tier.targetNetHpPct * boost * tier.nonAllDmgMultiplier, tier.gearDefensePct)
+
+  // Simulate: what net damage does allBase actually deal once scaled + blocked?
+  const defense   = typicalDefenseAtFloor(floor, tier.gearDefensePct)
+  const block     = calculateBlockPercent(defense)
+  const scale     = floorScaleMultiplier(floor)
+  const netDmgAll = Math.round(allBase * scale * (1 - block))
+  const hp        = heroMaxHp(heroLevelAtFloor(floor))
+  const netHpPct  = netDmgAll / hp
+
+  const scaledAll = Math.round(allBase * scale)
+
+  const src = fs.readFileSync(filePath, 'utf8')
+  const { newSrc, changes } = rewriteDamageValues(src, allBase, singleBase)
+  const label = changes.length > 0 ? (doWrite ? 'WRITE' : 'CHANGE') : 'ok'
+
+  if (doWrite && changes.length > 0) fs.writeFileSync(filePath, newSrc, 'utf8')
+
+  return {
+    kind, floor, label, allBase, singleBase, scale, scaledAll, netDmgAll, netHpPct, changes,
+    file:  path.relative(ROOT, filePath),
+    title: (Array.isArray(event.title) ? event.title[0] : event.title).slice(0, 28),
+  }
+}
 
 // ─── Tier config summary ───────────────────────────────────────────────────
 console.log('\n═══ Tier Configuration (from game data) ══════════════════════════════════════════')
 console.log(`Defense curve: ${DEFENSE_CONFIG.curveType}  maxDefense: ${DEFENSE_CONFIG.maxDefense}  midpointRatio: ${DEFENSE_CONFIG.midpointDefenseRatio}`)
 console.log(`Floor boss damage scaling: ${FLOOR_BOSS_SCALING}  Hero maxLevel: ${MAX_LEVEL}  maxFloors: ${MAX_FLOORS}`)
+console.log(`Zone boss boost: ${ZONE_BOSS_BOOST}×   Final boss boost: ${FINAL_BOSS_BOOST}×`)
 console.log()
-console.log('Tier             Floor  TargetHP  GearDef%  GearRaw  EstDef  Block%  AllBase  SingBase')
+console.log('Tier      Floors    TargetHP  GearDef%  EstDef  Block%  ScaleMin ScaleMid ScaleMax  AllBase SingBase')
 for (const t of TIERS) {
   const mid     = Math.round((t.minFloor + t.maxFloor) / 2)
-  const gearRaw = Math.round(t.gearDefensePct * DEFENSE_CONFIG.maxDefense)
   const def     = typicalDefenseAtFloor(mid, t.gearDefensePct)
   const blk     = (calculateBlockPercent(def) * 100).toFixed(1)
   const all     = calcBaseValue(mid, t.targetNetHpPct, t.gearDefensePct)
-  const single  = calcBaseValue(mid, t.targetNetHpPct * t.nonAllDmgMultiplier, t.gearDefensePct)
+  const sing    = calcBaseValue(mid, t.targetNetHpPct * t.nonAllDmgMultiplier, t.gearDefensePct)
+  const sMin    = floorScaleMultiplier(t.minFloor).toFixed(1)
+  const sMid    = floorScaleMultiplier(mid).toFixed(1)
+  const sMax    = floorScaleMultiplier(t.maxFloor).toFixed(1)
   console.log(
-    `${t.label.padEnd(16)} ${String(mid).padStart(3)}     ${(t.targetNetHpPct * 100).toFixed(0).padStart(4)}%` +
-    `     ${(t.gearDefensePct * 100).toFixed(1).padStart(5)}%  ${String(gearRaw).padStart(7)}  ${String(def).padStart(6)}  ${blk.padStart(5)}%` +
-    `  ${String(all).padStart(7)}  ${String(single).padStart(7)}`
+    `${t.label.padEnd(10)} ${String(t.minFloor).padStart(2)}-${String(t.maxFloor).padEnd(2)}` +
+    `     ${(t.targetNetHpPct * 100).toFixed(0).padStart(4)}%` +
+    `     ${(t.gearDefensePct * 100).toFixed(1).padStart(5)}%  ${String(def).padStart(6)}` +
+    `  ${blk.padStart(5)}%  ${(sMin + 'x').padStart(8)} ${(sMid + 'x').padStart(8)} ${(sMax + 'x').padStart(8)}` +
+    `  ${String(all).padStart(7)} ${String(sing).padStart(8)}`
   )
 }
 console.log()
 
-// ─── Per-boss table ────────────────────────────────────────────────────────
-interface Row {
-  file: string
-  title: string
-  floor: number
-  label: string
-  allBase: number
-  singleBase: number
-  changes: Change[]
+// ─── Process all bosses into typed rows ────────────────────────────────────
+const introRows:  Row[] = []
+const normalRows: Row[] = []
+const zoneRows:   Row[] = []
+const finalRows:  Row[] = []
+
+for (const event of ALL_BOSS_EVENTS.sort((a, b) => (a.depth ?? 100) - (b.depth ?? 100))) {
+  let kind: BossKind
+  if      (event.isFinalBoss) kind = 'final'
+  else if (event.isZoneBoss)  kind = 'zone'
+  else if (event.isIntroBoss) kind = 'intro'
+  else                         kind = 'normal'
+
+  if (introOnly  && kind !== 'intro')  continue
+  if (normalOnly && kind !== 'normal') continue
+
+  const row = computeRow(event, kind)
+  if (!row) continue
+  if      (kind === 'final')  finalRows.push(row)
+  else if (kind === 'zone')   zoneRows.push(row)
+  else if (kind === 'intro')  introRows.push(row)
+  else                        normalRows.push(row)
 }
 
-console.log('═══ Boss Files ════════════════════════════════════════════════════════════════════')
-const rows: Row[] = []
-let written = 0
+const allRows   = [...introRows, ...normalRows, ...zoneRows, ...finalRows]
+const written   = allRows.filter(r => r.label === 'WRITE').length
+const needChange = allRows.filter(r => r.label !== 'ok').length
 
-for (const event of bosses.sort((a, b) => a.depth - b.depth)) {
-  const floor    = event.depth          // depth = minFloor in event data (see eventSelector comment)
-  const filePath = idToFile.get(event.id)
-  if (!filePath) {
-    console.warn(`  ⚠  No source file found for event id: ${event.id}`)
-    continue
+// ─── Console output helpers ────────────────────────────────────────────────
+const COL_HDR = 'File'.padEnd(50) + 'Title'.padEnd(30) + 'Fl'.padStart(3) +
+  '  Status'.padEnd(9) + 'AllBase'.padStart(8) + ' SingBase' +
+  ' Scale×'.padStart(8) + ' Scaled'.padStart(8) + ' NetDmg'.padStart(8) + ' NetHP%'.padStart(8)
+const COL_SEP = '─'.repeat(138)
+
+function printRows(rows: Row[]): void {
+  console.log(COL_HDR)
+  console.log(COL_SEP)
+  for (const r of rows) {
+    const changeStr = r.changes.length
+      ? r.changes.slice(0, 3).map(c => `${c.old}->${c.new}(${c.target})`).join(', ')
+      : ''
+    console.log(
+      r.file.slice(-50).padEnd(50) +
+      r.title.padEnd(30) +
+      String(r.floor).padStart(3) +
+      `  ${r.label}`.padEnd(9) +
+      String(r.allBase).padStart(8) +
+      `  ${String(r.singleBase).padStart(7)}` +
+      `${r.scale.toFixed(1)}×`.padStart(8) +
+      String(r.scaledAll).padStart(8) +
+      String(r.netDmgAll).padStart(8) +
+      `${(r.netHpPct * 100).toFixed(1)}%`.padStart(8) +
+      (changeStr ? `   [${changeStr}]` : '')
+    )
   }
-
-  const src  = fs.readFileSync(filePath, 'utf8')
-  const tier = tierForFloor(floor)
-  const { newSrc, changes } = rewriteDamageValues(src, floor)
-
-  const allBase    = calcBaseValue(floor, tier.targetNetHpPct, tier.gearDefensePct)
-  const singleBase = calcBaseValue(floor, tier.targetNetHpPct * tier.nonAllDmgMultiplier, tier.gearDefensePct)
-
-  const label = changes.length > 0 ? (doWrite ? 'WRITE' : 'CHANGE') : 'ok'
-  rows.push({ file: path.relative(ROOT, filePath), title: (Array.isArray(event.title) ? event.title[0] : event.title).slice(0, 28), floor, label, allBase, singleBase, changes })
-
-  if (doWrite && changes.length > 0) {
-    fs.writeFileSync(filePath, newSrc, 'utf8')
-    written++
-  }
+  console.log()
 }
 
-// print table
-console.log(
-  'File'.padEnd(52) + 'Title'.padEnd(30) + 'Fl'.padStart(3) +
-  '  Status'.padEnd(9) + 'AllBase'.padStart(8) + ' SingBase'
-)
-console.log('─'.repeat(115))
+if (introRows.length)  { console.log('─── Intro Bosses ─────────────────────────────────────────────────────────────────────────────────────────────────────────────');  printRows(introRows)  }
+if (normalRows.length) { console.log('─── Normal Bosses ────────────────────────────────────────────────────────────────────────────────────────────────────────────'); printRows(normalRows) }
+if (zoneRows.length)   { console.log(`─── Zone Bosses (${ZONE_BOSS_BOOST}× boost) ──────────────────────────────────────────────────────────────────────────────────────────────`);  printRows(zoneRows)   }
+if (finalRows.length)  { console.log(`─── Final Boss (${FINAL_BOSS_BOOST}× boost) ──────────────────────────────────────────────────────────────────────────────────────────────`);  printRows(finalRows)  }
 
-for (const r of rows) {
-  const changeStr = r.changes.length
-    ? r.changes.slice(0, 3).map(c => `${c.old}→${c.new}(${c.target})`).join(', ')
-    : ''
-  console.log(
-    r.file.slice(-52).padEnd(52) +
-    r.title.padEnd(30) +
-    String(r.floor).padStart(3) +
-    `  ${r.label}`.padEnd(9) +
-    String(r.allBase).padStart(8) +
-    `  ${String(r.singleBase).padStart(7)}` +
-    (changeStr ? `   [${changeStr}]` : '')
-  )
-}
-
-const needsChange = rows.filter(r => r.label !== 'ok').length
-console.log()
-console.log(`${rows.length} bosses scanned (${ALL_BOSS_EVENTS.length} total in game data, zone/final excluded).`)
-console.log(`${needsChange} files need changes.`)
+console.log(`${allRows.length} bosses total (${needChange} need changes).`)
 if (!doWrite) {
   console.log('Dry run — no files written. Re-run with --write to apply changes.')
 } else {
@@ -362,51 +414,68 @@ if (!doWrite) {
 }
 
 // ─── Write markdown report ─────────────────────────────────────────────────
-const reportLines: string[] = []
-const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
+const rl: string[] = []
+const now  = new Date().toISOString().replace('T', ' ').slice(0, 19)
 const mode = doWrite ? 'WRITE' : 'DRY RUN'
 
-reportLines.push(`# Boss Damage Report`)
-reportLines.push(``)
-reportLines.push(`Generated: ${now}  |  Mode: **${mode}**`)
-reportLines.push(``)
-reportLines.push(`## Config`)
-reportLines.push(``)
-reportLines.push(`| Setting | Value |`)
-reportLines.push(`|---------|-------|`)
-reportLines.push(`| Defense curve | ${DEFENSE_CONFIG.curveType} |`)
-reportLines.push(`| maxDefense | ${DEFENSE_CONFIG.maxDefense} |`)
-reportLines.push(`| midpointDefenseRatio | ${DEFENSE_CONFIG.midpointDefenseRatio} |`)
-reportLines.push(`| floorBossDamageScaling | ${FLOOR_BOSS_SCALING} |`)
-reportLines.push(`| Hero maxLevel | ${MAX_LEVEL} |`)
-reportLines.push(`| maxFloors | ${MAX_FLOORS} |`)
-reportLines.push(``)
-reportLines.push(`## Tiers`)
-reportLines.push(``)
-reportLines.push(`| Tier | MidFloor | TargetHP% | GearDef% | GearRaw | EstDef | Block% | AllBase | SingBase |`)
-reportLines.push(`|------|----------|-----------|----------|---------|--------|--------|---------|----------|`)
+rl.push(`# Boss Damage Report`)
+rl.push(``)
+rl.push(`Generated: ${now}  |  Mode: **${mode}**`)
+rl.push(``)
+rl.push(`## Config`)
+rl.push(``)
+rl.push(`| Setting | Value |`)
+rl.push(`|---------|-------|`)
+rl.push(`| Defense curve | ${DEFENSE_CONFIG.curveType} |`)
+rl.push(`| maxDefense | ${DEFENSE_CONFIG.maxDefense} |`)
+rl.push(`| midpointDefenseRatio | ${DEFENSE_CONFIG.midpointDefenseRatio} |`)
+rl.push(`| floorBossDamageScaling | ${FLOOR_BOSS_SCALING} |`)
+rl.push(`| Hero maxLevel | ${MAX_LEVEL} |`)
+rl.push(`| maxFloors | ${MAX_FLOORS} |`)
+rl.push(`| Zone boss boost | ${ZONE_BOSS_BOOST}× |`)
+rl.push(`| Final boss boost | ${FINAL_BOSS_BOOST}× |`)
+rl.push(``)
+rl.push(`## Tiers`)
+rl.push(``)
+rl.push(`| Tier | Floors | TargetHP% | GearDef% | GearRaw | EstDef | Block% | Scale@Min | Scale@Mid | Scale@Max | AllBase | SingBase |`)
+rl.push(`|------|--------|-----------|----------|---------|--------|--------|-----------|-----------|-----------|---------|----------|`)
 for (const t of TIERS) {
   const mid     = Math.round((t.minFloor + t.maxFloor) / 2)
   const gearRaw = Math.round(t.gearDefensePct * DEFENSE_CONFIG.maxDefense)
   const def     = typicalDefenseAtFloor(mid, t.gearDefensePct)
   const blk     = (calculateBlockPercent(def) * 100).toFixed(1)
   const all     = calcBaseValue(mid, t.targetNetHpPct, t.gearDefensePct)
-  const single  = calcBaseValue(mid, t.targetNetHpPct * t.nonAllDmgMultiplier, t.gearDefensePct)
-  reportLines.push(`| ${t.label} | ${mid} | ${(t.targetNetHpPct * 100).toFixed(0)}% | ${(t.gearDefensePct * 100).toFixed(1)}% | ${gearRaw} | ${def} | ${blk}% | ${all} | ${single} |`)
+  const sing    = calcBaseValue(mid, t.targetNetHpPct * t.nonAllDmgMultiplier, t.gearDefensePct)
+  const sMin    = floorScaleMultiplier(t.minFloor).toFixed(1)
+  const sMid    = floorScaleMultiplier(mid).toFixed(1)
+  const sMax    = floorScaleMultiplier(t.maxFloor).toFixed(1)
+  rl.push(`| ${t.label} | ${t.minFloor}-${t.maxFloor} | ${(t.targetNetHpPct * 100).toFixed(0)}% | ${(t.gearDefensePct * 100).toFixed(1)}% | ${gearRaw} | ${def} | ${blk}% | ${sMin}× | ${sMid}× | ${sMax}× | ${all} | ${sing} |`)
 }
-reportLines.push(``)
-reportLines.push(`## Bosses`)
-reportLines.push(``)
-reportLines.push(`| File | Title | Floor | Status | AllBase | SingBase | Changes |`)
-reportLines.push(`|------|-------|-------|--------|---------|----------|---------|`)
-for (const r of rows) {
-  const changeStr = r.changes.map(c => `${c.old}→${c.new}(${c.target})`).join(', ')
-  reportLines.push(`| ${r.file.replace(/\\/g, '/')} | ${r.title} | ${r.floor} | ${r.label} | ${r.allBase} | ${r.singleBase} | ${changeStr} |`)
+rl.push(``)
+
+function reportSection(title: string, rows: Row[], boost = 1.0): void {
+  if (!rows.length) return
+  rl.push(`## ${title}`)
+  rl.push(boost > 1 ? `> Boost: **${boost}×** applied on top of tier targetNetHpPct` : '')
+  rl.push(``)
+  rl.push(`| File | Title | Floor | Status | AllBase | SingBase | Scale× | Scaled | NetDmg | NetHP% | Changes |`)
+  rl.push(`|------|-------|-------|--------|---------|----------|--------|--------|--------|--------|---------|`)
+  for (const r of rows) {
+    const changeStr = r.changes.map(c => `${c.old}→${c.new}(${c.target})`).join(', ')
+    rl.push(`| ${r.file.replace(/\\/g, '/')} | ${r.title} | ${r.floor} | ${r.label} | ${r.allBase} | ${r.singleBase} | ${r.scale.toFixed(1)}× | ${r.scaledAll} | ${r.netDmgAll} | ${(r.netHpPct * 100).toFixed(1)}% | ${changeStr} |`)
+  }
+  rl.push(``)
 }
-reportLines.push(``)
-reportLines.push(`**${rows.length}** bosses scanned — **${needsChange}** needed changes${doWrite ? ` — **${written}** files updated` : ''}.`)
-reportLines.push(``)
+
+reportSection('Intro Bosses (floors 1-9)', introRows)
+reportSection('Normal Floor Bosses', normalRows)
+reportSection(`Zone Bosses (${ZONE_BOSS_BOOST}× boost)`, zoneRows, ZONE_BOSS_BOOST)
+reportSection(`Final Boss (${FINAL_BOSS_BOOST}× boost)`, finalRows, FINAL_BOSS_BOOST)
+
+rl.push(`---`)
+rl.push(`**${allRows.length}** bosses total — **${needChange}** needed changes${doWrite ? ` — **${written}** files updated` : ''}.`)
+rl.push(``)
 
 const reportPath = path.join(ROOT, 'scripts', 'boss-damage-report.md')
-fs.writeFileSync(reportPath, reportLines.join('\n'), 'utf8')
-console.log(`Report written → scripts/boss-damage-report.md`)
+fs.writeFileSync(reportPath, rl.join('\n'), 'utf8')
+console.log(`Report written -> scripts/boss-damage-report.md`)
