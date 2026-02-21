@@ -117,6 +117,7 @@ export const createDungeonActions: StateCreator<
           gold: 0, // Reset gold for each new run
           inventory: [], // Reset inventory for each new run
           isNextEventBoss: false,
+          bossType: null, // Explicitly null so advanceDungeon doesn't treat first advance as floor completion
         },
         isGameOver: false,
         hasPendingPenalty: false,
