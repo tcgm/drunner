@@ -11,7 +11,9 @@
     "build:check": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "calculate-max-defense": "tsx --tsconfig tsconfig.scripts.json scripts/calculate-max-defense.mjs"
+    "calculate-max-defense": "tsx --tsconfig tsconfig.scripts.json scripts/calculate-max-defense.mjs",
+    "set-boss-damage": "tsx --tsconfig tsconfig.scripts.json scripts/set-boss-damage.ts",
+    "set-boss-damage:write": "tsx --tsconfig tsconfig.scripts.json scripts/set-boss-damage.ts --write"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.10.9",

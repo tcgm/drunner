@@ -25,6 +25,6 @@
     "resolveJsonModule": true,
     "strict": true
   },
-  "include": ["scripts/**/*"],
+  "include": ["scripts/**/*", "src/**/*"],
   "exclude": ["node_modules"]
 }
