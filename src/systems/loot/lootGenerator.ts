@@ -255,7 +255,7 @@ function generateBaseTemplateId(base: Omit<Item, 'id' | 'name' | 'rarity' | 'val
  * Generate item name from material and base template
  * Returns both the name and the appropriate icon for that specific baseName
  */
-function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): { name: string; icon?: IconType } {
+function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): { name: string; icon?: IconType | string } {
   // If base template has explicit baseNames, randomly pick one
   if ('baseNames' in baseTemplate && Array.isArray(baseTemplate.baseNames) && baseTemplate.baseNames.length > 0) {
     const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
@@ -264,7 +264,7 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
     // Check if there's a specific icon for this baseName
     let icon = baseTemplate.icon
     if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && typeof baseTemplate.baseNameIcons === 'object') {
-      const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType>)[randomName]
+      const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType | string>)[randomName]
       if (specificIcon) {
         icon = specificIcon
       }

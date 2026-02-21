@@ -563,7 +563,7 @@ export interface Material {
 }
 
 export interface BaseTemplate {
-  icon: IconType
+  icon: IconType | string // react-icons icon component or local SVG path
   description: string
   type: ItemSlot
   stats: Partial<Omit<Stats, 'hp'>>

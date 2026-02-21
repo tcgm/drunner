@@ -385,7 +385,7 @@ function deriveProceduralItem(item: ProceduralItemV3): Item {
   // Get icon (check for variantName-specific icon)
   let icon = baseTemplate.icon
   if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && selectedVariant) {
-    const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType>)[selectedVariant]
+    const specificIcon = baseTemplate.baseNameIcons[selectedVariant]
     if (specificIcon) {
       icon = specificIcon
     }
