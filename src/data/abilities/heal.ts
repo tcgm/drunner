@@ -15,7 +15,7 @@ export const HEAL: Ability = {
     effect: {
         type: 'heal',
         value: 20,
-        target: 'ally',
+        targeting: { side: 'ally', breadth: 'single', priority: 'lowest', priorityStat: 'hpPercent', includesSelf: true },
         scaling: {
             stat: 'magicPower',
             ratio: 0.5

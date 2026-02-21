@@ -10,7 +10,7 @@ export const REGENERATION: BossAbility = {
     effects: [
         {
             type: 'heal',
-            target: 'self',
+            targeting: { side: 'self', breadth: 'single' },
             value: 100,
         },
     ],

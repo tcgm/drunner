@@ -14,7 +14,7 @@ export const HOLY_LIGHT: Ability = {
     effect: {
         type: 'damage',
         value: 20,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
             ratio: 3

@@ -14,7 +14,7 @@ export const SMITE_PALADIN: Ability = {
     effect: {
         type: 'damage',
         value: 20,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
     },
     icon: GiHolySymbol,
 }

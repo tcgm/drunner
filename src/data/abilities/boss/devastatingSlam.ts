@@ -10,7 +10,7 @@ export const DEVASTATING_SLAM: BossAbility = {
     effects: [
         {
             type: 'damage',
-            target: 'all-enemies',
+            targeting: { side: 'enemy', breadth: 'all' },
             value: 80,
         },
     ],

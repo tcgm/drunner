@@ -12,7 +12,7 @@ export const ENRAGE: BossAbility = {
         {
             type: 'buff',
             value: 0, // Value calculated dynamically (current attack)
-            target: 'self',
+            targeting: { side: 'self', breadth: 'single' },
             duration: 999, // Permanent for rest of combat
             stat: 'attack',
         },

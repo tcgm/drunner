@@ -14,7 +14,7 @@ export const INSPIRE: Ability = {
     effect: {
         type: 'buff',
         value: 3,
-        target: 'all-allies',
+        targeting: { side: 'party', breadth: 'all' },
         duration: 2,
         stat: 'attack',
         scaling: {

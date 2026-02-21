@@ -14,7 +14,7 @@ export const BACKSTAB: Ability = {
     effect: {
         type: 'damage',
         value: 30,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'attack',
             ratio: 0.8

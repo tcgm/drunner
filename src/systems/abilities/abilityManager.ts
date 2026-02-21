@@ -2,6 +2,7 @@ import type { Hero, Ability, AbilityEffect } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { refreshAbilityFromTemplate } from '@/utils/abilityUtils'
+import { resolveAbilityTargets } from '@/systems/combat/targetingResolver'
 
 /**
  * Check if an ability can be used at the current floor/depth
@@ -210,7 +211,7 @@ function applyAbilityEffect(
 
     switch (effect.type) {
         case 'heal': {
-            const targets = selectTargets(effect.target, hero, party)
+            const targets = resolveAbilityTargets(effect.targeting, hero, party).heroes
             
             // Check if this is a heal-over-time effect (has duration > 1)
             if (effect.duration && effect.duration > 1) {
@@ -316,38 +317,6 @@ function applyAbilityEffect(
 /**
  * Select targets based on targeting rule
  */
-function selectTargets(
-    target: AbilityEffect['target'],
-    caster: Hero,
-    party: (Hero | null)[]
-): Hero[] {
-    const aliveParty = party.filter((h): h is Hero => h !== null && h.isAlive)
-
-    switch (target) {
-        case 'self':
-            return [caster]
-
-        case 'ally': {
-            // For now, select random ally (could add UI for selection later)
-            const allies = aliveParty.filter(h => h.id !== caster.id)
-            if (allies.length === 0) return [caster]
-            return [allies[Math.floor(Math.random() * allies.length)]]
-        }
-
-        case 'all-allies':
-            return aliveParty
-
-        case 'enemy':
-        case 'all-enemies':
-            // Enemy targeting would be for combat events
-            // Return empty for now
-            return []
-
-        default:
-            return [caster]
-    }
-}
-
 /**
  * Tick cooldowns when floor increases
  * Called when the party advances to the next floor

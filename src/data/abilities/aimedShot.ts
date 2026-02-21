@@ -14,7 +14,7 @@ export const AIMED_SHOT: Ability = {
     effect: {
         type: 'damage',
         value: 20,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'attack',
             ratio: 0.6

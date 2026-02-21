@@ -9,6 +9,7 @@ import type { HeroActionResult } from './heroActions'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { recalculateDynamicBossStats } from './bossStats'
+import { resolveAbilityTargets } from './targetingResolver'
 
 /**
  * Execute hero ability during combat
@@ -135,7 +136,7 @@ function processDamageEffect(
 ): number {
     let totalDamage = 0
 
-    if (effect.target === 'enemy' || effect.target === 'all-enemies') {
+    if (effect.targeting.side === 'enemy') {
         // Damage boss - use current scaled defense
         const scaledBossStats = recalculateDynamicBossStats(
             {
@@ -181,7 +182,7 @@ function processHealEffect(
     result: HeroActionResult
 ): number {
     let totalHealing = 0
-    const targets = selectHealTargets(effect, hero, party)
+    const targets = resolveAbilityTargets(effect.targeting, hero, party).heroes
 
     // Check if this is a heal-over-time effect (has duration)
     if (effect.duration && effect.duration > 1) {
@@ -246,7 +247,7 @@ function processBuffEffect(
     party: (Hero | null)[],
     result: HeroActionResult
 ): void {
-    const targets = selectBuffTargets(effect, hero, party)
+    const targets = resolveAbilityTargets(effect.targeting, hero, party).heroes
     const duration = effect.duration || 3
 
     for (const target of targets) {
@@ -285,7 +286,7 @@ function processDebuffEffect(
 ): void {
     const duration = effect.duration || 3
 
-    if (effect.target === 'enemy' || effect.target === 'all-enemies') {
+    if (effect.targeting.side === 'enemy') {
         // Debuff boss
         combatState.activeEffects.push({
             id: `debuff-${Date.now()}`,
@@ -305,70 +306,6 @@ function processDebuffEffect(
                 ? `Boss's ${effect.stat} reduced by ${value} for ${duration} turns!`
                 : `Boss was debuffed for ${duration} turns!`,
         })
-    }
-}
-
-/**
- * Select heal targets based on effect target
- */
-function selectHealTargets(
-    effect: AbilityEffect,
-    hero: Hero,
-    party: (Hero | null)[]
-): Hero[] {
-    const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
-
-    switch (effect.target) {
-        case 'self':
-            return [hero]
-
-        case 'ally': {
-            // Select most wounded ally (using total stats including equipment)
-            const others = aliveHeroes.filter(h => h.id !== hero.id)
-            if (others.length === 0) return [hero]
-
-            const mostWounded = others.reduce((lowest, h) => {
-                const hStats = calculateTotalStats(h)
-                const lowestStats = calculateTotalStats(lowest)
-                const hRatio = h.stats.hp / hStats.maxHp
-                const lowestRatio = lowest.stats.hp / lowestStats.maxHp
-                return hRatio < lowestRatio ? h : lowest
-            })
-            return [mostWounded]
-        }
-
-        case 'all-allies':
-            return aliveHeroes
-
-        default:
-            return [hero]
-    }
-}
-
-/**
- * Select buff targets based on effect target
- */
-function selectBuffTargets(
-    effect: AbilityEffect,
-    hero: Hero,
-    party: (Hero | null)[]
-): Hero[] {
-    const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
-
-    switch (effect.target) {
-        case 'self':
-            return [hero]
-
-        case 'ally': {
-            const others = aliveHeroes.filter(h => h.id !== hero.id)
-            return others.length > 0 ? [others[0]] : [hero]
-        }
-
-        case 'all-allies':
-            return aliveHeroes
-
-        default:
-            return [hero]
     }
 }
 

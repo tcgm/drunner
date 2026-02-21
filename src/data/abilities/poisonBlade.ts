@@ -14,7 +14,7 @@ export const POISON_BLADE: Ability = {
     effect: {
         type: 'special',
         value: 5,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         duration: 3,
         scaling: {
             stat: 'luck',

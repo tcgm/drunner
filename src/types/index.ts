@@ -32,11 +32,54 @@ export interface Ability {
 
 export type PrimaryStat = 'attack' | 'defense' | 'speed' | 'luck' | 'wisdom' | 'charisma' | 'magicPower'
 
+// --- Ability Targeting System ---
+
+/** Which side of combat to target (from the caster's perspective) */
+export type TargetSide =
+  | 'self'   // Caster only
+  | 'ally'   // Other party members (excludes caster unless includesSelf=true)
+  | 'enemy'  // Boss / enemy combatants
+  | 'party'  // All alive party members (includes caster)
+
+/** Whether the effect hits one or all valid targets */
+export type TargetBreadth = 'single' | 'all'
+
+/** How to select a single target from the valid pool */
+export type TargetPriority =
+  | 'lowest'   // Lowest value of priorityStat
+  | 'highest'  // Highest value of priorityStat
+  | 'first'    // First in party-slot order
+  | 'last'     // Last in party-slot order
+  | 'random'   // Uniformly at random
+
+/** Stat used when priority is 'lowest' or 'highest' */
+export type TargetPriorityStat =
+  | 'currentHp'  // hero.stats.hp (absolute)
+  | 'hpPercent'  // hero.stats.hp / maxHp (proportional — best for "most wounded")
+  | 'maxHp'
+  | PrimaryStat
+
+/** Filter targets by their party position */
+export type TargetPosition = 'any' | 'frontline' | 'backline'
+
+export interface TargetingSpec {
+  side: TargetSide
+  breadth: TargetBreadth
+  /** For single breadth: how to pick from the pool. Default: 'random' */
+  priority?: TargetPriority
+  /** Stat used for lowest/highest comparison. Default: 'currentHp' */
+  priorityStat?: TargetPriorityStat
+  /** Party position filter. Default: 'any' */
+  position?: TargetPosition
+  /** When side='ally': whether the caster is eligible. Default: false */
+  includesSelf?: boolean
+}
+
 export interface AbilityEffect {
   type: 'damage' | 'heal' | 'buff' | 'debuff' | 'special'
   value: number // Base value
-  target: 'self' | 'ally' | 'enemy' | 'all-allies' | 'all-enemies'
-  duration?: number // For buffs/debuffs
+  targeting: TargetingSpec
+  duration?: number // For buffs/debuffs/status effects
   stat?: PrimaryStat // Which stat to buff/debuff
   scaling?: { // Optional stat scaling
     stat: PrimaryStat

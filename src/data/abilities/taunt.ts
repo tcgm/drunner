@@ -15,7 +15,7 @@ export const TAUNT: Ability = {
     effect: {
         type: 'special',
         value: 0,      // computed dynamically from primary stat in heroAbilities.ts
-        target: 'self',
+        targeting: { side: 'self', breadth: 'single' },
         duration: 2,   // base duration; extended by primary stat
     },
     icon: GiScreaming,

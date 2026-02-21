@@ -14,7 +14,7 @@ export const FIREBALL: Ability = {
     effect: {
         type: 'damage',
         value: 25,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
             ratio: 1.7

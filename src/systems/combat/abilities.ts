@@ -161,7 +161,7 @@ function executeAbilityEffect(
         }
 
         case 'heal': {
-            if (effect.target === 'self') {
+            if (effect.targeting.side === 'self') {
                 const healAmount = effect.value || 0
                 combatState.currentHp = Math.min(
                     combatState.currentHp + healAmount,
@@ -174,7 +174,7 @@ function executeAbilityEffect(
         }
 
         case 'buff': {
-            if (effect.target === 'self') {
+            if (effect.targeting.side === 'self') {
                 let buffValue = effect.value || 0
                 
                 // Special handling for ENRAGE - double the boss's current attack
@@ -259,21 +259,17 @@ function selectEffectTargets(
         return []
     }
 
-    switch (effect.target) {
-        case 'all-allies':
-        case 'all-enemies':
-            return aliveHeroes
+    const { side, breadth } = effect.targeting
 
-        case 'enemy': {
+    // From boss's perspective: 'enemy' = heroes, 'ally'/'party' = also heroes
+    if (side === 'enemy' || side === 'party' || side === 'ally') {
+        if (breadth === 'all') return aliveHeroes
+        if (breadth === 'single') {
             const index = Math.floor(Math.random() * aliveHeroes.length)
             return [aliveHeroes[index]]
         }
-
-        case 'ally':
-        case 'self':
-            return []
-
-        default:
-            return []
     }
+
+    // 'self' = boss is the target
+    return []
 }

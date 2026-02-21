@@ -15,8 +15,10 @@ export const BLESS: Ability = {
     effect: {
         type: 'buff',
         value: 5,
-        target: 'ally',
-        duration: 2,        stat: 'defense',        scaling: {
+        targeting: { side: 'ally', breadth: 'single', priority: 'random' },
+        duration: 2,
+        stat: 'defense',
+        scaling: {
             stat: 'wisdom',
             ratio: 0.3
         }

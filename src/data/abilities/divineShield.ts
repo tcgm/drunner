@@ -14,8 +14,10 @@ export const DIVINE_SHIELD: Ability = {
     effect: {
         type: 'buff',
         value: 50,
-        target: 'self',
-        duration: 1,        stat: 'defense',        scaling: {
+        targeting: { side: 'self', breadth: 'single' },
+        duration: 1,
+        stat: 'defense',
+        scaling: {
             stat: 'wisdom',
             ratio: 0.5
         }

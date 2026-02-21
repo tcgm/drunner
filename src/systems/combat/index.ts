@@ -52,6 +52,12 @@ export {
     checkPatternCondition,
 } from './targeting'
 
+// Ability targeting resolver
+export {
+    resolveAbilityTargets,
+    type ResolvedTargets,
+} from './targetingResolver'
+
 // Attack patterns
 export {
     selectAttackPattern,

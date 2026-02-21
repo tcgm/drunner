@@ -14,7 +14,7 @@ export const TRACK: Ability = {
     effect: {
         type: 'special',
         value: 0,
-        target: 'self',
+        targeting: { side: 'self', breadth: 'single' },
     },
     icon: GiFootprint,
 }

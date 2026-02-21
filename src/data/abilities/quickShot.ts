@@ -14,7 +14,7 @@ export const QUICK_SHOT: Ability = {
     effect: {
         type: 'damage',
         value: 12,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'attack',
             ratio: 0.5

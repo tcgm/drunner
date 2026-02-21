@@ -14,7 +14,7 @@ export const CURSE: Ability = {
     effect: {
         type: 'debuff',
         value: 5,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         duration: 2,
         stat: 'attack',
         scaling: {

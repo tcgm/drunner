@@ -14,7 +14,7 @@ export const SUMMON_SKELETON: Ability = {
     effect: {
         type: 'special',
         value: 15,
-        target: 'self',
+        targeting: { side: 'self', breadth: 'single' },
         duration: 5,
     },
     icon: GiSkeletonKey,

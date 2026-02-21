@@ -15,7 +15,7 @@ export const DEFEND: Ability = {
     effect: {
         type: 'buff',
         value: 5,
-        target: 'self',
+        targeting: { side: 'self', breadth: 'single' },
         duration: 1,
         stat: 'defense',
         scaling: {
