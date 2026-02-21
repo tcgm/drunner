@@ -9,6 +9,8 @@ export const TITANS_STRIDE: Omit<Item, 'id'> = {
   description: 'Boots that shake the earth with each thunderous step.',
   type: 'boots',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiBootStomp,
   stats: {
     defense: 60,

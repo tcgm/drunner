@@ -9,6 +9,8 @@ export const ARCANE_VESTMENTS: Omit<Item, 'id'> = {
   description: 'Robes inscribed with ancient runes. Enhances magical abilities.',
   type: 'armor',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiMagicSwirl,
   stats: {
     defense: 50,

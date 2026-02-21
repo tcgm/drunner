@@ -9,6 +9,8 @@ export const DRACONIC_SOUL: Omit<Item, 'id'> = {
   description: 'Contains a fragment of a dragon\'s eternal soul. Burns with inner fire.',
   type: 'accessory2',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiFireGem,
   stats: {
     magicPower: 60,

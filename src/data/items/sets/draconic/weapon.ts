@@ -9,6 +9,8 @@ export const DRACONIC_FANG: Omit<Item, 'id'> = {
   description: 'A weapon forged from an ancient dragon\'s fang. Radiates primordial fire.',
   type: 'weapon',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiDragonBreath,
   stats: {
     attack: 140,

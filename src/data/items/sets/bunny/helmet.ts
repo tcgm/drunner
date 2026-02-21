@@ -10,6 +10,8 @@ export const SATIN_BUNNY_EARS: Omit<Item, 'id'> = {
   description: 'Perky satin ears on a velvet headband. Draws all eyes to you.',
   type: 'helmet',
   rarity: 'rare',
+  minRarity: 'uncommon',
+  maxRarity: 'artifact',
   icon: GiRabbit,
   stats: {
     defense: 15,

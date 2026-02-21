@@ -5,17 +5,23 @@ import { useState, useEffect } from 'react'
 import { GiChest, GiHearts, GiSwordWound, GiCoins, GiLevelFourAdvanced, GiAngelWings, GiGooExplosion, GiDodge, GiAnvilImpact } from 'react-icons/gi'
 import type { ResolvedOutcome } from '@systems/events/eventResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { BiArrowFromBottom } from 'react-icons/bi'
+import { ItemSlot } from '@/components/ui/ItemSlot'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/raritySystem'
+import { getModifierById } from '@/data/items/mods'
 
 const MotionBox = motion.create(Box)
 const MotionHStack = motion.create(HStack)
+
+const RARITY_COLORS = Object.fromEntries(
+  Object.entries(CENTRALIZED_RARITY_COLORS).map(([k, v]) => [k, { text: v.text, bg: v.backgroundColor }])
+)
 
 interface OutcomeDisplayProps {
   outcome: ResolvedOutcome
   onContinue: () => void
 }
 
-const EFFECT_ICONS = {
+const EFFECT_ICONS: Record<string, typeof GiChest> = {
   damage: GiSwordWound,
   heal: GiHearts,
   xp: GiLevelFourAdvanced,
@@ -28,17 +34,17 @@ const EFFECT_ICONS = {
   upgradeItem: GiAnvilImpact,
 }
 
-const EFFECT_COLORS = {
-  damage: GAME_CONFIG.colors.damage.base,
-  heal: GAME_CONFIG.colors.heal.base,
-  xp: GAME_CONFIG.colors.xp.base,
-  gold: GAME_CONFIG.colors.gold.base,
-  item: 'blue.400',
-  status: 'cyan.400',
-  revive: 'cyan.300',
-  upgradeItem: 'blue.400',
-  dodge: 'cyan.400',
-  crit: 'red.400',
+const EFFECT_COLORS: Record<string, string> = {
+  damage: GAME_CONFIG.colors.damage.hex,
+  heal: GAME_CONFIG.colors.heal.hex,
+  xp: GAME_CONFIG.colors.xp.hex,
+  gold: GAME_CONFIG.colors.gold.hex,
+  item: '#63B3ED',       // blue.400
+  status: '#76E4F7',     // cyan.400
+  revive: '#76E4F7',     // cyan.300
+  upgradeItem: '#63B3ED', // blue.400
+  dodge: '#76E4F7',      // cyan.400
+  crit: '#FC8181',       // red.400
 }
 
 export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayProps) {
@@ -144,13 +150,13 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
                   }}
                 >
                   <Icon
-                    as={EFFECT_ICONS[effect.type]}
+                    as={EFFECT_ICONS[effect.type] ?? GiChest}
                     boxSize={5}
-                    color={EFFECT_COLORS[effect.type]}
+                    color={EFFECT_COLORS[effect.type] ?? '#A0AEC0'}
                   />
                 </motion.div>
                 <VStack align="start" spacing={0} flex={1}>
-                  <HStack spacing={2} flexWrap="wrap">
+                  <HStack spacing={2} flexWrap="wrap" align="center">
                     <Text color="gray.300" fontSize="sm">
                       {effect.description}
                     </Text>
@@ -201,9 +207,47 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
                     )}
                   </HStack>
                   {effect.item && (
-                    <Text color="gray.500" fontSize="xs">
-                      {effect.item.description}
-                    </Text>
+                    <HStack spacing={2} mt={1} align="center" flexWrap="wrap">
+                      <Box flexShrink={0} w="36px" h="36px">
+                        <ItemSlot item={effect.item} iconOnly size="sm" isClickable />
+                      </Box>
+                      <VStack align="start" spacing={0.5}>
+                        <HStack spacing={1} flexWrap="wrap" align="center">
+                          <Text
+                            color={RARITY_COLORS[effect.item.rarity]?.text || 'gray.300'}
+                            fontSize="xs"
+                            fontWeight="semibold"
+                          >
+                            {effect.item.name}
+                          </Text>
+                          <Badge
+                            fontSize="2xs"
+                            bg={RARITY_COLORS[effect.item.rarity]?.bg || 'gray.700'}
+                            color="white"
+                            px={1}
+                          >
+                            {effect.item.rarity.toUpperCase()}
+                          </Badge>
+                        </HStack>
+                        {effect.item.modifiers && effect.item.modifiers.length > 0 && (
+                          <HStack spacing={1} flexWrap="wrap">
+                            {effect.item.modifiers.map(modId => {
+                              const mod = getModifierById(modId)
+                              return mod ? (
+                                <Badge
+                                  key={modId}
+                                  fontSize="2xs"
+                                  style={{ color: mod.colorLight, backgroundColor: mod.backgroundColor }}
+                                  px={1}
+                                >
+                                  {mod.name.toUpperCase()}
+                                </Badge>
+                              ) : null
+                            })}
+                          </HStack>
+                        )}
+                      </VStack>
+                    </HStack>
                   )}
                 </VStack>
               </MotionHStack>

@@ -9,6 +9,8 @@ export const ARCANE_CIRCLET: Omit<Item, 'id'> = {
   description: 'A circlet that enhances mental acuity and magical focus.',
   type: 'helmet',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiWizardFace,
   stats: {
     wisdom: 50,

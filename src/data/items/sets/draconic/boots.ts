@@ -9,6 +9,8 @@ export const DRACONIC_TALONS: Omit<Item, 'id'> = {
   description: 'Boots reinforced with dragon claws. Each step leaves scorched earth.',
   type: 'boots',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiClawHammer,
   stats: {
     defense: 50,

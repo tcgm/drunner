@@ -9,6 +9,8 @@ export const SHADOWS_EMBRACE: Omit<Item, 'id'> = {
   description: 'Light armor woven from living shadows. Makes the wearer nearly invisible.',
   type: 'armor',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiNinjaArmor,
   stats: {
     defense: 60,

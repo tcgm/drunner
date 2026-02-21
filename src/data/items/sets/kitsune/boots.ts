@@ -9,6 +9,8 @@ export const KITSUNE_STEPS: Omit<Item, 'id'> = {
   description: 'Boots blessed by fox spirits. Leave phantom afterimages with each stride.',
   type: 'boots',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiPawHeart,
   stats: {
     speed: 40,

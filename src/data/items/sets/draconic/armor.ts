@@ -9,6 +9,8 @@ export const DRACONIC_SCALES: Omit<Item, 'id'> = {
   description: 'Armor plated with impenetrable dragon scales. Nearly indestructible.',
   type: 'armor',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiDragonOrb,
   stats: {
     defense: 100,

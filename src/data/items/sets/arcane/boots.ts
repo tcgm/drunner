@@ -9,6 +9,8 @@ export const ARCANE_TREADS: Omit<Item, 'id'> = {
   description: 'Boots that leave glowing magical runes with each step.',
   type: 'boots',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiBootStomp,
   stats: {
     speed: 30,

@@ -9,6 +9,8 @@ export const DRACONIC_HEART: Omit<Item, 'id'> = {
   description: 'A crystallized dragon heart. Pulses with ancient power.',
   type: 'accessory1',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiDiamondRing,
   stats: {
     maxHp: 100,

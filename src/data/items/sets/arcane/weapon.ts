@@ -9,6 +9,8 @@ export const ARCANE_CONDUIT: Omit<Item, 'id'> = {
   description: 'A staff that channels raw magical energy. Crackles with arcane power.',
   type: 'weapon',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiWizardStaff,
   stats: {
     magicPower: 80,

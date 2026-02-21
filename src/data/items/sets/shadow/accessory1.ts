@@ -9,6 +9,8 @@ export const SHADOWS_TOUCH: Omit<Item, 'id'> = {
   description: 'Gloves that allow manipulation of shadows themselves.',
   type: 'accessory1',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiShadowGrasp,
   stats: {
     attack: 35,

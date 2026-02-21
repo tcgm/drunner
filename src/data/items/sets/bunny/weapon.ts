@@ -10,6 +10,8 @@ export const COCKTAIL_TRAY: Omit<Item, 'id'> = {
   description: 'A polished silver tray. Perfect for serving drinks... or dealing swift strikes.',
   type: 'weapon',
   rarity: 'rare',
+  minRarity: 'uncommon',
+  maxRarity: 'artifact',
   icon: GiCoffeeCup,
   stats: {
     attack: 45,

@@ -9,6 +9,8 @@ export const SHADOWS_HEART: Omit<Item, 'id'> = {
   description: 'A dark gem that pulses with the essence of night. Empowers the wielder.',
   type: 'accessory2',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiMoon,
   stats: {
     speed: 35,

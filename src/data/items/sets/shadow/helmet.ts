@@ -9,6 +9,8 @@ export const SHADOWS_VEIL: Omit<Item, 'id'> = {
   description: 'A mask that obscures the wearer in darkness. Enhances perception.',
   type: 'helmet',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiNinjaMask,
   stats: {
     defense: 40,

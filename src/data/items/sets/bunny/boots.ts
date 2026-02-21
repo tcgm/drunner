@@ -10,6 +10,8 @@ export const STILETTO_HEELS: Omit<Item, 'id'> = {
   description: 'Six-inch heels that somehow make you faster. Dazzle and distract your foes.',
   type: 'boots',
   rarity: 'rare',
+  minRarity: 'uncommon',
+  maxRarity: 'artifact',
   icon: GiHighHeel,
   stats: {
     defense: 10,

@@ -9,6 +9,8 @@ export const ARCANE_TOME: Omit<Item, 'id'> = {
   description: 'An ancient spellbook containing forgotten magical secrets.',
   type: 'accessory1',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiSpellBook,
   stats: {
     wisdom: 45,

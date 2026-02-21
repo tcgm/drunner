@@ -10,6 +10,8 @@ export const BOW_TIE_COLLAR: Omit<Item, 'id'> = {
   description: 'A charming black bowtie attached to a satin collar. Adds class to the ensemble.',
   type: 'accessory1',
   rarity: 'rare',
+  minRarity: 'uncommon',
+  maxRarity: 'artifact',
   icon: GiBowTie,
   stats: {
     speed: 15,

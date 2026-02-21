@@ -9,6 +9,8 @@ export const TITANS_CROWN: Omit<Item, 'id'> = {
   description: 'A helm worn by titan lords. Grants unwavering resolve.',
   type: 'helmet',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiVisoredHelm,
   stats: {
     defense: 70,

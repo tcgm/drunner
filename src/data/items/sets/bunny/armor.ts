@@ -10,6 +10,8 @@ export const VELVET_LEOTARD: Omit<Item, 'id'> = {
   description: 'A form-fitting velvet outfit that leaves little to the imagination. Confidence is the best armor.',
   type: 'armor',
   rarity: 'rare',
+  minRarity: 'uncommon',
+  maxRarity: 'artifact',
   icon: GiAmpleDress,
   stats: {
     defense: 35,

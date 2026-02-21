@@ -10,6 +10,8 @@ export const FLUFFY_TAIL: Omit<Item, 'id'> = {
   description: 'A soft, fluffy cottontail. Impossibly adorable and alluring.',
   type: 'accessory2',
   rarity: 'rare',
+  minRarity: 'uncommon',
+  maxRarity: 'artifact',
   icon: GiFeather,
   stats: {
     speed: 20,
