@@ -280,7 +280,7 @@ export function MarketHallModal({
                       {stall.items.filter(item => !purchasedItemIds.has(item.id)).length}
                     </Badge>
                   </VStack>
-                  {/* Stall items — scrollable vertical list */}
+                  {/* Stall items  -  scrollable vertical list */}
                   <VStack spacing={1.5} p={1.5} overflowY="auto" flex="1" align="stretch">
                     {stall.items.map((item) => {
                       const isPurchased = purchasedItemIds.has(item.id)

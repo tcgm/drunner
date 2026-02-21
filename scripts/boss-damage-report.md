@@ -247,4 +247,4 @@ Generated: 2026-02-21 05:16:29  |  Mode: **WRITE**
 | src/data/events/boss/zone/finalBoss.ts | The Dungeon Lord | 100 | WRITE | 162 | 121 | 45.6× | 7379 | 438 | 182.5% | 1450→162(all), 1250→162(all), 1375→162(all), 1500→162(all), 2000→162(all) |
 
 ---
-**192** bosses total — **192** needed changes — **192** files updated.
+**192** bosses total  -  **192** needed changes  -  **192** files updated.

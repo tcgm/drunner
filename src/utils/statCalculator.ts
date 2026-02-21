@@ -17,7 +17,7 @@ export function calculateTotalStats(hero: Hero): Stats {
 
   // Add in-combat buff/debuff modifiers (combatEffects)
   // Values are already signed: buffs store positive values, debuffs store negative values.
-  // No sign flip needed — just sum them directly.
+  // No sign flip needed  -  just sum them directly.
   const combatModifiers: Partial<Stats> = {}
   for (const effect of (hero.combatEffects || [])) {
     if ((effect.type === 'buff' || effect.type === 'debuff') && effect.stat && effect.value !== undefined) {

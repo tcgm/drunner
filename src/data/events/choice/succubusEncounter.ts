@@ -21,7 +21,7 @@ export const SUCCUBUS_ENCOUNTER: DungeonEvent = {
                 text: [
                     'You steel yourself against her draining embrace. The succubus, impressed by your resilience, rewards you with dark gifts and forbidden knowledge before departing.',
                     'Her kisses drain at your vitality, but you endure. "Such... strength," she gasps, pulling away with newfound respect. She leaves behind treasures and whispered secrets.',
-                    'The life-draining caress threatens to overwhelm you, but you stand firm. Surprised and intrigued, the succubus laughs melodiously. "Remarkable. Take these—you\'ve earned them."',
+                    'The life-draining caress threatens to overwhelm you, but you stand firm. Surprised and intrigued, the succubus laughs melodiously. "Remarkable. Take these - you\'ve earned them."',
                     'Each kiss saps your strength, yet you refuse to fall. The succubus\'s eyes widen with admiration. "You are... different. Here, a token of my favor." She vanishes with a wink.'
                 ],
                 effects: [
@@ -56,7 +56,7 @@ export const SUCCUBUS_ENCOUNTER: DungeonEvent = {
             statModifier: 'wisdom',
             successOutcome: {
                 text: [
-                    'Your mental fortitude breaks through her enchantments. Frustrated but respectful, she vanishes—leaving behind tribute to your strong will.',
+                    'Your mental fortitude breaks through her enchantments. Frustrated but respectful, she vanishes - leaving behind tribute to your strong will.',
                     'You feel the charm magic trying to take hold, but your mind is a fortress. The succubus frowns, then smirks. "Clever mortal. You\'ve earned this." She fades away.',
                     'Her enchantments wash over you like water off stone. She stamps her foot in mock frustration. "Fine! Take your prize, iron-willed one."',
                     'Willpower anchors you against her psychic assault. "Impossible!" she exclaims. After a moment, she laughs. "Well played. Here\'s your reward."'
@@ -95,7 +95,7 @@ export const SUCCUBUS_ENCOUNTER: DungeonEvent = {
                     'You match her wit and charm with your own! Delighted by the challenge, she grants you a powerful boon and promises to remember you.',
                     'Your silver tongue and charisma catch her off-guard. She laughs with genuine delight! "Fascinating! I simply must reward such boldness." She bestows lavish gifts.',
                     'The demon finds herself charmed by *you* instead. "Oh my," she breathes, clearly smitten. "Take these treasures, and know that you\'ve made an impression."',
-                    'You flirt, jest, and banter as equals. The succubus is thoroughly enchanted. "I haven\'t had this much fun in centuries! Here—and do come visit again."'
+                    'You flirt, jest, and banter as equals. The succubus is thoroughly enchanted. "I haven\'t had this much fun in centuries! Here - and do come visit again."'
                 ],
                 effects: [
                     { type: 'heal', target: 'random', value: 50 },

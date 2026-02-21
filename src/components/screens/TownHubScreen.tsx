@@ -359,7 +359,7 @@ function BuildingCard({ icon, label, color, disabled = false, sizeMultiplier = 1
     >
       {/* Fixed-size 120px container so the card layout never shifts regardless of sizeMultiplier */}
       <Box position="relative" boxSize="120px" flexShrink={0} mb={2} overflow="visible" display="flex" alignItems="center" justifyContent="center">
-        {/* Scale + tilt wrapper — owns transform so svg bob animation doesn't fight scale */}
+        {/* Scale + tilt wrapper  -  owns transform so svg bob animation doesn't fight scale */}
         <Box
           className="icon-scale-wrapper"
           style={{

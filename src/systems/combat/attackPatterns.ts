@@ -117,7 +117,7 @@ export function executeAttackPattern(
     for (const target of targets) {
         const heroStats = calculateTotalStats(target)
         
-        // calculateTotalStats already includes combatEffects (buff/debuff) — use directly
+        // calculateTotalStats already includes combatEffects (buff/debuff)  -  use directly
         const effectiveDefense = heroStats.defense
         const effectiveLuck = heroStats.luck
 

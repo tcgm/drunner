@@ -22,7 +22,7 @@
  *       scaledBase = baseValue × (1 + (floor − 1) × floorBossDamageScaling)
  *
  *  2. Defense reduction (defenseConfig.ts → calculateBlockPercent):
- *       Uses the real exported function — no formula duplication.
+ *       Uses the real exported function  -  no formula duplication.
  *
  *  3. Net damage:
  *       netDmg = scaledBase × (1 − blockPct)
@@ -31,7 +31,7 @@
  *       baseValue = netTarget / (floorScaleMultiplier × (1 − blockPct))
  *
  * ─── TUNABLE TIER CONFIG ─────────────────────────────────────────────────────
- *  This is intentionally the only hardcoded section — it expresses design
+ *  This is intentionally the only hardcoded section  -  it expresses design
  *  intent about how dangerous each tier of boss should feel.
  *
  *  targetNetHpPct     – fraction of a hero's max HP dealt AFTER defense.
@@ -95,7 +95,7 @@ const TIERS: Tier[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MATH — all constants pulled from game data
+// MATH  -  all constants pulled from game data
 // ─────────────────────────────────────────────────────────────────────────────
 
 const FLOOR_BOSS_SCALING = GAME_CONFIG.scaling.floorBossDamage
@@ -196,7 +196,7 @@ function rewriteDamageValues(src: string, allBase: number, singleBase: number): 
   // Work backwards so string indices stay valid
   for (let i = effects.length - 1; i >= 0; i--) {
     const eff = effects[i]
-    if (eff.value === 0) continue  // intentional zero (success / dodge) — leave alone
+    if (eff.value === 0) continue  // intentional zero (success / dodge)  -  leave alone
 
     const proposed = ALL_TARGETS.includes(eff.target) ? allBase : singleBase
     if (proposed === eff.value) continue
@@ -408,7 +408,7 @@ if (finalRows.length)  { console.log(`─── Final Boss (${FINAL_BOSS_BOOST}�
 
 console.log(`${allRows.length} bosses total (${needChange} need changes).`)
 if (!doWrite) {
-  console.log('Dry run — no files written. Re-run with --write to apply changes.')
+  console.log('Dry run  -  no files written. Re-run with --write to apply changes.')
 } else {
   console.log(`${written} files updated.`)
 }
@@ -473,7 +473,7 @@ reportSection(`Zone Bosses (${ZONE_BOSS_BOOST}× boost)`, zoneRows, ZONE_BOSS_BO
 reportSection(`Final Boss (${FINAL_BOSS_BOOST}× boost)`, finalRows, FINAL_BOSS_BOOST)
 
 rl.push(`---`)
-rl.push(`**${allRows.length}** bosses total — **${needChange}** needed changes${doWrite ? ` — **${written}** files updated` : ''}.`)
+rl.push(`**${allRows.length}** bosses total  -  **${needChange}** needed changes${doWrite ? `  -  **${written}** files updated` : ''}.`)
 rl.push(``)
 
 const reportPath = path.join(ROOT, 'scripts', 'boss-damage-report.md')

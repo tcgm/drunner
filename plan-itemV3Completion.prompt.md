@@ -1,4 +1,4 @@
-# Plan: Item System Simplification—V3 Completion
+# Plan: Item System Simplification - V3 Completion
 
 The item system has a partially-implemented V3 format that stores only IDs and derives everything else at runtime. Currently only unique/set items use it; procedural items and consumables still use the bloated V2 format (15+ fields with redundant computed data). This plan completes the migration, eliminates redundant storage, removes repair systems, and establishes conversion from legacy formats on first display or modification.
 
@@ -267,10 +267,10 @@ The item system has a partially-implemented V3 format that stores only IDs and d
 
 **Decisions**
 
-- **Dual-trigger migration**: V2→V3 conversion happens when item first rendered in UI OR when modified (equip/upgrade/sell)—fast load times, ensures all active items migrate
+- **Dual-trigger migration**: V2→V3 conversion happens when item first rendered in UI OR when modified (equip/upgrade/sell) - fast load times, ensures all active items migrate
 - **Parse failure handling**: Items with unparseable names stay V2 for manual resolution modal
-- **Cache scope**: Per-composition key (material+base+rarity+etc), shared across item instances—less memory than per-item ID
-- **Variant storage**: Store full variant name string (e.g., `"Staff"`)—simple, collision-free, minimal overhead (~5 bytes average)
+- **Cache scope**: Per-composition key (material+base+rarity+etc), shared across item instances - less memory than per-item ID
+- **Variant storage**: Store full variant name string (e.g., `"Staff"`) - simple, collision-free, minimal overhead (~5 bytes average)
 - **Backward compat strategy**: Infinite backward support via hydration; V2 items never forced to convert
 - **Runtime format**: Continue using V2 as runtime format (hydrated); only storage format changes to V3
 - **Save trigger**: Batch conversions with debounced save to avoid performance impact

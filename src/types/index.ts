@@ -55,7 +55,7 @@ export type TargetPriority =
 /** Stat used when priority is 'lowest' or 'highest' */
 export type TargetPriorityStat =
   | 'currentHp'  // hero.stats.hp (absolute)
-  | 'hpPercent'  // hero.stats.hp / maxHp (proportional — best for "most wounded")
+  | 'hpPercent'  // hero.stats.hp / maxHp (proportional  -  best for "most wounded")
   | 'maxHp'
   | PrimaryStat
 
@@ -93,7 +93,7 @@ export interface HeroClass {
   description: string
   baseStats: Omit<Stats, 'hp' | 'maxHp'>
   statGains: Omit<Stats, 'hp'> // Stat increases per level (includes maxHp but not current hp)
-  primaryStats: [PrimaryStat, PrimaryStat] // Top 2 stats by per-level gain — used for ability scaling
+  primaryStats: [PrimaryStat, PrimaryStat] // Top 2 stats by per-level gain  -  used for ability scaling
   abilities: Ability[]
   icon: string // react-icons/gi name
 }

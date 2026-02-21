@@ -425,7 +425,7 @@ function processSpecialEffect(
         }
 
         case 'track': {
-            // Expose boss weakness — apply a defense debuff
+            // Expose boss weakness  -  apply a defense debuff
             const weaknessAmount = Math.max(3, Math.round(value) || 5)
             const duration = 2
 

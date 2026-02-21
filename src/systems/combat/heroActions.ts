@@ -51,7 +51,7 @@ export function executeAttack(
 ): HeroActionResult {
     const heroStats = calculateTotalStats(hero)
     
-    // calculateTotalStats already includes combatEffects (buff/debuff) — use directly
+    // calculateTotalStats already includes combatEffects (buff/debuff)  -  use directly
     const effectiveAttack = heroStats.attack
     const effectiveSpeed = heroStats.speed
     const effectiveLuck = heroStats.luck

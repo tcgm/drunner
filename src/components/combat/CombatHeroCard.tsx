@@ -143,7 +143,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     ) : effects.length > 0 ? (
                         <HStack spacing={1} flexWrap="wrap">
                             {buffs.slice(0, 2).map((effect) => (
-                                <Tooltip key={effect.id} label={`${effect.name}: +${effect.value} ${effect.stat ?? 'stat'} — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`} hasArrow>
+                                <Tooltip key={effect.id} label={`${effect.name}: +${effect.value} ${effect.stat ?? 'stat'}  -  ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`} hasArrow>
                                     <Badge colorScheme="green" fontSize="2xs" display="flex" alignItems="center">
                                         <Icon as={GiHeartPlus} boxSize={2} mr={1} />
                                         {effect.stat?.slice(0, 3).toUpperCase()}
@@ -151,7 +151,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                                 </Tooltip>
                             ))}
                             {debuffs.slice(0, 2).map((effect) => (
-                                <Tooltip key={effect.id} label={`${effect.name}: ${effect.value} ${effect.stat ?? 'stat'} — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`} hasArrow>
+                                <Tooltip key={effect.id} label={`${effect.name}: ${effect.value} ${effect.stat ?? 'stat'}  -  ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`} hasArrow>
                                     <Badge colorScheme="red" fontSize="2xs" display="flex" alignItems="center">
                                         <Icon as={GiSwordWound} boxSize={2} mr={1} />
                                         {effect.stat?.slice(0, 3).toUpperCase()}
@@ -164,10 +164,10 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                                 const colorScheme = isHeal ? 'cyan' : isDamage ? 'orange' : 'purple'
                                 const icon = isHeal ? GiHeartPlus : isDamage ? GiSwordWound : GiSparkles
                                 const tooltipLabel = isHeal
-                                    ? `${effect.name}: +${effect.behavior?.healAmount ?? '?'} HP/turn — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
+                                    ? `${effect.name}: +${effect.behavior?.healAmount ?? '?'} HP/turn  -  ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
                                     : isDamage
-                                    ? `${effect.name}: ${effect.behavior?.damageAmount ?? '?'} damage/turn — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
-                                    : `${effect.name} — ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
+                                    ? `${effect.name}: ${effect.behavior?.damageAmount ?? '?'} damage/turn  -  ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
+                                    : `${effect.name}  -  ${effect.duration} turn${effect.duration !== 1 ? 's' : ''} remaining`
 
                                 return (
                                     <Tooltip key={effect.id} label={tooltipLabel} hasArrow>

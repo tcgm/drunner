@@ -378,7 +378,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
               </SimpleGrid>
             </VStack>
           ) : (
-            /* Landscape: 3 columns — left potions | featured | right potions */
+            /* Landscape: 3 columns  -  left potions | featured | right potions */
             <Grid templateColumns="1fr 2fr 1fr" gap={2} flex="1" minH="0">
               {/* Left Column - Potions */}
               <VStack spacing={1.5} h="100%" overflow="hidden">
