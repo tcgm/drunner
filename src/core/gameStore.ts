@@ -421,6 +421,11 @@ export const useGameStore = create<GameStore>()(
               }
             }
 
+            // Reset runtime-only state that should not persist across page loads
+            // audioManager is re-initialized fresh every load, so these must be reset
+            // to avoid the "already on context" skip-guard blocking playback on startup.
+            actualState.currentMusicContext = null
+
             // If already in pending migration state, just return it
             if (actualState.pendingMigration) {
               console.log('[Migration] Already in pending migration state')

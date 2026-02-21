@@ -2,6 +2,8 @@ import { Box, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
+import TownHubScreen from '@components/screens/TownHubScreen'
+import { DungeonPrepScreen } from '@components/screens/DungeonPrepScreen'
 import { PartySetupScreen } from '@components/screens/PartySetupScreen'
 import DungeonScreen from '@components/screens/DungeonScreen'
 import RunHistoryScreen from '@components/screens/RunHistoryScreen'
@@ -14,11 +16,11 @@ import { HeroModalProvider } from '@/contexts/HeroModalContext'
 import { OrientationProvider } from '@/contexts/OrientationContext'
 import { useGameStore } from '@/core/gameStore'
 import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
-import type { Hero } from '@/types/hero'
+import type { Hero } from '@/types'
 
 const MotionBox = motion.create(Box)
 
-type Screen = 'menu' | 'party-setup' | 'dungeon' | 'run-history'
+type Screen = 'menu' | 'town-hub' | 'dungeon-prep' | 'party-setup' | 'dungeon' | 'run-history'
 
 const screenVariants = {
   initial: { opacity: 0, x: 20 },
@@ -37,6 +39,28 @@ const screenVariants = {
     x: -20,
     transition: {
       duration: 0.2
+    }
+  }
+}
+
+// Zoom transition for town hub and dungeon prep
+const zoomVariants = {
+  initial: { opacity: 0, scale: 0.9 },
+  animate: { 
+    opacity: 1, 
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 80,
+      damping: 12,
+      duration: 0.5
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 1.1,
+    transition: {
+      duration: 0.3
     }
   }
 }
@@ -95,7 +119,8 @@ function App() {
     if (activeRun && activeRun.result === 'active') {
       onOpen()
     } else {
-      setCurrentScreen('party-setup')
+      // Go to town hub instead of directly to party setup
+      setCurrentScreen('town-hub')
     }
   }
   
@@ -103,12 +128,28 @@ function App() {
     // Retreat from current run before starting new one
     retreatFromDungeon()
     onClose()
-    setCurrentScreen('party-setup')
+    // Go to town hub instead of directly to party setup
+    setCurrentScreen('town-hub')
   }
 
   const handleContinue = () => {
     // Continue an in-progress dungeon run
     setCurrentScreen('dungeon')
+  }
+
+  const handleEnterDungeonPrep = () => {
+    // Navigate from town hub to dungeon prep
+    setCurrentScreen('dungeon-prep')
+  }
+
+  const handleBackToTown = () => {
+    // Navigate back to town hub from dungeon prep
+    setCurrentScreen('town-hub')
+  }
+
+  const handleBackToMenu = () => {
+    // Navigate back to main menu from town hub
+    setCurrentScreen('menu')
   }
 
   return (
@@ -134,6 +175,38 @@ function App() {
                 onNewRun={handleNewRun}
                 onContinue={handleContinue}
                 onRunHistory={() => setCurrentScreen('run-history')}
+              />
+            </MotionBox>
+          )}
+          {currentScreen === 'town-hub' && (
+            <MotionBox
+              key="town-hub"
+              h="full"
+              w="full"
+              variants={zoomVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <TownHubScreen
+                onEnterDungeon={handleEnterDungeonPrep}
+                onBack={handleBackToMenu}
+              />
+            </MotionBox>
+          )}
+          {currentScreen === 'dungeon-prep' && (
+            <MotionBox
+              key="dungeon-prep"
+              h="full"
+              w="full"
+              variants={zoomVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <DungeonPrepScreen
+                onStart={handleStartDungeon}
+                onBack={handleBackToTown}
               />
             </MotionBox>
           )}
@@ -163,7 +236,7 @@ function App() {
               animate="animate"
               exit="exit"
             >
-              <DungeonScreen onExit={() => setCurrentScreen('menu')} />
+              <DungeonScreen onExit={() => setCurrentScreen('town-hub')} />
             </MotionBox>
           )}
           {currentScreen === 'run-history' && (

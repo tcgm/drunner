@@ -1,0 +1,80 @@
+/* ============================================================================
+   DUNGEON PREP SCREEN RESPONSIVE STYLES
+   Component: DungeonPrepScreen.tsx
+   Similar to PartySetupScreen but with zoom-in transition effects
+   ============================================================================ */
+
+.dungeon-prep-screen {
+  animation: zoomIn 0.5s ease-out;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile FAB buttons for accessing sidebars in portrait mode */
+.dungeon-prep-fabs {
+  display: none !important;
+}
+
+/* Show FABs only in portrait mode */
+@media (orientation: portrait) and (max-width: 768px) {
+  /* Hide sidebars in portrait mode */
+  .hero-selection-sidebar,
+  .equipment-panel {
+    display: none !important;
+  }
+  
+  .dungeon-prep-screen-center {
+    width: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .dungeon-prep-screen-content {
+    min-height: 0 !important;
+    flex: 1 !important;
+  }
+  
+  /* Ensure modals are scrollable */
+  .chakra-modal__body {
+    overflow-y: auto !important;
+    max-height: 85vh !important;
+  }
+}
+
+/* Mobile landscape - compact sidebars */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 600px) {
+  .hero-selection-sidebar {
+    width: clamp(160px, 18vw, 220px) !important;
+    min-width: 160px !important;
+  }
+  
+  .equipment-panel {
+    width: clamp(160px, 18vw, 220px) !important;
+    min-width: 160px !important;
+  }
+  
+  .dungeon-prep-screen-center {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Tablet portrait */
+@media (orientation: portrait) and (min-width: 769px) and (max-width: 1024px) {
+  .hero-selection-sidebar {
+    width: 240px !important;
+  }
+  
+  .equipment-panel {
+    width: 260px !important;
+  }
+}

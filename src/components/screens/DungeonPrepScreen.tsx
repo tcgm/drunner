@@ -1,4 +1,4 @@
-import './PartySetupScreen.css'
+import './DungeonPrepScreen.css'
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../core/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
@@ -18,13 +18,18 @@ import { MarketHallModal } from '../party/MarketHallModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
+import { useMusicContext } from '@/utils/useMusicContext'
+import { MusicContext } from '@/types/audio'
 
-interface PartySetupScreenProps {
+interface DungeonPrepScreenProps {
   onBack: () => void
   onStart: (startingFloor?: number) => void
 }
 
-export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
+export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
+  // Set party screen music
+  useMusicContext(MusicContext.PARTY_SCREEN)
+
   const {
     party,
     addHero,
@@ -50,10 +55,11 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     deleteCorruptedItem,
     metaXp,
     healParty,
+    purchasePotion,
     spendBankGold,
   } = useGameStore()
 
-  // Heal all heroes when the party setup screen is mounted
+  // Heal all heroes when the dungeon prep screen is mounted
   useEffect(() => {
     healParty()
   }, [healParty])
@@ -238,32 +244,29 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     onStart(floor)
   }
 
-  const handlePurchasePotion = (potion: Consumable, price: number) => {
-    if (spendBankGold(price)) {
-      moveItemToBank(potion)
-    }
+  const handlePurchasePotion = (potion: Consumable) => {
+    purchasePotion(potion)
   }
 
-  const handlePurchaseConsumable = (consumable: Consumable, price: number) => {
+  const handlePurchaseConsumable = (consumable: Consumable) => {
     // Check if bank is full
     if (bankInventory.length >= bankStorageSlots) {
       onBuySlotsOpen()
       return
     }
-    if (spendBankGold(price)) {
-      moveItemToBank(consumable)
-    }
+    purchasePotion(consumable)
   }
 
-  const handlePurchaseItem = (item: Item, price: number) => {
+  const handlePurchaseItem = (item: Item) => {
     // Check if bank is full
     if (bankInventory.length >= bankStorageSlots) {
       onBuySlotsOpen()
       return
     }
     
-    if (spendBankGold(price)) {
+    if (bankGold >= item.value) {
       moveItemToBank(item)
+      spendBankGold(item.value)
     }
   }
 
@@ -277,7 +280,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   }
 
   return (
-    <Box className="party-setup-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
+    <Box className="dungeon-prep-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
       {/* Header */}
       <PartySetupHeader
         bankGold={bankGold}
@@ -293,7 +296,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onOpenBank={handleOpenBank}
       />
 
-      <Flex className="party-setup-screen-content" flex={1} minH={0} overflow="hidden">
+      <Flex className="dungeon-prep-screen-content" flex={1} minH={0} overflow="hidden">
         {/* Left Sidebar */}
         <HeroSelectionSidebar
           tabIndex={tabIndex}
@@ -306,7 +309,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         />
 
         {/* Center - Party Slots */}
-        <Box className="party-setup-screen-center" flex={1} minW={0} minH={0} display="flex" flexDirection="column">
+        <Box className="dungeon-prep-screen-center" flex={1} minW={0} minH={0} display="flex" flexDirection="column">
           {isPortrait ? (
             // Portrait Layout - PartySummary outside scroll area
             <>
@@ -361,7 +364,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         </Box>
 
         {/* Right Sidebar - Equipment */}
-        {isPortrait? null : <EquipmentPanel
+        {isPortrait ? null : <EquipmentPanel
           selectedHeroIndex={selectedHeroIndex}
           party={party}
           bankInventory={bankInventory}

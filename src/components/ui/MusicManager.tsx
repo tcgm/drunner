@@ -31,7 +31,10 @@ export function MusicManager({ currentScreen }: { currentScreen: string }) {
   }, [currentScreen, dungeon.currentEvent?.type, dungeon.currentEvent?.isFinalBoss, dungeon.currentEvent?.isZoneBoss, dungeon.bossType])
 
   useEffect(() => {
-    if (!musicEnabled) return
+    if (!musicEnabled) {
+      console.log('[MusicManager] Music disabled, skipping context change for screen:', currentScreen)
+      return
+    }
 
     let newContext: MusicContext | null = null
 
@@ -42,6 +45,11 @@ export function MusicManager({ currentScreen }: { currentScreen: string }) {
         newContext = MusicContext.MAIN_MENU
         break
 
+      case 'town-hub':
+        newContext = MusicContext.TOWN
+        break
+
+      case 'dungeon-prep':
       case 'party-setup':
         newContext = MusicContext.PARTY_SCREEN
         break
@@ -72,6 +80,8 @@ export function MusicManager({ currentScreen }: { currentScreen: string }) {
       console.log('[MusicManager] Changing context to:', newContext)
       lastContextRef.current = newContext
       changeMusicContext(newContext)
+    } else if (!newContext) {
+      console.log('[MusicManager] No music context mapped for screen:', currentScreen)
     }
   }, [musicKey, changeMusicContext, musicEnabled, currentScreen, dungeon.currentEvent, dungeon.bossType])
 

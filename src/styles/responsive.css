@@ -53,7 +53,32 @@
   .chakra-modal__content {
     max-height: 95vh !important;
     max-width: 95vw !important;
-    margin: 2.5vh 2.5vw !important;
+    margin-top: 2.5vh !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Bank modal tabs – icon only in portrait */
+  .inventory-tab-list .bank-tab-label {
+    display: none;
+  }
+  .inventory-tab-list [role="tab"] {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    min-width: 0 !important;
+  }
+  .inventory-tab-list [role="tab"] svg {
+    margin-right: 0 !important;
+  }
+
+  /* Bank modal header – hide button text in portrait */
+  .bank-header-btn-label {
+    display: none;
+  }
+  .bank-header-btn {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    min-width: 0 !important;
   }
   
   /* Combat screen adjustments */

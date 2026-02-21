@@ -45,6 +45,17 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
     crossfadeDuration: 2000
   },
 
+  [MusicContext.TOWN]: {
+    context: MusicContext.TOWN,
+    tracks: [
+      // Add town-specific tracks here
+      // e.g. { name: 'Town Theme', path: townMusic1, volume: 0.75 }
+    ],
+    shuffle: true,
+    loop: 'all',
+    crossfadeDuration: 2000
+  },
+
   [MusicContext.PARTY_SCREEN]: {
     context: MusicContext.PARTY_SCREEN,
     tracks: [
@@ -275,6 +286,12 @@ export function getPlaylistForContext(context: MusicContext): MusicPlaylist {
     return getPlaylistForContext(MusicContext.DUNGEON_BOSS);
   }
   
+  // Town falls back to main menu
+  if (context === MusicContext.TOWN) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to MAIN_MENU`);
+    return getPlaylistForContext(MusicContext.MAIN_MENU);
+  }
+
   // No fallback available, return empty playlist
   return playlist;
 }

@@ -1,5 +1,5 @@
 import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon, Collapse, IconButton } from '@chakra-ui/react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
@@ -120,6 +120,20 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     }
   }
 
+  const getRelativeTime = useMemo(() => {
+    return (timestamp: number) => {
+      const diff = Date.now() - timestamp
+      const minutes = Math.floor(diff / 60000)
+      const hours = Math.floor(diff / 3600000)
+      const days = Math.floor(diff / 86400000)
+      
+      if (minutes < 1) return 'Just now'
+      if (minutes < 60) return `${minutes}m ago`
+      if (hours < 24) return `${hours}h ago`
+      return `${days}d ago`
+    }
+  }, [])
+
   const formatBackupDate = (key: string) => {
     const timestamp = parseInt(key.split('-').pop() || '0')
     const date = new Date(timestamp)
@@ -128,18 +142,6 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
       time: date.toLocaleTimeString(),
       relative: getRelativeTime(timestamp)
     }
-  }
-
-  const getRelativeTime = (timestamp: number) => {
-    const diff = Date.now() - timestamp
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days = Math.floor(diff / 86400000)
-    
-    if (minutes < 1) return 'Just now'
-    if (minutes < 60) return `${minutes}m ago`
-    if (hours < 24) return `${hours}h ago`
-    return `${days}d ago`
   }
 
   const handleExportSave = () => {
@@ -412,7 +414,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             transition="all 0.2s"
             leftIcon={<Icon as={GiCryptEntrance} boxSize={6} />}
           >
-            New Run
+            Town
           </Button>
           {hasActiveRun && (
             <Button 
@@ -498,7 +500,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
       </VStack>
 
       {/* Save Management Modal */}
-      <Modal className="save-management-modal" isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
+      <Modal id="save-management-modal" isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
         <ModalOverlay bg="blackAlpha.700" />
         <ModalContent className="save-management-content" bg="gray.800" maxW="clamp(400px, 70vw, 800px)">
           <ModalHeader className="save-management-header" color="orange.400" fontSize="2xl" pb={3}>

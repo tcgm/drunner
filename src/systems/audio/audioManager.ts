@@ -34,21 +34,29 @@ class AudioManager {
    * Setup listener for first user interaction to unlock audio
    */
   private setupAutoplayUnlock(): void {
-    const unlockAudio = () => {
+    const unlockAudio = async () => {
       console.log('[Audio] User interaction detected, unlocking audio');
-      
+
+      // Remove listeners immediately to prevent double-firing
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('keydown', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
+
       // If we have a pending context, play it now
       if (this.pendingContext) {
         console.log('[Audio] Playing pending music context:', this.pendingContext.context);
         const pending = this.pendingContext;
         this.pendingContext = null;
-        this.changeContext(pending);
+        await this.changeContext(pending);
+
+        // If changeContext blocked again (set pendingContext), re-register for next interaction
+        if (this.pendingContext) {
+          console.warn('[Audio] Autoplay still blocked after user interaction, re-registering unlock listeners');
+          document.addEventListener('click', unlockAudio);
+          document.addEventListener('keydown', unlockAudio);
+          document.addEventListener('touchstart', unlockAudio);
+        }
       }
-      
-      // Remove listeners after first interaction
-      document.removeEventListener('click', unlockAudio);
-      document.removeEventListener('keydown', unlockAudio);
-      document.removeEventListener('touchstart', unlockAudio);
     };
 
     document.addEventListener('click', unlockAudio);
