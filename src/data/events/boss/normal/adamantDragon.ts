@@ -15,7 +15,7 @@ export const ADAMANT_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Molten metal pierces your defenses! The dragon is impenetrable!',
             effects: [
-              { type: 'damage', target: 'all', value: 420 },
+              { type: 'damage', target: 'all', value: 3 },
               { type: 'xp', value: 1680 },
               { type: 'gold', value: 2520 },
               { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 33 },
@@ -27,7 +27,7 @@ export const ADAMANT_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Molten metal pierces your defenses! The dragon is impenetrable! One of its adamant scales falls, imbued with ancient power!',
             effects: [
-              { type: 'damage', target: 'all', value: 420 },
+              { type: 'damage', target: 'all', value: 3 },
               { type: 'xp', value: 1680 },
               { type: 'gold', value: 2520 },
               { 
@@ -54,7 +54,7 @@ export const ADAMANT_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You strike between the scales! Even adamant has gaps!',
             effects: [
-              { type: 'damage', target: 'strongest', value: 348 },
+              { type: 'damage', target: 'strongest', value: 2 },
               { type: 'xp', value: 1800 },
               { type: 'gold', value: 2700 },
               { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 43 },
@@ -66,7 +66,7 @@ export const ADAMANT_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You strike between the scales! Even adamant has gaps! The dying dragon leaves behind a legendary draconic relic!',
             effects: [
-              { type: 'damage', target: 'strongest', value: 348 },
+              { type: 'damage', target: 'strongest', value: 2 },
               { type: 'xp', value: 1800 },
               { type: 'gold', value: 2700 },
               { 
@@ -92,7 +92,7 @@ export const ADAMANT_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You reflect the metal shards! The dragon is destroyed by its own weapon!',
             effects: [
-              { type: 'damage', target: 'all', value: 362 },
+              { type: 'damage', target: 'all', value: 3 },
               { type: 'xp', value: 1825 },
               { type: 'gold', value: 2738 },
               { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 44 },
@@ -104,7 +104,7 @@ export const ADAMANT_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You reflect the metal shards! The dragon is destroyed by its own weapon! A fang infused with draconic magic remains!',
             effects: [
-              { type: 'damage', target: 'all', value: 362 },
+              { type: 'damage', target: 'all', value: 3 },
               { type: 'xp', value: 1825 },
               { type: 'gold', value: 2738 },
               { 

@@ -12,7 +12,7 @@ export const MEMORY_PHANTOM: DungeonEvent = {
       outcome: {
         text: 'Every regret returns! Lost memories cut deeper than any blade!',
         effects: [
-          { type: 'damage', target: 'all', value: 578 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2435 },
           { type: 'gold', value: 3653 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 47 },
@@ -28,7 +28,7 @@ export const MEMORY_PHANTOM: DungeonEvent = {
       outcome: {
         text: 'You embrace what was lost! The phantom finds peace!',
         effects: [
-          { type: 'damage', target: 'all', value: 505 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2565 },
           { type: 'gold', value: 3848 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 65 },
@@ -43,7 +43,7 @@ export const MEMORY_PHANTOM: DungeonEvent = {
       outcome: {
         text: 'Divine grace releases all pain! The phantom is freed!',
         effects: [
-          { type: 'damage', target: 'all', value: 518 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2590 },
           { type: 'gold', value: 3885 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 66 },

@@ -12,7 +12,7 @@ export const HARPY_QUEEN: DungeonEvent = {
       outcome: {
         text: 'Harpies attack from all sides! Their talons and songs overwhelm you!',
         effects: [
-          { type: 'damage', target: 'all', value: 285 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1110 },
           { type: 'gold', value: 1665 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 22 },
@@ -27,7 +27,7 @@ export const HARPY_QUEEN: DungeonEvent = {
       outcome: {
         text: 'Your arrow destroys her wing! Grounded, she\'s vulnerable!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 215 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 1230 },
           { type: 'gold', value: 1845 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 26 },
@@ -42,7 +42,7 @@ export const HARPY_QUEEN: DungeonEvent = {
       outcome: {
         text: 'Your melody drowns out hers! The flock flees in confusion!',
         effects: [
-          { type: 'damage', target: 'all', value: 205 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1260 },
           { type: 'gold', value: 1890 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 27 },

@@ -12,7 +12,7 @@ export const WAILING_BANSHEE: DungeonEvent = {
       outcome: {
         text: 'The banshee\'s scream pierces your soul! The psychic damage is excruciating!',
         effects: [
-          { type: 'damage', target: 'all', value: 72 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 312 },
           { type: 'gold', value: 412 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 13 },
@@ -27,7 +27,7 @@ export const WAILING_BANSHEE: DungeonEvent = {
       outcome: {
         text: 'Your melody soothes her torment! She fades away in peace!',
         effects: [
-          { type: 'damage', target: 'all', value: 44 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 365 },
           { type: 'gold', value: 475 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 17 },
@@ -43,7 +43,7 @@ export const WAILING_BANSHEE: DungeonEvent = {
       outcome: {
         text: 'You protect yourself from the wail! Unable to harm you, she dissipates!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 50 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 355 },
           { type: 'gold', value: 465 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 16 },

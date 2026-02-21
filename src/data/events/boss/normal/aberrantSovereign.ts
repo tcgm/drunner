@@ -12,7 +12,7 @@ export const ABERRANT_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'Your mind reels at impossible angles! Sanity slips away!',
         effects: [
-          { type: 'damage', target: 'random', value: 488 },
+          { type: 'damage', target: 'random', value: 4 },
           { type: 'xp', value: 1975 },
           { type: 'gold', value: 2963 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 39 },
@@ -28,7 +28,7 @@ export const ABERRANT_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'You refuse to perceive! What you don\'t see can\'t hurt you!',
         effects: [
-          { type: 'damage', target: 'all', value: 422 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2105 },
           { type: 'gold', value: 3158 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 52 },
@@ -43,7 +43,7 @@ export const ABERRANT_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'You attack without looking! Blind fury succeeds where sight fails!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 438 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2130 },
           { type: 'gold', value: 3195 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 53 },

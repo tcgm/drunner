@@ -12,7 +12,7 @@ export const CAVERN_BEHEMOTH: DungeonEvent = {
       outcome: {
         text: 'Walls close in! The floor erupts! The ceiling collapses! The dungeon attacks!',
         effects: [
-          { type: 'damage', target: 'all', value: 410 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1640 },
           { type: 'gold', value: 2460 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 32 },
@@ -28,7 +28,7 @@ export const CAVERN_BEHEMOTH: DungeonEvent = {
       outcome: {
         text: 'You sense its true body hidden within! You strike the vulnerable core!',
         effects: [
-          { type: 'damage', target: 'all', value: 342 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1760 },
           { type: 'gold', value: 2640 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 41 },
@@ -43,7 +43,7 @@ export const CAVERN_BEHEMOTH: DungeonEvent = {
       outcome: {
         text: 'You smash through walls and floor! Somewhere in the rubble, it dies!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 355 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1785 },
           { type: 'gold', value: 2678 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 42 },

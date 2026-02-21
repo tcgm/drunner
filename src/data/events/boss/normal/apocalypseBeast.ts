@@ -12,7 +12,7 @@ export const APOCALYPSE_BEAST: DungeonEvent = {
       outcome: {
         text: 'The apocalypse cannot be stopped! Everything dies!',
         effects: [
-          { type: 'damage', target: 'all', value: 665 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2755 },
           { type: 'gold', value: 4133 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 55 },
@@ -27,7 +27,7 @@ export const APOCALYPSE_BEAST: DungeonEvent = {
       outcome: {
         text: 'Hope defeats despair! Life conquers ending! The beast is sealed!',
         effects: [
-          { type: 'damage', target: 'all', value: 632 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2915 },
           { type: 'gold', value: 4373 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 77 },
@@ -43,7 +43,7 @@ export const APOCALYPSE_BEAST: DungeonEvent = {
       outcome: {
         text: 'Every end is a beginning! You embody rebirth! The beast becomes you!',
         effects: [
-          { type: 'damage', target: 'all', value: 645 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2945 },
           { type: 'gold', value: 4418 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 78 },

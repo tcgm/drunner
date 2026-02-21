@@ -12,7 +12,7 @@ export const OBSIDIAN_KNIGHT: DungeonEvent = {
       outcome: {
         text: 'The obsidian cuts like razors and burns like lava! Every strike wounds you!',
         effects: [
-          { type: 'damage', target: 'all', value: 176 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 698 },
           { type: 'gold', value: 1008 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -28,7 +28,7 @@ export const OBSIDIAN_KNIGHT: DungeonEvent = {
       outcome: {
         text: 'You strike with precision! The obsidian cracks and explodes!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 148 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 763 },
           { type: 'gold', value: 1088 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -43,7 +43,7 @@ export const OBSIDIAN_KNIGHT: DungeonEvent = {
       outcome: {
         text: 'Ice magic solidifies the lava! The knight becomes brittle and shatters!',
         effects: [
-          { type: 'damage', target: 'all', value: 138 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 783 },
           { type: 'gold', value: 1113 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 25 },

@@ -12,7 +12,7 @@ export const CAVE_TROLL_KING: DungeonEvent = {
       outcome: {
         text: 'The troll\'s strength is monstrous! Each swing of his club creates shockwaves!',
         effects: [
-          { type: 'damage', target: 'all', value: 180 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 705 },
           { type: 'gold', value: 1020 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 21 },
@@ -28,7 +28,7 @@ export const CAVE_TROLL_KING: DungeonEvent = {
       outcome: {
         text: 'You trigger a collapse! Tons of rock bury the troll!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 138 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 768 },
           { type: 'gold', value: 1098 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -43,7 +43,7 @@ export const CAVE_TROLL_KING: DungeonEvent = {
       outcome: {
         text: 'You match his savagery blow for blow! The king falls to a greater warrior!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 155 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 788 },
           { type: 'gold', value: 1118 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 25 },

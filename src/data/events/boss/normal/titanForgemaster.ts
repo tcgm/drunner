@@ -12,7 +12,7 @@ export const TITAN_FORGEMASTER: DungeonEvent = {
       outcome: {
         text: 'Each hammer strike levels mountains! The shockwaves devastate you!',
         effects: [
-          { type: 'damage', target: 'all', value: 330 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1220 },
           { type: 'gold', value: 1830 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 26 },
@@ -28,7 +28,7 @@ export const TITAN_FORGEMASTER: DungeonEvent = {
       outcome: {
         text: 'You destroy their weapon! Without the hammer, the titan falls!',
         effects: [
-          { type: 'damage', target: 'random', value: 275 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 1360 },
           { type: 'gold', value: 2040 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 31 },
@@ -43,7 +43,7 @@ export const TITAN_FORGEMASTER: DungeonEvent = {
       outcome: {
         text: 'The titan respects strength! They forge you a gift and let you pass!',
         effects: [
-          { type: 'damage', target: 'all', value: 180 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1400 },
           { type: 'gold', value: 2100 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 33 },

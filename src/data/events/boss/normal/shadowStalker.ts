@@ -12,7 +12,7 @@ export const SHADOW_STALKER: DungeonEvent = {
       outcome: {
         text: 'You swing wildly at the darkness, taking hits from unseen attacks!',
         effects: [
-          { type: 'damage', target: 'all', value: 32 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 190 },
           { type: 'gold', value: 270 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 10 },
@@ -27,7 +27,7 @@ export const SHADOW_STALKER: DungeonEvent = {
       outcome: {
         text: 'Your magical light reveals the shadow\'s true form! You strike it down!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 230 },
           { type: 'gold', value: 330 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 13 },
@@ -43,7 +43,7 @@ export const SHADOW_STALKER: DungeonEvent = {
       outcome: {
         text: 'You close your eyes and listen. Your strike lands perfectly!',
         effects: [
-          { type: 'damage', target: 'random', value: 24 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 220 },
           { type: 'gold', value: 310 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 12 },

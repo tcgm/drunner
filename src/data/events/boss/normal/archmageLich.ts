@@ -12,7 +12,7 @@ export const ARCHMAGE_LICH: DungeonEvent = {
       outcome: {
         text: 'Arcane energies of unimaginable power strike you! Reality itself bends to harm you!',
         effects: [
-          { type: 'damage', target: 'all', value: 188 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 725 },
           { type: 'gold', value: 1050 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 22 },
@@ -27,7 +27,7 @@ export const ARCHMAGE_LICH: DungeonEvent = {
       outcome: {
         text: 'You match spell for spell! In the end, your living magic overpowers undead sorcery!',
         effects: [
-          { type: 'damage', target: 'all', value: 145 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 795 },
           { type: 'gold', value: 1135 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 26 },
@@ -43,7 +43,7 @@ export const ARCHMAGE_LICH: DungeonEvent = {
       outcome: {
         text: 'You locate and destroy their soul vessel! The lich crumbles to dust!',
         effects: [
-          { type: 'damage', target: 'random', value: 158 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 815 },
           { type: 'gold', value: 1165 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 28 },

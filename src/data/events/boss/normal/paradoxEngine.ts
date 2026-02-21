@@ -12,7 +12,7 @@ export const PARADOX_ENGINE: DungeonEvent = {
       outcome: {
         text: 'Logic fails completely! Paradoxes compound! Reality screams!',
         effects: [
-          { type: 'damage', target: 'random', value: 632 },
+          { type: 'damage', target: 'random', value: 37 },
           { type: 'xp', value: 2620 },
           { type: 'gold', value: 3930 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 51 },
@@ -28,7 +28,7 @@ export const PARADOX_ENGINE: DungeonEvent = {
       outcome: {
         text: 'You think in paradoxes! The impossible becomes your weapon!',
         effects: [
-          { type: 'damage', target: 'all', value: 585 },
+          { type: 'damage', target: 'all', value: 49 },
           { type: 'xp', value: 2780 },
           { type: 'gold', value: 4170 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 71 },
@@ -43,7 +43,7 @@ export const PARADOX_ENGINE: DungeonEvent = {
       outcome: {
         text: 'Paradox or not, everything breaks when hit hard enough!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 598 },
+          { type: 'damage', target: 'strongest', value: 37 },
           { type: 'xp', value: 2810 },
           { type: 'gold', value: 4215 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 72 },

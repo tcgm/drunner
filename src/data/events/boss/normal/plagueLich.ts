@@ -12,7 +12,7 @@ export const PLAGUE_LICH: DungeonEvent = {
       outcome: {
         text: 'Disease magic withers you! The infection spreads with every breath!',
         effects: [
-          { type: 'damage', target: 'all', value: 462 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1900 },
           { type: 'gold', value: 2850 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 37 },
@@ -27,7 +27,7 @@ export const PLAGUE_LICH: DungeonEvent = {
       outcome: {
         text: 'Divine light cleanses all disease! The phylactery is destroyed!',
         effects: [
-          { type: 'damage', target: 'all', value: 395 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2030 },
           { type: 'gold', value: 3045 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 49 },
@@ -43,7 +43,7 @@ export const PLAGUE_LICH: DungeonEvent = {
       outcome: {
         text: 'Your fortitude cannot be infected! The lich\'s power fails!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 408 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2055 },
           { type: 'gold', value: 3083 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 50 },

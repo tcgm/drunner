@@ -12,7 +12,7 @@ export const MARTYRED_SAINT: DungeonEvent = {
       outcome: {
         text: 'Holy fire burns you even as necrotic energy drains your life!',
         effects: [
-          { type: 'damage', target: 'all', value: 308 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1165 },
           { type: 'gold', value: 1748 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 24 },
@@ -27,7 +27,7 @@ export const MARTYRED_SAINT: DungeonEvent = {
       outcome: {
         text: 'Your blessing finally allows them to rest! They thank you as they fade!',
         effects: [
-          { type: 'damage', target: 'all', value: 235 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1295 },
           { type: 'gold', value: 1943 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 29 },
@@ -43,7 +43,7 @@ export const MARTYRED_SAINT: DungeonEvent = {
       outcome: {
         text: 'You break through their conflicted defenses! Victory is yours!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 262 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1315 },
           { type: 'gold', value: 1973 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 30 },

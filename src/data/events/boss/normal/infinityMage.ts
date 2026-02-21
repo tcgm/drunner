@@ -12,7 +12,7 @@ export const INFINITY_MAGE: DungeonEvent = {
       outcome: {
         text: 'Spell after spell without end! You\'re buried under infinite power!',
         effects: [
-          { type: 'damage', target: 'all', value: 612 },
+          { type: 'damage', target: 'all', value: 24 },
           { type: 'xp', value: 2550 },
           { type: 'gold', value: 3825 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 50 },
@@ -27,7 +27,7 @@ export const INFINITY_MAGE: DungeonEvent = {
       outcome: {
         text: 'You tap your own infinite well! Endless power meets endless power!',
         effects: [
-          { type: 'damage', target: 'all', value: 558 },
+          { type: 'damage', target: 'all', value: 24 },
           { type: 'xp', value: 2710 },
           { type: 'gold', value: 4065 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 69 },
@@ -43,7 +43,7 @@ export const INFINITY_MAGE: DungeonEvent = {
       outcome: {
         text: 'You see the source! Sever the connection and infinity becomes zero!',
         effects: [
-          { type: 'damage', target: 'all', value: 572 },
+          { type: 'damage', target: 'all', value: 24 },
           { type: 'xp', value: 2740 },
           { type: 'gold', value: 4110 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 70 },

@@ -12,7 +12,7 @@ export const ELDER_HORROR: DungeonEvent = {
       outcome: {
         text: 'Sanity shatters! Your mind breaks under cosmic horror!',
         effects: [
-          { type: 'damage', target: 'all', value: 552 },
+          { type: 'damage', target: 'all', value: 11 },
           { type: 'xp', value: 2265 },
           { type: 'gold', value: 3398 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 45 },
@@ -28,7 +28,7 @@ export const ELDER_HORROR: DungeonEvent = {
       outcome: {
         text: 'You refuse to see! What you don\'t perceive cannot harm you!',
         effects: [
-          { type: 'damage', target: 'all', value: 492 },
+          { type: 'damage', target: 'all', value: 11 },
           { type: 'xp', value: 2395 },
           { type: 'gold', value: 3593 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 61 },
@@ -43,7 +43,7 @@ export const ELDER_HORROR: DungeonEvent = {
       outcome: {
         text: 'Sight is a weakness! You fight without looking and triumph!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 505 },
+          { type: 'damage', target: 'strongest', value: 8 },
           { type: 'xp', value: 2420 },
           { type: 'gold', value: 3630 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 62 },

@@ -12,7 +12,7 @@ export const WHIRLWIND_ASSASSIN: DungeonEvent = {
       outcome: {
         text: 'Blades strike from every direction! The whirlwind cuts you to ribbons!',
         effects: [
-          { type: 'damage', target: 'all', value: 170 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 685 },
           { type: 'gold', value: 995 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -27,7 +27,7 @@ export const WHIRLWIND_ASSASSIN: DungeonEvent = {
       outcome: {
         text: 'Your magic creates a zone of calm! Without wind, the assassin is helpless!',
         effects: [
-          { type: 'damage', target: 'all', value: 135 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 752 },
           { type: 'gold', value: 1072 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 23 },
@@ -42,7 +42,7 @@ export const WHIRLWIND_ASSASSIN: DungeonEvent = {
       outcome: {
         text: 'You time your strike perfectly and hit the center of the vortex!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 142 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 778 },
           { type: 'gold', value: 1108 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 25 },

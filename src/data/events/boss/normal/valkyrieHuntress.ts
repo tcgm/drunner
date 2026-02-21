@@ -12,7 +12,7 @@ export const VALKYRIE_HUNTRESS: DungeonEvent = {
       outcome: {
         text: 'Her aerial attacks and divine power are overwhelming! She strikes from every angle!',
         effects: [
-          { type: 'damage', target: 'all', value: 146 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 505 },
           { type: 'gold', value: 665 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -28,7 +28,7 @@ export const VALKYRIE_HUNTRESS: DungeonEvent = {
       outcome: {
         text: 'You destroy her wings! Without flight, she\'s much more vulnerable!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 113 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 550 },
           { type: 'gold', value: 725 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -43,7 +43,7 @@ export const VALKYRIE_HUNTRESS: DungeonEvent = {
       outcome: {
         text: 'You fight with such honor that she yields! She grants you a warrior\'s blessing!',
         effects: [
-          { type: 'damage', target: 'all', value: 95 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 560 },
           { type: 'gold', value: 740 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 26 },

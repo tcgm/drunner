@@ -12,7 +12,7 @@ export const MIND_FLAYER: DungeonEvent = {
       outcome: {
         text: 'The mind flayer\'s psychic assault is overwhelming! Your thoughts turn against you!',
         effects: [
-          { type: 'damage', target: 'all', value: 138 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 495 },
           { type: 'gold', value: 645 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 19 },
@@ -28,7 +28,7 @@ export const MIND_FLAYER: DungeonEvent = {
       outcome: {
         text: 'Your mind is an impenetrable fortress! The flayer recoils in shock!',
         effects: [
-          { type: 'damage', target: 'random', value: 102 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 538 },
           { type: 'gold', value: 703 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 23 },
@@ -43,7 +43,7 @@ export const MIND_FLAYER: DungeonEvent = {
       outcome: {
         text: 'Your quick blades slice off its tentacles! It can\'t fight or use psionics!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 95 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 533 },
           { type: 'gold', value: 698 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 22 },

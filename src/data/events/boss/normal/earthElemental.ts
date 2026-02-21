@@ -12,7 +12,7 @@ export const EARTH_ELEMENTAL: DungeonEvent = {
       outcome: {
         text: 'Your weapons chip away at the stone, but it\'s slow going!',
         effects: [
-          { type: 'damage', target: 'all', value: 34 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 165 },
           { type: 'gold', value: 230 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 8 },
@@ -28,7 +28,7 @@ export const EARTH_ELEMENTAL: DungeonEvent = {
       outcome: {
         text: 'You spot the glowing core! One precise strike and it crumbles!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 23 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 210 },
           { type: 'gold', value: 290 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 11 },

@@ -12,7 +12,7 @@ export const GIANT_SLIME: DungeonEvent = {
       outcome: {
         text: 'Your weapons cut through the slime, but it reforms slowly. Victory is yours!',
         effects: [
-          { type: 'damage', target: 'all', value: 14 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 115 },
           { type: 'gold', value: 145 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 5 },
@@ -28,7 +28,7 @@ export const GIANT_SLIME: DungeonEvent = {
       outcome: {
         text: 'You find a weak spot! The slime freezes and shatters into pieces!',
         effects: [
-          { type: 'damage', target: 'random', value: 9 },
+          { type: 'damage', target: 'random', value: 6 },
           { type: 'xp', value: 145 },
           { type: 'gold', value: 175 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 7 },
@@ -43,7 +43,7 @@ export const GIANT_SLIME: DungeonEvent = {
       outcome: {
         text: 'Your flames evaporate the slime instantly! Nothing but steam remains!',
         effects: [
-          { type: 'damage', target: 'all', value: 6 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 155 },
           { type: 'gold', value: 195 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 9 },

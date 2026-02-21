@@ -12,7 +12,7 @@ export const JUGGERNAUT_PRIME: DungeonEvent = {
       outcome: {
         text: 'Futile! It crushes through all resistance! The unstoppable cannot stop!',
         effects: [
-          { type: 'damage', target: 'all', value: 685 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2825 },
           { type: 'gold', value: 4238 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 56 },
@@ -28,7 +28,7 @@ export const JUGGERNAUT_PRIME: DungeonEvent = {
       outcome: {
         text: 'Unstoppable meets immovable! The paradox destroys the juggernaut!',
         effects: [
-          { type: 'damage', target: 'all', value: 658 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2985 },
           { type: 'gold', value: 4478 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 79 },
@@ -44,7 +44,7 @@ export const JUGGERNAUT_PRIME: DungeonEvent = {
       outcome: {
         text: 'You channel its momentum! The juggernaut destroys itself!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 672 },
+          { type: 'damage', target: 'strongest', value: 36 },
           { type: 'xp', value: 3015 },
           { type: 'gold', value: 4523 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 80 },

@@ -12,7 +12,7 @@ export const RUST_MONSTER_ALPHA: DungeonEvent = {
       outcome: {
         text: 'Your weapons and armor crumble as you fight! You\'re left nearly defenseless!',
         effects: [
-          { type: 'damage', target: 'all', value: 132 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 480 },
           { type: 'gold', value: 630 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 18 },
@@ -27,7 +27,7 @@ export const RUST_MONSTER_ALPHA: DungeonEvent = {
       outcome: {
         text: 'Spells bypass the rust! You destroy it from afar!',
         effects: [
-          { type: 'damage', target: 'all', value: 85 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 525 },
           { type: 'gold', value: 690 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 22 },
@@ -43,7 +43,7 @@ export const RUST_MONSTER_ALPHA: DungeonEvent = {
       outcome: {
         text: 'You use stone and wood! The creature can\'t corrode non-metal weapons!',
         effects: [
-          { type: 'damage', target: 'random', value: 92 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 515 },
           { type: 'gold', value: 675 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 21 },

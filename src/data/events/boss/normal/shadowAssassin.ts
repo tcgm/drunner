@@ -12,7 +12,7 @@ export const SHADOW_ASSASSIN: DungeonEvent = {
             outcome: {
                 text: 'You weather the assassin\'s relentless assault, landing careful counterblows!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 38 },
+                    { type: 'damage', target: 'all', value: 2 },
                     { type: 'xp', value: 210 },
                     { type: 'gold', value: 270 },
                     { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 6 },
@@ -28,7 +28,7 @@ export const SHADOW_ASSASSIN: DungeonEvent = {
             outcome: {
                 text: 'You predict their movements and strike at the perfect moment!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 28 },
+                    { type: 'damage', target: 'all', value: 2 },
                     { type: 'xp', value: 260 },
                     { type: 'gold', value: 320 },
                     { type: 'item', itemType: 'accessory1', minRarity: 'rare', rarityBoost: 10 },
@@ -43,7 +43,7 @@ export const SHADOW_ASSASSIN: DungeonEvent = {
             outcome: {
                 text: 'You engage in a deadly dance of blades, emerging victorious!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 25 },
+                    { type: 'damage', target: 'all', value: 2 },
                     { type: 'xp', value: 270 },
                     { type: 'gold', value: 340 },
                     { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 12 },
@@ -55,7 +55,7 @@ export const SHADOW_ASSASSIN: DungeonEvent = {
             outcome: {
                 text: 'You retreat, but the assassin lands several strikes before vanishing.',
                 effects: [
-                    { type: 'damage', target: 'random', value: 25 },
+                    { type: 'damage', target: 'random', value: 2 },
                     { type: 'xp', value: 55 },
                 ],
             },

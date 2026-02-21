@@ -12,7 +12,7 @@ export const INFERNAL_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'Hellfire and steel combine in a devastating assault! You\'re seared and battered!',
         effects: [
-          { type: 'damage', target: 'all', value: 134 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 488 },
           { type: 'gold', value: 638 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 19 },
@@ -27,7 +27,7 @@ export const INFERNAL_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'Your divine authority sends it back to the Nine Hells!',
         effects: [
-          { type: 'damage', target: 'all', value: 88 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 532 },
           { type: 'gold', value: 697 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 23 },
@@ -43,7 +43,7 @@ export const INFERNAL_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'You find weak points in the hellforged plate! Critical strikes bring it down!',
         effects: [
-          { type: 'damage', target: 'random', value: 98 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 527 },
           { type: 'gold', value: 692 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 22 },

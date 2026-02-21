@@ -12,7 +12,7 @@ export const WEB_WEAVER: DungeonEvent = {
       outcome: {
         text: 'You become entangled! The spider wraps you in silk as venom courses through you!',
         effects: [
-          { type: 'damage', target: 'all', value: 120 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 465 },
           { type: 'gold', value: 615 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 17 },
@@ -27,7 +27,7 @@ export const WEB_WEAVER: DungeonEvent = {
       outcome: {
         text: 'Flames consume the web! The spider falls and you finish it!',
         effects: [
-          { type: 'damage', target: 'all', value: 82 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 510 },
           { type: 'gold', value: 670 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 21 },
@@ -43,7 +43,7 @@ export const WEB_WEAVER: DungeonEvent = {
       outcome: {
         text: 'You find the structural weak points! The web collapses on the spider!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 88 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 500 },
           { type: 'gold', value: 660 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 20 },

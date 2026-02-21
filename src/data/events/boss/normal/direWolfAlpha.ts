@@ -12,7 +12,7 @@ export const DIRE_WOLF_ALPHA: DungeonEvent = {
       outcome: {
         text: 'Wolves attack from all sides! You take down several but suffer many bites!',
         effects: [
-          { type: 'damage', target: 'all', value: 31 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 190 },
           { type: 'gold', value: 280 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 10 },
@@ -27,7 +27,7 @@ export const DIRE_WOLF_ALPHA: DungeonEvent = {
       outcome: {
         text: 'You understand pack dynamics! Kill the alpha and the pack scatters!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 19 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 235 },
           { type: 'gold', value: 335 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 13 },
@@ -43,7 +43,7 @@ export const DIRE_WOLF_ALPHA: DungeonEvent = {
       outcome: {
         text: 'You stand your ground! The wolves sense your strength and retreat!',
         effects: [
-          { type: 'damage', target: 'all', value: 15 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 225 },
           { type: 'gold', value: 325 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 12 },

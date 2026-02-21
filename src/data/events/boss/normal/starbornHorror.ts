@@ -12,7 +12,7 @@ export const STARBORN_HORROR: DungeonEvent = {
       outcome: {
         text: 'Cosmic forces assault you! Gravity crushes as starlight burns!',
         effects: [
-          { type: 'damage', target: 'all', value: 192 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 735 },
           { type: 'gold', value: 1065 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 22 },
@@ -27,7 +27,7 @@ export const STARBORN_HORROR: DungeonEvent = {
       outcome: {
         text: 'You cast it back into the void between stars! It screams as it\'s pulled away!',
         effects: [
-          { type: 'damage', target: 'all', value: 150 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 810 },
           { type: 'gold', value: 1160 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 27 },
@@ -43,7 +43,7 @@ export const STARBORN_HORROR: DungeonEvent = {
       outcome: {
         text: 'You stand firm against impossible forces! It exhausts its power!',
         effects: [
-          { type: 'damage', target: 'all', value: 162 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 830 },
           { type: 'gold', value: 1185 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 29 },

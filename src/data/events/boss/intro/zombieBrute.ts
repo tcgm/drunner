@@ -12,7 +12,7 @@ export const ZOMBIE_BRUTE: DungeonEvent = {
       outcome: {
         text: 'You hack away at the zombie, avoiding its massive fists. It falls apart!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 135 },
           { type: 'gold', value: 165 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 7 },
@@ -28,7 +28,7 @@ export const ZOMBIE_BRUTE: DungeonEvent = {
       outcome: {
         text: 'You weather its slow attacks and methodically take it down!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 15 },
+          { type: 'damage', target: 'weakest', value: 6 },
           { type: 'xp', value: 165 },
           { type: 'gold', value: 195 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 9 },
@@ -43,7 +43,7 @@ export const ZOMBIE_BRUTE: DungeonEvent = {
       outcome: {
         text: 'Your holy power forces the zombie to crumble into dust instantly!',
         effects: [
-          { type: 'damage', target: 'all', value: 9 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 175 },
           { type: 'gold', value: 215 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 12 },

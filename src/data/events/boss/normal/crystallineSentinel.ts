@@ -12,7 +12,7 @@ export const CRYSTALLINE_SENTINEL: DungeonEvent = {
       outcome: {
         text: 'You hammer away at the crystal, each blow sending cracks spreading through its form!',
         effects: [
-          { type: 'damage', target: 'all', value: 210 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 850 },
           { type: 'gold', value: 1250 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 18 },
@@ -28,7 +28,7 @@ export const CRYSTALLINE_SENTINEL: DungeonEvent = {
       outcome: {
         text: 'You discover the exact resonance frequency! The sentinel vibrates itself apart!',
         effects: [
-          { type: 'damage', target: 'all', value: 140 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1000 },
           { type: 'gold', value: 1450 },
           { type: 'item', itemType: 'accessory1', minRarity: 'epic', rarityBoost: 26 },
@@ -40,7 +40,7 @@ export const CRYSTALLINE_SENTINEL: DungeonEvent = {
       outcome: {
         text: 'Your spells interfere with its crystalline structure, causing it to crack and eventually shatter!',
         effects: [
-          { type: 'damage', target: 'all', value: 175 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 900 },
           { type: 'gold', value: 1300 },
           { type: 'item', itemType: 'helmet', minRarity: 'epic', rarityBoost: 20 },

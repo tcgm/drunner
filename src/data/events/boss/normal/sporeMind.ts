@@ -12,7 +12,7 @@ export const SPORE_MIND: DungeonEvent = {
       outcome: {
         text: 'The spores infiltrate your mind! You struggle against your own possession!',
         effects: [
-          { type: 'damage', target: 'random', value: 390 },
+          { type: 'damage', target: 'random', value: 3 },
           { type: 'xp', value: 1595 },
           { type: 'gold', value: 2393 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 31 },
@@ -28,7 +28,7 @@ export const SPORE_MIND: DungeonEvent = {
       outcome: {
         text: 'Your mind is too strong! The spores cannot take root!',
         effects: [
-          { type: 'damage', target: 'all', value: 318 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1710 },
           { type: 'gold', value: 2565 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 38 },
@@ -43,7 +43,7 @@ export const SPORE_MIND: DungeonEvent = {
       outcome: {
         text: 'Magical fire consumes the entire hivemind! The spore mind dies!',
         effects: [
-          { type: 'damage', target: 'all', value: 332 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1730 },
           { type: 'gold', value: 2595 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 39 },

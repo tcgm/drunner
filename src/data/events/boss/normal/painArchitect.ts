@@ -12,7 +12,7 @@ export const PAIN_ARCHITECT: DungeonEvent = {
       outcome: {
         text: 'Agony beyond description! Pain becomes your entire world!',
         effects: [
-          { type: 'damage', target: 'all', value: 452 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1870 },
           { type: 'gold', value: 2805 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 37 },
@@ -28,7 +28,7 @@ export const PAIN_ARCHITECT: DungeonEvent = {
       outcome: {
         text: 'You separate mind from body! Pain becomes meaningless!',
         effects: [
-          { type: 'damage', target: 'all', value: 385 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2000 },
           { type: 'gold', value: 3000 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 47 },
@@ -43,7 +43,7 @@ export const PAIN_ARCHITECT: DungeonEvent = {
       outcome: {
         text: 'Pain fuels your rage! You use suffering as a weapon!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 398 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2025 },
           { type: 'gold', value: 3038 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 48 },

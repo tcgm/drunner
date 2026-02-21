@@ -12,7 +12,7 @@ export const VOID_WYRM: DungeonEvent = {
       outcome: {
         text: 'Parts of you cease to exist! The void breath unmakes reality!',
         effects: [
-          { type: 'damage', target: 'random', value: 448 },
+          { type: 'damage', target: 'random', value: 4 },
           { type: 'xp', value: 1860 },
           { type: 'gold', value: 2790 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 36 },
@@ -28,7 +28,7 @@ export const VOID_WYRM: DungeonEvent = {
       outcome: {
         text: 'Your sense of self is too strong to erase! The wyrm cannot unmake you!',
         effects: [
-          { type: 'damage', target: 'all', value: 382 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1990 },
           { type: 'gold', value: 2985 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 47 },
@@ -43,7 +43,7 @@ export const VOID_WYRM: DungeonEvent = {
       outcome: {
         text: 'You interrupt the breath! The wyrm chokes on its own void!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 395 },
+          { type: 'damage', target: 'weakest', value: 4 },
           { type: 'xp', value: 2015 },
           { type: 'gold', value: 3023 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 48 },

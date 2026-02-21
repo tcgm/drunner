@@ -12,7 +12,7 @@ export const HURRICANE_PRINCE: DungeonEvent = {
       outcome: {
         text: 'The hurricane tears you apart! Wind blades cut from every direction!',
         effects: [
-          { type: 'damage', target: 'all', value: 435 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1820 },
           { type: 'gold', value: 2730 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 35 },
@@ -27,7 +27,7 @@ export const HURRICANE_PRINCE: DungeonEvent = {
       outcome: {
         text: 'You command absolute calm! Without wind, the prince fades!',
         effects: [
-          { type: 'damage', target: 'all', value: 365 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1950 },
           { type: 'gold', value: 2925 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 45 },
@@ -43,7 +43,7 @@ export const HURRICANE_PRINCE: DungeonEvent = {
       outcome: {
         text: 'You reach the calm center and strike! The hurricane collapses!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 378 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 1975 },
           { type: 'gold', value: 2963 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 46 },

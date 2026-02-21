@@ -15,7 +15,7 @@ export const PLAGUE_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Plague and poison overwhelm you! Every breath brings more infection!',
             effects: [
-              { type: 'damage', target: 'all', value: 315 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1185 },
               { type: 'gold', value: 1778 },
               { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 24 },
@@ -27,7 +27,7 @@ export const PLAGUE_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Plague and poison overwhelm you! Every breath brings more infection! Beneath the rot, you find an untainted draconic artifact!',
             effects: [
-              { type: 'damage', target: 'all', value: 315 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1185 },
               { type: 'gold', value: 1778 },
               { 
@@ -53,7 +53,7 @@ export const PLAGUE_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Holy magic cleanses the corruption! The dragon is freed from suffering!',
             effects: [
-              { type: 'damage', target: 'all', value: 240 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1305 },
               { type: 'gold', value: 1958 },
               { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 29 },
@@ -65,7 +65,7 @@ export const PLAGUE_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Holy magic cleanses the corruption! The dragon is freed from suffering! In gratitude, its spirit grants you a draconic treasure!',
             effects: [
-              { type: 'damage', target: 'all', value: 240 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1305 },
               { type: 'gold', value: 1958 },
               { 
@@ -92,7 +92,7 @@ export const PLAGUE_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Immunity protects you! You slay the dragon without harm!',
             effects: [
-              { type: 'damage', target: 'all', value: 255 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1325 },
               { type: 'gold', value: 1988 },
               { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 30 },
@@ -104,7 +104,7 @@ export const PLAGUE_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Immunity protects you! You slay the dragon without harm! Among the plague, a draconic relic remains pristine!',
             effects: [
-              { type: 'damage', target: 'all', value: 255 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1325 },
               { type: 'gold', value: 1988 },
               { 

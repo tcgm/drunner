@@ -12,7 +12,7 @@ export const OMEGA_ENTITY: DungeonEvent = {
       outcome: {
         text: 'The ultimate power! Every ability, every strength, pushed to absolute limits!',
         effects: [
-          { type: 'damage', target: 'all', value: 678 },
+          { type: 'damage', target: 'all', value: 47 },
           { type: 'xp', value: 2800 },
           { type: 'gold', value: 4200 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 56 },
@@ -28,7 +28,7 @@ export const OMEGA_ENTITY: DungeonEvent = {
       outcome: {
         text: 'You exceed the omega! There is always something beyond!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 652 },
+          { type: 'damage', target: 'strongest', value: 35 },
           { type: 'xp', value: 2975 },
           { type: 'gold', value: 4463 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 79 },
@@ -44,7 +44,7 @@ export const OMEGA_ENTITY: DungeonEvent = {
       outcome: {
         text: 'You become omega! The final form is yours!',
         effects: [
-          { type: 'damage', target: 'all', value: 665 },
+          { type: 'damage', target: 'all', value: 47 },
           { type: 'xp', value: 3000 },
           { type: 'gold', value: 4500 },
           { type: 'item', itemType: 'armor', minRarity: 'mythic', rarityBoost: 80 },

@@ -12,7 +12,7 @@ export const CLOCKWORK_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'Countless constructs swarm you while the emperor coordinates the assault!',
         effects: [
-          { type: 'damage', target: 'all', value: 320 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1200 },
           { type: 'gold', value: 1800 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 25 },
@@ -27,7 +27,7 @@ export const CLOCKWORK_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'You infiltrate its command systems! The emperor shuts down!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 245 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 1310 },
           { type: 'gold', value: 1965 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 30 },
@@ -43,7 +43,7 @@ export const CLOCKWORK_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'You fight through to its power source! One strike ends the machine age!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 270 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1350 },
           { type: 'gold', value: 2025 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 31 },

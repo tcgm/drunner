@@ -12,7 +12,7 @@ export const DUALIST_ELEMENTAL: DungeonEvent = {
       outcome: {
         text: 'Burning and freezing simultaneously! Your body cannot survive both!',
         effects: [
-          { type: 'damage', target: 'all', value: 468 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1915 },
           { type: 'gold', value: 2873 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 38 },
@@ -27,7 +27,7 @@ export const DUALIST_ELEMENTAL: DungeonEvent = {
       outcome: {
         text: 'You split them apart! Alone, each half is manageable!',
         effects: [
-          { type: 'damage', target: 'all', value: 405 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2045 },
           { type: 'gold', value: 3068 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 49 },
@@ -43,7 +43,7 @@ export const DUALIST_ELEMENTAL: DungeonEvent = {
       outcome: {
         text: 'You resist both elements! Your fortitude is unbreakable!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 418 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2070 },
           { type: 'gold', value: 3105 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 50 },

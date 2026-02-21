@@ -12,7 +12,7 @@ export const DIMENSION_RIPPER: DungeonEvent = {
       outcome: {
         text: 'It strikes from impossible directions! You cannot defend angles you cannot perceive!',
         effects: [
-          { type: 'damage', target: 'random', value: 518 },
+          { type: 'damage', target: 'random', value: 8 },
           { type: 'xp', value: 2145 },
           { type: 'gold', value: 3218 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 41 },
@@ -28,7 +28,7 @@ export const DIMENSION_RIPPER: DungeonEvent = {
       outcome: {
         text: 'You expand your awareness! Now you can strike back!',
         effects: [
-          { type: 'damage', target: 'all', value: 452 },
+          { type: 'damage', target: 'all', value: 11 },
           { type: 'xp', value: 2275 },
           { type: 'gold', value: 3413 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 56 },
@@ -43,7 +43,7 @@ export const DIMENSION_RIPPER: DungeonEvent = {
       outcome: {
         text: 'You fold space! All dimensions become one! The ripper is trapped!',
         effects: [
-          { type: 'damage', target: 'all', value: 465 },
+          { type: 'damage', target: 'all', value: 11 },
           { type: 'xp', value: 2300 },
           { type: 'gold', value: 3450 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 57 },

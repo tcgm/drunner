@@ -12,7 +12,7 @@ export const VAMPIRE_LORD: DungeonEvent = {
       outcome: {
         text: 'The vampire moves with supernatural speed! He drains your blood as you fight!',
         effects: [
-          { type: 'damage', target: 'all', value: 38 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 205 },
           { type: 'gold', value: 295 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 11 },
@@ -27,7 +27,7 @@ export const VAMPIRE_LORD: DungeonEvent = {
       outcome: {
         text: 'The blessed water burns like acid! The vampire shrieks and crumbles to ash!',
         effects: [
-          { type: 'damage', target: 'all', value: 24 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 245 },
           { type: 'gold', value: 345 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 14 },
@@ -43,7 +43,7 @@ export const VAMPIRE_LORD: DungeonEvent = {
       outcome: {
         text: 'In one perfect strike, you pierce his heart! He dissolves into mist!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 28 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 235 },
           { type: 'gold', value: 335 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 13 },

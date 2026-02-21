@@ -29,7 +29,7 @@ export const BERSERKER_KING: DungeonEvent = {
       outcome: {
         text: 'You trade devastating blows! His berserker rage makes him nearly unstoppable!',
         effects: [
-          { type: 'damage', target: 'all', value: 142 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 505 },
           { type: 'gold', value: 655 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -45,7 +45,7 @@ export const BERSERKER_KING: DungeonEvent = {
       outcome: {
         text: 'You exploit openings in his wild attacks! Precision defeats fury!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 108 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 545 },
           { type: 'gold', value: 715 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -60,7 +60,7 @@ export const BERSERKER_KING: DungeonEvent = {
       outcome: {
         text: 'You match his rage with your own! A clash of titans ends in your favor!',
         effects: [
-          { type: 'damage', target: 'all', value: 115 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 550 },
           { type: 'gold', value: 725 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 25 },

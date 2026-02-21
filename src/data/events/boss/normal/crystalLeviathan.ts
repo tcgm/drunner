@@ -12,7 +12,7 @@ export const CRYSTAL_LEVIATHAN: DungeonEvent = {
       outcome: {
         text: 'Rainbows of death! Each color burns differently!',
         effects: [
-          { type: 'damage', target: 'random', value: 475 },
+          { type: 'damage', target: 'random', value: 4 },
           { type: 'xp', value: 1940 },
           { type: 'gold', value: 2910 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 38 },
@@ -28,7 +28,7 @@ export const CRYSTAL_LEVIATHAN: DungeonEvent = {
       outcome: {
         text: 'You strike the weak point! The leviathan shatters into a thousand shards!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 412 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2070 },
           { type: 'gold', value: 3105 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 51 },
@@ -43,7 +43,7 @@ export const CRYSTAL_LEVIATHAN: DungeonEvent = {
       outcome: {
         text: 'You redirect the beams! The leviathan is destroyed by its own light!',
         effects: [
-          { type: 'damage', target: 'all', value: 425 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2095 },
           { type: 'gold', value: 3143 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 52 },

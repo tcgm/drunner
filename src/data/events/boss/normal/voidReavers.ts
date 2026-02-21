@@ -12,7 +12,7 @@ export const VOID_REAVERS: DungeonEvent = {
       outcome: {
         text: 'You divide your attention between the three entities, suffering wounds from all sides before finally overwhelming them!',
         effects: [
-          { type: 'damage', target: 'all', value: 420 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1750 },
           { type: 'gold', value: 2600 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 30 },
@@ -27,7 +27,7 @@ export const VOID_REAVERS: DungeonEvent = {
       successOutcome: {
         text: 'You sever the connection binding them! Without their unity, they collapse into harmless void energy!',
         effects: [
-          { type: 'damage', target: 'random', value: 240 },
+          { type: 'damage', target: 'random', value: 4 },
           { type: 'xp', value: 2100 },
           { type: 'gold', value: 3000 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 40 },
@@ -37,7 +37,7 @@ export const VOID_REAVERS: DungeonEvent = {
       failureOutcome: {
         text: 'Your attempt fails and they channel their combined power directly at you!',
         effects: [
-          { type: 'damage', target: 'all', value: 540 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1500 },
           { type: 'gold', value: 2200 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 22 },
@@ -52,7 +52,7 @@ export const VOID_REAVERS: DungeonEvent = {
       outcome: {
         text: 'Your divine radiance proves to be the antithesis of their void nature! They are banished from reality!',
         effects: [
-          { type: 'damage', target: 'all', value: 330 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'heal', target: 'all', value: 90 },
           { type: 'xp', value: 1950 },
           { type: 'gold', value: 2800 },

@@ -12,7 +12,7 @@ export const RABID_WOLF: DungeonEvent = {
       outcome: {
         text: 'You block the wolf\'s attacks and strike back. It\'s a tough fight!',
         effects: [
-          { type: 'damage', target: 'all', value: 16 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 125 },
           { type: 'gold', value: 155 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 5 },
@@ -28,7 +28,7 @@ export const RABID_WOLF: DungeonEvent = {
       outcome: {
         text: 'Your defense holds strong! The wolf exhausts itself against your guard!',
         effects: [
-          { type: 'damage', target: 'all', value: 11 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 155 },
           { type: 'gold', value: 185 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 7 },

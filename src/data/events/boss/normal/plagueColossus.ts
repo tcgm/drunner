@@ -12,7 +12,7 @@ export const PLAGUE_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'Disease ravages your body! The colossus spreads plague with every movement!',
         effects: [
-          { type: 'damage', target: 'all', value: 378 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1550 },
           { type: 'gold', value: 2325 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 30 },
@@ -27,7 +27,7 @@ export const PLAGUE_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'Your divine power cleanses the plague! The colossus crumbles!',
         effects: [
-          { type: 'damage', target: 'all', value: 305 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1670 },
           { type: 'gold', value: 2505 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 36 },
@@ -43,7 +43,7 @@ export const PLAGUE_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'You destroy it before the disease takes hold! Victory!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 318 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1690 },
           { type: 'gold', value: 2535 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 37 },

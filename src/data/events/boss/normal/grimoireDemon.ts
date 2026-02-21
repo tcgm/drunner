@@ -12,7 +12,7 @@ export const GRIMOIRE_DEMON: DungeonEvent = {
       outcome: {
         text: 'Page after page of devastation! Spells beyond mortal comprehension!',
         effects: [
-          { type: 'damage', target: 'all', value: 442 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1840 },
           { type: 'gold', value: 2760 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 36 },
@@ -27,7 +27,7 @@ export const GRIMOIRE_DEMON: DungeonEvent = {
       outcome: {
         text: 'You counter spell after spell! The grimoire exhausts its pages!',
         effects: [
-          { type: 'damage', target: 'all', value: 372 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1970 },
           { type: 'gold', value: 2955 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 46 },
@@ -43,7 +43,7 @@ export const GRIMOIRE_DEMON: DungeonEvent = {
       outcome: {
         text: 'You rip the grimoire apart! No pages, no spells!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 385 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 1995 },
           { type: 'gold', value: 2993 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 47 },

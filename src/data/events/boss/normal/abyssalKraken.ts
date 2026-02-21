@@ -12,7 +12,7 @@ export const ABYSSAL_KRAKEN: DungeonEvent = {
       outcome: {
         text: 'You slash through tentacle after tentacle, but each severed limb regenerates rapidly!',
         effects: [
-          { type: 'damage', target: 'all', value: 200 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 600 },
           { type: 'gold', value: 850 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 16 },
@@ -28,7 +28,7 @@ export const ABYSSAL_KRAKEN: DungeonEvent = {
       outcome: {
         text: 'You break through the tentacles and strike at its vulnerable head! The kraken thrashes wildly before going still!',
         effects: [
-          { type: 'damage', target: 'all', value: 150 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 750 },
           { type: 'gold', value: 1000 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 22 },
@@ -43,7 +43,7 @@ export const ABYSSAL_KRAKEN: DungeonEvent = {
       outcome: {
         text: 'You turn the water against the kraken, creating crushing pressure that implodes the beast!',
         effects: [
-          { type: 'damage', target: 'all', value: 125 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 800 },
           { type: 'gold', value: 1100 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -55,7 +55,7 @@ export const ABYSSAL_KRAKEN: DungeonEvent = {
       outcome: {
         text: 'The kraken\'s tentacles wrap around you, squeezing with bone-crushing force!',
         effects: [
-          { type: 'damage', target: 'random', value: 175 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 150 },
         ],
       },

@@ -12,7 +12,7 @@ export const GIANT_BAT: DungeonEvent = {
       outcome: {
         text: 'You time your attack perfectly and wound the bat as it swoops past!',
         effects: [
-          { type: 'damage', target: 'all', value: 17 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 125 },
           { type: 'gold', value: 155 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 6 },
@@ -28,7 +28,7 @@ export const GIANT_BAT: DungeonEvent = {
       outcome: {
         text: 'You weave past its attacks and land critical strikes! The bat falls!',
         effects: [
-          { type: 'damage', target: 'fastest', value: 11 },
+          { type: 'damage', target: 'fastest', value: 6 },
           { type: 'xp', value: 155 },
           { type: 'gold', value: 185 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 8 },

@@ -12,7 +12,7 @@ export const VENOMOUS_HYDRA: DungeonEvent = {
       outcome: {
         text: 'You slash at all three heads, but the venom burns your skin!',
         effects: [
-          { type: 'damage', target: 'all', value: 35 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 200 },
           { type: 'gold', value: 290 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 11 },
@@ -27,7 +27,7 @@ export const VENOMOUS_HYDRA: DungeonEvent = {
       outcome: {
         text: 'You sever each head and burn the stumps! No regrowth occurs!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 25 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 240 },
           { type: 'gold', value: 340 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 14 },
@@ -43,7 +43,7 @@ export const VENOMOUS_HYDRA: DungeonEvent = {
       outcome: {
         text: 'The venom has no effect! You methodically destroy each head!',
         effects: [
-          { type: 'damage', target: 'all', value: 22 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 230 },
           { type: 'gold', value: 320 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 13 },

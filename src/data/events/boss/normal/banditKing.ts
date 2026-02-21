@@ -12,7 +12,7 @@ export const BANDIT_KING: DungeonEvent = {
       outcome: {
         text: 'You battle through the bandits, but their numbers wear you down!',
         effects: [
-          { type: 'damage', target: 'all', value: 29 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 180 },
           { type: 'gold', value: 265 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 9 },
@@ -28,7 +28,7 @@ export const BANDIT_KING: DungeonEvent = {
       outcome: {
         text: 'You defeat the king in single combat! His gang surrenders!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 22 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 220 },
           { type: 'gold', value: 315 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 12 },

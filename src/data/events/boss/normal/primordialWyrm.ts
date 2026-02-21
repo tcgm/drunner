@@ -12,7 +12,7 @@ export const PRIMORDIAL_WYRM: DungeonEvent = {
       outcome: {
         text: 'Primal dragon magic! The source of all draconic power!',
         effects: [
-          { type: 'damage', target: 'all', value: 592 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2485 },
           { type: 'gold', value: 3728 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 48 },
@@ -28,7 +28,7 @@ export const PRIMORDIAL_WYRM: DungeonEvent = {
       outcome: {
         text: 'You represent the pinnacle of progress! Even the primordial must yield!',
         effects: [
-          { type: 'damage', target: 'all', value: 532 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2615 },
           { type: 'gold', value: 3923 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 66 },
@@ -43,7 +43,7 @@ export const PRIMORDIAL_WYRM: DungeonEvent = {
       outcome: {
         text: 'You become the first dragonslayer! The wyrm falls to your blade!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 545 },
+          { type: 'damage', target: 'strongest', value: 19 },
           { type: 'xp', value: 2645 },
           { type: 'gold', value: 3968 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 67 },

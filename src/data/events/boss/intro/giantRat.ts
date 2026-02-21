@@ -12,7 +12,7 @@ export const GIANT_RAT: DungeonEvent = {
       outcome: {
         text: 'The rat lunges at you, but you fight it off. Your first real challenge!',
         effects: [
-          { type: 'damage', target: 'all', value: 15 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 120 },
           { type: 'gold', value: 150 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 5 },
@@ -28,7 +28,7 @@ export const GIANT_RAT: DungeonEvent = {
       outcome: {
         text: 'You quickly set up a trap and the rat falls right into it!',
         effects: [
-          { type: 'damage', target: 'random', value: 10 },
+          { type: 'damage', target: 'random', value: 6 },
           { type: 'xp', value: 150 },
           { type: 'gold', value: 180 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 7 },

@@ -12,7 +12,7 @@ export const FALLEN_ANGEL: DungeonEvent = {
       outcome: {
         text: 'Divine and infernal power combine in devastating attacks! You\'re overwhelmed!',
         effects: [
-          { type: 'damage', target: 'all', value: 140 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 498 },
           { type: 'gold', value: 658 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 19 },
@@ -27,7 +27,7 @@ export const FALLEN_ANGEL: DungeonEvent = {
       outcome: {
         text: 'Your faith pierces the corruption! The angel finds peace and fades!',
         effects: [
-          { type: 'damage', target: 'all', value: 90 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 548 },
           { type: 'gold', value: 720 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 25 },
@@ -43,7 +43,7 @@ export const FALLEN_ANGEL: DungeonEvent = {
       outcome: {
         text: 'You destroy its wings! Grounded, the fallen angel is vulnerable!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 105 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 543 },
           { type: 'gold', value: 710 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 24 },

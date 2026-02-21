@@ -12,7 +12,7 @@ export const CURSED_PALADIN: DungeonEvent = {
       outcome: {
         text: 'His corrupted power is formidable! Each strike carries dark energy!',
         effects: [
-          { type: 'damage', target: 'all', value: 71 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 322 },
           { type: 'gold', value: 432 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 14 },
@@ -27,7 +27,7 @@ export const CURSED_PALADIN: DungeonEvent = {
       outcome: {
         text: 'Your divine magic breaks the curse! He thanks you as he fades away!',
         effects: [
-          { type: 'damage', target: 'all', value: 46 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 367 },
           { type: 'gold', value: 477 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 18 },
@@ -43,7 +43,7 @@ export const CURSED_PALADIN: DungeonEvent = {
       outcome: {
         text: 'You turn the dark energy against him! The corruption consumes him!',
         effects: [
-          { type: 'damage', target: 'random', value: 56 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 357 },
           { type: 'gold', value: 467 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 17 },

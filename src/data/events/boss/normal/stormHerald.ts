@@ -12,7 +12,7 @@ export const STORM_HERALD: DungeonEvent = {
       outcome: {
         text: 'Endless lightning strikes! Thunder deafens you! Wind tears at your flesh!',
         effects: [
-          { type: 'damage', target: 'random', value: 398 },
+          { type: 'damage', target: 'random', value: 3 },
           { type: 'xp', value: 1620 },
           { type: 'gold', value: 2430 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 32 },
@@ -28,7 +28,7 @@ export const STORM_HERALD: DungeonEvent = {
       outcome: {
         text: 'You channel the electricity safely! Without lightning, the herald falls!',
         effects: [
-          { type: 'damage', target: 'all', value: 322 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1740 },
           { type: 'gold', value: 2610 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 40 },
@@ -43,7 +43,7 @@ export const STORM_HERALD: DungeonEvent = {
       outcome: {
         text: 'You charge through wind and lightning! The herald cannot stop you!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 338 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1760 },
           { type: 'gold', value: 2640 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 41 },

@@ -12,7 +12,7 @@ export const SINGULARITY: DungeonEvent = {
       outcome: {
         text: 'Irresistible gravity! You\'re crushed into infinitesimal density!',
         effects: [
-          { type: 'damage', target: 'all', value: 625 },
+          { type: 'damage', target: 'all', value: 49 },
           { type: 'xp', value: 2595 },
           { type: 'gold', value: 3893 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 51 },
@@ -27,7 +27,7 @@ export const SINGULARITY: DungeonEvent = {
       outcome: {
         text: 'You create anti-gravity! The singularity tears itself apart!',
         effects: [
-          { type: 'damage', target: 'all', value: 578 },
+          { type: 'damage', target: 'all', value: 49 },
           { type: 'xp', value: 2755 },
           { type: 'gold', value: 4133 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 70 },
@@ -43,7 +43,7 @@ export const SINGULARITY: DungeonEvent = {
       outcome: {
         text: 'Your power exceeds even a black hole! You escape and destroy it!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 592 },
+          { type: 'damage', target: 'strongest', value: 36 },
           { type: 'xp', value: 2785 },
           { type: 'gold', value: 4178 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 71 },

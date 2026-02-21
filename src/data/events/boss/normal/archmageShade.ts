@@ -12,7 +12,7 @@ export const ARCHMAGE_SHADE: DungeonEvent = {
       outcome: {
         text: 'Spell after spell of legendary power! You\'re overwhelmed!',
         effects: [
-          { type: 'damage', target: 'all', value: 465 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1910 },
           { type: 'gold', value: 2865 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 38 },
@@ -27,7 +27,7 @@ export const ARCHMAGE_SHADE: DungeonEvent = {
       outcome: {
         text: 'You absorb the shade\'s knowledge! Its own spells teach you victory!',
         effects: [
-          { type: 'damage', target: 'all', value: 402 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2040 },
           { type: 'gold', value: 3060 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 49 },
@@ -43,7 +43,7 @@ export const ARCHMAGE_SHADE: DungeonEvent = {
       outcome: {
         text: 'You see through its ethereal nature! The shade dissipates!',
         effects: [
-          { type: 'damage', target: 'all', value: 415 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2065 },
           { type: 'gold', value: 3098 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 50 },

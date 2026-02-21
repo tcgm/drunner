@@ -29,7 +29,7 @@ export const BOUND_DEMON: DungeonEvent = {
       outcome: {
         text: 'The demon\'s rage is terrifying! Even chained, it nearly breaks free!',
         effects: [
-          { type: 'damage', target: 'all', value: 83 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 345 },
           { type: 'gold', value: 455 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 16 },
@@ -44,7 +44,7 @@ export const BOUND_DEMON: DungeonEvent = {
       outcome: {
         text: 'Holy power sends the demon back to the abyss! The chains vanish!',
         effects: [
-          { type: 'damage', target: 'all', value: 55 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 375 },
           { type: 'gold', value: 490 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 19 },
@@ -60,7 +60,7 @@ export const BOUND_DEMON: DungeonEvent = {
       outcome: {
         text: 'You reinforce the binding! The demon is crushed by its own prison!',
         effects: [
-          { type: 'damage', target: 'random', value: 62 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 368 },
           { type: 'gold', value: 478 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 18 },

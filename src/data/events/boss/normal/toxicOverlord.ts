@@ -12,7 +12,7 @@ export const TOXIC_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'You can\'t hold it forever! The toxic fumes seep through your skin!',
         effects: [
-          { type: 'damage', target: 'all', value: 408 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1645 },
           { type: 'gold', value: 2468 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 32 },
@@ -27,7 +27,7 @@ export const TOXIC_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'Divine light cleanses all poison! The overlord withers without its power!',
         effects: [
-          { type: 'damage', target: 'all', value: 342 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1765 },
           { type: 'gold', value: 2648 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 41 },
@@ -43,7 +43,7 @@ export const TOXIC_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'Your fortitude is too strong! No poison can harm you!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 352 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1790 },
           { type: 'gold', value: 2685 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 42 },

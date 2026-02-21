@@ -12,7 +12,7 @@ export const STARFORGED_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'You endure blast after blast of stellar energy, slowly wearing down its power core!',
         effects: [
-          { type: 'damage', target: 'all', value: 360 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1400 },
           { type: 'gold', value: 2100 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 28 },
@@ -28,7 +28,7 @@ export const STARFORGED_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'You move faster than its targeting systems! You reach the core and overload it from within!',
         effects: [
-          { type: 'damage', target: 'all', value: 270 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1650 },
           { type: 'gold', value: 2400 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 35 },
@@ -43,7 +43,7 @@ export const STARFORGED_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'You stand firm against its stellar fury, your armor glowing red-hot but holding! Eventually it exhausts its power!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 300 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'heal', target: 'strongest', value: 80 },
           { type: 'xp', value: 1550 },
           { type: 'gold', value: 2250 },

@@ -12,7 +12,7 @@ export const WARLOCK_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'Summoned demons swarm you while dark magic assaults from every angle!',
         effects: [
-          { type: 'damage', target: 'all', value: 200 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 748 },
           { type: 'gold', value: 1078 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 23 },
@@ -27,7 +27,7 @@ export const WARLOCK_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'Divine authority breaks their contracts! The demons turn on their master!',
         effects: [
-          { type: 'damage', target: 'all', value: 157 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 818 },
           { type: 'gold', value: 1168 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 28 },
@@ -43,7 +43,7 @@ export const WARLOCK_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'You strike so fast they can\'t cast! Without spells, they fall quickly!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 170 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 838 },
           { type: 'gold', value: 1193 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 30 },

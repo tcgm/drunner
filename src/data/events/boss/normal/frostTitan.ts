@@ -12,7 +12,7 @@ export const FROST_TITAN: DungeonEvent = {
             outcome: {
                 text: 'You charge through the freezing winds, trading blows with the titan!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 40 },
+                    { type: 'damage', target: 'all', value: 3 },
                     { type: 'xp', value: 220 },
                     { type: 'gold', value: 280 },
                     { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 5 },
@@ -27,7 +27,7 @@ export const FROST_TITAN: DungeonEvent = {
             outcome: {
                 text: 'Your flames melt the titan\'s icy form, steam erupting as it falls!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 25 },
+                    { type: 'damage', target: 'all', value: 3 },
                     { type: 'xp', value: 280 },
                     { type: 'gold', value: 350 },
                     { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 10 },
@@ -43,7 +43,7 @@ export const FROST_TITAN: DungeonEvent = {
             outcome: {
                 text: 'You dance around its slow attacks, shattering its frozen limbs!',
                 effects: [
-                    { type: 'damage', target: 'all', value: 30 },
+                    { type: 'damage', target: 'all', value: 3 },
                     { type: 'xp', value: 250 },
                     { type: 'gold', value: 300 },
                     { type: 'item', itemType: 'boots', minRarity: 'rare', rarityBoost: 8 },
@@ -55,7 +55,7 @@ export const FROST_TITAN: DungeonEvent = {
             outcome: {
                 text: 'You withdraw from the freezing battle zone.',
                 effects: [
-                    { type: 'damage', target: 'random', value: 20 },
+                    { type: 'damage', target: 'random', value: 2 },
                     { type: 'xp', value: 60 },
                 ],
             },

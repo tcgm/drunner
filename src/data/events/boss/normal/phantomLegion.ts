@@ -12,7 +12,7 @@ export const PHANTOM_LEGION: DungeonEvent = {
       outcome: {
         text: 'You\'re surrounded! Phantom blades strike from every direction!',
         effects: [
-          { type: 'damage', target: 'all', value: 130 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 485 },
           { type: 'gold', value: 635 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 18 },
@@ -27,7 +27,7 @@ export const PHANTOM_LEGION: DungeonEvent = {
       outcome: {
         text: 'A prayer for the dead grants them peace! They fade gratefully!',
         effects: [
-          { type: 'damage', target: 'all', value: 88 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 530 },
           { type: 'gold', value: 695 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 22 },
@@ -43,7 +43,7 @@ export const PHANTOM_LEGION: DungeonEvent = {
       outcome: {
         text: 'You shatter their rallying standard! The legion breaks and disperses!',
         effects: [
-          { type: 'damage', target: 'random', value: 98 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 520 },
           { type: 'gold', value: 685 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 21 },

@@ -12,7 +12,7 @@ export const ROGUE_APPRENTICE: DungeonEvent = {
       outcome: {
         text: 'You trade blows with the apprentice. They\'re skilled but inexperienced!',
         effects: [
-          { type: 'damage', target: 'all', value: 16 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 120 },
           { type: 'gold', value: 170 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 6 },
@@ -28,7 +28,7 @@ export const ROGUE_APPRENTICE: DungeonEvent = {
       outcome: {
         text: 'You anticipate every strike! The apprentice surrenders, impressed!',
         effects: [
-          { type: 'damage', target: 'random', value: 10 },
+          { type: 'damage', target: 'random', value: 6 },
           { type: 'xp', value: 150 },
           { type: 'gold', value: 200 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 8 },

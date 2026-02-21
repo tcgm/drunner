@@ -12,7 +12,7 @@ export const DARK_PROPHET: DungeonEvent = {
       outcome: {
         text: 'Their words assault your sanity! Reality bends as their prophecies manifest!',
         effects: [
-          { type: 'damage', target: 'all', value: 185 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 720 },
           { type: 'gold', value: 1040 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 21 },
@@ -28,7 +28,7 @@ export const DARK_PROPHET: DungeonEvent = {
       outcome: {
         text: 'You stop their chanting! Without their words, their power fades!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 145 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 775 },
           { type: 'gold', value: 1105 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 25 },
@@ -43,7 +43,7 @@ export const DARK_PROPHET: DungeonEvent = {
       outcome: {
         text: 'Divine authority severs their connection! The prophet collapses, abandoned!',
         effects: [
-          { type: 'damage', target: 'all', value: 142 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 795 },
           { type: 'gold', value: 1135 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 26 },

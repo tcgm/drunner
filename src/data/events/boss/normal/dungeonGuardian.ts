@@ -12,7 +12,7 @@ export const DUNGEON_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You unleash your full arsenal against the guardian!',
         effects: [
-          { type: 'damage', target: 'all', value: 50 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 500 },
           { type: 'gold', value: 600 },
         ],
@@ -27,7 +27,7 @@ export const DUNGEON_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You shatter the crystal! The guardian crumbles!',
         effects: [
-          { type: 'damage', target: 'all', value: 30 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 550 },
           { type: 'gold', value: 650 },
         ],
@@ -41,7 +41,7 @@ export const DUNGEON_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You dispel the magic animating the guardian!',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 580 },
           { type: 'gold', value: 680 },
         ],
@@ -52,7 +52,7 @@ export const DUNGEON_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You dodge its attacks and discover a weak point!',
         effects: [
-          { type: 'damage', target: 'all', value: 35 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 520 },
           { type: 'gold', value: 620 },
         ],

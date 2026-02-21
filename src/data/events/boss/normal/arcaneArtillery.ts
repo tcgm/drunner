@@ -12,7 +12,7 @@ export const ARCANE_ARTILLERY: DungeonEvent = {
       outcome: {
         text: 'Magical explosions rain down! The artillery never misses!',
         effects: [
-          { type: 'damage', target: 'all', value: 328 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1225 },
           { type: 'gold', value: 1838 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 26 },
@@ -27,7 +27,7 @@ export const ARCANE_ARTILLERY: DungeonEvent = {
       outcome: {
         text: 'You negate every spell! Without magic, it\'s defenseless!',
         effects: [
-          { type: 'damage', target: 'all', value: 260 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1345 },
           { type: 'gold', value: 2018 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 30 },
@@ -43,7 +43,7 @@ export const ARCANE_ARTILLERY: DungeonEvent = {
       outcome: {
         text: 'You reach it before it can fire! Up close, you tear it apart!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 278 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1365 },
           { type: 'gold', value: 2048 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 31 },

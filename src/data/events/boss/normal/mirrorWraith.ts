@@ -12,7 +12,7 @@ export const MIRROR_WRAITH: DungeonEvent = {
       outcome: {
         text: 'You strike at the wraith, but it mirrors your attacks perfectly!',
         effects: [
-          { type: 'damage', target: 'all', value: 36 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 195 },
           { type: 'gold', value: 285 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 11 },
@@ -28,7 +28,7 @@ export const MIRROR_WRAITH: DungeonEvent = {
       outcome: {
         text: 'You destroy the source! The wraith screams and dissipates!',
         effects: [
-          { type: 'damage', target: 'random', value: 26 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 240 },
           { type: 'gold', value: 340 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 14 },
@@ -43,7 +43,7 @@ export const MIRROR_WRAITH: DungeonEvent = {
       outcome: {
         text: 'Your magical sight pierces the deception! The wraith has no power over you!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 250 },
           { type: 'gold', value: 350 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 15 },

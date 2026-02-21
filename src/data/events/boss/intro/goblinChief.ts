@@ -12,7 +12,7 @@ export const GOBLIN_CHIEF: DungeonEvent = {
       outcome: {
         text: 'You battle through the goblins and strike down their chief!',
         effects: [
-          { type: 'damage', target: 'all', value: 18 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 130 },
           { type: 'gold', value: 160 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 6 },
@@ -28,7 +28,7 @@ export const GOBLIN_CHIEF: DungeonEvent = {
       outcome: {
         text: 'You duel the chief and defeat him quickly! The other goblins flee!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 12 },
+          { type: 'damage', target: 'strongest', value: 6 },
           { type: 'xp', value: 160 },
           { type: 'gold', value: 190 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 8 },

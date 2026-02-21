@@ -12,7 +12,7 @@ export const WILD_BOAR: DungeonEvent = {
       outcome: {
         text: 'The boar charges! You stand your ground and fight back fiercely!',
         effects: [
-          { type: 'damage', target: 'all', value: 19 },
+          { type: 'damage', target: 'all', value: 8 },
           { type: 'xp', value: 130 },
           { type: 'gold', value: 160 },
           { type: 'item', itemType: 'random', minRarity: 'common', rarityBoost: 6 },
@@ -28,7 +28,7 @@ export const WILD_BOAR: DungeonEvent = {
       outcome: {
         text: 'You dodge its charge and strike its vulnerable side! A decisive blow!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 13 },
+          { type: 'damage', target: 'strongest', value: 6 },
           { type: 'xp', value: 160 },
           { type: 'gold', value: 190 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 9 },

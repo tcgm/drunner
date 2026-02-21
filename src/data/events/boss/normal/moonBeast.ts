@@ -12,7 +12,7 @@ export const MOON_BEAST: DungeonEvent = {
       outcome: {
         text: 'Its power shifts constantly! Sometimes weak, sometimes overwhelming!',
         effects: [
-          { type: 'damage', target: 'random', value: 478 },
+          { type: 'damage', target: 'random', value: 4 },
           { type: 'xp', value: 1950 },
           { type: 'gold', value: 2925 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 39 },
@@ -28,7 +28,7 @@ export const MOON_BEAST: DungeonEvent = {
       outcome: {
         text: 'You see the pattern! You strike only during weakness!',
         effects: [
-          { type: 'damage', target: 'all', value: 412 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2080 },
           { type: 'gold', value: 3120 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 51 },
@@ -43,7 +43,7 @@ export const MOON_BEAST: DungeonEvent = {
       outcome: {
         text: 'You block its lunar connection! Without the moon, it\'s powerless!',
         effects: [
-          { type: 'damage', target: 'all', value: 425 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2100 },
           { type: 'gold', value: 3150 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 52 },

@@ -12,7 +12,7 @@ export const PLAGUE_BEARER: DungeonEvent = {
       outcome: {
         text: 'Disease ravages your body! Every breath brings more poison!',
         effects: [
-          { type: 'damage', target: 'all', value: 143 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 502 },
           { type: 'gold', value: 662 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -27,7 +27,7 @@ export const PLAGUE_BEARER: DungeonEvent = {
       outcome: {
         text: 'Holy light cleanses the plague! The demon withers without its pestilence!',
         effects: [
-          { type: 'damage', target: 'all', value: 100 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 545 },
           { type: 'gold', value: 715 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -43,7 +43,7 @@ export const PLAGUE_BEARER: DungeonEvent = {
       outcome: {
         text: 'Your constitution is iron! The plague has no effect on you!',
         effects: [
-          { type: 'damage', target: 'all', value: 107 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 538 },
           { type: 'gold', value: 703 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 23 },

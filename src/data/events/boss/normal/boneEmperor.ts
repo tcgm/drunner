@@ -12,7 +12,7 @@ export const BONE_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'Endless undead overwhelm you! The emperor\'s army is unstoppable!',
         effects: [
-          { type: 'damage', target: 'all', value: 418 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1670 },
           { type: 'gold', value: 2505 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 33 },
@@ -27,7 +27,7 @@ export const BONE_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'The emperor\'s pride accepts! In single combat, you prevail!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 352 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1790 },
           { type: 'gold', value: 2685 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 42 },
@@ -43,7 +43,7 @@ export const BONE_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'You locate and destroy its soul vessel! The emperor crumbles to dust!',
         effects: [
-          { type: 'damage', target: 'all', value: 365 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1815 },
           { type: 'gold', value: 2723 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 43 },

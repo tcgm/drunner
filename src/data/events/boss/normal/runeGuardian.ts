@@ -12,7 +12,7 @@ export const RUNE_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'Each destroyed rune triggers magical explosions! The guardian adapts!',
         effects: [
-          { type: 'damage', target: 'all', value: 352 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1295 },
           { type: 'gold', value: 1943 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 28 },
@@ -28,7 +28,7 @@ export const RUNE_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You understand the runic language! You deactivate them safely!',
         effects: [
-          { type: 'damage', target: 'all', value: 288 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1400 },
           { type: 'gold', value: 2100 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 34 },
@@ -43,7 +43,7 @@ export const RUNE_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You pump too much magic into the system! The guardian explodes!',
         effects: [
-          { type: 'damage', target: 'random', value: 298 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 1415 },
           { type: 'gold', value: 2123 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 35 },

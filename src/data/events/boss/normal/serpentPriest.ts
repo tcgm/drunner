@@ -12,7 +12,7 @@ export const SERPENT_PRIEST: DungeonEvent = {
       outcome: {
         text: 'Venomous snakes strike from all sides while the priest hexes you!',
         effects: [
-          { type: 'damage', target: 'all', value: 69 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 308 },
           { type: 'gold', value: 408 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 13 },
@@ -28,7 +28,7 @@ export const SERPENT_PRIEST: DungeonEvent = {
       outcome: {
         text: 'You break the chant! The snakes turn on their master!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 49 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 352 },
           { type: 'gold', value: 462 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 16 },
@@ -43,7 +43,7 @@ export const SERPENT_PRIEST: DungeonEvent = {
       outcome: {
         text: 'The snakes obey your commands! They abandon the priest!',
         effects: [
-          { type: 'damage', target: 'all', value: 42 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 360 },
           { type: 'gold', value: 470 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 17 },

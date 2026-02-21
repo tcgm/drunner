@@ -12,7 +12,7 @@ export const CORRUPTED_BEAR: DungeonEvent = {
       outcome: {
         text: 'You narrowly avoid its claws and land several hits, but it\'s incredibly strong!',
         effects: [
-          { type: 'damage', target: 'all', value: 28 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 170 },
           { type: 'gold', value: 240 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 9 },
@@ -28,7 +28,7 @@ export const CORRUPTED_BEAR: DungeonEvent = {
       outcome: {
         text: 'You withstand its assault and purge the dark energy! The bear falls peacefully!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 210 },
           { type: 'gold', value: 300 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 11 },

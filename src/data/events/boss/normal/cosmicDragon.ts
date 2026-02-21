@@ -15,7 +15,7 @@ export const COSMIC_DRAGON: DungeonEvent = {
           outcome: {
             text: 'The universe itself attacks you! Stars explode in miniature supernovas!',
             effects: [
-              { type: 'damage', target: 'all', value: 528 },
+              { type: 'damage', target: 'all', value: 11 },
               { type: 'xp', value: 2175 },
               { type: 'gold', value: 3263 },
               { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 42 },
@@ -27,7 +27,7 @@ export const COSMIC_DRAGON: DungeonEvent = {
           outcome: {
             text: 'The universe itself attacks you! Stars explode in miniature supernovas! A cosmic-forged draconic relic materializes!',
             effects: [
-              { type: 'damage', target: 'all', value: 528 },
+              { type: 'damage', target: 'all', value: 11 },
               { type: 'xp', value: 2175 },
               { type: 'gold', value: 3263 },
               { 
@@ -54,7 +54,7 @@ export const COSMIC_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You expand your consciousness to cosmic scope! The dragon is merely one more star!',
             effects: [
-              { type: 'damage', target: 'all', value: 465 },
+              { type: 'damage', target: 'all', value: 11 },
               { type: 'xp', value: 2305 },
               { type: 'gold', value: 3458 },
               { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 57 },
@@ -66,7 +66,7 @@ export const COSMIC_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You expand your consciousness to cosmic scope! The dragon is merely one more star! From the cosmic flames, draconic artifacts emerge!',
             effects: [
-              { type: 'damage', target: 'all', value: 465 },
+              { type: 'damage', target: 'all', value: 11 },
               { type: 'xp', value: 2305 },
               { type: 'gold', value: 3458 },
               { 
@@ -92,7 +92,7 @@ export const COSMIC_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You find the pattern! Every dragon has a heart, even cosmic ones!',
             effects: [
-              { type: 'damage', target: 'weakest', value: 478 },
+              { type: 'damage', target: 'weakest', value: 8 },
               { type: 'xp', value: 2330 },
               { type: 'gold', value: 3495 },
               { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 58 },
@@ -104,7 +104,7 @@ export const COSMIC_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You find the pattern! Every dragon has a heart, even cosmic ones! Its death releases primordial draconic power!',
             effects: [
-              { type: 'damage', target: 'weakest', value: 478 },
+              { type: 'damage', target: 'weakest', value: 8 },
               { type: 'xp', value: 2330 },
               { type: 'gold', value: 3495 },
               { 
