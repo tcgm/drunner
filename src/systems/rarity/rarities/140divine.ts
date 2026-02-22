@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiAngelWings } from 'react-icons/gi'
 
 export const DIVINE: RarityConfig = {
   id: 'divine',
@@ -8,6 +9,7 @@ export const DIVINE: RarityConfig = {
   backgroundColor: '#083344', // Cyan-950 (L=0.0217)
   statMultiplierBase: 7.0,
   minFloor: 65,
+  icon: GiAngelWings,
   glow: 'rgba(14, 116, 144, 0.6)',
   text: '#06B6D4',         // Cyan-500
   textLight: '#22D3EE',    // Cyan-400

@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiCrystalShine } from 'react-icons/gi'
 
 export const VERY_RARE: RarityConfig = {
   id: 'veryRare',
@@ -8,6 +9,7 @@ export const VERY_RARE: RarityConfig = {
   backgroundColor: '#3B0764', // Purple-950 (L=0.0192)
   statMultiplierBase: 2.5,
   minFloor: 15,
+  icon: GiCrystalShine,
   glow: 'rgba(88, 28, 135, 0.5)',
   text: '#A855F7',         // Purple-500
   textLight: '#C084FC',    // Purple-400

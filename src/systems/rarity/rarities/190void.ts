@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiVortex } from 'react-icons/gi'
 
 export const VOID: RarityConfig = {
   id: 'void',
@@ -8,6 +9,7 @@ export const VOID: RarityConfig = {
   backgroundColor: '#1F2937', // Gray-800 (L=0.0263)
   statMultiplierBase: 15.0,
   minFloor: 90,
+  icon: GiVortex,
   glow: 'rgba(209, 213, 219, 0.5)',
   text: '#E5E7EB',         // Gray-200
   textLight: '#F3F4F6',    // Gray-100

@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiCardRandom } from 'react-icons/gi'
 
 export const PLANE: RarityConfig = {
   id: 'plane',
@@ -8,6 +9,7 @@ export const PLANE: RarityConfig = {
   backgroundColor: '#082F49', // Sky-950 (L=0.0285)
   statMultiplierBase: 25.0,
   minFloor: 98,
+  icon: GiCardRandom,
   glow: 'rgba(12, 74, 110, 0.6)',
   text: '#0EA5E9',         // Sky-500
   textLight: '#38BDF8',    // Sky-400

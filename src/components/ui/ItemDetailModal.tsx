@@ -29,34 +29,12 @@ import { MultIcon } from '@/components/ui/MultIcon'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { dehydrateItem } from '@/utils/itemHydration'
 import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
-import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/raritySystem'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 
-// Gem icons for each rarity - increasing complexity and fanciness
-const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
-  junk: GameIcons.GiStoneBlock,
-  abundant: GameIcons.GiRock,
-  common: GameIcons.GiGems,
-  uncommon: GameIcons.GiCutDiamond,
-  rare: GameIcons.GiDiamondTrophy,
-  veryRare: GameIcons.GiCrystalShine,
-  magical: GameIcons.GiSparkles,
-  elite: GameIcons.GiDiamonds,
-  epic: GameIcons.GiCrystalCluster,
-  legendary: GameIcons.GiCrystalShine,
-  mythic: GameIcons.GiBatwingEmblem,
-  mythicc: GameIcons.GiCrystalEye,
-  artifact: GameIcons.GiCrystalEye,
-  divine: GameIcons.GiAngelWings,
-  celestial: GameIcons.GiStarFormation,
-  realityAnchor: GameIcons.GiChainedHeart,
-  structural: GameIcons.GiCubeforce,
-  singularity: GameIcons.GiBlackHoleBolas,
-  void: GameIcons.GiVortex,
-  elder: GameIcons.GiEvilBook,
-  layer: GameIcons.GiPerspectiveDiceSixFacesRandom,
-  plane: GameIcons.GiCardRandom,
-  author: GameIcons.GiQuillInk,
-}
+// Gem icons derived from rarity configs
+const RARITY_GEM_ICONS = Object.fromEntries(
+  Object.entries(RARITY_CONFIGS).map(([k, v]) => [k, v.icon])
+) as Record<Item['rarity'], IconType>
 
 // Use centralized rarity colors with adapted format for this modal
 const RARITY_COLORS = Object.fromEntries(

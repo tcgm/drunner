@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiStarFormation } from 'react-icons/gi'
 
 export const CELESTIAL: RarityConfig = {
   id: 'celestial',
@@ -8,6 +9,7 @@ export const CELESTIAL: RarityConfig = {
   backgroundColor: '#0C4A6E', // Sky-900 (L=0.0610)
   statMultiplierBase: 8.0,
   minFloor: 70,
+  icon: GiStarFormation,
   glow: 'rgba(224, 242, 254, 0.6)',
   text: '#F0F9FF',         // Sky-50
   textLight: '#FFFFFF',    // White

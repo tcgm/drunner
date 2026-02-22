@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiQuillInk } from 'react-icons/gi'
 
 export const AUTHOR: RarityConfig = {
   id: 'author',
@@ -8,6 +9,7 @@ export const AUTHOR: RarityConfig = {
   backgroundColor: '#000000',
   statMultiplierBase: 30.0,
   minFloor: 100,
+  icon: GiQuillInk,
   glow: 'rgba(255, 255, 255, 0.8)',
   text: '#FFFFFF',
   textLight: '#FFFFFF',

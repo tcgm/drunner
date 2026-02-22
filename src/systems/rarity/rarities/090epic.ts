@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiCrystalCluster } from 'react-icons/gi'
 
 export const EPIC: RarityConfig = {
   id: 'epic',
@@ -8,6 +9,7 @@ export const EPIC: RarityConfig = {
   backgroundColor: '#831843',
   statMultiplierBase: 3.5,
   minFloor: 30,
+  icon: GiCrystalCluster,
   glow: 'rgba(251, 207, 232, 0.5)',
   text: '#FCE7F3',
   textLight: '#FDF2F8',

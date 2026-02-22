@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiDiamonds } from 'react-icons/gi'
 
 export const ELITE: RarityConfig = {
   id: 'elite',
@@ -8,6 +9,7 @@ export const ELITE: RarityConfig = {
   backgroundColor: '#4C0519',
   statMultiplierBase: 3.0,
   minFloor: 25,
+  icon: GiDiamonds,
   glow: 'rgba(136, 19, 55, 0.5)',
   text: '#E11D48',
   textLight: '#F43F5E',

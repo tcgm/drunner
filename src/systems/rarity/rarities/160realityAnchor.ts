@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiChainedHeart } from 'react-icons/gi'
 
 export const REALITY_ANCHOR: RarityConfig = {
   id: 'realityAnchor',
@@ -8,6 +9,7 @@ export const REALITY_ANCHOR: RarityConfig = {
   backgroundColor: '#1E1B4B',
   statMultiplierBase: 9.0,
   minFloor: 75,
+  icon: GiChainedHeart,
   glow: 'rgba(49, 46, 129, 0.6)',
   text: '#6366F1',
   textLight: '#818CF8',

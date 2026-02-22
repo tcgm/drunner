@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiGems } from 'react-icons/gi'
 
 export const COMMON: RarityConfig = {
   id: 'common',
@@ -8,6 +9,7 @@ export const COMMON: RarityConfig = {
   backgroundColor: '#14532D', // Green-900 (L=0.0454)
   statMultiplierBase: 1.0,
   minFloor: 1,
+  icon: GiGems,
   glow: 'rgba(134, 239, 172, 0.5)',
   text: '#BBF7D0',         // Green-200
   textLight: '#DCFCE7',    // Green-100

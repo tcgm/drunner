@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiBlackHoleBolas } from 'react-icons/gi'
 
 export const SINGULARITY: RarityConfig = {
   id: 'singularity',
@@ -8,6 +9,7 @@ export const SINGULARITY: RarityConfig = {
   backgroundColor: '#2E1065',
   statMultiplierBase: 12.0,
   minFloor: 85,
+  icon: GiBlackHoleBolas,
   glow: 'rgba(76, 29, 149, 0.6)',
   text: '#7C3AED',
   textLight: '#8B5CF6',

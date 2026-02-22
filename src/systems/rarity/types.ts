@@ -1,4 +1,5 @@
 import type { ItemRarity } from '@/types'
+import type { IconType } from 'react-icons'
 
 export interface RarityConfig {
   id: ItemRarity
@@ -8,6 +9,7 @@ export interface RarityConfig {
   backgroundColor: string  // Background color (hex)
   statMultiplierBase: number  // Base stat multiplier for materials
   minFloor: number         // Minimum floor for this rarity
+  icon: IconType           // Gem/badge icon
   // Additional UI colors
   glow?: string            // Glow effect color with opacity (rgba)
   text?: string            // Text color (hex)

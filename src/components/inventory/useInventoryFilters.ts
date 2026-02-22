@@ -2,6 +2,12 @@ import { useMemo } from 'react'
 import type { Item, ItemRarity } from '@/types'
 import type { SortOption, FilterOption } from './InventoryControls'
 import { slotAcceptsItemType } from '@/config/slotConfig'
+import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
+
+// Derive rarity sort order from RARITY_CONFIGS (insertion order = tier order)
+const RARITY_SORT_ORDER = Object.fromEntries(
+  Object.keys(RARITY_CONFIGS).map((rarity, index) => [rarity, index])
+) as Record<ItemRarity, number>
 
 interface UseInventoryFiltersProps {
   items: Item[]
@@ -19,18 +25,6 @@ export function useInventoryFilters({
   pendingSlot
 }: UseInventoryFiltersProps) {
   return useMemo(() => {
-    const rarityOrder: Record<ItemRarity, number> = {
-      junk: 0,
-      common: 1,
-      uncommon: 2,
-      rare: 3,
-      epic: 4,
-      legendary: 5,
-      mythic: 6,
-      artifact: 7,
-      set: 9,
-    }
-    
     let filteredItems = [...items]
 
     // Apply pending slot filter first (overrides other filters)
@@ -60,7 +54,7 @@ export function useInventoryFilters({
         case 'name':
           return a.name.localeCompare(b.name)
         case 'rarity':
-          return rarityOrder[b.rarity] - rarityOrder[a.rarity] // Descending
+          return (RARITY_SORT_ORDER[b.rarity] ?? -1) - (RARITY_SORT_ORDER[a.rarity] ?? -1) // Descending
         case 'type':
           return a.type.localeCompare(b.type)
         case 'value':

@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiCutDiamond } from 'react-icons/gi'
 
 export const UNCOMMON: RarityConfig = {
   id: 'uncommon',
@@ -8,6 +9,7 @@ export const UNCOMMON: RarityConfig = {
   backgroundColor: '#1E293B', // Slate-800 (L=0.0407)
   statMultiplierBase: 1.5,
   minFloor: 5,
+  icon: GiCutDiamond,
   glow: 'rgba(30, 58, 138, 0.5)',
   text: '#3B82F6',         // Blue-500
   textLight: '#60A5FA',    // Blue-400

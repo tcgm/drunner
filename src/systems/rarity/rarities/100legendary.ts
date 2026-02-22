@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiTrophy } from 'react-icons/gi'
 
 export const LEGENDARY: RarityConfig = {
   id: 'legendary',
@@ -8,6 +9,7 @@ export const LEGENDARY: RarityConfig = {
   backgroundColor: '#431407', // Orange-950 (L=0.0109)
   statMultiplierBase: 4.0,
   minFloor: 40,
+  icon: GiTrophy,
   glow: 'rgba(146, 64, 14, 0.5)',
   text: '#F59E0B',         // Amber-500
   textLight: '#FBBF24',    // Amber-400
