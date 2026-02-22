@@ -9,6 +9,7 @@ export * from './heartOfThePhoenix'
 export * from './frozenHeart'
 export * from './icebound'
 export * from './blahajCompanion'
+export * from './orbOfAncientPower'
 
 import { RING_OF_OMNIPOTENCE } from './ringOfOmnipotence'
 import { AMULET_OF_RESURRECTION } from './amuletOfResurrection'
@@ -20,6 +21,7 @@ import { HEART_OF_THE_PHOENIX } from './heartOfThePhoenix'
 import { FROZEN_HEART } from './frozenHeart'
 import { ICEBOUND_RELIC } from './icebound'
 import { BLAHAJ_COMPANION } from './blahajCompanion'
+import { ORB_OF_ANCIENT_POWER } from './orbOfAncientPower'
 
 export const UNIQUE_ACCESSORIES = [
   RING_OF_OMNIPOTENCE,
@@ -32,4 +34,5 @@ export const UNIQUE_ACCESSORIES = [
   FROZEN_HEART,
   ICEBOUND_RELIC,
   BLAHAJ_COMPANION,
+  ORB_OF_ANCIENT_POWER,
 ]

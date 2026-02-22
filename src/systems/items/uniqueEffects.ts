@@ -181,6 +181,176 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     }
   },
   
+  'Staff of Eternal Flame': {
+    triggers: ['onCombatStart'],
+    description: 'Eternal Flame: 30% chance to surge Magic Power by 60% for the battle',
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.30) {
+        return null
+      }
+
+      const baseMagicPower = sourceHero.stats.magicPower ?? 0
+      const surgeAmount = Math.floor(baseMagicPower * 0.60)
+      sourceHero.stats.magicPower = baseMagicPower + surgeAmount
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Staff of Eternal Flame ignites! (+${surgeAmount} Magic Power)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The eternal flame surges through ${sourceHero.name}, granting ${surgeAmount} bonus Magic Power!`
+        }]
+      }
+    }
+  },
+
+  'Orb of Ancient Power': {
+    triggers: ['onBossDefeat'],
+    description: 'Ancient Resonance: After defeating a boss, permanently gain +15 Magic Power',
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      const gain = 15
+      sourceHero.stats.magicPower = (sourceHero.stats.magicPower ?? 0) + gain
+
+      return {
+        party,
+        message: `The Orb of Ancient Power resonates with victory! ${sourceHero.name} gains +${gain} Magic Power permanently.`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The ancient orb absorbs the boss's magical essence, permanently granting ${sourceHero.name} +${gain} Magic Power.`
+        }]
+      }
+    }
+  },
+
+  'Lyre of the Ancients': {
+    triggers: ['onCombatStart'],
+    description: 'Ancient Melody: 35% chance to heal each party member for 8% of their max HP',
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.35) {
+        return null
+      }
+
+      const healedIds: string[] = []
+      let totalHealed = 0
+
+      party.forEach(hero => {
+        if (hero && hero.isAlive) {
+          const healAmount = Math.floor(hero.stats.maxHp * 0.08)
+          hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healAmount)
+          healedIds.push(hero.id)
+          totalHealed += healAmount
+        }
+      })
+
+      if (healedIds.length === 0) return null
+
+      return {
+        party,
+        message: `${sourceHero.name} plays an Ancient Melody, mending the party!`,
+        additionalEffects: [{
+          type: 'heal',
+          target: healedIds,
+          value: Math.floor(totalHealed / healedIds.length),
+          description: `The haunting notes of the Lyre of the Ancients wash over the party, restoring 8% of each member's HP.`
+        }]
+      }
+    }
+  },
+
+  'Diadem of Devotion': {
+    triggers: ['onBossDefeat'],
+    description: 'Radiant Restoration: After defeating a boss, heals the most wounded party member for 25% of their max HP',
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      // Find the most wounded (lowest HP as fraction of max) alive hero
+      const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
+      if (aliveHeroes.length === 0) return null
+
+      const mostWounded = aliveHeroes.reduce((prev, curr) => {
+        const prevRatio = prev.stats.hp / prev.stats.maxHp
+        const currRatio = curr.stats.hp / curr.stats.maxHp
+        return currRatio < prevRatio ? curr : prev
+      })
+
+      const healAmount = Math.floor(mostWounded.stats.maxHp * 0.25)
+      mostWounded.stats.hp = Math.min(mostWounded.stats.maxHp, mostWounded.stats.hp + healAmount)
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Diadem of Devotion pulses with healing light! ${mostWounded.name} recovers ${healAmount} HP.`,
+        additionalEffects: [{
+          type: 'heal',
+          target: [mostWounded.id],
+          value: healAmount,
+          description: `The Diadem of Devotion channels restorative power into ${mostWounded.name}, healing ${healAmount} HP.`
+        }]
+      }
+    }
+  },
+
+  "Minstrel's Crown": {
+    triggers: ['onCombatStart'],
+    description: "Battle Ballad: 40% chance to inspire the party, granting each member +25 Luck for the battle",
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.40) {
+        return null
+      }
+
+      const luckBoost = 25
+      const inspiredIds: string[] = []
+
+      party.forEach(hero => {
+        if (hero && hero.isAlive) {
+          hero.stats.luck = (hero.stats.luck ?? 0) + luckBoost
+          inspiredIds.push(hero.id)
+        }
+      })
+
+      if (inspiredIds.length === 0) return null
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Minstrel's Crown rings out a Battle Ballad! (+${luckBoost} Luck to all)`,
+        additionalEffects: [{
+          type: 'status',
+          target: inspiredIds,
+          description: `A rousing battle ballad fills the air! The entire party gains +${luckBoost} Luck for this fight.`
+        }]
+      }
+    }
+  },
+
   // Example of other unique effects that could be added:
   // 'Amulet of Last Stand': {
   //   triggers: ['onDeath'],
