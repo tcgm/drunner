@@ -19,5 +19,6 @@ export const CROWN_BASE: BaseItemTemplate = {
   stats: {
     defense: 4,
     luck: 3,
+    charisma: 3,
   },
 }
