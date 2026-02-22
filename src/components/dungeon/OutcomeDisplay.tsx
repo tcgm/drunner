@@ -160,6 +160,46 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
                     <Text color="gray.300" fontSize="sm">
                       {effect.description}
                     </Text>
+                    {/* Show item slot, name, rarity, and modifiers inline */}
+                    {effect.item && (
+                      <>
+                        <Box flexShrink={0} w="28px" h="28px">
+                          <ItemSlot item={effect.item} iconOnly size="sm" isClickable />
+                        </Box>
+                        <Text
+                          color={RARITY_COLORS[effect.item.rarity]?.text || 'gray.300'}
+                          fontSize="xs"
+                          fontWeight="semibold"
+                        >
+                          {effect.item.name}
+                        </Text>
+                        <Badge
+                          fontSize="2xs"
+                          bg={RARITY_COLORS[effect.item.rarity]?.bg || 'gray.700'}
+                          color="white"
+                          px={1}
+                        >
+                          {effect.item.rarity.toUpperCase()}
+                        </Badge>
+                        {effect.item.modifiers && effect.item.modifiers.length > 0 && (
+                          <>
+                            {effect.item.modifiers.map(modId => {
+                              const mod = getModifierById(modId)
+                              return mod ? (
+                                <Badge
+                                  key={modId}
+                                  fontSize="2xs"
+                                  style={{ color: mod.colorLight, backgroundColor: mod.backgroundColor }}
+                                  px={1}
+                                >
+                                  {mod.name.toUpperCase()}
+                                </Badge>
+                              ) : null
+                            })}
+                          </>
+                        )}
+                      </>
+                    )}
                     {/* Show badges for crits and dodges */}
                     {effect.type === 'damage' && effect.damageBreakdown && (
                       <>
@@ -206,49 +246,6 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
                       </>
                     )}
                   </HStack>
-                  {effect.item && (
-                    <HStack spacing={2} mt={1} align="center" flexWrap="wrap">
-                      <Box flexShrink={0} w="36px" h="36px">
-                        <ItemSlot item={effect.item} iconOnly size="sm" isClickable />
-                      </Box>
-                      <VStack align="start" spacing={0.5}>
-                        <HStack spacing={1} flexWrap="wrap" align="center">
-                          <Text
-                            color={RARITY_COLORS[effect.item.rarity]?.text || 'gray.300'}
-                            fontSize="xs"
-                            fontWeight="semibold"
-                          >
-                            {effect.item.name}
-                          </Text>
-                          <Badge
-                            fontSize="2xs"
-                            bg={RARITY_COLORS[effect.item.rarity]?.bg || 'gray.700'}
-                            color="white"
-                            px={1}
-                          >
-                            {effect.item.rarity.toUpperCase()}
-                          </Badge>
-                        </HStack>
-                        {effect.item.modifiers && effect.item.modifiers.length > 0 && (
-                          <HStack spacing={1} flexWrap="wrap">
-                            {effect.item.modifiers.map(modId => {
-                              const mod = getModifierById(modId)
-                              return mod ? (
-                                <Badge
-                                  key={modId}
-                                  fontSize="2xs"
-                                  style={{ color: mod.colorLight, backgroundColor: mod.backgroundColor }}
-                                  px={1}
-                                >
-                                  {mod.name.toUpperCase()}
-                                </Badge>
-                              ) : null
-                            })}
-                          </HStack>
-                        )}
-                      </VStack>
-                    </HStack>
-                  )}
                 </VStack>
               </MotionHStack>
             ))}

@@ -668,7 +668,7 @@ export function resolveEventOutcome(
             type: 'item',
             target: [],
             item: generatedItem,
-            description: `Found ${generatedItem.name}`
+            description: `Found `
           })
         }
         break
@@ -688,7 +688,7 @@ export function resolveEventOutcome(
               type: 'item',
               target: [],
               item: consumableWithId as unknown as Item,
-              description: `Found ${consumable.name}`
+              description: `Found `
             })
           }
         }
