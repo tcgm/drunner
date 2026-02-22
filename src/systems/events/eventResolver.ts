@@ -1,8 +1,9 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { generateItem, generateSetItemFromTemplate } from '@/systems/loot/lootGenerator'
+import { generateItem, generateSetItemFromTemplate, generateUniqueItemFromTemplate } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem, canUpgradeMaterial, canUpgradeRarity } from '@/systems/loot/itemUpgrader'
 import { ALL_SET_ITEMS, getRandomSetItemBySetId } from '@/data/items/sets'
+import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
@@ -174,10 +175,34 @@ function generateItemFromSpec(spec: {
     console.warn(`[Item Generation] setId "${spec.setId}" not found. Generating random item instead.`)
   }
 
-  // Handle literal unique item import
+  // Handle literal unique item import - route through proper V3 generation for rarity rolling & stat scaling
   if (spec.uniqueItem && typeof spec.uniqueItem === 'object') {
+    const template = spec.uniqueItem
+    // Check if it's a set item
+    const isSetItem = ALL_SET_ITEMS.some(item => item.name === template.name)
+    if (isSetItem) {
+      return generateSetItemFromTemplate(
+        template,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
+    }
+    // Check if it's a standalone unique
+    const isUniqueItem = ALL_UNIQUE_ITEMS.some(item => item.name === template.name)
+    if (isUniqueItem) {
+      return generateUniqueItemFromTemplate(
+        template,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
+    }
+    // Fallback: unknown template, spread as-is
     return {
-      ...spec.uniqueItem,
+      ...template,
       id: uuidv4(),
     }
   }

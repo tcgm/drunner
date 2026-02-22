@@ -556,6 +556,37 @@ export function generateSetItemFromTemplate(
 }
 
 /**
+ * Generate a specific unique item from a template with proper rarity rolling and V3 generation.
+ * Used by event systems that need to create a guaranteed unique item with correct rarity variance.
+ */
+export function generateUniqueItemFromTemplate(
+  uniqueTemplate: Omit<Item, 'id'>,
+  depth: number,
+  overrideMinRarity?: ItemRarity,
+  overrideMaxRarity?: ItemRarity,
+  modifiers: string[] = []
+): Item {
+  const { minRarity: templateMin, maxRarity: templateMax } = getUniqueItemRarityConstraints(uniqueTemplate)
+  const itemRarity = selectRarity(
+    depth,
+    overrideMinRarity || templateMin,
+    overrideMaxRarity || templateMax
+  )
+  const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
+
+  const v3Item: UniqueItemV3 = {
+    version: 3,
+    id: uuidv4(),
+    itemType: 'unique',
+    templateId,
+    rarity: itemRarity,
+    modifiers: modifiers.length > 0 ? modifiers : undefined
+  }
+
+  return hydrateItem(v3Item)
+}
+
+/**
  * Repair an item's name if it has a generic name
  * This is used to fix items loaded from old saves that may have incorrect names
  * Attempts to extract material from name and base from description
