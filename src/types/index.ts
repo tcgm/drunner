@@ -187,6 +187,7 @@ export interface Item {
   // Template-only fields for rarity constraints (not stored on actual items)
   minRarity?: ItemRarity  // Minimum rarity this item can roll at
   maxRarity?: ItemRarity  // Maximum rarity this item can roll at
+  dropChance?: number     // Per-unique override drop chance (0–1). Bypasses the rarity-wide base chance.
 }
 
 export interface Consumable extends Item {

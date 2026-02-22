@@ -277,11 +277,30 @@ export const GAME_CONFIG = {
   // Loot Generation
   loot: {
     baseItemValue: 50, // Base value for crafted items
+    // Base chance to roll a unique instead of a procedural item when a given rarity is picked.
+    // Items with a per-item `dropChance` field are excluded from this pool and roll independently.
+    // Rarities omitted here (or set to 0) produce no uniques via the general pool.
     uniqueChances: {
-      epic: 0.15, // 15% chance for epic uniques
-      legendary: 0.30, // 30% chance for legendary uniques
-      mythic: 0.50, // 50% chance for mythic uniques
-    },
+      rare:          0.02, // 2%
+      veryRare:      0.04, // 4%
+      magical:       0.06, // 6%
+      elite:         0.08, // 8%
+      epic:          0.15, // 15%
+      legendary:     0.30, // 30%
+      mythic:        0.50, // 50%
+      mythicc:       0.55, // 55%
+      artifact:      0.60, // 60%
+      divine:        0.65, // 65%
+      celestial:     0.70, // 70%
+      realityAnchor: 0.75, // 75%
+      structural:    0.80, // 80%
+      singularity:   0.85, // 85%
+      void:          0.90, // 90%
+      elder:         0.90, // 90%
+      layer:         0.95, // 95%
+      plane:         0.95, // 95%
+      author:        1.00, // 100% – author-tier items are always unique
+    } as Partial<Record<import('@/types').ItemRarity, number>>,
     setChance: 0.05, // 5% chance for set item drops
 
     // Rarities that can never appear in procedural loot drops regardless of floor

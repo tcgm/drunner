@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
 import type { BaseItemTemplate } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
-import { getRandomUnique, ALL_UNIQUE_ITEMS, getUniqueItemRarityConstraints } from '@data/items/uniques'
+import { selectUniqueForLoot, getRandomUnique, ALL_UNIQUE_ITEMS, getUniqueItemRarityConstraints } from '@data/items/uniques'
 import { getRandomSetItem, ALL_SET_ITEMS, getSetIdFromItemName, getSetItemRarityConstraints } from '@data/items/sets'
 import { applyModifiers, getModifierById } from '@data/items/mods'
 import { hydrateItem } from '@/utils/itemHydration'
@@ -36,9 +36,6 @@ const LOOT_CONFIG = {
     accessory1: 15,
     accessory2: 15,
   },
-
-  // Chance for a unique item instead of procedural (by rarity)
-  uniqueChance: GAME_CONFIG.loot.uniqueChances,
 
   // Chance for set items (independent roll, very rare)
   setChance: GAME_CONFIG.loot.setChance,
@@ -379,39 +376,37 @@ export function generateItem(
     }
   }
   
-  // Check if we should generate a unique item
-  const uniqueChances: Record<string, number> = LOOT_CONFIG.uniqueChance
-  if (rarity in uniqueChances && Math.random() < uniqueChances[rarity]) {
-    const uniqueTemplate = getRandomUnique(rarity)
-    if (uniqueTemplate) {
-      // Generate unique item with proper type matching if possible
-      if (!forceType || 
-          uniqueTemplate.type === forceType ||
-          ((forceType === 'accessory1' || forceType === 'accessory2') && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
-        
-        // Get rarity constraints for this unique item
-        const { minRarity: uniqueMinRarity, maxRarity: uniqueMaxRarity } = getUniqueItemRarityConstraints(uniqueTemplate)
+  // Check if we should generate a unique item (two-phase: overrides first, then general pool)
+  const baseUniqueChance = (GAME_CONFIG.loot.uniqueChances as Partial<Record<string, number>>)[rarity] ?? 0
+  const uniqueTemplate = selectUniqueForLoot(rarity, baseUniqueChance)
+  if (uniqueTemplate) {
+    // Generate unique item with proper type matching if possible
+    if (!forceType || 
+        uniqueTemplate.type === forceType ||
+        ((forceType === 'accessory1' || forceType === 'accessory2') && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
+      
+      // Get rarity constraints for this unique item
+      const { minRarity: uniqueMinRarity, maxRarity: uniqueMaxRarity } = getUniqueItemRarityConstraints(uniqueTemplate)
 
-        // Roll rarity within the item's allowed range
-        const itemRarity = selectRarity(adjustedDepth, uniqueMinRarity, uniqueMaxRarity)
+      // Roll rarity within the item's allowed range
+      const itemRarity = selectRarity(adjustedDepth, uniqueMinRarity, uniqueMaxRarity)
 
-        // Generate V3 unique item
-        const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
-        
-        const v3Item: UniqueItemV3 = {
-          version: 3,
-          id: uuidv4(),
-          itemType: 'unique',
-          templateId,
-          rarity: itemRarity,  // Store rolled rarity to scale stats
-          modifiers: modifiers.length > 0 ? modifiers : undefined
-        }
-        
-        // Hydrate and return
-        return hydrateItem(v3Item)
+      // Generate V3 unique item
+      const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
+      
+      const v3Item: UniqueItemV3 = {
+        version: 3,
+        id: uuidv4(),
+        itemType: 'unique',
+        templateId,
+        rarity: itemRarity,  // Store rolled rarity to scale stats
+        modifiers: modifiers.length > 0 ? modifiers : undefined
       }
-      // If forced type doesn't match unique, generate procedural item instead
+      
+      // Hydrate and return
+      return hydrateItem(v3Item)
     }
+    // If forced type doesn't match unique, fall through to procedural generation
   }
   
   // Determine if we have a forced base template or material
