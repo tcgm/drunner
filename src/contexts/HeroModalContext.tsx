@@ -3,6 +3,11 @@ import type { Hero } from '@/types'
 import HeroModal from '@/components/party/HeroModal'
 import { useGameStore } from '@/core/gameStore'
 
+// HMR: context identity must be stable — force full page reload when this module changes
+if (import.meta.hot) {
+  import.meta.hot.decline()
+}
+
 interface HeroModalContextType {
   openHeroModal: (hero: Hero, isDungeon?: boolean) => void
   closeHeroModal: () => void

@@ -2,6 +2,11 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 import type { Item } from '@/types'
 import { ItemDetailModal } from '@/components/ui/ItemDetailModal'
 
+// HMR: context identity must be stable — force full page reload when this module changes
+if (import.meta.hot) {
+  import.meta.hot.decline()
+}
+
 interface ItemDetailModalContextType {
     openItemDetail: (item: Item) => void
     closeItemDetail: () => void
