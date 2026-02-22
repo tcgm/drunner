@@ -1,6 +1,8 @@
 import type { Item } from '@/types'
 import { GiPlanetCore } from 'react-icons/gi'
 
+import celestialRaimentSvg from '@/assets/icons/items/celestialRaiment.svg'
+
 /**
  * Celestial Raiment - Mythic divine robes
  */
@@ -11,7 +13,7 @@ export const CELESTIAL_RAIMENT: Omit<Item, 'id'> = {
   rarity: 'mythic',
   minRarity: 'epic',
   maxRarity: 'divine',
-  icon: GiPlanetCore,
+  icon: celestialRaimentSvg,
   stats: {
     defense: 120,
     maxHp: 150,

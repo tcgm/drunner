@@ -13,6 +13,7 @@ import { useGameStore } from '@/core/gameStore'
 import { PotionShopModal } from '../party/PotionShopModal'
 import { MarketHallModal } from '../party/MarketHallModal'
 import { BankInventoryModal } from '../party/BankInventoryModal'
+import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
 import type { Consumable } from '@/types'
 
@@ -41,7 +42,30 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
   const gridRowSizes = isMobile ? mobileTownGridRowSizes : townGridRowSizes
 
   // Game store
-  const { bankGold, alkahest, metaXp, party, purchasePotion, spendBankGold, bankInventory } = useGameStore()
+  const {
+    bankGold, alkahest, metaXp, party, purchasePotion, spendBankGold,
+    bankInventory, bankStorageSlots,
+    overflowInventory, dungeon,
+    keepOverflowItem, discardOverflowItem, clearOverflow, expandBankStorage,
+    finalizeRunItemTransfer,
+  } = useGameStore()
+
+  // On mount: finalize any stranded dungeon item transfer, then surface overflow modal
+  const { isOpen: isOverflowOpen, onOpen: onOverflowOpen, onClose: onOverflowClose } = useDisclosure()
+
+  React.useEffect(() => {
+    if (dungeon.inventory.length > 0) {
+      finalizeRunItemTransfer()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
+    if (overflowInventory.length > 0) {
+      onOverflowOpen()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [overflowInventory.length])
 
   // development grid debug
   const devMode = import.meta.env.DEV
@@ -299,6 +323,20 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         onEquipItem={() => {}} // No equipping from town hub bank
         selectedHeroIndex={null}
         party={party}
+      />
+
+      {/* Overflow Inventory Modal - shown when last run items exceeded bank capacity */}
+      <OverflowInventoryModal
+        isOpen={isOverflowOpen}
+        onClose={onOverflowClose}
+        overflowInventory={overflowInventory}
+        bankInventory={bankInventory}
+        bankStorageSlots={bankStorageSlots}
+        bankGold={bankGold}
+        onExpandBank={expandBankStorage}
+        onKeepItem={keepOverflowItem}
+        onDiscardItem={discardOverflowItem}
+        onClearAll={clearOverflow}
       />
     </Box>
   )

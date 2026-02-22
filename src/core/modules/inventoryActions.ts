@@ -38,6 +38,8 @@ export interface InventoryActionsSlice {
   // V2 item migration
   convertV2Item: (itemId: string, materialId: string, baseTemplateId: string) => void
   skipV2Item: (itemId: string) => void
+  // Post-run cleanup
+  finalizeRunItemTransfer: () => void
 }
 
 export const createInventoryActions: StateCreator<
@@ -445,6 +447,32 @@ export const createInventoryActions: StateCreator<
 
   clearOverflow: () =>
     set({ overflowInventory: [] }),
+
+  finalizeRunItemTransfer: () =>
+    set((state) => {
+      const pendingItems = state.dungeon.inventory
+      if (pendingItems.length === 0) return {}
+
+      console.log(`[FinalizeRunItemTransfer] Processing ${pendingItems.length} stranded dungeon items`)
+
+      const availableSlots = state.bankStorageSlots - state.bankInventory.length
+      const itemsToBank = pendingItems.slice(0, availableSlots)
+      const itemsToOverflow = pendingItems.slice(availableSlots)
+
+      const result: Partial<GameState> = {
+        dungeon: {
+          ...state.dungeon,
+          inventory: [],
+        },
+        bankInventory: [...state.bankInventory, ...itemsToBank],
+      }
+
+      if (itemsToOverflow.length > 0) {
+        result.overflowInventory = [...state.overflowInventory, ...itemsToOverflow]
+      }
+
+      return result
+    }),
 
   discardItems: (itemIds) =>
     set((state) => {
