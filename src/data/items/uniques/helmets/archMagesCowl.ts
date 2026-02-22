@@ -1,6 +1,8 @@
 import { GiWizardFace } from 'react-icons/gi'
 import type { Item } from '@/types'
 
+import archmageCowlIcon from '@/assets/icons/items/archmageCowl.svg'
+
 /**
  * Archmage's Cowl - Epic mage helmet
  * Suffused with centuries of concentrated arcane study.
@@ -12,7 +14,7 @@ export const ARCHMAGES_COWL: Omit<Item, 'id'> = {
   rarity: 'epic',
   minRarity: 'uncommon',
   maxRarity: 'artifact',
-  icon: GiWizardFace,
+  icon: archmageCowlIcon,
   stats: {
     magicPower: 90,
     wisdom: 55,
