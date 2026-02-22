@@ -7,6 +7,7 @@ export * from './arcane'
 export * from './titan'
 export * from './shadow'
 export * from './bunny'
+export * from './santa'
 
 import { KITSUNE_SET_ITEMS, KITSUNE_SET_BONUSES, KITSUNE_SET_NAME } from './kitsune'
 import { DRACONIC_SET_ITEMS, DRACONIC_SET_BONUSES, DRACONIC_SET_NAME } from './draconic'
@@ -14,6 +15,7 @@ import { ARCANE_SET_ITEMS, ARCANE_SET_BONUSES, ARCANE_SET_NAME } from './arcane'
 import { TITAN_SET_ITEMS, TITAN_SET_BONUSES, TITAN_SET_NAME } from './titan'
 import { SHADOW_SET_ITEMS, SHADOW_SET_BONUSES, SHADOW_SET_NAME } from './shadow'
 import { BUNNY_SET_ITEMS, BUNNY_SET_BONUSES, BUNNY_SET_NAME } from './bunny'
+import { SANTA_SET_ITEMS, SANTA_SET_BONUSES, SANTA_SET_NAME } from './santa'
 
 // All set items
 export const ALL_SET_ITEMS: Array<Omit<Item, 'id'>> = [
@@ -23,6 +25,7 @@ export const ALL_SET_ITEMS: Array<Omit<Item, 'id'>> = [
   ...TITAN_SET_ITEMS,
   ...SHADOW_SET_ITEMS,
   ...BUNNY_SET_ITEMS,
+  ...SANTA_SET_ITEMS,
 ]
 
 // Set definitions with bonuses
@@ -69,6 +72,11 @@ export const ALL_SETS: SetDefinition[] = [
     name: BUNNY_SET_NAME,
     items: BUNNY_SET_ITEMS,
     bonuses: BUNNY_SET_BONUSES,
+  },
+  {
+    name: SANTA_SET_NAME,
+    items: SANTA_SET_ITEMS,
+    bonuses: SANTA_SET_BONUSES,
   },
 ]
 
