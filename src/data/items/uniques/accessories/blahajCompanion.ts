@@ -11,7 +11,7 @@ export const BLAHAJ_COMPANION: Omit<Item, 'id'> = {
   type: 'accessory1',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: Shork,
   stats: {
     maxHp: 100,

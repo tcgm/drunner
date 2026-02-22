@@ -10,7 +10,7 @@ export const AMULET_OF_RESURRECTION: Omit<Item, 'id'> = {
   type: 'accessory2',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiAnkh,
   stats: {
     maxHp: 150,

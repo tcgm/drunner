@@ -10,7 +10,7 @@ export const SHADOWWEAVE_CLOAK: Omit<Item, 'id'> = {
   type: 'armor',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiCloak,
   stats: {
     defense: 60,

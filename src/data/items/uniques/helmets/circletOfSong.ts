@@ -11,7 +11,7 @@ export const DIADEM_OF_DEVOTION: Omit<Item, 'id'> = {
   type: 'helmet',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'legendary',
+  maxRarity: 'artifact',
   icon: GiHolySymbol,
   stats: {
     wisdom: 80,

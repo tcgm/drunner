@@ -10,7 +10,7 @@ export const TITANS_BULWARK: Omit<Item, 'id'> = {
   type: 'armor',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiShield,
   stats: {
     defense: 70,

@@ -11,7 +11,7 @@ export const ORB_OF_ANCIENT_POWER: Omit<Item, 'id'> = {
   type: 'accessory2',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiCrystalBall,
   stats: {
     magicPower: 120,

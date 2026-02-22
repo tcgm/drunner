@@ -11,7 +11,7 @@ export const MINSTRELS_CROWN: Omit<Item, 'id'> = {
   type: 'helmet',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'legendary',
+  maxRarity: 'artifact',
   icon: GiMusicalNotes,
   stats: {
     charisma: 85,

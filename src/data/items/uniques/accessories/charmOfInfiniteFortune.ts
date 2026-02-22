@@ -10,7 +10,7 @@ export const CHARM_OF_INFINITE_FORTUNE: Omit<Item, 'id'> = {
   type: 'accessory1',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiClover,
   stats: {
     luck: 40,

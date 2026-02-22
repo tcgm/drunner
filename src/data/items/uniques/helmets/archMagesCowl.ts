@@ -11,7 +11,7 @@ export const ARCHMAGES_COWL: Omit<Item, 'id'> = {
   type: 'helmet',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiWizardFace,
   stats: {
     magicPower: 90,

@@ -11,7 +11,7 @@ export const JESTERS_MOTLEY: Omit<Item, 'id'> = {
   type: 'armor',
   rarity: 'rare',
   minRarity: 'uncommon',
-  maxRarity: 'legendary',
+  maxRarity: 'artifact',
   icon: GiDramaMasks,
   stats: {
     charisma: 50,

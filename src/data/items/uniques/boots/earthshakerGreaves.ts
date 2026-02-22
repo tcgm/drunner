@@ -10,7 +10,7 @@ export const EARTHSHAKER_GREAVES: Omit<Item, 'id'> = {
   type: 'boots',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiSpikedArmor,
   stats: {
     defense: 45,

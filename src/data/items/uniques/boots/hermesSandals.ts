@@ -10,7 +10,7 @@ export const HERMES_SANDALS: Omit<Item, 'id'> = {
   type: 'boots',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiWingfoot,
   stats: {
     speed: 100,

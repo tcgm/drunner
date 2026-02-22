@@ -10,7 +10,7 @@ export const DRAGONHEART_PLATE: Omit<Item, 'id'> = {
   type: 'armor',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiDragonHead,
   stats: {
     defense: 100,
