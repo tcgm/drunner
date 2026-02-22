@@ -27,19 +27,6 @@ function getRarityOrder(): ItemRarity[] {
  * Loot generation configuration
  */
 const LOOT_CONFIG = {
-  // Base rarity weights (will be modified by depth)
-  baseRarityWeights: {
-    junk: 15,
-    common: 40,
-    uncommon: 25,
-    rare: 12,
-    epic: 5,
-    legendary: 2.5,
-    mythic: 0.5,
-    artifact: 0,  // Stretch goal - not yet implemented
-    set: 0,       // Handled separately
-  },
-
   // Item type weights (what kind of item to generate)
   itemTypeWeights: {
     weapon: 20,
@@ -62,51 +49,50 @@ const LOOT_CONFIG = {
 }
 
 /**
- * Adjust rarity weights based on dungeon depth
+ * Adjust rarity weights based on dungeon depth.
+ *
+ * Available rarities at `depth` = all rarities with minFloor <= depth, minus
+ * excludedFromLoot, sorted by minFloor (ascending).
+ * That list is divided into `lootRarityBuckets` equal-size segments.
+ * The active floor band's bucketWeights[i] is distributed evenly across all
+ * rarities inside segment i — no rarity names appear in the config.
  */
 function getDepthAdjustedWeights(depth: number): Partial<Record<ItemRarity, number>> {
-  const weights: Partial<Record<ItemRarity, number>> = { ...LOOT_CONFIG.baseRarityWeights }
+  const { floorBands, lootRarityBuckets, excludedFromLoot } = GAME_CONFIG.loot
+  const excluded = new Set<string>(excludedFromLoot)
 
-  if (depth <= 5) {
-    // Early floors: mostly junk and common
-    weights.junk = 40
-    weights.common = 40
-    weights.uncommon = 20
-    weights.rare = 0
-    weights.epic = 0
-    weights.legendary = 0
-    weights.mythic = 0
-    weights.artifact = 0
-  } else if (depth <= 10) {
-    // Early-mid floors
-    weights.junk = 20
-    weights.common = 40
-    weights.uncommon = 30
-    weights.rare = 10
-    weights.epic = 0
-    weights.legendary = 0
-    weights.mythic = 0
-    weights.artifact = 0
-  } else if (depth <= 20) {
-    // Mid floors
-    weights.junk = 5
-    weights.common = 25
-    weights.uncommon = 40
-    weights.rare = 20
-    weights.epic = 8
-    weights.legendary = 2
-    weights.mythic = 0
-    weights.artifact = 0
-  } else {
-    // Deep floors: shift toward higher rarities
-    weights.junk = 0
-    weights.common = 10
-    weights.uncommon = 20
-    weights.rare = 30
-    weights.epic = 25
-    weights.legendary = 12
-    weights.mythic = 3
-    weights.artifact = 0
+  // Find highest band whose minFloor has been reached
+  let activeBand = floorBands[0]
+  for (const band of floorBands) {
+    if (depth >= band.minFloor) activeBand = band
+  }
+
+  // Build the live rarity list: unlocked at this floor, not excluded, sorted low→high
+  const available = (Object.entries(RARITY_CONFIGS) as [ItemRarity, { minFloor: number }][])
+    .filter(([rarity, cfg]) => depth >= cfg.minFloor && !excluded.has(rarity))
+    .sort(([, a], [, b]) => a.minFloor - b.minFloor)
+    .map(([rarity]) => rarity)
+
+  if (available.length === 0) return {}
+
+  const bucketCount = lootRarityBuckets
+  const weights: Partial<Record<ItemRarity, number>> = {}
+
+  for (let b = 0; b < bucketCount; b++) {
+    const bucketWeight = activeBand.bucketWeights[b] ?? 0
+    if (bucketWeight <= 0) continue
+
+    // Slice this bucket's rarities from the sorted list
+    const start = Math.round((b / bucketCount) * available.length)
+    const end   = Math.round(((b + 1) / bucketCount) * available.length)
+    const bucket = available.slice(start, end)
+    if (bucket.length === 0) continue
+
+    // Spread the bucket's total weight evenly across its members
+    const perRarity = bucketWeight / bucket.length
+    for (const rarity of bucket) {
+      weights[rarity] = (weights[rarity] ?? 0) + perRarity
+    }
   }
 
   return weights
@@ -116,20 +102,24 @@ function getDepthAdjustedWeights(depth: number): Partial<Record<ItemRarity, numb
  * Select a random rarity based on weights
  */
 function selectRarity(depth: number, minRarity?: ItemRarity, maxRarity?: ItemRarity): ItemRarity {
+  // weights already exclude `excludedFromLoot` rarities (handled in getDepthAdjustedWeights)
   const weights = getDepthAdjustedWeights(depth)
-  
+  const excluded = new Set<string>(GAME_CONFIG.loot.excludedFromLoot)
+
   // Get rarity order dynamically from the rarity system (sorted by minFloor)
   const rarityOrder = getRarityOrder()
   const minIndex = minRarity ? rarityOrder.indexOf(minRarity) : 0
   const maxIndex = maxRarity ? rarityOrder.indexOf(maxRarity) : rarityOrder.length - 1
-  
-  // If min/max rarities are specified but not in weights, use them directly
+
+  // If min/max rarities are specified but not in weights, pick randomly from that range
+  // (events can force high-tier rarities that are above the current floor band)
   if (minRarity && maxRarity && minIndex >= 0 && maxIndex >= 0) {
-    // For high-tier rarities not in the weight table, pick randomly from the range
-    const validRarities = rarityOrder.slice(minIndex, maxIndex + 1)
-    return validRarities[Math.floor(Math.random() * validRarities.length)]
+    const validRarities = rarityOrder
+      .slice(minIndex, maxIndex + 1)
+      .filter(r => !excluded.has(r))
+    return validRarities[Math.floor(Math.random() * validRarities.length)] ?? (minRarity || 'common')
   }
-  
+
   const filteredWeights: Record<string, number> = {}
   for (const [rarity, weight] of Object.entries(weights)) {
     const rarityIndex = rarityOrder.indexOf(rarity as ItemRarity)

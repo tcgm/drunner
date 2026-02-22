@@ -283,6 +283,27 @@ export const GAME_CONFIG = {
       mythic: 0.50, // 50% chance for mythic uniques
     },
     setChance: 0.05, // 5% chance for set item drops
+
+    // Rarities that can never appear in procedural loot drops regardless of floor
+    excludedFromLoot: ['narrative', 'author', 'plane', 'layer', 'elder', 'void', 'singularity', 'structural', 'realityAnchor'] as const,
+
+    // The available rarity list at a given floor (all rarities with minFloor <= floor,
+    // minus excludedFromLoot) is divided into this many equal-size bucket segments,
+    // ordered from lowest tier (bucket 0) to highest tier (bucket N-1).
+    lootRarityBuckets: 4,
+
+    // Floor bands: each band is active from minFloor until the next band's minFloor.
+    // bucketWeights[0] = bottom segment of available rarities (lowest tiers),
+    // bucketWeights[N-1] = top segment (highest tiers unlocked at this floor).
+    // Values are relative weights — normalised automatically at runtime.
+    // No rarity names needed: the bucket boundaries shift as new rarities unlock.
+    floorBands: [
+      { minFloor: 1,  bucketWeights: [70, 30,  0,  0] },
+      { minFloor: 15, bucketWeights: [30, 45, 25,  0] },
+      { minFloor: 30, bucketWeights: [ 5, 35, 45, 15] },
+      { minFloor: 55, bucketWeights: [ 0, 10, 45, 45] },
+      { minFloor: 80, bucketWeights: [ 0,  0, 30, 70] },
+    ],
   },
 
   // Multipliers (adjustable game balance)
