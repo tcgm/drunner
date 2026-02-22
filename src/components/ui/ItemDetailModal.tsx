@@ -20,7 +20,8 @@ import { Icon as ChakraIcon } from '@chakra-ui/react'
 import { keyframes } from '@emotion/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Item } from '@/types'
+import type { Item, Consumable, ConsumableEffect } from '@/types'
+import { getConsumableEffects } from '@/utils/itemDataResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
 import { getModifierById } from '@/data/items/mods'
@@ -139,6 +140,43 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
 
   // Get unique effect if this item has one
   const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
+
+  // Get consumable effects if this is a consumable (resolves effects from metadata if needed)
+  const consumableEffects = useMemo(() => {
+    if ('consumableType' in restoredItem) {
+      return getConsumableEffects(restoredItem as Consumable)
+    }
+    return null
+  }, [restoredItem])
+
+  const formatConsumableEffect = (effect: ConsumableEffect): string => {
+    const targetStr = effect.target && effect.target !== 'self'
+      ? ` (${effect.target.replace(/-/g, ' ')})`
+      : ''
+    switch (effect.type) {
+      case 'heal':
+        return `Heals ${effect.value ?? 0} HP${targetStr}`
+      case 'hot':
+        return `Regenerates ${effect.value ?? 0} HP per event for ${effect.duration ?? 0} events/turns${targetStr}`
+      case 'buff': {
+        const statName = effect.stat
+          ? effect.stat === 'maxHp' ? 'Max HP' : effect.stat.charAt(0).toUpperCase() + effect.stat.slice(1)
+          : 'STAT'
+        const durationStr = effect.isPermanent ? 'permanently' : `for ${effect.duration ?? 0} events/turns`
+        return `+${effect.value ?? 0} ${statName} ${durationStr}${targetStr}`
+      }
+      case 'revive':
+        return `Revives with ${effect.value ?? 0} HP${targetStr}`
+      case 'cleanse':
+        return `Cleanses all debuffs${targetStr}`
+      case 'damage':
+        return `Deals ${effect.value ?? 0} damage${targetStr}`
+      case 'special':
+        return `Special effect${targetStr}`
+      default:
+        return 'Unknown effect'
+    }
+  }
 
   // Use set theme if item is part of a set
   const effectiveTheme = setName ? RARITY_COLORS.set : rarityTheme
@@ -335,6 +373,72 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 "{item.description}"
               </Text>
             </div>
+
+            {/* Consumable Effects */}
+            {consumableEffects && consumableEffects.length > 0 && (
+              <Box
+                className="item-detail-modal-consumable-effects"
+                w="full"
+                bg="rgba(72, 187, 120, 0.12)"
+                p={1}
+                borderRadius="xl"
+                borderWidth="2px"
+                borderColor="green.600"
+                boxShadow="0 0 12px rgba(72, 187, 120, 0.25)"
+                position="relative"
+                overflow="hidden"
+              >
+                <VStack spacing={1} align="start" position="relative" zIndex={1}>
+                  <HStack spacing={2}>
+                    <Icon as={GameIcons.GiHealthPotion} color="green.300" boxSize="clamp(18px, 1.8vw, 24px)" />
+                    <Text fontSize="md" fontWeight="bold" color="green.300">
+                      Effects
+                    </Text>
+                  </HStack>
+                  <VStack align="start" spacing={2} w="full" pl={2}>
+                    {consumableEffects.map((effect, i) => {
+                      const effectColor =
+                        effect.type === 'heal' || effect.type === 'hot' ? 'green.200' :
+                        effect.type === 'buff' ? 'blue.200' :
+                        effect.type === 'revive' ? 'yellow.200' :
+                        effect.type === 'cleanse' ? 'teal.200' :
+                        effect.type === 'damage' ? 'red.200' :
+                        'gray.300'
+                      const effectBorderColor =
+                        effect.type === 'heal' || effect.type === 'hot' ? '#38A169' :
+                        effect.type === 'buff' ? '#3182CE' :
+                        effect.type === 'revive' ? '#D69E2E' :
+                        effect.type === 'cleanse' ? '#319795' :
+                        effect.type === 'damage' ? '#E53E3E' :
+                        '#718096'
+                      return (
+                        <Box
+                          key={i}
+                          w="full"
+                          bg="rgba(0, 0, 0, 0.2)"
+                          p={2}
+                          borderRadius="md"
+                          borderLeft={`3px solid ${effectBorderColor}`}
+                        >
+                          <Text fontSize="sm" color={effectColor} fontWeight="semibold">
+                            {formatConsumableEffect(effect)}
+                          </Text>
+                        </Box>
+                      )
+                    })}
+                  </VStack>
+                  <HStack spacing={2} pl={2} pt={1}>
+                    <Text fontSize="xs" color={(restoredItem as Consumable).usableInCombat ? 'green.300' : 'red.400'}>
+                      {(restoredItem as Consumable).usableInCombat ? '⚔ Usable in combat' : '✗ Not usable in combat'}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">·</Text>
+                    <Text fontSize="xs" color={(restoredItem as Consumable).usableOutOfCombat ? 'green.300' : 'red.400'}>
+                      {(restoredItem as Consumable).usableOutOfCombat ? '🏕 Usable out of combat' : '✗ Not usable out of combat'}
+                    </Text>
+                  </HStack>
+                </VStack>
+              </Box>
+            )}
 
             {/* Set Information */}
             {setDefinition && (

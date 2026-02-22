@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { GiGoldBar as GiTreasure, GiSparkles, GiCursedStar } from 'react-icons/gi'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Item } from '@/types'
+import type { Item, Consumable, ConsumableEffect } from '@/types'
 import { useItemDetailModal } from '@/contexts/ItemDetailModalContext'
 import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
@@ -62,6 +62,35 @@ RARITY_GLOW_COLORS.cursed = 'rgba(75, 85, 99, 0.4)'
 RARITY_GLOW_COLORS.set = 'rgba(20, 184, 166, 0.5)'
 RARITY_COLORS.cursed = { text: '#6B7280', bg: '#111827', gem: '#4B5563' }
 RARITY_COLORS.set = { text: '#5EEAD4', bg: '#134E4A', gem: '#14B8A6' }
+
+function formatConsumableEffect(effect: ConsumableEffect): string {
+  const targetStr = effect.target && effect.target !== 'self'
+    ? ` (${effect.target.replace(/-/g, ' ')})`
+    : ''
+  switch (effect.type) {
+    case 'heal':
+      return `Heals ${effect.value ?? 0} HP${targetStr}`
+    case 'hot':
+      return `Regenerates ${effect.value ?? 0} HP/event for ${effect.duration ?? 0} events/turns${targetStr}`
+    case 'buff': {
+      const statName = effect.stat
+        ? effect.stat === 'maxHp' ? 'Max HP' : effect.stat.charAt(0).toUpperCase() + effect.stat.slice(1)
+        : 'STAT'
+      const durationStr = effect.isPermanent ? 'permanently' : `for ${effect.duration ?? 0} events/turns`
+      return `+${effect.value ?? 0} ${statName} ${durationStr}${targetStr}`
+    }
+    case 'revive':
+      return `Revives with ${effect.value ?? 0} HP${targetStr}`
+    case 'cleanse':
+      return `Cleanses all debuffs${targetStr}`
+    case 'damage':
+      return `Deals ${effect.value ?? 0} damage${targetStr}`
+    case 'special':
+      return `Special effect${targetStr}`
+    default:
+      return 'Unknown effect'
+  }
+}
 
 export const ItemSlot = memo(function ItemSlot({
   item,
@@ -263,6 +292,31 @@ export const ItemSlot = memo(function ItemSlot({
             </SimpleGrid>
           )}
         </>
+      )}
+      {'consumableType' in item && Array.isArray((item as Consumable).effects) && (item as Consumable).effects.length > 0 && (
+        <Box
+          w="full"
+          mt={1}
+          p={1}
+          bg="rgba(72, 187, 120, 0.12)"
+          borderRadius="md"
+          borderWidth="1px"
+          borderColor="green.600"
+        >
+          <Text fontSize="2xs" color="green.300" fontWeight="bold" mb={0.5}>
+            Effects:
+          </Text>
+          <VStack align="start" spacing={0}>
+            {(item as Consumable).effects.map((effect, i) => (
+              <Text key={i} fontSize="2xs" color="green.200">
+                • {formatConsumableEffect(effect)}
+              </Text>
+            ))}
+          </VStack>
+          <Text fontSize="2xs" color="gray.400" mt={0.5}>
+            {[(item as Consumable).usableInCombat && '⚔ Combat', (item as Consumable).usableOutOfCombat && '🏕 Camp'].filter(Boolean).join(' · ')}
+          </Text>
+        </Box>
       )}
       {item.isUnique && uniqueEffect && (
         <Box
