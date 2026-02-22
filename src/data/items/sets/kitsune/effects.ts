@@ -30,7 +30,7 @@ export const KITSUNE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
   description: 'Fox Spirit: 20% chance to gain +50% Speed for the battle',
   handler: (context) => {
-    const { party, sourceHero } = context
+    const { party, sourceHero, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -42,7 +42,7 @@ export const KITSUNE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
     }
     
     // Apply speed boost (temporary for combat)
-    const speedBoost = Math.floor(sourceHero.stats.speed * 0.5)
+    const speedBoost = Math.floor(sourceHero.stats.speed * 0.5 * effectMultiplier)
     sourceHero.stats.speed += speedBoost
     
     return {

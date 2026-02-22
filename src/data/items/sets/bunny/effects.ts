@@ -34,7 +34,7 @@ export const BUNNY_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
   description: 'Captivating Presence: 25% chance to gain +50% Charisma for the battle',
   handler: (context) => {
-    const { party, sourceHero } = context
+    const { party, sourceHero, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -46,7 +46,7 @@ export const BUNNY_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
     }
     
     // Apply charisma boost (temporary for combat)
-    const charismaBoost = Math.floor(sourceHero.stats.charisma * 0.5)
+    const charismaBoost = Math.floor(sourceHero.stats.charisma * 0.5 * effectMultiplier)
     sourceHero.stats.charisma += charismaBoost
     
     return {

@@ -30,7 +30,7 @@ export const TITAN_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onDamageTaken'],
   description: 'Titan Endurance: 20% chance to reduce incoming damage by 50%',
   handler: (context) => {
-    const { party, sourceHero, damageAmount } = context
+    const { party, sourceHero, damageAmount, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive || !damageAmount) {
       return null
@@ -41,7 +41,7 @@ export const TITAN_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
       return null
     }
     
-    const damageReduction = Math.floor(damageAmount * 0.5)
+    const damageReduction = Math.floor(damageAmount * 0.5 * effectMultiplier)
     
     return {
       party,

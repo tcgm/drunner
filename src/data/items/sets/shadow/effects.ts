@@ -30,7 +30,7 @@ export const SHADOW_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
   description: 'Assassin\'s Mark: 35% chance to gain +100% Luck and guaranteed critical strikes for the first attack',
   handler: (context) => {
-    const { party, sourceHero } = context
+    const { party, sourceHero, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -41,8 +41,8 @@ export const SHADOW_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
       return null
     }
     
-    // Double luck for the battle
-    const luckBoost = sourceHero.stats.luck
+    // Double luck for the battle, scaled by effectMultiplier
+    const luckBoost = Math.floor(sourceHero.stats.luck * effectMultiplier)
     sourceHero.stats.luck += luckBoost
     
     return {

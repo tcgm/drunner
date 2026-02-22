@@ -35,8 +35,9 @@
  * - SET_UNIQUE_EFFECT: Triggered effect when any piece rolls as unique (15% chance)
  */
 
-import type { Hero, Item, Consumable } from '@/types'
+import type { Hero, Item, Consumable, ItemRarity } from '@/types'
 import type { ResolvedOutcome } from '@/systems/events/eventResolver'
+import { getRarityConfig } from '@/systems/rarity/raritySystem'
 import { KITSUNE_SET_UNIQUE_EFFECT } from '@/data/items/sets/kitsune/effects'
 import { TITAN_SET_UNIQUE_EFFECT } from '@/data/items/sets/titan/effects'
 import { ARCANE_SET_UNIQUE_EFFECT } from '@/data/items/sets/arcane/effects'
@@ -71,6 +72,10 @@ export interface UniqueEffectContext {
   targetHero?: Hero       // Target of an effect
   damageAmount?: number
   healAmount?: number
+  // Rarity scaling: normalized so legendary unique = 1.0
+  itemRarity?: ItemRarity
+  isUniqueRoll?: boolean
+  effectMultiplier?: number  // Multiply effect magnitudes by this for rarity scaling
 }
 
 export interface UniqueEffectResult {
@@ -88,6 +93,26 @@ export type UniqueEffectHandler = (
   context: UniqueEffectContext
 ) => UniqueEffectResult | null
 
+/**
+ * Returns a rarity-based effect multiplier normalized so that a common non-unique = 1.0.
+ * Higher-rarity items produce stronger effects; lower-rarity items are slightly weaker.
+ * isUnique should be true for standalone unique items and set items rolled as unique.
+ *
+ * Examples (common = 1.0):
+ *   common          → 1.0
+ *   rare            → 2.0
+ *   epic            → 3.5
+ *   legendary       → 4.0
+ *   legendary+unique→ 5.2
+ *   mythic+unique   → 6.5
+ */
+export function getEffectMultiplier(rarity: ItemRarity, isUnique: boolean): number {
+  const UNIQUE_BOOST = 1.3
+  const rarityMultiplier = getRarityConfig(rarity).statMultiplierBase
+  // Common (statMultiplierBase = 1.0) non-unique is the baseline = 1.0
+  return rarityMultiplier * (isUnique ? UNIQUE_BOOST : 1.0)
+}
+
 export interface UniqueEffectDefinition {
   triggers: UniqueEffectTrigger[]
   handler: UniqueEffectHandler
@@ -104,7 +129,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onBossDefeat'],
     description: 'Resurrects a random dead party member with 50% HP after defeating a boss',
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
       
       // Must have an alive hero wearing it
       if (!sourceHero || !sourceHero.isAlive) {
@@ -120,7 +145,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       
       // Pick a random dead hero
       const randomDead = deadHeroes[Math.floor(Math.random() * deadHeroes.length)]
-      const resurrectionHp = Math.floor(randomDead.stats.maxHp * 0.5)
+      const resurrectionHp = Math.floor(randomDead.stats.maxHp * 0.5 * effectMultiplier)
       
       // Resurrect them
       randomDead.isAlive = true
@@ -143,8 +168,8 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onCombatStart', 'onDepthAdvance'],
     description: 'Lethal Radiation: Deals 8 damage to entire party at combat start and every depth advance',
     handler: (context) => {
-      const { party } = context
-      const radiationDamage = 8
+      const { party, effectMultiplier = 1.0 } = context
+      const radiationDamage = Math.max(1, Math.floor(8 * effectMultiplier))
       const deathMessages: string[] = []
       const affectedHeroes: string[] = []
       let totalDamage = 0
@@ -185,7 +210,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onCombatStart'],
     description: 'Eternal Flame: 30% chance to surge Magic Power by 60% for the battle',
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
@@ -196,7 +221,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       }
 
       const baseMagicPower = sourceHero.stats.magicPower ?? 0
-      const surgeAmount = Math.floor(baseMagicPower * 0.60)
+      const surgeAmount = Math.floor(baseMagicPower * 0.60 * effectMultiplier)
       sourceHero.stats.magicPower = baseMagicPower + surgeAmount
 
       return {
@@ -215,13 +240,13 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onBossDefeat'],
     description: 'Ancient Resonance: After defeating a boss, permanently gain +15 Magic Power',
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
       }
 
-      const gain = 15
+      const gain = Math.max(1, Math.floor(15 * effectMultiplier))
       sourceHero.stats.magicPower = (sourceHero.stats.magicPower ?? 0) + gain
 
       return {
@@ -240,7 +265,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onCombatStart'],
     description: 'Ancient Melody: 35% chance to heal each party member for 8% of their max HP',
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
@@ -255,7 +280,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
       party.forEach(hero => {
         if (hero && hero.isAlive) {
-          const healAmount = Math.floor(hero.stats.maxHp * 0.08)
+          const healAmount = Math.floor(hero.stats.maxHp * 0.08 * effectMultiplier)
           hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healAmount)
           healedIds.push(hero.id)
           totalHealed += healAmount
@@ -281,7 +306,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onBossDefeat'],
     description: 'Radiant Restoration: After defeating a boss, heals the most wounded party member for 25% of their max HP',
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
@@ -297,7 +322,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
         return currRatio < prevRatio ? curr : prev
       })
 
-      const healAmount = Math.floor(mostWounded.stats.maxHp * 0.25)
+      const healAmount = Math.floor(mostWounded.stats.maxHp * 0.25 * effectMultiplier)
       mostWounded.stats.hp = Math.min(mostWounded.stats.maxHp, mostWounded.stats.hp + healAmount)
 
       return {
@@ -317,7 +342,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onCombatStart'],
     description: "Battle Ballad: 40% chance to inspire the party, granting each member +25 Luck for the battle",
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
@@ -327,7 +352,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
         return null
       }
 
-      const luckBoost = 25
+      const luckBoost = Math.max(1, Math.floor(25 * effectMultiplier))
       const inspiredIds: string[] = []
 
       party.forEach(hero => {
@@ -365,7 +390,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onCombatStart'],
     description: "You Shall Not Pass: 30% chance to deny the first enemy attack of the battle entirely — it simply fails to land",
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
@@ -377,7 +402,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
       // Grant the wearer a temporary +999 defense spike for the first hit
       // (represented as a very large defense bonus that gets noted in message)
-      const wisdomBoost = Math.floor(sourceHero.stats.wisdom * 0.60)
+      const wisdomBoost = Math.floor(sourceHero.stats.wisdom * 0.60 * effectMultiplier)
       sourceHero.stats.wisdom += wisdomBoost
 
       return {
@@ -396,7 +421,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onCombatStart'],
     description: 'Face-melting Riff: 45% chance to unleash a devastating riff, boosting the wearer\'s Attack by 50% and Charisma by 40% for the battle',
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
@@ -406,8 +431,8 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
         return null
       }
 
-      const attackBoost = Math.floor(sourceHero.stats.attack * 0.50)
-      const charismaBoost = Math.floor(sourceHero.stats.charisma * 0.40)
+      const attackBoost = Math.floor(sourceHero.stats.attack * 0.50 * effectMultiplier)
+      const charismaBoost = Math.floor(sourceHero.stats.charisma * 0.40 * effectMultiplier)
       sourceHero.stats.attack += attackBoost
       sourceHero.stats.charisma += charismaBoost
 
@@ -427,7 +452,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     triggers: ['onCombatStart'],
     description: 'Petal Burst: 40% chance at combat start to surge Attack by 45% and Speed by 60% for the battle, leaving a trail of crimson rose petals',
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
 
       if (!sourceHero || !sourceHero.isAlive) {
         return null
@@ -437,8 +462,8 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
         return null
       }
 
-      const attackBoost = Math.floor(sourceHero.stats.attack * 0.45)
-      const speedBoost = Math.floor(sourceHero.stats.speed * 0.60)
+      const attackBoost = Math.floor(sourceHero.stats.attack * 0.45 * effectMultiplier)
+      const speedBoost = Math.floor(sourceHero.stats.speed * 0.60 * effectMultiplier)
       sourceHero.stats.attack += attackBoost
       sourceHero.stats.speed += speedBoost
 
@@ -531,11 +556,19 @@ export function processUniqueEffects(
       // Check if this trigger matches
       if (!effectDef.triggers.includes(trigger)) continue
       
+      // Compute rarity-based effect scaling from the triggering item
+      const triggerRarity = itemData.rarity
+      const triggerIsUnique = itemData.isUnique || false
+      const triggerEffectMult = getEffectMultiplier(triggerRarity, triggerIsUnique)
+
       // Execute the effect
       const result = effectDef.handler({
         party: modifiedParty,
         trigger,
         sourceHero: hero,
+        itemRarity: triggerRarity,
+        isUniqueRoll: triggerIsUnique,
+        effectMultiplier: triggerEffectMult,
         ...context
       })
       

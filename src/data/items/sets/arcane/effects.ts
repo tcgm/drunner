@@ -30,7 +30,7 @@ export const ARCANE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
   description: 'Arcane Surge: 25% chance to gain +80% Magic Power for the battle',
   handler: (context) => {
-    const { party, sourceHero } = context
+    const { party, sourceHero, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -43,7 +43,7 @@ export const ARCANE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
     
     // Apply magic power surge (temporary for combat)
     const baseMagicPower = sourceHero.stats.magicPower ?? 0
-    const magicBoost = Math.floor(baseMagicPower * 0.8)
+    const magicBoost = Math.floor(baseMagicPower * 0.8 * effectMultiplier)
     sourceHero.stats.magicPower = baseMagicPower + magicBoost
     
     return {

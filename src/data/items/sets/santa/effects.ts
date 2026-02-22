@@ -34,7 +34,7 @@ export const SANTA_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onBossDefeat'],
   description: "Gift of Giving: 30% chance to restore 15% Max HP to the hero after defeating a boss",
   handler: (context) => {
-    const { party, sourceHero } = context
+    const { party, sourceHero, effectMultiplier = 1.0 } = context
 
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -45,7 +45,7 @@ export const SANTA_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
       return null
     }
 
-    const healAmount = Math.floor(sourceHero.stats.maxHp * 0.15)
+    const healAmount = Math.floor(sourceHero.stats.maxHp * 0.15 * effectMultiplier)
     sourceHero.stats.hp = Math.min(
       sourceHero.stats.hp + healAmount,
       sourceHero.stats.maxHp,

@@ -30,7 +30,7 @@ export const DRACONIC_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onDamageTaken'],
   description: "Dragon's Wrath: 30% chance to retaliate with fire damage when hit",
   handler: (context) => {
-    const { party, sourceHero, damageAmount } = context
+    const { party, sourceHero, damageAmount, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive || !damageAmount) {
       return null
@@ -43,7 +43,7 @@ export const DRACONIC_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
     
     // Retaliation damage scales with attack and magic power
     const baseMagicPower = sourceHero.stats.magicPower ?? 0
-    const retaliationDamage = Math.floor((sourceHero.stats.attack * 0.5) + (baseMagicPower * 0.3))
+    const retaliationDamage = Math.floor(((sourceHero.stats.attack * 0.5) + (baseMagicPower * 0.3)) * effectMultiplier)
     
     return {
       party,
