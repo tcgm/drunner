@@ -360,6 +360,37 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   //     return null
   //   }
   // },
+
+  'Heavy, Metal Guitar': {
+    triggers: ['onCombatStart'],
+    description: 'Face-melting Riff: 45% chance to unleash a devastating riff, boosting the wearer\'s Attack by 50% and Charisma by 40% for the battle',
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.45) {
+        return null
+      }
+
+      const attackBoost = Math.floor(sourceHero.stats.attack * 0.50)
+      const charismaBoost = Math.floor(sourceHero.stats.charisma * 0.40)
+      sourceHero.stats.attack += attackBoost
+      sourceHero.stats.charisma += charismaBoost
+
+      return {
+        party,
+        message: `${sourceHero.name} unleashes a FACE-MELTING RIFF! (+${attackBoost} ATK, +${charismaBoost} CHA)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The Heavy, Metal Guitar erupts in thunderous noise. Enemies tremble. Allies weep with joy. +${attackBoost} Attack, +${charismaBoost} Charisma for this battle.`
+        }]
+      }
+    }
+  },
 }
 
 /**
