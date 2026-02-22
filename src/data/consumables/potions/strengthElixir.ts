@@ -4,7 +4,7 @@ import { GiStrong } from 'react-icons/gi'
 export const STRENGTH_ELIXIR: Consumable = {
   id: 'strength-elixir',
   name: 'Strength Elixir',
-  description: 'Increases attack by 10 for 5 events.',
+  description: 'Increases attack by 30 for 5 events.',
   type: 'consumable',
   rarity: 'uncommon',
   stats: {},
@@ -15,7 +15,7 @@ export const STRENGTH_ELIXIR: Consumable = {
     {
       type: 'buff',
       stat: 'attack',
-      value: 10,
+      value: 30,
       duration: 5,
       target: 'self',
     }

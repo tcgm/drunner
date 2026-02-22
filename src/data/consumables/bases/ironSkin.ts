@@ -9,7 +9,7 @@ export const IRON_SKIN_BASE: ConsumableBase = {
   effects: [
     {
       type: 'buff',
-      value: 10,
+      value: 30,
       stat: 'defense',
       duration: 3,
       target: 'self',

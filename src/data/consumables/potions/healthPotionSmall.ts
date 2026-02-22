@@ -4,7 +4,7 @@ import { GiHealthPotion } from 'react-icons/gi'
 export const HEALTH_POTION_SMALL: Consumable = {
   id: 'health-potion-small',
   name: 'Small Health Potion',
-  description: 'Restores 30 HP to a single hero.',
+  description: 'Restores 100 HP to a single hero.',
   type: 'consumable',
   rarity: 'common',
   stats: {},
@@ -14,7 +14,7 @@ export const HEALTH_POTION_SMALL: Consumable = {
   effects: [
     {
       type: 'heal',
-      value: 30,
+      value: 100,
       target: 'self',
     }
   ],
