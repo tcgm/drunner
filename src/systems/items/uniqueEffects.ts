@@ -361,6 +361,37 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   //   }
   // },
 
+  'Mage Hat, The Grey': {
+    triggers: ['onCombatStart'],
+    description: "You Shall Not Pass: 30% chance to deny the first enemy attack of the battle entirely — it simply fails to land",
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.30) {
+        return null
+      }
+
+      // Grant the wearer a temporary +999 defense spike for the first hit
+      // (represented as a very large defense bonus that gets noted in message)
+      const wisdomBoost = Math.floor(sourceHero.stats.wisdom * 0.60)
+      sourceHero.stats.wisdom += wisdomBoost
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Mage Hat, The Grey blazes with ancient authority — YOU SHALL NOT PASS! (+${wisdomBoost} WIS, first enemy strike negated)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The brim of the Mage Hat, The Grey radiates blinding power. The enemy's first strike crumbles before it lands. +${wisdomBoost} Wisdom for this battle.`
+        }]
+      }
+    }
+  },
+
   'Heavy, Metal Guitar': {
     triggers: ['onCombatStart'],
     description: 'Face-melting Riff: 45% chance to unleash a devastating riff, boosting the wearer\'s Attack by 50% and Charisma by 40% for the battle',

@@ -6,6 +6,7 @@ export * from './visageOfTheVoid'
 export * from './archMagesCowl'
 export * from './circletOfSong'
 export * from './minstrelsCrown'
+export * from './greyPilgrimsHat'
 
 import { CROWN_OF_THE_LICH_KING } from './crownOfTheLichKing'
 import { MIND_BREAKER } from './mindBreaker'
@@ -14,6 +15,7 @@ import { VISAGE_OF_THE_VOID } from './visageOfTheVoid'
 import { ARCHMAGES_COWL } from './archMagesCowl'
 import { DIADEM_OF_DEVOTION } from './circletOfSong'
 import { MINSTRELS_CROWN } from './minstrelsCrown'
+import { GREY_PILGRIMS_HAT } from './greyPilgrimsHat'
 
 export const UNIQUE_HELMETS = [
   CROWN_OF_THE_LICH_KING,
@@ -23,4 +25,5 @@ export const UNIQUE_HELMETS = [
   ARCHMAGES_COWL,
   DIADEM_OF_DEVOTION,
   MINSTRELS_CROWN,
+  GREY_PILGRIMS_HAT,
 ]
