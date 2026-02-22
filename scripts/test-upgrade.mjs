@@ -1,5 +1,5 @@
 // Quick test of the upgrade function
-import { upgradeItemMaterial } from './src/systems/loot/itemUpgrader.ts'
+import { upgradeItemMaterial } from '../src/systems/loot/itemUpgrader.ts'
 
 const testItem = {
   id: 'test-1',
