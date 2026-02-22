@@ -422,6 +422,37 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       }
     }
   },
+
+  'Crimson Arc': {
+    triggers: ['onCombatStart'],
+    description: 'Petal Burst: 40% chance at combat start to surge Attack by 45% and Speed by 60% for the battle, leaving a trail of crimson rose petals',
+    handler: (context) => {
+      const { party, sourceHero } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.40) {
+        return null
+      }
+
+      const attackBoost = Math.floor(sourceHero.stats.attack * 0.45)
+      const speedBoost = Math.floor(sourceHero.stats.speed * 0.60)
+      sourceHero.stats.attack += attackBoost
+      sourceHero.stats.speed += speedBoost
+
+      return {
+        party,
+        message: `${sourceHero.name} launches into a Petal Burst! (+${attackBoost} ATK, +${speedBoost} SPD)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The Crimson Arc erupts in a whirlwind of rose petals. ${sourceHero.name} moves in a crimson blur, striking with terrifying speed and force. +${attackBoost} Attack, +${speedBoost} Speed for this battle.`
+        }]
+      }
+    }
+  },
 }
 
 /**
