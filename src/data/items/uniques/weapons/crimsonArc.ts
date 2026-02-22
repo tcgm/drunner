@@ -1,5 +1,5 @@
 import type { Item } from '@/types'
-import crimsonArcSvg from '@/assets/icons/items/crimsonArc.svg'
+import crimsonArcSvg from '@/assets/icons/items/crimsonArcSmall.svg'
 
 /**
  * Crimson Arc - Mythic high-velocity scythe of unknown origin
