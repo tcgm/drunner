@@ -1,4 +1,4 @@
-import { GiFlowerEarring, GiOlive, GiLeafSwirl } from 'react-icons/gi'
+import { GiPowerRing, GiOlive, GiLeafSwirl, GiImperialCrown, GiVineFlower, GiCrownOfThorns, GiLaurelCrown } from 'react-icons/gi'
 import type { BaseItemTemplate } from '../index'
 
 /**
@@ -11,9 +11,9 @@ export const WREATH_BASE: BaseItemTemplate = {
   icon: GiOlive,
   baseNames: ['Wreath', 'Laurel', 'Garland'],
   baseNameIcons: {
-    'Wreath': GiLeafSwirl,
-    'Laurel': GiOlive,
-    'Garland': GiFlowerEarring,
+    'Wreath': GiCrownOfThorns,
+    'Laurel': GiLaurelCrown,
+    'Garland': GiLeafSwirl,
   },
   stats: {
     defense: 1,
