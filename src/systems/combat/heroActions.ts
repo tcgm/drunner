@@ -8,6 +8,7 @@ import type { Hero, BossCombatState, Ability, Consumable } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { recalculateDynamicBossStats } from './bossStats'
+import { applyBurningDot } from './effects'
 
 export type HeroActionType =
     | 'attack'
@@ -94,6 +95,14 @@ export function executeAttack(
     // Apply damage to boss
     combatState.currentHp = Math.max(0, combatState.currentHp - actualDamage)
 
+    // Emberblade: apply 1 burning stack per basic attack
+    const equippedWeapon = hero.slots['weapon']
+    const burningMsg: string[] = []
+    if (equippedWeapon && !('consumableType' in equippedWeapon) && equippedWeapon.name === 'Emberblade') {
+        const totalDmgPerTurn = applyBurningDot(combatState, 1)
+        burningMsg.push(`Emberblade ignites the boss! Burning: ${totalDmgPerTurn} dmg/turn`)
+    }
+
     return {
         action: {
             type: 'attack',
@@ -108,6 +117,11 @@ export function executeAttack(
                 value: actualDamage,
                 description: `${hero.name} dealt ${actualDamage} damage${isCrit ? ' (CRIT!)' : ''}!`,
             },
+            ...burningMsg.map(msg => ({
+                type: 'status',
+                target: 'boss',
+                description: msg,
+            })),
         ],
         message: `${hero.name} attacks the boss!${isCrit ? ' Critical hit!' : ''}`,
     }

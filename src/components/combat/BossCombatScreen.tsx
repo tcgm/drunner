@@ -306,6 +306,12 @@ export default function BossCombatScreen({
                 if (result.success) {
                     addLogEntry('damage', `${hero.name} attacks for ${result.damage} damage!`, 'boss', result.damage)
                     triggerParticles('damage', { x: 50, y: 30 })
+                    // Log any status effects (e.g. Emberblade burning DoT)
+                    for (const effect of result.effects) {
+                        if (effect.type === 'status' && effect.description) {
+                            addLogEntry('buff', effect.description)
+                        }
+                    }
                 } else {
                     addLogEntry('action', result.message)
                 }

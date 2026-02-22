@@ -199,3 +199,48 @@ export function applyPassiveHealing(combatState: BossCombatState): number {
 
     return combatState.currentHp - oldHp
 }
+
+/** Damage dealt per individual burning stack per turn */
+export const BURN_STACK_DAMAGE = 15
+
+/**
+ * Apply stacking Burning DoT to the boss.
+ *
+ * If the boss already has a "Burning" status effect the damage is increased
+ * by `stacks * BURN_STACK_DAMAGE` and the duration is refreshed to at least
+ * 3 rounds.  Otherwise a new "Burning" status effect is created.
+ *
+ * @param combatState - Current combat state (boss side)
+ * @param stacks      - Number of burn stacks to apply (each = BURN_STACK_DAMAGE dmg/turn)
+ * @returns The total burning damage per turn after this application
+ */
+export function applyBurningDot(
+    combatState: BossCombatState,
+    stacks: number = 1
+): number {
+    const addedDamage = stacks * BURN_STACK_DAMAGE
+
+    const existing = combatState.activeEffects.find(
+        (e) => e.type === 'status' && e.name === 'Burning'
+    )
+
+    if (existing && existing.behavior?.type === 'damagePerTurn') {
+        existing.behavior.damageAmount = (existing.behavior.damageAmount ?? 0) + addedDamage
+        existing.duration = Math.max(existing.duration, 3)
+        return existing.behavior.damageAmount
+    }
+
+    combatState.activeEffects.push({
+        id: `burning-${Date.now()}`,
+        type: 'status',
+        name: 'Burning',
+        duration: 3,
+        target: 'boss',
+        behavior: {
+            type: 'damagePerTurn',
+            damageAmount: addedDamage,
+        },
+    })
+
+    return addedDamage
+}

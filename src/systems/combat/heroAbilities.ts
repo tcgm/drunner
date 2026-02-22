@@ -10,6 +10,7 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { recalculateDynamicBossStats } from './bossStats'
 import { resolveAbilityTargets } from './targetingResolver'
+import { applyBurningDot } from './effects'
 
 /**
  * Execute hero ability during combat
@@ -61,6 +62,15 @@ export function executeHeroAbility(
                 party,
                 result
             )
+            // Apply burning DoT stacks if this ability has burnStacks (e.g. Fireball)
+            if (effect.burnStacks && effect.burnStacks > 0 && effect.targeting.side === 'enemy') {
+                const totalDmgPerTurn = applyBurningDot(combatState, effect.burnStacks)
+                result.effects.push({
+                    type: 'status',
+                    target: 'boss',
+                    description: `${hero.name}'s ${ability.name} ignites the boss! Burning: ${totalDmgPerTurn} dmg/turn`,
+                })
+            }
             break
 
         case 'heal':

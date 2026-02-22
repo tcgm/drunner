@@ -85,6 +85,7 @@ export interface AbilityEffect {
     stat: PrimaryStat
     ratio: number // Multiplier (e.g., 0.5 = 50% of stat added to base value)
   }
+  burnStacks?: number // Number of burning DoT stacks to apply to the boss on a successful hit
 }
 
 export interface HeroClass {
