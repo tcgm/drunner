@@ -18,6 +18,7 @@ import { MarketHallModal } from '../party/MarketHallModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
+import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 
 interface PartySetupScreenProps {
   onBack: () => void
@@ -35,7 +36,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     bankGold,
     alkahest,
     bankStorageSlots,
-    expandBankStorage,
     equipItemFromBank,
     unequipItemFromHero,
     moveItemToBank,
@@ -97,9 +97,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Market Hall modal
   const { isOpen: isMarketOpen, onOpen: onMarketOpen, onClose: onMarketClose } = useDisclosure()
-
-  // Buy bank slots modal
-  const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
 
   // Corrupted items modal
   const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
@@ -238,43 +235,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     onStart(floor)
   }
 
-  const handlePurchasePotion = (potion: Consumable, price: number) => {
-    if (spendBankGold(price)) {
-      moveItemToBank(potion)
-    }
-  }
-
-  const handlePurchaseConsumable = (consumable: Consumable, price: number) => {
-    // Check if bank is full
-    if (bankInventory.length >= bankStorageSlots) {
-      onBuySlotsOpen()
-      return
-    }
-    if (spendBankGold(price)) {
-      moveItemToBank(consumable)
-    }
-  }
-
-  const handlePurchaseItem = (item: Item, price: number) => {
-    // Check if bank is full
-    if (bankInventory.length >= bankStorageSlots) {
-      onBuySlotsOpen()
-      return
-    }
-    
-    if (spendBankGold(price)) {
-      moveItemToBank(item)
-    }
-  }
-
-  const handleExpandBank = (slots: number) => {
-    const costPerSlot = GAME_CONFIG.bank.costPerSlot
-    const totalCost = slots * costPerSlot
-    
-    if (bankGold >= totalCost) {
-      expandBankStorage(slots)
-    }
-  }
+  const { handlePurchasePotion, handlePurchaseConsumable, handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
 
   return (
     <Box className="party-setup-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">

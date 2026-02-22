@@ -14,8 +14,10 @@ import { PotionShopModal } from '../party/PotionShopModal'
 import { MarketHallModal } from '../party/MarketHallModal'
 import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
+import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
-import type { Consumable } from '@/types'
+import type { Consumable, Item } from '@/types'
+import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 
 interface TownHubScreenProps {
   onEnterDungeon: () => void
@@ -103,6 +105,8 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
   const handlePurchasePotion = (potion: Consumable) => {
     purchasePotion(potion)
   }
+
+  const { handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
 
   return (
     <Box className="town-hub-screen" position="relative" h="100vh" overflow="hidden">
@@ -298,10 +302,10 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         bankGold={bankGold}
         party={party}
         onPurchase={handlePurchasePotion}
-        onPurchaseItem={() => {}} // No direct item purchase in town hub
+        onPurchaseItem={handlePurchaseItem}
         onSpendGold={spendBankGold}
-        bankInventory={[]}
-        bankStorageSlots={0}
+        bankInventory={bankInventory}
+        bankStorageSlots={bankStorageSlots}
       />
 
       {/* Market Hall Modal */}
@@ -323,6 +327,15 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         onEquipItem={() => {}} // No equipping from town hub bank
         selectedHeroIndex={null}
         party={party}
+      />
+
+      {/* Buy Bank Slots Modal */}
+      <BuyBankSlotsModal
+        isOpen={isBuySlotsOpen}
+        onClose={onBuySlotsClose}
+        onConfirm={handleExpandBank}
+        bankGold={bankGold}
+        currentSlots={bankStorageSlots}
       />
 
       {/* Overflow Inventory Modal - shown when last run items exceeded bank capacity */}

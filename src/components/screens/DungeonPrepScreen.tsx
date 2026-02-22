@@ -20,6 +20,7 @@ import PartySummary from '../party/PartySummary'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
 import { useMusicContext } from '@/utils/useMusicContext'
 import { MusicContext } from '@/types/audio'
+import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 
 interface DungeonPrepScreenProps {
   onBack: () => void
@@ -40,7 +41,6 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
     bankGold,
     alkahest,
     bankStorageSlots,
-    expandBankStorage,
     equipItemFromBank,
     unequipItemFromHero,
     moveItemToBank,
@@ -55,7 +55,6 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
     deleteCorruptedItem,
     metaXp,
     healParty,
-    purchasePotion,
     spendBankGold,
   } = useGameStore()
 
@@ -103,9 +102,6 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
 
   // Market Hall modal
   const { isOpen: isMarketOpen, onOpen: onMarketOpen, onClose: onMarketClose } = useDisclosure()
-
-  // Buy bank slots modal
-  const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
 
   // Corrupted items modal
   const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
@@ -244,40 +240,7 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
     onStart(floor)
   }
 
-  const handlePurchasePotion = (potion: Consumable) => {
-    purchasePotion(potion)
-  }
-
-  const handlePurchaseConsumable = (consumable: Consumable) => {
-    // Check if bank is full
-    if (bankInventory.length >= bankStorageSlots) {
-      onBuySlotsOpen()
-      return
-    }
-    purchasePotion(consumable)
-  }
-
-  const handlePurchaseItem = (item: Item) => {
-    // Check if bank is full
-    if (bankInventory.length >= bankStorageSlots) {
-      onBuySlotsOpen()
-      return
-    }
-    
-    if (bankGold >= item.value) {
-      moveItemToBank(item)
-      spendBankGold(item.value)
-    }
-  }
-
-  const handleExpandBank = (slots: number) => {
-    const costPerSlot = GAME_CONFIG.bank.costPerSlot
-    const totalCost = slots * costPerSlot
-    
-    if (bankGold >= totalCost) {
-      expandBankStorage(slots)
-    }
-  }
+  const { handlePurchasePotion, handlePurchaseConsumable, handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
 
   return (
     <Box className="dungeon-prep-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
