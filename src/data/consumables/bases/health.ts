@@ -9,7 +9,7 @@ export const HEALTH_BASE: ConsumableBase = {
   effects: [
     {
       type: 'heal',
-      value: 200,
+      value: 50,
       target: 'self',
     }
   ],
