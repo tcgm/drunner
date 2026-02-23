@@ -1,4 +1,4 @@
-import { GiCrystalWand } from 'react-icons/gi'
+import infinityEdgeIcon from '@/assets/icons/items/infinityEdgeBlade.svg'
 import type { Item } from '@/types'
 
 /**
@@ -11,7 +11,7 @@ export const INFINITY_EDGE: Omit<Item, 'id'> = {
   rarity: 'mythic',
   minRarity: 'epic',
   maxRarity: 'divine',
-  icon: GiCrystalWand,
+  icon: infinityEdgeIcon,
   stats: {
     attack: 180,
     speed: 35,
