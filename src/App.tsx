@@ -138,8 +138,13 @@ function App() {
   }
 
   const handleEnterDungeonPrep = () => {
-    // Navigate from town hub to dungeon prep
-    setCurrentScreen('dungeon-prep')
+    // If there's an active run in progress, resume it via the same path as main menu "Continue"
+    if (activeRun && activeRun.result === 'active') {
+      handleContinue()
+    } else {
+      // Navigate from town hub to dungeon prep to start a new run
+      setCurrentScreen('dungeon-prep')
+    }
   }
 
   const handleBackToTown = () => {
