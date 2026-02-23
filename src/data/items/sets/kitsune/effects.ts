@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const KITSUNE_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Fox Spirit (2 pieces): +10 Speed, +5 Luck', stats: { speed: 10, luck: 5 } },
-  4: { description: 'Fox Cunning (4 pieces): +20 Speed, +15 Luck, +20 Magic Power', stats: { speed: 20, luck: 15, magicPower: 20 } },
-  6: { description: 'Nine-Tailed Power (Full Set): +40 Speed, +30 Luck, +50 Magic Power, +30 Attack', stats: { speed: 40, luck: 30, magicPower: 50, attack: 30 } },
+  2: { description: 'Fox Spirit (2 pieces): +1 Speed, +1 Luck per piece', stats: { speed: 1, luck: 1 } },
+  4: { description: 'Fox Cunning (4 pieces): +2 Speed, +1 Luck, +2 Magic Power per piece', stats: { speed: 2, luck: 1, magicPower: 2 } },
+  6: { description: 'Nine-Tailed Power (Full Set): +3 Speed, +2 Luck, +4 Magic Power, +2 Attack per piece', stats: { speed: 3, luck: 2, magicPower: 4, attack: 2 } },
 }
 
 /**
@@ -28,7 +28,7 @@ export const KITSUNE_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const KITSUNE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
-  description: 'Fox Spirit: 20% chance to gain +50% Speed for the battle',
+  description: (m) => `Fox Spirit: 20% chance to gain +${Math.floor(50 * m)}% Speed for the battle`,
   handler: (context) => {
     const { party, sourceHero, effectMultiplier = 1.0, currentDepth } = context
     

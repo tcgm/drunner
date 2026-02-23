@@ -2,6 +2,7 @@ import type { Hero, Stats, Item } from '@/types'
 import { calculateEffectModifiers } from '@/systems/effects'
 import { getItemSetName, getSetBonuses } from '@data/items/sets'
 import { MATERIALS_BY_RARITY } from '@data/items/materials'
+import { getEffectMultiplier } from '@/systems/items/uniqueEffects'
 
 /**
  * Calculate total stats for a hero including equipment and active effects
@@ -66,7 +67,8 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
   }
   
   // Calculate set bonuses
-  // 1. Named set bonuses (e.g., Kitsune set)
+  // 1. Named set bonuses — each equipped piece contributes the current tier's bonus
+  //    scaled by that piece's own rarity multiplier (stacks across all pieces).
   const setCounts: Record<string, number> = {}
   equippedItems.forEach(item => {
     const setName = getItemSetName(item.name)
@@ -75,20 +77,24 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
     }
   })
 
-  // Apply named set bonuses
-  Object.entries(setCounts).forEach(([setName, count]) => {
+  // Apply per-item set bonuses: each piece contributes bonus × its rarity multiplier
+  equippedItems.forEach(item => {
+    const setName = getItemSetName(item.name)
+    if (!setName) return
+    const count = setCounts[setName]
     const setBonus = getSetBonuses(setName, count)
-    if (setBonus?.stats) {
-      if (setBonus.stats.attack) equipmentStats.attack = (equipmentStats.attack || 0) + setBonus.stats.attack
-      if (setBonus.stats.defense) equipmentStats.defense = (equipmentStats.defense || 0) + setBonus.stats.defense
-      if (setBonus.stats.speed) equipmentStats.speed = (equipmentStats.speed || 0) + setBonus.stats.speed
-      if (setBonus.stats.luck) equipmentStats.luck = (equipmentStats.luck || 0) + setBonus.stats.luck
-      if (setBonus.stats.maxHp) equipmentStats.maxHp = (equipmentStats.maxHp || 0) + setBonus.stats.maxHp
-      if (setBonus.stats.wisdom) equipmentStats.wisdom = (equipmentStats.wisdom || 0) + setBonus.stats.wisdom
-      if (setBonus.stats.charisma) equipmentStats.charisma = (equipmentStats.charisma || 0) + setBonus.stats.charisma
-      if (setBonus.stats.magicPower && equipmentStats.magicPower !== undefined) {
-        equipmentStats.magicPower = (equipmentStats.magicPower || 0) + setBonus.stats.magicPower
-      }
+    if (!setBonus?.stats) return
+    const mult = getEffectMultiplier(item.rarity, item.isUnique ?? false)
+    const s = setBonus.stats
+    if (s.attack)     equipmentStats.attack     = (equipmentStats.attack     || 0) + Math.floor(s.attack     * mult)
+    if (s.defense)    equipmentStats.defense    = (equipmentStats.defense    || 0) + Math.floor(s.defense    * mult)
+    if (s.speed)      equipmentStats.speed      = (equipmentStats.speed      || 0) + Math.floor(s.speed      * mult)
+    if (s.luck)       equipmentStats.luck       = (equipmentStats.luck       || 0) + Math.floor(s.luck       * mult)
+    if (s.maxHp)      equipmentStats.maxHp      = (equipmentStats.maxHp      || 0) + Math.floor(s.maxHp      * mult)
+    if (s.wisdom)     equipmentStats.wisdom     = (equipmentStats.wisdom     || 0) + Math.floor(s.wisdom     * mult)
+    if (s.charisma)   equipmentStats.charisma   = (equipmentStats.charisma   || 0) + Math.floor(s.charisma   * mult)
+    if (s.magicPower && equipmentStats.magicPower !== undefined) {
+      equipmentStats.magicPower = (equipmentStats.magicPower || 0) + Math.floor(s.magicPower * mult)
     }
   })
 

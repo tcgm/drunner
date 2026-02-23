@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const DRACONIC_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Dragon Blood (2 pieces): +50 HP, +10 Defense', stats: { maxHp: 50, defense: 10 } },
-  4: { description: 'Dragon Might (4 pieces): +100 HP, +25 Defense, +30 Attack', stats: { maxHp: 100, defense: 25, attack: 30 } },
-  6: { description: 'Ancient Dragon (Full Set): +200 HP, +50 Defense, +60 Attack, +40 Magic Power', stats: { maxHp: 200, defense: 50, attack: 60, magicPower: 40 } },
+  2: { description: 'Dragon Blood (2 pieces): +5 HP, +1 Defense per piece', stats: { maxHp: 5, defense: 1 } },
+  4: { description: 'Dragon Might (4 pieces): +9 HP, +2 Defense, +3 Attack per piece', stats: { maxHp: 9, defense: 2, attack: 3 } },
+  6: { description: 'Ancient Dragon (Full Set): +14 HP, +4 Defense, +5 Attack, +3 Magic Power per piece', stats: { maxHp: 14, defense: 4, attack: 5, magicPower: 3 } },
 }
 
 /**
@@ -28,7 +28,7 @@ export const DRACONIC_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const DRACONIC_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onDamageTaken'],
-  description: "Dragon's Wrath: 30% chance to retaliate with fire damage when hit",
+  description: (m) => `Dragon's Wrath: 30% chance to retaliate with ${m > 1 ? 'amplified ' : ''}fire damage (50% ATK + 30% Magic Power × ${m.toFixed(1)}×) when hit`,
   handler: (context) => {
     const { party, sourceHero, damageAmount, effectMultiplier = 1.0 } = context
     

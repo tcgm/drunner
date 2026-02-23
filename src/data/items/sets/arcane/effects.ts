@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const ARCANE_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Magical Affinity (2 pieces): +30 Magic Power, +20 Wisdom', stats: { magicPower: 30, wisdom: 20 } },
-  4: { description: 'Arcane Mastery (4 pieces): +60 Magic Power, +40 Wisdom, +30 Charisma', stats: { magicPower: 60, wisdom: 40, charisma: 30 } },
-  6: { description: 'Supreme Sorcery (Full Set): +120 Magic Power, +80 Wisdom, +60 Charisma, +20 Speed', stats: { magicPower: 120, wisdom: 80, charisma: 60, speed: 20 } },
+  2: { description: 'Magical Affinity (2 pieces): +3 Magic Power, +2 Wisdom per piece', stats: { magicPower: 3, wisdom: 2 } },
+  4: { description: 'Arcane Mastery (4 pieces): +5 Magic Power, +3 Wisdom, +2 Charisma per piece', stats: { magicPower: 5, wisdom: 3, charisma: 2 } },
+  6: { description: 'Supreme Sorcery (Full Set): +8 Magic Power, +5 Wisdom, +4 Charisma, +2 Speed per piece', stats: { magicPower: 8, wisdom: 5, charisma: 4, speed: 2 } },
 }
 
 /**
@@ -28,7 +28,7 @@ export const ARCANE_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const ARCANE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
-  description: 'Arcane Surge: 25% chance to gain +80% Magic Power for the battle',
+  description: (m) => `Arcane Surge: 25% chance to gain +${Math.floor(80 * m)}% Magic Power for the battle`,
   handler: (context) => {
     const { party, sourceHero, effectMultiplier = 1.0 } = context
     

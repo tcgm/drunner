@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const SHADOW_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Shadow Step (2 pieces): +30 Speed, +20 Luck', stats: { speed: 30, luck: 20 } },
-  4: { description: 'Veil of Night (4 pieces): +60 Speed, +40 Luck, +40 Attack', stats: { speed: 60, luck: 40, attack: 40 } },
-  6: { description: 'Master Assassin (Full Set): +100 Speed, +80 Luck, +80 Attack, +30 Wisdom', stats: { speed: 100, luck: 80, attack: 80, wisdom: 30 } },
+  2: { description: 'Shadow Step (2 pieces): +2 Speed, +2 Luck per piece', stats: { speed: 2, luck: 2 } },
+  4: { description: 'Veil of Night (4 pieces): +4 Speed, +3 Luck, +3 Attack per piece', stats: { speed: 4, luck: 3, attack: 3 } },
+  6: { description: 'Master Assassin (Full Set): +7 Speed, +5 Luck, +5 Attack, +3 Wisdom per piece', stats: { speed: 7, luck: 5, attack: 5, wisdom: 3 } },
 }
 
 /**
@@ -28,7 +28,7 @@ export const SHADOW_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const SHADOW_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
-  description: 'Assassin\'s Mark: 35% chance to gain +100% Luck and guaranteed critical strikes for the first attack',
+  description: (m) => `Assassin's Mark: 35% chance to gain +${Math.floor(100 * m)}% Luck for the battle`,
   handler: (context) => {
     const { party, sourceHero, effectMultiplier = 1.0, currentDepth } = context
     

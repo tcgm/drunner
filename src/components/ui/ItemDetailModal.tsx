@@ -29,7 +29,7 @@ import { getItemSetName, ALL_SETS } from '@/data/items/sets'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { dehydrateItem } from '@/utils/itemHydration'
-import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
+import { getUniqueEffectForItem, getEffectMultiplier, resolveEffectDescription } from '@/systems/items/uniqueEffects'
 import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 
 // Gem icons derived from rarity configs
@@ -140,6 +140,12 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
 
   // Get unique effect if this item has one
   const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
+
+  // Compute rarity-scaling multiplier for effect descriptions
+  const effectMultiplier = useMemo(
+    () => getEffectMultiplier(restoredItem.rarity, restoredItem.isUnique ?? false),
+    [restoredItem.rarity, restoredItem.isUnique]
+  )
 
   // Get consumable effects if this is a consumable (resolves effects from metadata if needed)
   const consumableEffects = useMemo(() => {
@@ -474,25 +480,40 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     </Text>
                   </HStack>
                   <VStack align="start" spacing={2} w="full" pl={2}>
-                    <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="bold">
-                      Set Bonuses:
-                    </Text>
+                    <HStack spacing={1} w="full">
+                      <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="bold">
+                        Set Bonuses
+                      </Text>
+                      <Text fontSize="xs" color="teal.400" fontStyle="italic">
+                        (base per piece · scales × rarity · stacks)
+                      </Text>
+                    </HStack>
                     {Object.entries(setDefinition.bonuses)
                       .sort(([a], [b]) => parseInt(a) - parseInt(b))
-                      .map(([pieceCount, bonus]) => (
-                        <Box
-                          key={pieceCount}
-                          w="full"
-                          bg="rgba(20, 184, 166, 0.1)"
-                          p={2}
-                          borderRadius="md"
-                          borderLeft={`3px solid ${RARITY_COLORS.set.border}`}
-                        >
-                          <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="semibold">
-                            ({pieceCount} pieces) {bonus.description}
-                          </Text>
-                        </Box>
-                      ))}
+                      .map(([pieceCount, bonus]) => {
+                        const mult = getEffectMultiplier(restoredItem.rarity, restoredItem.isUnique ?? false)
+                        const scaledStats = Object.entries(bonus.stats)
+                          .filter(([, v]) => v)
+                          .map(([k, v]) => `+${Math.floor((v as number) * mult)} ${k === 'maxHp' ? 'HP' : k === 'magicPower' ? 'MP' : k.charAt(0).toUpperCase() + k.slice(1)}`)
+                          .join(', ')
+                        return (
+                          <Box
+                            key={pieceCount}
+                            w="full"
+                            bg="rgba(20, 184, 166, 0.1)"
+                            p={2}
+                            borderRadius="md"
+                            borderLeft={`3px solid ${RARITY_COLORS.set.border}`}
+                          >
+                            <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="semibold">
+                              ({pieceCount} pieces) {scaledStats}
+                            </Text>
+                            <Text fontSize="xs" color="teal.500" mt={0.5}>
+                              base: {Object.entries(bonus.stats).filter(([,v])=>v).map(([k,v])=>`+${v} ${k === 'maxHp' ? 'HP' : k === 'magicPower' ? 'MP' : k.charAt(0).toUpperCase() + k.slice(1)}`).join(', ')}
+                            </Text>
+                          </Box>
+                        )
+                      })}
                   </VStack>
                 </VStack>
               </Box>
@@ -540,7 +561,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       borderLeft="3px solid #FFD700"
                     >
                       <Text fontSize="sm" color="#FFF8DC" fontWeight="semibold">
-                        {uniqueEffect.description}
+                        {resolveEffectDescription(uniqueEffect, effectMultiplier)}
                       </Text>
                       <Text fontSize="xs" color="#F0E68C" fontStyle="italic" mt={1}>
                         Triggers: {uniqueEffect.triggers.map(t => {

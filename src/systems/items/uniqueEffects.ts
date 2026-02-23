@@ -117,7 +117,21 @@ export function getEffectMultiplier(rarity: ItemRarity, isUnique: boolean): numb
 export interface UniqueEffectDefinition {
   triggers: UniqueEffectTrigger[]
   handler: UniqueEffectHandler
-  description: string
+  /** Static string or a function that receives effectMultiplier and returns a scaled description */
+  description: string | ((effectMultiplier: number) => string)
+}
+
+/**
+ * Resolve the description for a unique effect, scaling it by effectMultiplier if it\'s a function.
+ * Falls back to 1.0 (common baseline) when no multiplier is supplied.
+ */
+export function resolveEffectDescription(
+  effect: UniqueEffectDefinition,
+  effectMultiplier = 1.0
+): string {
+  return typeof effect.description === 'function'
+    ? effect.description(effectMultiplier)
+    : effect.description
 }
 
 /**
@@ -128,7 +142,7 @@ export interface UniqueEffectDefinition {
 export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   'Heart of the Phoenix': {
     triggers: ['onBossDefeat'],
-    description: 'Resurrects a random dead party member with 50% HP after defeating a boss',
+    description: (m) => `Resurrects a random dead party member with ${Math.min(100, Math.floor(50 * m))}% HP after defeating a boss`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
       
@@ -167,7 +181,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   
   'Demon Coreflail': {
     triggers: ['onCombatStart', 'onDepthAdvance'],
-    description: 'Lethal Radiation: Deals 8 damage to entire party at combat start and every depth advance',
+    description: (m) => `Lethal Radiation: Deals ${Math.max(1, Math.floor(8 * m))} damage to entire party at combat start and every depth advance`,
     handler: (context) => {
       const { party, effectMultiplier = 1.0 } = context
       const radiationDamage = Math.max(1, Math.floor(8 * effectMultiplier))
@@ -209,7 +223,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   
   'Staff of Eternal Flame': {
     triggers: ['onCombatStart'],
-    description: 'Eternal Flame: 30% chance to surge Magic Power by 60% for the battle',
+    description: (m) => `Eternal Flame: 30% chance to surge Magic Power by ${Math.floor(60 * m)}% for the battle`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 
@@ -239,7 +253,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
   'Orb of Ancient Power': {
     triggers: ['onBossDefeat'],
-    description: 'Ancient Resonance: After defeating a boss, permanently gain +15 Magic Power',
+    description: (m) => `Ancient Resonance: After defeating a boss, permanently gain +${Math.max(1, Math.floor(15 * m))} Magic Power`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 
@@ -264,7 +278,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
   'Lyre of the Ancients': {
     triggers: ['onCombatStart'],
-    description: 'Ancient Melody: 35% chance to heal each party member for 8% of their max HP',
+    description: (m) => `Ancient Melody: 35% chance to heal each party member for ${Math.floor(8 * m)}% of their max HP`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 
@@ -305,7 +319,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
   'Diadem of Devotion': {
     triggers: ['onBossDefeat'],
-    description: 'Radiant Restoration: After defeating a boss, heals the most wounded party member for 25% of their max HP',
+    description: (m) => `Radiant Restoration: After defeating a boss, heals the most wounded party member for ${Math.floor(25 * m)}% of their max HP`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 
@@ -341,7 +355,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
   "Minstrel's Crown": {
     triggers: ['onCombatStart'],
-    description: "Battle Ballad: 40% chance to inspire the party, granting each member +25 Luck for the battle",
+    description: (m) => `Battle Ballad: 40% chance to inspire the party, granting each member +${Math.max(1, Math.floor(25 * m))} Luck for the battle`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 
@@ -403,7 +417,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
   'Mage Hat, The Grey': {
     triggers: ['onCombatStart'],
-    description: "You Shall Not Pass: 30% chance to deny the first enemy attack of the battle entirely — it simply fails to land",
+    description: (m) => `You Shall Not Pass: 30% chance to deny the first enemy attack entirely (+${Math.floor(60 * m)}% Wisdom for the battle)`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 
@@ -448,7 +462,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
   'Heavy, Metal Guitar': {
     triggers: ['onCombatStart'],
-    description: 'Face-melting Riff: 45% chance to unleash a devastating riff, boosting the wearer\'s Attack by 50% and Charisma by 40% for the battle',
+    description: (m) => `Face-melting Riff: 45% chance to boost Attack by ${Math.floor(50 * m)}% and Charisma by ${Math.floor(40 * m)}% for the battle`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 
@@ -484,7 +498,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
   'Crimson Arc': {
     triggers: ['onCombatStart'],
-    description: 'Petal Burst: 40% chance at combat start to surge Attack by 45% and Speed by 60% for the battle, leaving a trail of crimson rose petals',
+    description: (m) => `Petal Burst: 40% chance to surge Attack by ${Math.floor(45 * m)}% and Speed by ${Math.floor(60 * m)}% for the battle`,
     handler: (context) => {
       const { party, sourceHero, effectMultiplier = 1.0 } = context
 

@@ -22,7 +22,7 @@ import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { resolveItemData } from '@/utils/itemDataResolver'
-import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
+import { getUniqueEffectForItem, getEffectMultiplier, resolveEffectDescription } from '@/systems/items/uniqueEffects'
 import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 
 const MotionBox = motion.create(Box)
@@ -166,6 +166,12 @@ export const ItemSlot = memo(function ItemSlot({
 
   // Get unique effect if this item has one
   const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
+
+  // Rarity-scaling multiplier for effect descriptions
+  const effectMultiplier = useMemo(
+    () => getEffectMultiplier(item.rarity, item.isUnique ?? false),
+    [item.rarity, item.isUnique]
+  )
 
   // Get rarity gem icon
   const GemIcon = useMemo(() => RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond, [item.rarity])
@@ -335,7 +341,7 @@ export const ItemSlot = memo(function ItemSlot({
             </Text>
           </HStack>
           <Text fontSize="2xs" color="#FFF8DC">
-            {uniqueEffect.description}
+            {resolveEffectDescription(uniqueEffect, effectMultiplier)}
           </Text>
         </Box>
       )}

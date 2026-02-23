@@ -14,16 +14,16 @@ import type { SetBonus } from '@/data/items/sets'
  */
 export const SANTA_SET_BONUSES: Record<number, SetBonus> = {
   2: {
-    description: 'Holiday Cheer (2 pieces): +20 Luck, +15 Charisma',
-    stats: { luck: 20, charisma: 15 },
+    description: 'Holiday Cheer (2 pieces): +2 Luck, +1 Charisma per piece',
+    stats: { luck: 2, charisma: 1 },
   },
   4: {
-    description: "Season's Bounty (4 pieces): +40 Luck, +35 Charisma, +20 Speed",
-    stats: { luck: 40, charisma: 35, speed: 20 },
+    description: "Season's Bounty (4 pieces): +3 Luck, +2 Charisma, +1 Speed per piece",
+    stats: { luck: 3, charisma: 2, speed: 1 },
   },
   6: {
-    description: 'Christmas Magic (Full Set): +70 Luck, +60 Charisma, +45 Speed, +50 Max HP',
-    stats: { luck: 70, charisma: 60, speed: 45, maxHp: 50 },
+    description: 'Christmas Magic (Full Set): +5 Luck, +4 Charisma, +3 Speed, +4 Max HP per piece',
+    stats: { luck: 5, charisma: 4, speed: 3, maxHp: 4 },
   },
 }
 
@@ -32,7 +32,7 @@ export const SANTA_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const SANTA_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onBossDefeat'],
-  description: "Gift of Giving: 30% chance to restore 15% Max HP to the hero after defeating a boss",
+  description: (m) => `Gift of Giving: 30% chance to restore ${Math.floor(15 * m)}% Max HP to the hero after defeating a boss`,
   handler: (context) => {
     const { party, sourceHero, effectMultiplier = 1.0 } = context
 
