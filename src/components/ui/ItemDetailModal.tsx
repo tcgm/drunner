@@ -301,8 +301,8 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     {/* Icon */}
                     <MultIcon
                       icon={IconComponent}
-                      boxSize="clamp(50px, 5vw, 75px)"
-                      fontSize="clamp(50px, 5vw, 75px)"
+                      boxSize={item.isUnique ? "clamp(100px, 10vw, 150px)" : "clamp(50px, 5vw, 75px)"}
+                      fontSize={item.isUnique ? "clamp(100px, 10vw, 150px)" : "clamp(50px, 5vw, 75px)"}
                       color={(() => {
                         if (item.modifiers && item.modifiers.length > 0) {
                           const mod = getModifierById(item.modifiers[0]);

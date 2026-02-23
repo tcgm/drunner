@@ -223,6 +223,11 @@
   box-shadow: 0 0 20px rgba(var(--rarity-artifact-glow-rgb), 0.6);
 }
 
+.item-detail-modal--unique {
+  --icon-frame-size: clamp(140px, 14vw, 220px);
+  --icon-glow-size: clamp(180px, 18vw, 280px);
+}
+
 .item-detail-modal--unique .item-detail-modal__icon-frame {
   border-color: var(--rarity-unique-border) !important;
 }
