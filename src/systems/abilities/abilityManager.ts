@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { refreshAbilityFromTemplate } from '@/utils/abilityUtils'
 import { resolveAbilityTargets } from '@/systems/combat/targetingResolver'
+import { applyEffect } from '@/systems/effects/effectManager'
 
 /**
  * Check if an ability can be used at the current floor/depth
@@ -139,7 +140,7 @@ export function useAbility(
     }
 
     // Apply the ability effect
-    const result = applyAbilityEffect(hero, ability, party, currentFloor)
+    const result = applyAbilityEffect(hero, ability, party, currentFloor, currentDepth)
 
     // Update ability usage tracking - refresh all abilities to ensure current definitions
     const updatedAbilities = hero.abilities.map(a => {
@@ -195,7 +196,8 @@ function applyAbilityEffect(
     hero: Hero,
     ability: Ability,
     party: (Hero | null)[],
-    currentFloor: number
+    currentFloor: number,
+    currentDepth?: number
 ): {
     hero: Hero
     party: (Hero | null)[]
@@ -215,31 +217,29 @@ function applyAbilityEffect(
             
             // Check if this is a heal-over-time effect (has duration > 1)
             if (effect.duration && effect.duration > 1) {
-                // Apply HoT as status effect - value is healing per turn
+                // Apply HoT as an activeEffects regeneration TimedEffect so
+                // tickEffectsForDepthProgression heals on every depth increase
                 const healPerTurn = effectValue
+                const depth = currentDepth ?? currentFloor
                 targets.forEach(target => {
                     const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
                     if (targetIndex !== -1 && updatedParty[targetIndex]) {
                         const currentTarget = updatedParty[targetIndex]!
                         
-                        // Add regeneration combat effect
-                        const combatEffects = currentTarget.combatEffects || []
-                        combatEffects.push({
-                            id: `regen-${Date.now()}-${target.id}`,
-                            type: 'status',
-                            name: 'Regeneration',
-                            duration: effect.duration,
-                            target: target.id,
-                            behavior: {
-                                type: 'healPerTurn',
-                                healAmount: healPerTurn,
-                            }
-                        })
+                        const withRegen = applyEffect(
+                            currentTarget,
+                            {
+                                name: 'Regeneration',
+                                description: `Regenerating ${healPerTurn} HP per event`,
+                                type: 'regeneration',
+                                modifier: healPerTurn,
+                                duration: effect.duration,
+                                isPermanent: false,
+                            },
+                            depth
+                        )
                         
-                        updatedParty[targetIndex] = {
-                            ...currentTarget,
-                            combatEffects
-                        }
+                        updatedParty[targetIndex] = withRegen
                         
                         if (target.id === hero.id) {
                             updatedHero = updatedParty[targetIndex]!
