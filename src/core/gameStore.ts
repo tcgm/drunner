@@ -61,6 +61,7 @@ const initialState: GameState = {
   bankInventory: [],
   bankStorageSlots: GAME_CONFIG.bank.startingSlots,
   overflowInventory: [],
+  lastRunItems: [],
   corruptedItems: [],
   v2Items: [],
   metaXp: 0,
@@ -118,6 +119,7 @@ function dehydrateGameState(state: GameState): GameState {
     heroRoster: state.heroRoster.map(dehydrateHeroItems) as Hero[],
     bankInventory: dehydrateItems(state.bankInventory) as any,
     overflowInventory: dehydrateItems(state.overflowInventory) as any,
+    lastRunItems: dehydrateItems(state.lastRunItems ?? []) as any,
     dungeon: {
       ...state.dungeon,
       inventory: dehydrateItems(state.dungeon.inventory) as any,
@@ -247,6 +249,10 @@ export const useGameStore = create<GameStore>()(
               const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.overflowInventory as ItemStorage[])
               actualState.overflowInventory = valid
               allCorrupted.push(...corrupted)
+            }
+            if (actualState.lastRunItems?.length > 0) {
+              const { valid } = hydrateItemsWithCorrupted(actualState.lastRunItems as ItemStorage[])
+              actualState.lastRunItems = valid
             }
 
             // Hydrate equipped items on heroes in party

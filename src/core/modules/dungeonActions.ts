@@ -123,6 +123,7 @@ export const createDungeonActions: StateCreator<
         hasPendingPenalty: false,
         activeRun: newRun,
         lastOutcome: null,
+        lastRunItems: [], // Reset run item tracking for new run
       }
     }),
 
@@ -653,6 +654,10 @@ export const createDungeonActions: StateCreator<
         metaXp: state.metaXp + metaXpGained,
         party: isWiped ? penalizedParty : updatedParty,
         heroRoster: updatedRoster,
+        // Accumulate items found this event into lastRunItems for Shifty Guy tracking
+        lastRunItems: resolvedOutcome.items.length > 0
+          ? [...(state.lastRunItems ?? []), ...resolvedOutcome.items]
+          : (state.lastRunItems ?? []),
         dungeon: {
           ...state.dungeon,
           gold: loseGold ? 0 : updatedGold,
@@ -758,28 +763,24 @@ export const createDungeonActions: StateCreator<
         // Add in-run gold to bank on victory
         const goldToBank = Math.max(0, state.dungeon.gold)
 
-        // Handle inventory - items that fit go to bank, overflow goes to temporary storage
-        const availableSlots = state.bankStorageSlots - state.bankInventory.length
-        const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
-        const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
-
+        // Leave dungeon.inventory intact – Shifty Guy intercepts first.
+        // finalizeRunItemTransfer (called after Shifty Guy) distributes items to bank/overflow.
         const resultState = {
           dungeon: {
+            ...state.dungeon,   // preserves inventory
             depth: 0,
             floor: 0,
             eventsThisFloor: 0,
             eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
-            eventLog: [],
+            eventLog: state.dungeon.eventLog,
             gold: 0,
-            inventory: [],
             isNextEventBoss: false,
+            bossType: null,
           },
           alkahest: state.alkahest, // Explicitly preserve alkahest
           bankGold: state.bankGold + goldToBank,
-          bankInventory: [...state.bankInventory, ...itemsToBank],
-          overflowInventory: [...state.overflowInventory, ...itemsToOverflow],
           isGameOver: true,
           activeRun: completedRun,
         }
@@ -820,32 +821,27 @@ export const createDungeonActions: StateCreator<
         // Add in-run gold to bank on successful retreat
         const goldToBank = Math.max(0, state.dungeon.gold)
 
-        // Handle inventory - items that fit go to bank, overflow goes to temporary storage
-        const availableSlots = state.bankStorageSlots - state.bankInventory.length
-        const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
-        const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
-
-        const newAlkahest = state.alkahest
         const newBankGold = state.bankGold + goldToBank
-        console.log(`[Retreat] Returning - alkahest: ${newAlkahest}, bankGold: ${newBankGold} (was: ${state.bankGold})`)
+        console.log(`[Retreat] Returning - alkahest: ${state.alkahest}, bankGold: ${newBankGold} (was: ${state.bankGold})`)
 
+        // Leave dungeon.inventory intact – Shifty Guy intercepts first.
+        // finalizeRunItemTransfer (called after Shifty Guy) distributes items to bank/overflow.
         return {
           dungeon: {
+            ...state.dungeon,   // preserves inventory
             depth: 0,
             floor: 0,
             eventsThisFloor: 0,
             eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
-            eventLog: [],
+            eventLog: state.dungeon.eventLog,
             gold: 0,
-            inventory: [],
             isNextEventBoss: false,
+            bossType: null,
           },
-          alkahest: newAlkahest, // Explicitly preserve alkahest
+          alkahest: state.alkahest, // Explicitly preserve alkahest
           bankGold: newBankGold,
-          bankInventory: [...state.bankInventory, ...itemsToBank],
-          overflowInventory: itemsToOverflow,
           isGameOver: false,
           hasPendingPenalty: false,
           activeRun: null,
@@ -1004,6 +1000,10 @@ export const createDungeonActions: StateCreator<
         alkahest: state.alkahest, // Explicitly preserve alkahest
         party: finalParty,
         heroRoster: updatedRoster,
+        // Accumulate boss reward items into lastRunItems
+        lastRunItems: resolvedOutcome.items.length > 0
+          ? [...(state.lastRunItems ?? []), ...resolvedOutcome.items]
+          : (state.lastRunItems ?? []),
         dungeon: {
           ...state.dungeon,
           gold: updatedGold,

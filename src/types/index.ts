@@ -511,6 +511,7 @@ export interface GameState {
   bankInventory: Item[] // Items stored outside runs
   bankStorageSlots: number // Maximum bank storage capacity
   overflowInventory: Item[] // Items from last run that exceed bank capacity
+  lastRunItems: Item[] // Items from the most recent dungeon run (used for the Shifty Guy offer)
   corruptedItems: Item[] // Items that failed to load properly and need user resolution
   v2Items: Item[] // Items using old V2 format that can be migrated to V3
   metaXp: number // Account-wide XP for meta-progression unlocks

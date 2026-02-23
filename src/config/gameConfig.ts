@@ -411,4 +411,20 @@ export const GAME_CONFIG = {
     // 'lose-equipment': Heroes keep levels but lose all equipment
     loseAllGoldOnDefeat: true, // Whether defeated heroes lose all gold
   },
+
+  // Shifty Guy – post-run bulk scrapper that appears when returning to town
+  shiftyGuy: {
+    enabled: true,
+    // Gold fee charged by the Shifty Guy as a fraction of selected items' total gold value
+    goldCostPercent: 0.08, // 8% – "modest gold fee"
+    // Fraction of the normal manual-discard alkahest you actually receive (Shifty Guy takes a cut)
+    alkahestReturnPercent: 0.75, // 75% of what manual discarding would give
+    // Default rarity threshold shown in the UI when the modal first opens.
+    // Items AT or BELOW this rarity are pre-selected for scrapping.
+    defaultRarityThreshold: 'common' as import('@/types').ItemRarity,
+    // Default toggle states
+    defaultIncludeUnique: false, // Unique items excluded by default
+    defaultIncludeSet: false,    // Set items excluded by default
+    defaultIncludeMods: false,   // Modded items excluded by default
+  },
 } as const

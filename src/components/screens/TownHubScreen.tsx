@@ -1,6 +1,6 @@
 import React from 'react'
 import './TownHubScreen.css'
-import { Box, Flex, VStack, Heading, Text, Icon, HStack, Tooltip, useDisclosure, IconButton, Switch, FormControl, FormLabel } from '@chakra-ui/react'
+import { Box, Flex, VStack, Heading, Text, Icon, HStack, Tooltip, useDisclosure, IconButton, Switch, FormControl, FormLabel, useToast } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { 
   GiTowerFlag, GiTwoCoins, GiPowder, GiStarsStack
@@ -15,8 +15,9 @@ import { MarketHallModal } from '../party/MarketHallModal'
 import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
+import { ShiftyGuyModal } from '../ui/ShiftyGuyModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
-import type { Consumable, Item } from '@/types'
+import type { Consumable, Item, ItemRarity } from '@/types'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 
 interface TownHubScreenProps {
@@ -50,17 +51,53 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
     overflowInventory, dungeon,
     keepOverflowItem, discardOverflowItem, clearOverflow, expandBankStorage,
     finalizeRunItemTransfer,
+    dismissShiftyGuy, acceptShiftyGuyDeal,
   } = useGameStore()
+
+  const toast = useToast()
 
   // On mount: finalize any stranded dungeon item transfer, then surface overflow modal
   const { isOpen: isOverflowOpen, onOpen: onOverflowOpen, onClose: onOverflowClose } = useDisclosure()
 
+  // Shifty Guy → bank/overflow pipeline.
+  // On mount: if items are waiting in dungeon.inventory, Shifty Guy intercepts first.
+  // After accept/decline, finalizeRunItemTransfer distributes the remaining items,
+  // which may trigger the overflow modal reactively.
+  const [isShiftyGuyOpen, setIsShiftyGuyOpen] = React.useState(false)
+
   React.useEffect(() => {
-    if (dungeon.inventory.length > 0) {
-      finalizeRunItemTransfer()
+    if (dungeon.inventory.length === 0) return
+    if (GAME_CONFIG.shiftyGuy.enabled) {
+      // Small delay so the town renders before the modal pops
+      const t = setTimeout(() => setIsShiftyGuyOpen(true), 600)
+      return () => clearTimeout(t)
     }
+    // Shifty Guy disabled – distribute immediately
+    finalizeRunItemTransfer()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const handleShiftyGuyAccept = (rarityThreshold: ItemRarity, includeUnique: boolean, includeSet: boolean, includeMods: boolean) => {
+    const result = acceptShiftyGuyDeal(rarityThreshold, includeUnique, includeSet, includeMods)
+    setIsShiftyGuyOpen(false)
+    finalizeRunItemTransfer() // distribute remaining items → may trigger overflow modal
+    if (result.itemsScrapped > 0) {
+      toast({
+        title: 'Deal struck!',
+        description: `Handed off ${result.itemsScrapped} item${result.itemsScrapped !== 1 ? 's' : ''}. Paid ${result.goldSpent.toLocaleString()}g, received ${result.alkahestGained.toLocaleString()} alkahest.`,
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+        position: 'bottom-right',
+      })
+    }
+  }
+
+  const handleShiftyGuyDecline = () => {
+    setIsShiftyGuyOpen(false)
+    dismissShiftyGuy()
+    finalizeRunItemTransfer() // distribute all items → may trigger overflow modal
+  }
 
   React.useEffect(() => {
     if (overflowInventory.length > 0) {
@@ -350,6 +387,15 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         onKeepItem={keepOverflowItem}
         onDiscardItem={discardOverflowItem}
         onClearAll={clearOverflow}
+      />
+
+      {/* Shifty Guy Modal - post-run bulk scrapper offer */}
+      <ShiftyGuyModal
+        isOpen={isShiftyGuyOpen}
+        lastRunItems={dungeon.inventory}
+        bankGold={bankGold}
+        onAccept={handleShiftyGuyAccept}
+        onDecline={handleShiftyGuyDecline}
       />
     </Box>
   )

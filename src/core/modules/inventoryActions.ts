@@ -4,10 +4,11 @@
  */
 
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, Item, Consumable } from '@/types'
+import type { GameState, Hero, Item, Consumable, ItemRarity } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 import { generateItem } from '@/systems/loot/lootGenerator'
+import { isRarityAtOrBelow } from '@/systems/rarity/raritySystem'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { deduplicateItems } from '@/utils/itemDeduplication'
 import { convertToV3 } from '@/utils/itemConverter'
@@ -40,6 +41,14 @@ export interface InventoryActionsSlice {
   skipV2Item: (itemId: string) => void
   // Post-run cleanup
   finalizeRunItemTransfer: () => void
+  // Shifty Guy post-run bulk scrapper
+  dismissShiftyGuy: () => void
+  acceptShiftyGuyDeal: (
+    rarityThreshold: ItemRarity,
+    includeUnique: boolean,
+    includeSet: boolean,
+    includeMods: boolean
+  ) => { itemsScrapped: number; alkahestGained: number; goldSpent: number }
 }
 
 export const createInventoryActions: StateCreator<
@@ -453,7 +462,7 @@ export const createInventoryActions: StateCreator<
       const pendingItems = state.dungeon.inventory
       if (pendingItems.length === 0) return {}
 
-      console.log(`[FinalizeRunItemTransfer] Processing ${pendingItems.length} stranded dungeon items`)
+      console.log(`[FinalizeRunItemTransfer] Distributing ${pendingItems.length} items to bank/overflow`)
 
       const availableSlots = state.bankStorageSlots - state.bankInventory.length
       const itemsToBank = pendingItems.slice(0, availableSlots)
@@ -465,6 +474,7 @@ export const createInventoryActions: StateCreator<
           inventory: [],
         },
         bankInventory: [...state.bankInventory, ...itemsToBank],
+        lastRunItems: [], // clear now that items have been distributed
       }
 
       if (itemsToOverflow.length > 0) {
@@ -581,4 +591,49 @@ export const createInventoryActions: StateCreator<
     set((state) => ({
       v2Items: state.v2Items.filter(item => item.id !== itemId)
     })),
+
+  dismissShiftyGuy: () =>
+    set({ lastRunItems: [] }),
+
+  acceptShiftyGuyDeal: (rarityThreshold, includeUnique, includeSet, includeMods) => {
+    let result = { itemsScrapped: 0, alkahestGained: 0, goldSpent: 0 }
+
+    set((state) => {
+      // All items are still in dungeon.inventory at this point (Shifty Guy fires before distribution)
+      const qualifies = (item: Item): boolean => {
+        if (!isRarityAtOrBelow(item.rarity, rarityThreshold)) return false
+        if (!includeUnique && item.isUnique) return false
+        if (!includeSet && item.setId) return false
+        if (!includeMods && item.modifiers && item.modifiers.length > 0) return false
+        return true
+      }
+
+      const scrapped = state.dungeon.inventory.filter(qualifies)
+
+      if (scrapped.length === 0) {
+        result = { itemsScrapped: 0, alkahestGained: 0, goldSpent: 0 }
+        return {}
+      }
+
+      const totalValue = scrapped.reduce((sum, item) => sum + (item.value ?? 0), 0)
+      const manualAlkahest = Math.floor(totalValue * GAME_CONFIG.items.alkahestConversionRate)
+      const alkahestGained = Math.floor(manualAlkahest * GAME_CONFIG.shiftyGuy.alkahestReturnPercent)
+      const goldSpent = Math.floor(totalValue * GAME_CONFIG.shiftyGuy.goldCostPercent)
+
+      result = { itemsScrapped: scrapped.length, alkahestGained, goldSpent }
+
+      const scrappedIds = new Set(scrapped.map(i => i.id))
+
+      return {
+        dungeon: {
+          ...state.dungeon,
+          inventory: state.dungeon.inventory.filter(i => !scrappedIds.has(i.id)),
+        },
+        alkahest: state.alkahest + alkahestGained,
+        bankGold: Math.max(0, state.bankGold - goldSpent),
+      }
+    })
+
+    return result
+  },
 })
