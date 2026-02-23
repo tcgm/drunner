@@ -35,6 +35,8 @@ export function useInventoryFilters({
       // Special handling for consumables (check for consumableType property)
       if (filterBy === 'consumable') {
         filteredItems = filteredItems.filter(item => item.type === 'consumable' || 'consumableType' in item)
+      } else if (filterBy === 'unique') {
+        filteredItems = filteredItems.filter(item => (item as Item & { isUnique?: boolean }).isUnique === true)
       } else {
         filteredItems = filteredItems.filter(item => item.type === filterBy)
       }
