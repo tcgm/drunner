@@ -1,5 +1,5 @@
 import type { Item } from '@/types'
-import { GiDragonHead } from 'react-icons/gi'
+import dragonheartPlateIcon from '@/assets/icons/items/dragonheartPlate.svg'
 
 /**
  * Dragonheart Plate - Legendary dragon armor
@@ -11,7 +11,7 @@ export const DRAGONHEART_PLATE: Omit<Item, 'id'> = {
   rarity: 'legendary',
   minRarity: 'rare',
   maxRarity: 'artifact',
-  icon: GiDragonHead,
+  icon: dragonheartPlateIcon,
   stats: {
     defense: 100,
     maxHp: 120,
