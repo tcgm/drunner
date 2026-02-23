@@ -340,7 +340,8 @@ export const createDungeonActions: StateCreator<
       if ((currentEvent.type === 'combat' || currentEvent.type === 'boss') && state.party.some(h => h !== null && h.isAlive)) {
         const uniqueEffectResult = processUniqueEffects(state.party, 'onCombatStart', {
           eventType: currentEvent.type,
-          floor: state.dungeon.floor
+          floor: state.dungeon.floor,
+          currentDepth: state.dungeon.depth
         })
         
         if (uniqueEffectResult) {

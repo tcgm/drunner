@@ -1,4 +1,4 @@
-import { GiMagicSword } from 'react-icons/gi'
+import emberbladeIcon from '@/assets/icons/items/emberblade.svg'
 import type { Item } from '@/types'
 import type { UniqueEffectDefinition } from '@/systems/items/uniqueEffects'
 
@@ -17,7 +17,7 @@ export const EMBERBLADE: Omit<Item, 'id'> & { uniqueEffect?: UniqueEffectDefinit
   rarity: 'legendary',
   minRarity: 'epic',
   maxRarity: 'artifact',
-  icon: GiMagicSword,
+  icon: emberbladeIcon,
   stats: {
     attack: 135,
     magicPower: 45,

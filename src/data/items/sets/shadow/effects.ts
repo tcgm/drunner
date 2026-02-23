@@ -30,7 +30,7 @@ export const SHADOW_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
   description: 'Assassin\'s Mark: 35% chance to gain +100% Luck and guaranteed critical strikes for the first attack',
   handler: (context) => {
-    const { party, sourceHero, effectMultiplier = 1.0 } = context
+    const { party, sourceHero, effectMultiplier = 1.0, currentDepth } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -41,13 +41,28 @@ export const SHADOW_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
       return null
     }
     
-    // Double luck for the battle, scaled by effectMultiplier
+    // Double luck for the battle (1-event TimedEffect - works in both events and combat)
     const luckBoost = Math.floor(sourceHero.stats.luck * effectMultiplier)
-    sourceHero.stats.luck += luckBoost
+    const depth = currentDepth ?? 0
+    const duration = 1
+    if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+    sourceHero.activeEffects.push({
+      id: `shadow-mark-luck-${Date.now()}`,
+      type: 'buff',
+      name: "Assassin's Mark",
+      description: `+${luckBoost} Luck from Assassin's Mark`,
+      stat: 'luck',
+      modifier: luckBoost,
+      duration,
+      appliedAtDepth: depth,
+      expiresAtDepth: depth + duration,
+      isPermanent: false,
+    })
     
     return {
       party,
       message: `${sourceHero.name} marks their target from the shadows! (+${luckBoost} Luck)`,
+
       additionalEffects: [{
         type: 'status',
         target: [sourceHero.id],

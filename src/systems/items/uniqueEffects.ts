@@ -67,6 +67,7 @@ export interface UniqueEffectContext {
   eventType?: string
   resolvedOutcome?: ResolvedOutcome
   floor?: number
+  currentDepth?: number
   // Additional context based on trigger
   sourceHero?: Hero       // The hero wearing the item
   targetHero?: Hero       // Target of an effect
@@ -355,9 +356,23 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       const luckBoost = Math.max(1, Math.floor(25 * effectMultiplier))
       const inspiredIds: string[] = []
 
+      const depth = context.currentDepth ?? 0
+      const duration = 1
       party.forEach(hero => {
         if (hero && hero.isAlive) {
-          hero.stats.luck = (hero.stats.luck ?? 0) + luckBoost
+          if (!hero.activeEffects) hero.activeEffects = []
+          hero.activeEffects.push({
+            id: `minstrel-luck-${Date.now()}-${hero.id}`,
+            type: 'buff',
+            name: 'Battle Ballad',
+            description: `+${luckBoost} Luck from Battle Ballad`,
+            stat: 'luck',
+            modifier: luckBoost,
+            duration,
+            appliedAtDepth: depth,
+            expiresAtDepth: depth + duration,
+            isPermanent: false,
+          })
           inspiredIds.push(hero.id)
         }
       })
@@ -403,7 +418,21 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       // Grant the wearer a temporary +999 defense spike for the first hit
       // (represented as a very large defense bonus that gets noted in message)
       const wisdomBoost = Math.floor(sourceHero.stats.wisdom * 0.60 * effectMultiplier)
-      sourceHero.stats.wisdom += wisdomBoost
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+      sourceHero.activeEffects.push({
+        id: `mage-hat-wis-${Date.now()}`,
+        type: 'buff',
+        name: 'You Shall Not Pass',
+        description: `+${wisdomBoost} Wisdom from You Shall Not Pass`,
+        stat: 'wisdom',
+        modifier: wisdomBoost,
+        duration,
+        appliedAtDepth: depth,
+        expiresAtDepth: depth + duration,
+        isPermanent: false,
+      })
 
       return {
         party,
@@ -433,8 +462,13 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
       const attackBoost = Math.floor(sourceHero.stats.attack * 0.50 * effectMultiplier)
       const charismaBoost = Math.floor(sourceHero.stats.charisma * 0.40 * effectMultiplier)
-      sourceHero.stats.attack += attackBoost
-      sourceHero.stats.charisma += charismaBoost
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+      sourceHero.activeEffects.push(
+        { id: `guitar-atk-${Date.now()}`, type: 'buff' as const, name: 'Face-melting Riff', description: `+${attackBoost} Attack from Face-melting Riff`, stat: 'attack' as const, modifier: attackBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false },
+        { id: `guitar-cha-${Date.now()}`, type: 'buff' as const, name: 'Face-melting Riff', description: `+${charismaBoost} Charisma from Face-melting Riff`, stat: 'charisma' as const, modifier: charismaBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false }
+      )
 
       return {
         party,
@@ -464,8 +498,13 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
       const attackBoost = Math.floor(sourceHero.stats.attack * 0.45 * effectMultiplier)
       const speedBoost = Math.floor(sourceHero.stats.speed * 0.60 * effectMultiplier)
-      sourceHero.stats.attack += attackBoost
-      sourceHero.stats.speed += speedBoost
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+      sourceHero.activeEffects.push(
+        { id: `crimson-atk-${Date.now()}`, type: 'buff' as const, name: 'Petal Burst', description: `+${attackBoost} Attack from Petal Burst`, stat: 'attack' as const, modifier: attackBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false },
+        { id: `crimson-spd-${Date.now()}`, type: 'buff' as const, name: 'Petal Burst', description: `+${speedBoost} Speed from Petal Burst`, stat: 'speed' as const, modifier: speedBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false }
+      )
 
       return {
         party,

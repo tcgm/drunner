@@ -30,7 +30,7 @@ export const KITSUNE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
   description: 'Fox Spirit: 20% chance to gain +50% Speed for the battle',
   handler: (context) => {
-    const { party, sourceHero, effectMultiplier = 1.0 } = context
+    const { party, sourceHero, effectMultiplier = 1.0, currentDepth } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -41,9 +41,23 @@ export const KITSUNE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
       return null
     }
     
-    // Apply speed boost (temporary for combat)
+    // Apply speed boost (1-event TimedEffect - works in both events and combat)
     const speedBoost = Math.floor(sourceHero.stats.speed * 0.5 * effectMultiplier)
-    sourceHero.stats.speed += speedBoost
+    const depth = currentDepth ?? 0
+    const duration = 1
+    if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+    sourceHero.activeEffects.push({
+      id: `kitsune-speed-${Date.now()}`,
+      type: 'buff',
+      name: 'Fox Spirit',
+      description: `+${speedBoost} Speed from Fox Spirit`,
+      stat: 'speed',
+      modifier: speedBoost,
+      duration,
+      appliedAtDepth: depth,
+      expiresAtDepth: depth + duration,
+      isPermanent: false,
+    })
     
     return {
       party,
