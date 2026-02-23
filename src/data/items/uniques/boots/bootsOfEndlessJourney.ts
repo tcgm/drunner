@@ -1,4 +1,4 @@
-import { GiHighHeel } from 'react-icons/gi'
+import endlessBootsIcon from '@/assets/icons/items/endlessBoots.svg'
 import type { Item } from '@/types'
 
 /**
@@ -11,7 +11,7 @@ export const BOOTS_OF_ENDLESS_JOURNEY: Omit<Item, 'id'> = {
   rarity: 'mythic',
   minRarity: 'epic',
   maxRarity: 'divine',
-  icon: GiHighHeel,
+  icon: endlessBootsIcon,
   stats: {
     speed: 60,
     defense: 50,
