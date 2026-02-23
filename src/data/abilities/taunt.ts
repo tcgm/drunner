@@ -17,6 +17,7 @@ export const TAUNT: Ability = {
         value: 0,      // computed dynamically from primary stat in heroAbilities.ts
         targeting: { side: 'self', breadth: 'single' },
         duration: 2,   // base duration; extended by primary stat
+        scaling: { stat: 'defense', ratio: 0.2 }, // matches defenseBonus calc in heroAbilities.ts
     },
     icon: GiScreaming,
 }
