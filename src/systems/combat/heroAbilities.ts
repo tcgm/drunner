@@ -335,13 +335,11 @@ function processSpecialEffect(
 
     switch (ability.id) {
         case 'taunt': {
-            // Scale duration and defense bonus from hero's primary stat
-            // Fall back gracefully if primaryStats isn't present (old save not yet migrated)
+            // Duration comes from ability definition; defense bonus scales with primary stat
             const primaryStat = (hero.class.primaryStats?.[0]) ?? 'defense'
             const primaryStatValue = (heroStats[primaryStat as keyof Stats] as number) ?? 0
 
-            // Base 2 turns, +1 per 20 points of primary stat above 10
-            const duration = 2 + Math.max(0, Math.floor((primaryStatValue - 10) / 20))
+            const duration = effect.duration || 2
             // Defense bonus: 20% of primary stat value
             const defenseBonus = Math.round(primaryStatValue * 0.2)
 

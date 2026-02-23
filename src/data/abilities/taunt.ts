@@ -9,7 +9,7 @@ import { GiScreaming } from 'react-icons/gi'
 export const TAUNT: Ability = {
     id: 'taunt',
     name: 'Taunt',
-    description: 'Force boss to target you for 2-4 turns and gain bonus defense (scales with primary stat)',
+    description: 'Force boss to target you for 2 turns and gain bonus defense (scales with primary stat)',
     cooldown: 4,
     currentCooldown: 0,
     effect: {
