@@ -10,7 +10,7 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { recalculateDynamicBossStats } from './bossStats'
 import { resolveAbilityTargets } from './targetingResolver'
-import { applyBurningDot } from './effects'
+import { applyBurningDot, applyDotEffect } from './effects'
 
 /**
  * Execute hero ability during combat
@@ -62,8 +62,24 @@ export function executeHeroAbility(
                 party,
                 result
             )
-            // Apply burning DoT stacks if this ability has burnStacks (e.g. Fireball)
-            if (effect.burnStacks && effect.burnStacks > 0 && effect.targeting.side === 'enemy') {
+            // Apply per-ability DoT if defined (new dot property)
+            if (effect.dot && effect.targeting.side === 'enemy') {
+                // Scale the dot damage if the dot has its own scaling config
+                let dotDamage = effect.dot.damage
+                if (effect.dot.scaling) {
+                    const rawStat = heroStats[effect.dot.scaling.stat as keyof typeof heroStats]
+                    const statValue = typeof rawStat === 'number' ? rawStat : 0
+                    dotDamage += Math.floor(statValue * effect.dot.scaling.ratio)
+                }
+                const scaledDot = { ...effect.dot, damage: dotDamage }
+                const totalDmgPerTurn = applyDotEffect(combatState, scaledDot)
+                result.effects.push({
+                    type: 'status',
+                    target: 'boss',
+                    description: `${hero.name}'s ${ability.name} afflicts the boss with ${effect.dot.name}! ${totalDmgPerTurn} dmg/turn`,
+                })
+            // Legacy fallback: burnStacks uses global BURN_STACK_DAMAGE per stack
+            } else if (effect.burnStacks && effect.burnStacks > 0 && effect.targeting.side === 'enemy') {
                 const totalDmgPerTurn = applyBurningDot(combatState, effect.burnStacks)
                 result.effects.push({
                     type: 'status',
@@ -457,35 +473,29 @@ function processSpecialEffect(
         }
 
         case 'poison-blade': {
-            // Apply a poison DoT status to the boss
-            const poisonDamage = Math.max(3, value)
-            const poisonDuration = effect.duration || 3
-
-            // Remove existing poison stack from this source
-            combatState.activeEffects = combatState.activeEffects.filter(
-                e => !(e.name === 'Poisoned' && e.target === 'boss')
-            )
-
-            combatState.activeEffects.push({
-                id: `poison-${Date.now()}`,
-                type: 'status',
+            // If the ability defines a dot, honour its config; otherwise derive from value/duration
+            const baseDot = effect.dot ?? {
                 name: 'Poisoned',
-                duration: poisonDuration,
-                target: 'boss',
-                behavior: {
-                    type: 'damagePerTurn',
-                    damageAmount: poisonDamage,
-                    onRoundEnd: () => {
-                        // HP deduction handled by processStatusEffects in effects.ts
-                    },
-                },
-            })
+                damage: Math.max(3, value),
+                duration: effect.duration || 3,
+                stacking: 'replace' as const,
+            }
+
+            // Apply dot scaling if defined (same pattern as the generic 'damage' handler)
+            let dotDamage = baseDot.damage
+            if (baseDot.scaling) {
+                const rawStat = heroStats[baseDot.scaling.stat as keyof typeof heroStats]
+                const statValue = typeof rawStat === 'number' ? rawStat : 0
+                dotDamage += Math.floor(statValue * baseDot.scaling.ratio)
+            }
+            const scaledDot = { ...baseDot, damage: Math.max(1, dotDamage) }
+            const totalPoison = applyDotEffect(combatState, scaledDot)
 
             result.effects.push({
                 type: 'status',
                 target: 'boss',
-                value: poisonDamage,
-                description: `${hero.name} poisons the boss! ${poisonDamage} damage per turn for ${poisonDuration} turns!`,
+                value: totalPoison,
+                description: `${hero.name} poisons the boss! ${totalPoison} damage per turn for ${scaledDot.duration} turns!`,
             })
             break
         }

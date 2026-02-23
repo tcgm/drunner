@@ -827,6 +827,8 @@ export const createDungeonActions: StateCreator<
         // Leave dungeon.inventory intact – Shifty Guy intercepts first.
         // finalizeRunItemTransfer (called after Shifty Guy) distributes items to bank/overflow.
         return {
+          // Clear combat-only effects from all party members on retreat
+          party: state.party.map(h => h ? { ...h, combatEffects: undefined } : null),
           dungeon: {
             ...state.dungeon,   // preserves inventory
             depth: 0,
@@ -917,7 +919,10 @@ export const createDungeonActions: StateCreator<
             ...hero.stats,
             hp: finalHp
           },
-          isAlive: combatHpState[index]!.isAlive
+          isAlive: combatHpState[index]!.isAlive,
+          // Clear combat-only effects (HoT/DoT, buffs, debuffs) so they don't
+          // persist into out-of-combat events (e.g. Song of Rest Regeneration)
+          combatEffects: undefined,
         }
       })
 

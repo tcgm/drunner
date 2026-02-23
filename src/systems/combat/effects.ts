@@ -4,7 +4,7 @@
  * Manages buffs, debuffs, status effects, and cooldowns during combat
  */
 
-import type { Hero, BossCombatState, CombatEffect } from '@/types'
+import type { Hero, BossCombatState, CombatEffect, DotEffect } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 
 /**
@@ -200,47 +200,79 @@ export function applyPassiveHealing(combatState: BossCombatState): number {
     return combatState.currentHp - oldHp
 }
 
-/** Damage dealt per individual burning stack per turn */
+/** Damage dealt per individual burning stack per turn (legacy fallback) */
 export const BURN_STACK_DAMAGE = 15
+
+/**
+ * Apply a generic damage-over-time effect to the boss.
+ *
+ * @param combatState - Current combat state (boss side)
+ * @param dot         - DoT definition from the ability (name, damage, duration, stacking)
+ * @returns The total DoT damage per turn after this application
+ */
+export function applyDotEffect(
+    combatState: BossCombatState,
+    dot: Pick<DotEffect, 'name' | 'damage' | 'duration' | 'stacking'>
+): number {
+    const stacking = dot.stacking ?? 'additive'
+
+    const existing = combatState.activeEffects.find(
+        (e) => e.type === 'status' && e.name === dot.name
+    )
+
+    if (existing && existing.behavior?.type === 'damagePerTurn') {
+        switch (stacking) {
+            case 'additive':
+                existing.behavior.damageAmount = (existing.behavior.damageAmount ?? 0) + dot.damage
+                existing.duration = Math.max(existing.duration, dot.duration)
+                return existing.behavior.damageAmount
+
+            case 'refresh':
+                existing.duration = dot.duration
+                return existing.behavior.damageAmount ?? 0
+
+            case 'replace':
+                // Fall through to remove-then-add
+                combatState.activeEffects = combatState.activeEffects.filter(
+                    (e) => !(e.type === 'status' && e.name === dot.name)
+                )
+                break
+        }
+    }
+
+    combatState.activeEffects.push({
+        id: `${dot.name.toLowerCase()}-${Date.now()}`,
+        type: 'status',
+        name: dot.name,
+        duration: dot.duration,
+        target: 'boss',
+        behavior: {
+            type: 'damagePerTurn',
+            damageAmount: dot.damage,
+        },
+    })
+
+    return dot.damage
+}
 
 /**
  * Apply stacking Burning DoT to the boss.
  *
- * If the boss already has a "Burning" status effect the damage is increased
- * by `stacks * BURN_STACK_DAMAGE` and the duration is refreshed to at least
- * 3 rounds.  Otherwise a new "Burning" status effect is created.
+ * Legacy wrapper around applyDotEffect.  Kept for the Emberblade weapon
+ * which uses the old stacks-based API.
  *
  * @param combatState - Current combat state (boss side)
- * @param stacks      - Number of burn stacks to apply (each = BURN_STACK_DAMAGE dmg/turn)
+ * @param stacks      - Number of burn stacks (each = BURN_STACK_DAMAGE dmg/turn)
  * @returns The total burning damage per turn after this application
  */
 export function applyBurningDot(
     combatState: BossCombatState,
     stacks: number = 1
 ): number {
-    const addedDamage = stacks * BURN_STACK_DAMAGE
-
-    const existing = combatState.activeEffects.find(
-        (e) => e.type === 'status' && e.name === 'Burning'
-    )
-
-    if (existing && existing.behavior?.type === 'damagePerTurn') {
-        existing.behavior.damageAmount = (existing.behavior.damageAmount ?? 0) + addedDamage
-        existing.duration = Math.max(existing.duration, 3)
-        return existing.behavior.damageAmount
-    }
-
-    combatState.activeEffects.push({
-        id: `burning-${Date.now()}`,
-        type: 'status',
+    return applyDotEffect(combatState, {
         name: 'Burning',
+        damage: stacks * BURN_STACK_DAMAGE,
         duration: 3,
-        target: 'boss',
-        behavior: {
-            type: 'damagePerTurn',
-            damageAmount: addedDamage,
-        },
+        stacking: 'additive',
     })
-
-    return addedDamage
 }

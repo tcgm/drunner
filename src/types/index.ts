@@ -75,6 +75,35 @@ export interface TargetingSpec {
   includesSelf?: boolean
 }
 
+/**
+ * Defines a damage-over-time effect applied by an ability.
+ * Replaces the old global burnStacks/BURN_STACK_DAMAGE mechanism so each
+ * ability can fully specify its own DoT parameters.
+ */
+export interface DotEffect {
+  /** Display name of the status (e.g. 'Burning', 'Poisoned', 'Bleeding') */
+  name: string
+  /** Base damage per turn. Scaled up by `scaling` when applied if provided. */
+  damage: number
+  /** Duration in combat rounds */
+  duration: number
+  /**
+   * How this interacts with an already-active effect of the same name:
+   *  - 'additive'  (default): adds damage on top, refreshes to max(existing, new) duration
+   *  - 'replace'  : removes current effect and applies fresh
+   *  - 'refresh'  : keeps current damage, resets duration
+   */
+  stacking?: 'additive' | 'replace' | 'refresh'
+  /**
+   * Optional stat scaling for the dot damage (independent of the main effect scaling).
+   * Final dot damage = damage + floor(stat * ratio).
+   */
+  scaling?: {
+    stat: PrimaryStat
+    ratio: number
+  }
+}
+
 export interface AbilityEffect {
   type: 'damage' | 'heal' | 'buff' | 'debuff' | 'special'
   value: number // Base value
@@ -85,7 +114,10 @@ export interface AbilityEffect {
     stat: PrimaryStat
     ratio: number // Multiplier (e.g., 0.5 = 50% of stat added to base value)
   }
-  burnStacks?: number // Number of burning DoT stacks to apply to the boss on a successful hit
+  /** Per-ability DoT effect.  Replaces the legacy burnStacks approach. */
+  dot?: DotEffect
+  /** @deprecated Use dot instead. Number of burning stacks (each = BURN_STACK_DAMAGE dmg/turn) */
+  burnStacks?: number
 }
 
 export interface HeroClass {
