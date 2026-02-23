@@ -14,6 +14,7 @@
  *   --padding=N        Percentage of content size to add as padding (default 3).
  *   --margin=N         Override: absolute padding units instead of percentage.
  *   --file=name.svg    Process a single file only.
+ *   --verbose          Also log files that are already up-to-date.
  */
 
 import { readFileSync, writeFileSync, readdirSync } from 'fs';
@@ -25,6 +26,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // ─── CLI args ────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
 const DRY_RUN    = args.includes('--dry-run');
+const VERBOSE    = args.includes('--verbose');
 const PAD_PCT    = parseFloat(args.find(a => a.startsWith('--padding='))?.split('=')[1] ?? '3');
 const ABS_MARGIN = args.find(a => a.startsWith('--margin='))  ? parseFloat(args.find(a => a.startsWith('--margin='))?.split('=')[1]) : null;
 const ONLY_FILE  = args.find(a => a.startsWith('--file='))?.split('=')[1] ?? null;
@@ -503,7 +505,7 @@ function processFile(filePath) {
 
   if (!isFinite(bbox.minX)) {
     console.log(`  ${filename}: ⚠  No computable content found, skipping.`);
-    return;
+    return 'warn';
   }
 
   const contentW = bbox.maxX - bbox.minX;
@@ -511,7 +513,7 @@ function processFile(filePath) {
 
   if (contentW < 1 || contentH < 1) {
     console.log(`  ${filename}: ⚠  Degenerate bbox (${r(contentW)}×${r(contentH)}), skipping.`);
-    return;
+    return 'warn';
   }
 
   // Determine padding
@@ -539,14 +541,16 @@ function processFile(filePath) {
   const oldStr = oldVB ? `${oldVB.x} ${oldVB.y} ${oldVB.w} ${oldVB.h}` : '(none)';
   const newStr = `${newVB.x} ${newVB.y} ${newVB.w} ${newVB.h}`;
 
-  const changed = oldStr !== newStr;
+  if (oldStr === newStr) {
+    // Already up-to-date — silent skip (add --verbose to see these)
+    if (VERBOSE) console.log(`  ${filename}: (already cropped, skipped)`);
+    return 'skipped';
+  }
 
   console.log(`  ${filename}:`);
   console.log(`    Content bbox : [${r(bbox.minX)}, ${r(bbox.minY)}] → [${r(bbox.maxX)}, ${r(bbox.maxY)}]  (${r(contentW)}×${r(contentH)})`);
   console.log(`    Old viewBox  : ${oldStr}`);
-  console.log(`    New viewBox  : ${newStr}${changed ? ' ✓' : '  (unchanged)'}`);
-
-  if (!changed) return;
+  console.log(`    New viewBox  : ${newStr} ✓`);
 
   if (!DRY_RUN) {
     let updated = setViewBox(content, newVB);
@@ -556,6 +560,7 @@ function processFile(filePath) {
     writeFileSync(filePath, updated, 'utf-8');
     console.log(`    -> Written.`);
   }
+  return 'updated';
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -576,14 +581,16 @@ function main() {
     }
   }
 
-  let modified = 0;
+  let updated = 0, skipped = 0, warned = 0;
   for (const file of files) {
-    processFile(join(ICONS_DIR, file));
-    console.log('');
-    modified++;
+    const result = processFile(join(ICONS_DIR, file));
+    if (result === 'updated') { console.log(''); updated++; }
+    else if (result === 'skipped') skipped++;
+    else warned++;
   }
 
-  console.log(`Done — processed ${modified}/${files.length} SVG file(s).`);
+  console.log(`Done — ${updated} updated, ${skipped} already up-to-date, ${warned} warned (of ${files.length} total).`);
+  if (skipped && !VERBOSE) console.log('(run with --verbose to list skipped files)');
   if (DRY_RUN) console.log('(dry-run: no files were modified)');
 }
 
