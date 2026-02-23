@@ -14,16 +14,16 @@ import type { SetBonus } from '@/data/items/sets'
  */
 export const SANTA_SET_BONUSES: Record<number, SetBonus> = {
   2: {
-    description: 'Holiday Cheer (2 pieces): +2 Luck, +1 Charisma per piece',
-    stats: { luck: 2, charisma: 1 },
+    description: 'Holiday Cheer (2 pieces): +20 Luck, +10 Charisma per piece',
+    stats: { luck: 20, charisma: 10 },
   },
   4: {
-    description: "Season's Bounty (4 pieces): +3 Luck, +2 Charisma, +1 Speed per piece",
-    stats: { luck: 3, charisma: 2, speed: 1 },
+    description: "Season's Bounty (4 pieces): +30 Luck, +20 Charisma, +10 Speed per piece",
+    stats: { luck: 30, charisma: 20, speed: 10 },
   },
   6: {
-    description: 'Christmas Magic (Full Set): +5 Luck, +4 Charisma, +3 Speed, +4 Max HP per piece',
-    stats: { luck: 5, charisma: 4, speed: 3, maxHp: 4 },
+    description: 'Christmas Magic (Full Set): +50 Luck, +40 Charisma, +30 Speed, +40 Max HP per piece',
+    stats: { luck: 50, charisma: 40, speed: 30, maxHp: 40 },
   },
 }
 

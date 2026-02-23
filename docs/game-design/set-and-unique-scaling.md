@@ -51,20 +51,20 @@ Base values are tuned assuming Common rarity (×1.0). They are intentionally sma
 
 | Set      | 2-Piece (per piece)                    | 4-Piece (per piece)                          | 6-Piece (per piece)                                    |
 |----------|----------------------------------------|----------------------------------------------|--------------------------------------------------------|
-| Kitsune  | Speed +1, Luck +1                      | Speed +2, Luck +1, MP +2                     | Speed +3, Luck +2, MP +4, Attack +2                    |
-| Titan    | Attack +3, Defense +2                  | Attack +5, Defense +4, HP +6                 | Attack +8, Defense +6, HP +10                          |
-| Arcane   | MP +3, Wisdom +2                       | MP +5, Wisdom +3, Charisma +2                | MP +8, Wisdom +5, Charisma +4, Speed +2                |
-| Draconic | HP +5, Defense +1                      | HP +9, Defense +2, Attack +3                 | HP +14, Defense +4, Attack +5, Magic Power +3          |
-| Shadow   | Speed +2, Luck +2                      | Speed +4, Luck +3, Attack +3                 | Speed +7, Luck +5, Attack +5, Wisdom +3                |
-| Bunny    | Charisma +2, Speed +1                  | Charisma +3, Speed +2, Luck +1               | Charisma +5, Speed +4, Luck +3, Defense +2             |
-| Santa    | Luck +2, Charisma +1                   | Luck +3, Charisma +2, Speed +1               | Luck +5, Charisma +4, Speed +3, HP +4                  |
+| Kitsune  | Speed +10, Luck +10                    | Speed +20, Luck +10, MP +20                  | Speed +30, Luck +20, MP +40, Attack +20                |
+| Titan    | Attack +30, Defense +20                | Attack +50, Defense +40, HP +60              | Attack +80, Defense +60, HP +100                       |
+| Arcane   | MP +30, Wisdom +20                     | MP +50, Wisdom +30, Charisma +20             | MP +80, Wisdom +50, Charisma +40, Speed +20            |
+| Draconic | HP +50, Defense +10                    | HP +90, Defense +20, Attack +30              | HP +140, Defense +40, Attack +50, Magic Power +30      |
+| Shadow   | Speed +20, Luck +20                    | Speed +40, Luck +30, Attack +30              | Speed +70, Luck +50, Attack +50, Wisdom +30            |
+| Bunny    | Charisma +20, Speed +10                | Charisma +30, Speed +20, Luck +10            | Charisma +50, Speed +40, Luck +30, Defense +20         |
+| Santa    | Luck +20, Charisma +10                 | Luck +30, Charisma +20, Speed +10            | Luck +50, Charisma +40, Speed +30, HP +40              |
 
 ### Example: 6-Piece Legendary Titan Set
 
-Base 6-piece values: Attack +8, Defense +6, HP +10  
+Base 6-piece values: Attack +80, Defense +60, HP +100  
 Legendary multiplier: ×4.0  
-Per-piece contribution: Attack +32, Defense +24, HP +40  
-6 pieces × contribution: **Attack +192, Defense +144, HP +240 total**
+Per-piece contribution: Attack +320, Defense +240, HP +400  
+6 pieces × contribution: **Attack +1920, Defense +1440, HP +2400 total**
 
 ---
 

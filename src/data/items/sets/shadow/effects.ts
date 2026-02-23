@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const SHADOW_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Shadow Step (2 pieces): +2 Speed, +2 Luck per piece', stats: { speed: 2, luck: 2 } },
-  4: { description: 'Veil of Night (4 pieces): +4 Speed, +3 Luck, +3 Attack per piece', stats: { speed: 4, luck: 3, attack: 3 } },
-  6: { description: 'Master Assassin (Full Set): +7 Speed, +5 Luck, +5 Attack, +3 Wisdom per piece', stats: { speed: 7, luck: 5, attack: 5, wisdom: 3 } },
+  2: { description: 'Shadow Step (2 pieces): +20 Speed, +20 Luck per piece', stats: { speed: 20, luck: 20 } },
+  4: { description: 'Veil of Night (4 pieces): +40 Speed, +30 Luck, +30 Attack per piece', stats: { speed: 40, luck: 30, attack: 30 } },
+  6: { description: 'Master Assassin (Full Set): +70 Speed, +50 Luck, +50 Attack, +30 Wisdom per piece', stats: { speed: 70, luck: 50, attack: 50, wisdom: 30 } },
 }
 
 /**

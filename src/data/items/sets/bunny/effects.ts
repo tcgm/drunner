@@ -14,16 +14,16 @@ import type { SetBonus } from '@/data/items/sets'
  */
 export const BUNNY_SET_BONUSES: Record<number, SetBonus> = {
   2: { 
-    description: 'Showgirl Charm (2 pieces): +2 Charisma, +1 Speed per piece', 
-    stats: { charisma: 2, speed: 1 } 
+    description: 'Showgirl Charm (2 pieces): +20 Charisma, +10 Speed per piece', 
+    stats: { charisma: 20, speed: 10 } 
   },
   4: { 
-    description: 'Casino Darling (4 pieces): +3 Charisma, +2 Speed, +1 Luck per piece', 
-    stats: { charisma: 3, speed: 2, luck: 1 } 
+    description: 'Casino Darling (4 pieces): +30 Charisma, +20 Speed, +10 Luck per piece', 
+    stats: { charisma: 30, speed: 20, luck: 10 } 
   },
   6: { 
-    description: 'Irresistible Allure (Full Set): +5 Charisma, +4 Speed, +3 Luck, +2 Defense per piece', 
-    stats: { charisma: 5, speed: 4, luck: 3, defense: 2 } 
+    description: 'Irresistible Allure (Full Set): +50 Charisma, +40 Speed, +30 Luck, +20 Defense per piece', 
+    stats: { charisma: 50, speed: 40, luck: 30, defense: 20 } 
   },
 }
 

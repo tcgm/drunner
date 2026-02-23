@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const DRACONIC_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Dragon Blood (2 pieces): +5 HP, +1 Defense per piece', stats: { maxHp: 5, defense: 1 } },
-  4: { description: 'Dragon Might (4 pieces): +9 HP, +2 Defense, +3 Attack per piece', stats: { maxHp: 9, defense: 2, attack: 3 } },
-  6: { description: 'Ancient Dragon (Full Set): +14 HP, +4 Defense, +5 Attack, +3 Magic Power per piece', stats: { maxHp: 14, defense: 4, attack: 5, magicPower: 3 } },
+  2: { description: 'Dragon Blood (2 pieces): +50 HP, +10 Defense per piece', stats: { maxHp: 50, defense: 10 } },
+  4: { description: 'Dragon Might (4 pieces): +90 HP, +20 Defense, +30 Attack per piece', stats: { maxHp: 90, defense: 20, attack: 30 } },
+  6: { description: 'Ancient Dragon (Full Set): +140 HP, +40 Defense, +50 Attack, +30 Magic Power per piece', stats: { maxHp: 140, defense: 40, attack: 50, magicPower: 30 } },
 }
 
 /**

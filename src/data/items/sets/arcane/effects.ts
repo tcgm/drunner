@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const ARCANE_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Magical Affinity (2 pieces): +3 Magic Power, +2 Wisdom per piece', stats: { magicPower: 3, wisdom: 2 } },
-  4: { description: 'Arcane Mastery (4 pieces): +5 Magic Power, +3 Wisdom, +2 Charisma per piece', stats: { magicPower: 5, wisdom: 3, charisma: 2 } },
-  6: { description: 'Supreme Sorcery (Full Set): +8 Magic Power, +5 Wisdom, +4 Charisma, +2 Speed per piece', stats: { magicPower: 8, wisdom: 5, charisma: 4, speed: 2 } },
+  2: { description: 'Magical Affinity (2 pieces): +30 Magic Power, +20 Wisdom per piece', stats: { magicPower: 30, wisdom: 20 } },
+  4: { description: 'Arcane Mastery (4 pieces): +50 Magic Power, +30 Wisdom, +20 Charisma per piece', stats: { magicPower: 50, wisdom: 30, charisma: 20 } },
+  6: { description: 'Supreme Sorcery (Full Set): +80 Magic Power, +50 Wisdom, +40 Charisma, +20 Speed per piece', stats: { magicPower: 80, wisdom: 50, charisma: 40, speed: 20 } },
 }
 
 /**

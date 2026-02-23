@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const TITAN_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Titan Strength (2 pieces): +3 Attack, +2 Defense per piece', stats: { attack: 3, defense: 2 } },
-  4: { description: 'Titan Fortitude (4 pieces): +5 Attack, +4 Defense, +6 HP per piece', stats: { attack: 5, defense: 4, maxHp: 6 } },
-  6: { description: 'Primordial Might (Full Set): +8 Attack, +6 Defense, +10 HP per piece', stats: { attack: 8, defense: 6, maxHp: 10 } },
+  2: { description: 'Titan Strength (2 pieces): +30 Attack, +20 Defense per piece', stats: { attack: 30, defense: 20 } },
+  4: { description: 'Titan Fortitude (4 pieces): +50 Attack, +40 Defense, +60 HP per piece', stats: { attack: 50, defense: 40, maxHp: 60 } },
+  6: { description: 'Primordial Might (Full Set): +80 Attack, +60 Defense, +100 HP per piece', stats: { attack: 80, defense: 60, maxHp: 100 } },
 }
 
 /**
