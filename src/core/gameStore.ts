@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { GameState, Hero, Item, Equipment } from '@/types'
+import type { ItemV3 } from '@/types/items-v3'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { needsMigration, CURRENT_SAVE_VERSION } from '@/utils/migration'
 import { dehydrateItem, dehydrateItems } from '@/utils/itemHydration'
@@ -83,26 +84,26 @@ function dehydrateGameState(state: GameState): GameState {
   const dehydrateHeroItems = (hero: Hero | null): Hero | null => {
     if (!hero) return hero
 
-    const result: any = { ...hero }
+    const result = { ...hero } as Hero
 
     // Handle new slots format (current system)
     if (hero.slots) {
-      const dehydratedSlots: Record<string, any> = {}
+      const dehydratedSlots: Record<string, ItemV3 | null> = {}
       for (const [slotId, item] of Object.entries(hero.slots)) {
         dehydratedSlots[slotId] = item ? dehydrateItem(item) : null
       }
-      result.slots = dehydratedSlots
+      result.slots = dehydratedSlots as unknown as Hero['slots']
     }
 
     // Handle legacy equipment format (for backwards compatibility)
     if (hero.equipment) {
       const dehydratedEquipment: Equipment = {
-        weapon: hero.equipment.weapon ? dehydrateItem(hero.equipment.weapon) as any : null,
-        armor: hero.equipment.armor ? dehydrateItem(hero.equipment.armor) as any : null,
-        helmet: hero.equipment.helmet ? dehydrateItem(hero.equipment.helmet) as any : null,
-        boots: hero.equipment.boots ? dehydrateItem(hero.equipment.boots) as any : null,
-        accessory1: hero.equipment.accessory1 ? dehydrateItem(hero.equipment.accessory1) as any : null,
-        accessory2: hero.equipment.accessory2 ? dehydrateItem(hero.equipment.accessory2) as any : null,
+        weapon: hero.equipment.weapon ? dehydrateItem(hero.equipment.weapon) as unknown as Item : null,
+        armor: hero.equipment.armor ? dehydrateItem(hero.equipment.armor) as unknown as Item : null,
+        helmet: hero.equipment.helmet ? dehydrateItem(hero.equipment.helmet) as unknown as Item : null,
+        boots: hero.equipment.boots ? dehydrateItem(hero.equipment.boots) as unknown as Item : null,
+        accessory1: hero.equipment.accessory1 ? dehydrateItem(hero.equipment.accessory1) as unknown as Item : null,
+        accessory2: hero.equipment.accessory2 ? dehydrateItem(hero.equipment.accessory2) as unknown as Item : null,
       }
       result.equipment = dehydratedEquipment
     }
@@ -114,12 +115,12 @@ function dehydrateGameState(state: GameState): GameState {
     ...state,
     party: state.party.map(dehydrateHeroItems) as (Hero | null)[],
     heroRoster: state.heroRoster.map(dehydrateHeroItems) as Hero[],
-    bankInventory: dehydrateItems(state.bankInventory) as any,
-    overflowInventory: dehydrateItems(state.overflowInventory) as any,
-    lastRunItems: dehydrateItems(state.lastRunItems ?? []) as any,
+    bankInventory: dehydrateItems(state.bankInventory) as unknown as Item[],
+    overflowInventory: dehydrateItems(state.overflowInventory) as unknown as Item[],
+    lastRunItems: dehydrateItems(state.lastRunItems ?? []) as unknown as Item[],
     dungeon: {
       ...state.dungeon,
-      inventory: dehydrateItems(state.dungeon.inventory) as any,
+      inventory: dehydrateItems(state.dungeon.inventory) as unknown as Item[],
     },
     // Don't save v2Items - it's regenerated from bank scan on load
   }
