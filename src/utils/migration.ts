@@ -164,6 +164,7 @@ export function migrateGameState(state: GameState): GameState {
     bankGold: state.bankGold ?? 0,
     bankStorageSlots: state.bankStorageSlots ?? GAME_CONFIG.bank.startingSlots,
     metaXp: state.metaXp ?? 0,
+    nexusUpgrades: state.nexusUpgrades ?? {},
     isGameOver: state.isGameOver ?? false,
     isPaused: state.isPaused ?? false,
     hasPendingPenalty: state.hasPendingPenalty ?? false,

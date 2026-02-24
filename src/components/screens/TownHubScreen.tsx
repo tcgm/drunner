@@ -16,6 +16,7 @@ import { BankInventoryModal } from '../party/BankInventoryModal'
 import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
 import { ShiftyGuyModal } from '../ui/ShiftyGuyModal'
+import { NexusModal } from '../ui/NexusModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
 import type { Consumable, Item, ItemRarity } from '@/types'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
@@ -52,6 +53,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
     keepOverflowItem, discardOverflowItem, clearOverflow, expandBankStorage,
     finalizeRunItemTransfer,
     dismissShiftyGuy, acceptShiftyGuyDeal,
+    nexusUpgrades, purchaseNexusUpgrade,
   } = useGameStore()
 
   const toast = useToast()
@@ -119,6 +121,9 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
   // Bank modal
   const { isOpen: isBankOpen, onOpen: onBankOpen, onClose: onBankClose } = useDisclosure()
 
+  // Nexus modal
+  const { isOpen: isNexusOpen, onOpen: onNexusOpen, onClose: onNexusClose } = useDisclosure()
+
   const handleBuildingClick = (buildingId: string) => {
     switch (buildingId) {
       case 'shop':
@@ -129,6 +134,9 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         break
       case 'bank':
         onBankOpen()
+        break
+      case 'nexus':
+        onNexusOpen()
         break
       case 'forge':
         // TODO: Open forge when implemented
@@ -387,6 +395,15 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         onKeepItem={keepOverflowItem}
         onDiscardItem={discardOverflowItem}
         onClearAll={clearOverflow}
+      />
+
+      {/* Nexus Modal - meta-progression upgrades */}
+      <NexusModal
+        isOpen={isNexusOpen}
+        onClose={onNexusClose}
+        metaXp={metaXp}
+        nexusUpgrades={nexusUpgrades ?? {}}
+        onPurchase={purchaseNexusUpgrade}
       />
 
       {/* Shifty Guy Modal - post-run bulk scrapper offer */}

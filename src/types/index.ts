@@ -547,6 +547,7 @@ export interface GameState {
   corruptedItems: Item[] // Items that failed to load properly and need user resolution
   v2Items: Item[] // Items using old V2 format that can be migrated to V3
   metaXp: number // Account-wide XP for meta-progression unlocks
+  nexusUpgrades: Record<string, number> // Nexus building: upgradeId → tiers purchased
   isGameOver: boolean
   isPaused: boolean
   hasPendingPenalty: boolean

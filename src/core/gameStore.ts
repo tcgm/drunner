@@ -63,6 +63,7 @@ const initialState: GameState = {
   corruptedItems: [],
   v2Items: [],
   metaXp: 0,
+  nexusUpgrades: {},
   isGameOver: false,
   isPaused: false,
   hasPendingPenalty: false,

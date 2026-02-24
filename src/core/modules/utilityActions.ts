@@ -13,6 +13,7 @@ import { getClassById } from '@/data/classes'
 import { sanitizeHeroStats } from './middleware'
 import { loadRunHistory } from './runHistory'
 import { deduplicateGameState } from '@/utils/itemDeduplication'
+import { NEXUS_UPGRADES, getNextTierCost } from '@/data/nexusUpgrades'
 
 export interface UtilityActionsSlice {
   repairParty: () => void
@@ -24,6 +25,8 @@ export interface UtilityActionsSlice {
   clearRunHistory: () => void
   deduplicateInventories: () => void
   hydrateLoadedItems: () => void
+  /** Purchase the next tier of a Nexus upgrade. Returns true on success. */
+  purchaseNexusUpgrade: (upgradeId: string) => boolean
 }
 
 // We need the initial state from the main gameStore
@@ -308,5 +311,25 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
       corruptedItems: allCorrupted,
       v2Items: allV2,
     })
+  },
+
+  purchaseNexusUpgrade: (upgradeId: string): boolean => {
+    const state = get()
+    const cost = getNextTierCost(upgradeId, state.nexusUpgrades ?? {})
+    if (cost === null) return false // already at max tier
+    if (state.metaXp < cost) return false // insufficient Meta XP
+
+    const upgrade = NEXUS_UPGRADES.find(u => u.id === upgradeId)
+    if (!upgrade) return false
+
+    const currentTier = (state.nexusUpgrades ?? {})[upgradeId] ?? 0
+    set({
+      metaXp: state.metaXp - cost,
+      nexusUpgrades: {
+        ...(state.nexusUpgrades ?? {}),
+        [upgradeId]: currentTier + 1,
+      },
+    })
+    return true
   },
 })

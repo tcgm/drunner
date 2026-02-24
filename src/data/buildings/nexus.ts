@@ -7,5 +7,5 @@ export const nexus: Building = {
   label: 'Nexus',
   color: '#06B6D4',
   description: 'Harness arcane energies',
-  disabled: true
+  disabled: false
 }
