@@ -427,4 +427,12 @@ export const GAME_CONFIG = {
     defaultIncludeSet: false,    // Set items excluded by default
     defaultIncludeMods: false,   // Modded items excluded by default
   },
+
+  // Nexus – permanent meta-progression upgrades purchased with Meta XP
+  nexus: {
+    /** Global multiplier applied to all upgrade costs (1.0 = no change) */
+    costMultiplier: 1.0,
+    /** Global multiplier applied to all upgrade bonuses (1.0 = no change) */
+    bonusMultiplier: 1.0,
+  },
 } as const

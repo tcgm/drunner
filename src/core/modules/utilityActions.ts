@@ -13,7 +13,7 @@ import { getClassById } from '@/data/classes'
 import { sanitizeHeroStats } from './middleware'
 import { loadRunHistory } from './runHistory'
 import { deduplicateGameState } from '@/utils/itemDeduplication'
-import { NEXUS_UPGRADES, getNextTierCost } from '@/data/nexusUpgrades'
+import { NEXUS_UPGRADES, getNextTierCost } from '@/data/nexus'
 
 export interface UtilityActionsSlice {
   repairParty: () => void

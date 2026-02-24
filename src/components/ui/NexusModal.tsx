@@ -28,11 +28,11 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import {
   NEXUS_UPGRADES,
   NEXUS_CATEGORY_META,
+  NEXUS_CATEGORY_ORDER,
   getNexusBonus,
   getNextTierCost,
   type NexusUpgrade,
-  type NexusCategory,
-} from '@/data/nexusUpgrades'
+} from '@/data/nexus'
 
 interface NexusModalProps {
   isOpen: boolean
@@ -42,10 +42,8 @@ interface NexusModalProps {
   onPurchase: (upgradeId: string) => boolean
 }
 
-const CATEGORY_ORDER: NexusCategory[] = ['fortune', 'combat', 'resilience', 'arcane']
-
 export function NexusModal({ isOpen, onClose, metaXp, nexusUpgrades, onPurchase }: NexusModalProps) {
-  const upgradesByCategory = CATEGORY_ORDER.map(cat => ({
+  const upgradesByCategory = NEXUS_CATEGORY_ORDER.map(cat => ({
     category: cat,
     meta: NEXUS_CATEGORY_META[cat],
     upgrades: NEXUS_UPGRADES.filter(u => u.category === cat),
