@@ -13,6 +13,7 @@ import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAu
 import { deduplicateItems } from '@/utils/itemDeduplication'
 import { convertToV3 } from '@/utils/itemConverter'
 import { hydrateItem } from '@/utils/itemHydration'
+import { getActiveNexusUpgrades, getNexusBonus } from '@/data/nexus'
 
 export interface InventoryActionsSlice {
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
@@ -488,7 +489,8 @@ export const createInventoryActions: StateCreator<
     set((state) => {
       const itemsToDiscard = state.bankInventory.filter(item => itemIds.includes(item.id))
       const totalValue = itemsToDiscard.reduce((sum, item) => sum + item.value, 0)
-      const alkahestGained = Math.floor(totalValue * GAME_CONFIG.items.alkahestConversionRate)
+      const alkahestYieldBonus = 1 + getNexusBonus('alkahest_yield', getActiveNexusUpgrades()) / 100
+      const alkahestGained = Math.floor(totalValue * GAME_CONFIG.items.alkahestConversionRate * alkahestYieldBonus)
 
       // Track discard stats if there's an active run
       const runUpdate = state.activeRun ? {
@@ -535,7 +537,8 @@ export const createInventoryActions: StateCreator<
       const corruptedItem = state.corruptedItems.find(item => item.id === itemId)
       if (!corruptedItem) return {}
 
-      const alkahestAmount = Math.floor(corruptedItem.value * GAME_CONFIG.items.alkahestConversionRate)
+      const alkahestYieldBonus = 1 + getNexusBonus('alkahest_yield', getActiveNexusUpgrades()) / 100
+      const alkahestAmount = Math.floor(corruptedItem.value * GAME_CONFIG.items.alkahestConversionRate * alkahestYieldBonus)
 
       return {
         corruptedItems: state.corruptedItems.filter(item => item.id !== itemId),
@@ -616,7 +619,8 @@ export const createInventoryActions: StateCreator<
       }
 
       const totalValue = scrapped.reduce((sum, item) => sum + (item.value ?? 0), 0)
-      const manualAlkahest = Math.floor(totalValue * GAME_CONFIG.items.alkahestConversionRate)
+      const alkahestYieldBonus = 1 + getNexusBonus('alkahest_yield', getActiveNexusUpgrades()) / 100
+      const manualAlkahest = Math.floor(totalValue * GAME_CONFIG.items.alkahestConversionRate * alkahestYieldBonus)
       const alkahestGained = Math.floor(manualAlkahest * GAME_CONFIG.shiftyGuy.alkahestReturnPercent)
       const goldSpent = Math.floor(totalValue * GAME_CONFIG.shiftyGuy.goldCostPercent)
 

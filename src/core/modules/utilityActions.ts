@@ -13,7 +13,7 @@ import { getClassById } from '@/data/classes'
 import { sanitizeHeroStats } from './middleware'
 import { loadRunHistory } from './runHistory'
 import { deduplicateGameState } from '@/utils/itemDeduplication'
-import { NEXUS_UPGRADES, getNextTierCost } from '@/data/nexus'
+import { NEXUS_UPGRADES, getNextTierCost, setActiveNexusUpgrades } from '@/data/nexus'
 
 export interface UtilityActionsSlice {
   repairParty: () => void
@@ -323,13 +323,13 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
     if (!upgrade) return false
 
     const currentTier = (state.nexusUpgrades ?? {})[upgradeId] ?? 0
+    const newNexusUpgrades = { ...(state.nexusUpgrades ?? {}), [upgradeId]: currentTier + 1 }
     set({
       metaXp: state.metaXp - cost,
-      nexusUpgrades: {
-        ...(state.nexusUpgrades ?? {}),
-        [upgradeId]: currentTier + 1,
-      },
+      nexusUpgrades: newNexusUpgrades,
     })
+    // Keep the module-level context in sync for game systems
+    setActiveNexusUpgrades(newNexusUpgrades)
     return true
   },
 })

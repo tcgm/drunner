@@ -15,6 +15,7 @@ import { ItemDetailModalProvider } from '@/contexts/ItemDetailModalContext'
 import { HeroModalProvider } from '@/contexts/HeroModalContext'
 import { OrientationProvider } from '@/contexts/OrientationContext'
 import { useGameStore } from '@/core/gameStore'
+import { setActiveNexusUpgrades } from '@/data/nexus'
 import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
 import type { Hero } from '@/types'
 
@@ -68,7 +69,10 @@ const zoomVariants = {
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
   const [hmrCounter, setHmrCounter] = useState(0)
-  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration } = useGameStore()
+  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration, nexusUpgrades } = useGameStore()
+
+  // Sync nexus upgrades into the module-level context used by game systems
+  useEffect(() => { setActiveNexusUpgrades(nexusUpgrades ?? {}) }, [nexusUpgrades])
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   // HMR: Force component remount on module reload to restore item icons

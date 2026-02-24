@@ -7,6 +7,7 @@
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { DungeonEvent, CombatEffect } from '@/types'
 import { calculateDanger, applyFirstBossScaling } from './dangerCalculation'
+import { getActiveNexusUpgrades, getNexusBonus } from '@/data/nexus'
 
 export interface BossBaseStats {
     baseHp: number
@@ -102,7 +103,10 @@ export function calculateInitialBossStats(
     const scaling = GAME_CONFIG.combat.turnBased.bossScaling
 
     // Lock maxHP at combat start
-    const maxHp = calculateScaledStat(baseStats.baseHp, danger, scaling.hp)
+    const rawMaxHp = calculateScaledStat(baseStats.baseHp, danger, scaling.hp)
+    // Apply nexus boss HP reduction (% reduction, capped at 75% via the upgrade's bonusPerTier)
+    const bossHpReduction = getNexusBonus('boss_hp_reduction', getActiveNexusUpgrades()) / 100
+    const maxHp = bossHpReduction > 0 ? Math.max(1, Math.round(rawMaxHp * (1 - bossHpReduction))) : rawMaxHp
 
     // Calculate initial dynamic stats
     const attack = calculateScaledStat(baseStats.baseAttack, danger, scaling.attack)

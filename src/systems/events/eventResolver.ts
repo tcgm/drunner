@@ -8,6 +8,7 @@ import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { getEffectiveSpeed, getEffectiveLuck, getEffectiveDefense, calculateTotalStats } from '@/utils/statCalculator'
+import { getActiveNexusUpgrades, getNexusBonus } from '@/data/nexus'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
@@ -517,7 +518,8 @@ export function resolveEventOutcome(
       case 'xp': {
         const baseXp = effect.value || 0
         const scaledXp = scaleValue(baseXp, floor, 0.15) // 15% per floor (rewards scale faster)
-        const xp = Math.floor(scaledXp * GAME_CONFIG.multipliers.xp)
+        const xpGainBonus = 1 + getNexusBonus('xp_gain', getActiveNexusUpgrades()) / 100
+        const xp = Math.floor(scaledXp * GAME_CONFIG.multipliers.xp * xpGainBonus)
         let totalOverflowXp = 0
         
         // First, capture any existing overflow XP from max-level heroes
@@ -656,7 +658,8 @@ export function resolveEventOutcome(
       case 'gold': {
         const baseGold = effect.value || 0
         const scaledGold = scaleValue(baseGold, floor, 0.15) // 15% per floor (rewards scale faster)
-        const gold = Math.floor(scaledGold * GAME_CONFIG.multipliers.gold)
+        const goldFindBonus = 1 + getNexusBonus('gold_find', getActiveNexusUpgrades()) / 100
+        const gold = Math.floor(scaledGold * GAME_CONFIG.multipliers.gold * goldFindBonus)
         updatedGold += gold
         // Track negative gold (costs) for potential refunds
         if (gold < 0) {

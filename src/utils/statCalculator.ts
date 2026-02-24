@@ -1,5 +1,6 @@
 import type { Hero, Stats, Item } from '@/types'
 import { calculateEffectModifiers } from '@/systems/effects'
+import { getActiveNexusUpgrades, getNexusStatModifiers } from '@/data/nexus'
 import { getItemSetName, getSetBonuses } from '@data/items/sets'
 import { MATERIALS_BY_RARITY } from '@data/items/materials'
 import { getEffectMultiplier } from '@/systems/items/uniqueEffects'
@@ -8,8 +9,20 @@ import { getEffectMultiplier } from '@/systems/items/uniqueEffects'
  * Calculate total stats for a hero including equipment and active effects
  */
 export function calculateTotalStats(hero: Hero): Stats {
-  const baseStats = { ...hero.stats }
-  
+  // Nexus permanent bonuses baked into base stats first, so all subsequent
+  // scaling (equipment multipliers, effect layers, combat modifiers) builds on top.
+  const nexusMods = getNexusStatModifiers(getActiveNexusUpgrades())
+  const baseStats = {
+    ...hero.stats,
+    maxHp:      hero.stats.maxHp      + (nexusMods.maxHp      || 0),
+    attack:     hero.stats.attack     + (nexusMods.attack     || 0),
+    defense:    hero.stats.defense    + (nexusMods.defense    || 0),
+    luck:       hero.stats.luck       + (nexusMods.luck       || 0),
+    magicPower: hero.stats.magicPower != null
+      ? hero.stats.magicPower + (nexusMods.magicPower || 0)
+      : hero.stats.magicPower,
+  }
+
   // Add equipment bonuses
   const equipmentStats = calculateEquipmentStats(hero)
   
@@ -26,7 +39,7 @@ export function calculateTotalStats(hero: Hero): Stats {
       combatModifiers[key] = ((combatModifiers[key] as number) || 0) + effect.value
     }
   }
-  
+
   // Combine all stat sources
   return {
     hp: baseStats.hp, // HP is not modified by equipment or effects

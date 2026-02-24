@@ -14,9 +14,24 @@
  * and tierWithinRarity is 1-based position within that rarity phase.
  */
 
-import type { ItemRarity } from '@/types'
+import type { ItemRarity, Stats } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
+
+// ─── Global nexus context ──────────────────────────────────────────────────────
+// Populated by the store on load / after purchases so game systems can read it
+// without prop-drilling (statCalculator, eventResolver, bossStats, inventoryActions).
+let _activeNexusUpgrades: Record<string, number> = {}
+
+/** Called by the store after rehydration and after each purchase. */
+export function setActiveNexusUpgrades(nu: Record<string, number>): void {
+  _activeNexusUpgrades = nu
+}
+
+/** Returns the current nexus upgrade context used by game systems. */
+export function getActiveNexusUpgrades(): Record<string, number> {
+  return _activeNexusUpgrades
+}
 
 export type { NexusCategory, NexusUpgrade } from './types'
 export { NEXUS_CATEGORY_META, NEXUS_CATEGORY_ORDER } from './config'
@@ -170,5 +185,19 @@ export function getNexusBonus(upgradeId: string, nexusUpgrades: Record<string, n
   if (!upgrade) return 0
   const totalTiers = nexusUpgrades[upgradeId] ?? 0
   return Math.round(totalTiers * upgrade.bonusPerTier * GAME_CONFIG.nexus.bonusMultiplier)
+}
+
+/**
+ * Returns flat stat bonuses applied to every hero from nexus upgrades.
+ * Used by calculateTotalStats as an additional modifier layer.
+ */
+export function getNexusStatModifiers(nexusUpgrades: Record<string, number>): Partial<Stats> {
+  return {
+    attack: getNexusBonus('attack_bonus', nexusUpgrades),
+    defense: getNexusBonus('defense_bonus', nexusUpgrades),
+    maxHp: getNexusBonus('max_hp', nexusUpgrades),
+    luck: getNexusBonus('luck', nexusUpgrades),
+    magicPower: getNexusBonus('magic_bonus', nexusUpgrades),
+  }
 }
 
