@@ -7,9 +7,8 @@ export const XP_GAIN: NexusUpgrade = {
   description: 'All heroes earn more XP from combat and events.',
   icon: GiStarfighter,
   category: 'combat',
-  maxTier: 5,
+  baseCost: 100,
   bonusPerTier: 2,
   unit: '%',
-  costs: [100, 280, 700, 1700, 4000],
   color: '#ECC94B',
 }

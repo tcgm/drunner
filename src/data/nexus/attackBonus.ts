@@ -7,9 +7,8 @@ export const ATTACK_BONUS: NexusUpgrade = {
   description: "Permanently trains all heroes' attack.",
   icon: GiSwordman,
   category: 'combat',
-  maxTier: 4,
+  baseCost: 350,
   bonusPerTier: 1,
   unit: '',
-  costs: [350, 900, 2200, 5500],
   color: '#FC8181',
 }

@@ -8,12 +8,14 @@ export interface NexusUpgrade {
   description: string
   icon: IconType
   category: NexusCategory
-  maxTier: number
-  /** Flat bonus added per tier (cumulative) */
+  /**
+   * Base Meta XP cost for tier 1 of the first (Common) rarity phase.
+   * All other costs are derived from this via the curve config in GAME_CONFIG.nexus.
+   */
+  baseCost: number
+  /** Flat stat bonus added per tier (cumulative across all rarity phases and tiers) */
   bonusPerTier: number
   /** Display unit appended to the number in the UI, e.g. '%' or '' */
   unit: string
-  /** Meta XP cost per tier: index 0 = cost to reach tier 1, index 1 = cost to reach tier 2, … */
-  costs: number[]
   color: string
 }

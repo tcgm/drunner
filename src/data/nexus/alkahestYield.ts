@@ -7,9 +7,8 @@ export const ALKAHEST_YIELD: NexusUpgrade = {
   description: 'More alkahest recovered from item scrapping.',
   icon: GiCrystalBall,
   category: 'fortune',
-  maxTier: 4,
+  baseCost: 200,
   bonusPerTier: 5,
   unit: '%',
-  costs: [200, 600, 1500, 3500],
   color: '#7CDCE4',
 }

@@ -7,9 +7,8 @@ export const GOLD_FIND: NexusUpgrade = {
   description: 'Increases gold dropped by enemies.',
   icon: GiTwoCoins,
   category: 'fortune',
-  maxTier: 5,
+  baseCost: 100,
   bonusPerTier: 3,
   unit: '%',
-  costs: [100, 300, 750, 1800, 4200],
   color: '#D4AF37',
 }

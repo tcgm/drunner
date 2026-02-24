@@ -1,7 +1,8 @@
 /**
  * NexusModal – Nexus building UI
  * Displays permanent meta-progression upgrades purchasable with Meta XP.
- * Each upgrade has multiple tiers; costs escalate with each tier.
+ * Each upgrade has rarity-phased tiers; costs ramp exponentially both within
+ * a phase and across phases (via GAME_CONFIG.nexus curve settings).
  */
 
 import {
@@ -20,17 +21,19 @@ import {
   Badge,
   Tooltip,
   SimpleGrid,
-  Divider,
   Progress,
 } from '@chakra-ui/react'
 import { GiGreatPyramid, GiStarsStack } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
+import type { ItemRarity } from '@/types'
 import {
   NEXUS_UPGRADES,
   NEXUS_CATEGORY_META,
   NEXUS_CATEGORY_ORDER,
   getNexusBonus,
   getNextTierCost,
+  getNexusTierBreakdown,
   type NexusUpgrade,
 } from '@/data/nexus'
 
@@ -138,48 +141,64 @@ interface UpgradeCardProps {
   onPurchase: (upgradeId: string) => boolean
 }
 
+/** Roman-numeral labels for tiers 1-5 within a rarity phase */
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
+
 function UpgradeCard({ upgrade, nexusUpgrades, metaXp, onPurchase }: UpgradeCardProps) {
-  const currentTier = nexusUpgrades[upgrade.id] ?? 0
-  const isMaxed = currentTier >= upgrade.maxTier
+  const breakdown = getNexusTierBreakdown(upgrade.id, nexusUpgrades)
   const nextCost = getNextTierCost(upgrade.id, nexusUpgrades)
   const canAfford = nextCost !== null && metaXp >= nextCost
   const currentBonus = getNexusBonus(upgrade.id, nexusUpgrades)
-  const nextBonus = isMaxed ? currentBonus : currentBonus + upgrade.bonusPerTier
+  const nextBonus = breakdown.isMaxed ? currentBonus : currentBonus + Math.round(upgrade.bonusPerTier * GAME_CONFIG.nexus.bonusMultiplier)
 
-  const borderColor = isMaxed
-    ? upgrade.color + '80'
+  const phaseColor = breakdown.rarityColor
+
+  // Phase-advancing: the next tier starts a new rarity phase (tierWithinRarity is 0 and tiers > 0)
+  const isPhaseAdvance = !breakdown.isMaxed && breakdown.tierWithinRarity === 0 && breakdown.absoluteTier > 0
+
+  const borderColor = breakdown.isMaxed
+    ? phaseColor + '80'
     : canAfford
-    ? upgrade.color + '60'
+    ? phaseColor + '70'
     : 'gray.700'
 
-  const bgColor = isMaxed ? 'blackAlpha.600' : canAfford ? 'blackAlpha.500' : 'blackAlpha.400'
+  const bgGlow = canAfford && !breakdown.isMaxed
+    ? `0 0 14px ${phaseColor}20`
+    : 'none'
 
   return (
     <Box
-      bg={bgColor}
+      bg="blackAlpha.500"
       border="1px solid"
       borderColor={borderColor}
       borderRadius="lg"
       p={4}
       position="relative"
       transition="border-color 0.2s, box-shadow 0.2s"
-      _hover={!isMaxed && canAfford ? { borderColor: upgrade.color, boxShadow: `0 0 12px ${upgrade.color}30` } : {}}
+      boxShadow={bgGlow}
+      _hover={!breakdown.isMaxed && canAfford ? { borderColor: phaseColor, boxShadow: `0 0 18px ${phaseColor}35` } : {}}
     >
       {/* Maxed badge */}
-      {isMaxed && (
+      {breakdown.isMaxed && (
         <Badge
           position="absolute"
           top={2}
           right={2}
-          colorScheme="cyan"
-          variant="subtle"
           fontSize="2xs"
           letterSpacing="wider"
+          bg={phaseColor + '25'}
+          color={phaseColor}
+          border="1px solid"
+          borderColor={phaseColor + '60'}
+          px={2}
+          py={0.5}
+          borderRadius="md"
         >
-          MAXED
+          ASCENDED
         </Badge>
       )}
 
+      {/* Icon + name row */}
       <HStack spacing={3} mb={3} align="flex-start">
         <Box
           p={2}
@@ -188,6 +207,7 @@ function UpgradeCard({ upgrade, nexusUpgrades, metaXp, onPurchase }: UpgradeCard
           border="1px solid"
           borderColor={upgrade.color + '40'}
           flexShrink={0}
+          boxShadow={`0 0 8px ${upgrade.color}20`}
         >
           <Icon as={upgrade.icon} color={upgrade.color} boxSize={6} />
         </Box>
@@ -201,43 +221,97 @@ function UpgradeCard({ upgrade, nexusUpgrades, metaXp, onPurchase }: UpgradeCard
         </VStack>
       </HStack>
 
-      {/* Tier progress bar */}
+      {/* Rarity phase progress */}
       <Box mb={3}>
         <HStack justify="space-between" mb={1}>
-          <Text fontSize="xs" color="gray.500">
-            Tier {currentTier} / {upgrade.maxTier}
-          </Text>
+          {/* Rarity phase badge */}
+          <HStack spacing={1.5}>
+            <Box
+              as="span"
+              display="inline-flex"
+              alignItems="center"
+              gap={1.5}
+              fontSize="2xs"
+              fontWeight="bold"
+              px={2}
+              py={0.5}
+              borderRadius="sm"
+              bg={phaseColor + '20'}
+              color={'gray.300'}
+              border="1px solid"
+              borderColor={phaseColor + '50'}
+              letterSpacing="wide"
+              textTransform="uppercase"
+            >
+              <Icon as={RARITY_CONFIGS[breakdown.rarityId as ItemRarity].icon} boxSize={2.5} flexShrink={0} />
+              {breakdown.isMaxed
+                ? breakdown.rarityName
+                : isPhaseAdvance
+                ? `↑ ${breakdown.rarityName}`
+                : breakdown.rarityName}
+            </Box>
+            {!breakdown.isMaxed && (
+              <Text fontSize="xs" color="gray.300">
+                {ROMAN[breakdown.tierWithinRarity] ?? breakdown.tierWithinRarity + 1}
+                {' / '}
+                {ROMAN[breakdown.tiersPerRarity - 1] ?? breakdown.tiersPerRarity}
+              </Text>
+            )}
+          </HStack>
+
+          {/* Bonus display */}
           <Text fontSize="xs" color={upgrade.color} fontWeight="bold">
             +{currentBonus}{upgrade.unit}
-            {!isMaxed && (
+            {!breakdown.isMaxed && (
               <Text as="span" color="gray.500" fontWeight="normal">
-                {' '}→{' '}
+                {' → '}
                 <Text as="span" color="white">+{nextBonus}{upgrade.unit}</Text>
               </Text>
             )}
           </Text>
         </HStack>
-        <Progress
-          value={(currentTier / upgrade.maxTier) * 100}
-          size="xs"
-          borderRadius="full"
-          bg="gray.700"
-          sx={{
-            '& > div': {
-              background: isMaxed
-                ? `linear-gradient(90deg, ${upgrade.color}80, ${upgrade.color})`
-                : upgrade.color,
-              transition: 'width 0.3s ease',
-            },
-          }}
-        />
+
+        {/* Within-phase progress bar */}
+        <Tooltip
+          label={`${breakdown.rarityName} phase: ${breakdown.tierWithinRarity} / ${breakdown.tiersPerRarity} tiers`}
+          placement="top"
+          hasArrow
+        >
+          <Box>
+            <Progress
+              value={(breakdown.tierWithinRarity / breakdown.tiersPerRarity) * 100}
+              size="xs"
+              borderRadius="full"
+              bg="gray.700"
+              sx={{
+                '& > div': {
+                  background: breakdown.isMaxed
+                    ? `linear-gradient(90deg, ${phaseColor}70, ${phaseColor})`
+                    : phaseColor,
+                  transition: 'width 0.35s ease',
+                },
+              }}
+            />
+          </Box>
+        </Tooltip>
+
+        {/* Phase-advance hint */}
+        {isPhaseAdvance && (
+          <Text fontSize="2xs" color={phaseColor} mt={1} opacity={0.8}>
+            ✦ Entering {breakdown.rarityName} phase — costs {GAME_CONFIG.nexus.rarityMagnitudeMultiplier}× higher
+          </Text>
+        )}
       </Box>
 
       {/* Purchase row */}
-      {!isMaxed && (
+      {!breakdown.isMaxed && (
         <HStack justify="space-between" align="center">
           <HStack spacing={1}>
-            <Icon as={GiStarsStack} color={canAfford ? GAME_CONFIG.colors.xp.light : 'gray.600'} boxSize={3.5} />
+            <Icon
+              as={GiStarsStack}
+              color={canAfford ? GAME_CONFIG.colors.xp.light : 'gray.600'}
+              boxSize={3.5}
+            />
             <Text
               fontSize="xs"
               fontWeight="bold"
@@ -256,21 +330,26 @@ function UpgradeCard({ upgrade, nexusUpgrades, metaXp, onPurchase }: UpgradeCard
               size="xs"
               onClick={() => onPurchase(upgrade.id)}
               isDisabled={!canAfford}
-              bg={canAfford ? 'cyan.700' : 'gray.700'}
-              color={canAfford ? 'white' : 'gray.500'}
-              _hover={canAfford ? { bg: 'cyan.600' } : {}}
-              _disabled={{ opacity: 0.6, cursor: 'not-allowed' }}
+              bg={canAfford ? (isPhaseAdvance ? '#B7791F30' : '#27653030') : 'gray.700'}
+              color={canAfford ? (isPhaseAdvance ? '#F6AD55' : '#68D391') : 'gray.500'}
+              border="1px solid"
+              borderColor={canAfford ? (isPhaseAdvance ? '#F6AD5570' : '#68D39170') : 'gray.600'}
+              _hover={canAfford ? (isPhaseAdvance
+                ? { bg: '#B7791F50', borderColor: '#F6AD55' }
+                : { bg: '#27653055', borderColor: '#68D391' }
+              ) : {}}
+              _disabled={{ opacity: 0.5, cursor: 'not-allowed' }}
               px={4}
             >
-              Upgrade
+              {isPhaseAdvance ? 'Ascend' : 'Upgrade'}
             </Button>
           </Tooltip>
         </HStack>
       )}
 
-      {isMaxed && (
-        <Text fontSize="xs" color={upgrade.color} textAlign="center" fontStyle="italic">
-          +{currentBonus}{upgrade.unit} — Fully Enhanced
+      {breakdown.isMaxed && (
+        <Text fontSize="xs" color={phaseColor} textAlign="center" fontStyle="italic" opacity={0.9}>
+          +{currentBonus}{upgrade.unit} — Eternally Enhanced
         </Text>
       )}
     </Box>

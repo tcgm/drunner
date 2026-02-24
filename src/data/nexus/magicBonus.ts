@@ -7,9 +7,8 @@ export const MAGIC_BONUS: NexusUpgrade = {
   description: "Amplifies all heroes' base Magic.",
   icon: GiSpellBook,
   category: 'arcane',
-  maxTier: 4,
+  baseCost: 300,
   bonusPerTier: 1,
   unit: '',
-  costs: [300, 800, 2000, 5000],
   color: '#D6BCFA',
 }
