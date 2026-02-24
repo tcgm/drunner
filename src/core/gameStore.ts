@@ -151,10 +151,13 @@ export const useGameStore = create<GameStore>()(
     {
       name: 'dungeon-runner-storage',
       storage: {
-        getItem: (name) => {
+        getItem: async (name) => {
           console.log(`[GameStore] Loading from storage: ${name}`)
           const compressed = localStorage.getItem(name)
           if (!compressed) return null
+
+          // Yield to the browser so React can render before heavy deserialization work
+          await new Promise<void>(resolve => setTimeout(resolve, 0))
 
           // Try to decompress - if it fails, assume it's old uncompressed data
           let str: string
@@ -520,18 +523,26 @@ export const useGameStore = create<GameStore>()(
         },
         removeItem: (name) => localStorage.removeItem(name),
       },
+      onRehydrateStorage: () => {
+        // Called after the async getItem promise resolves and state is applied.
+        // This is the safe place to run post-load repairs; running them synchronously
+        // after store creation would execute on empty initialState since getItem is async.
+        return (state, error) => {
+          if (error) {
+            console.error('[GameStore] Failed to rehydrate:', error)
+            return
+          }
+          if (state) {
+            state.repairParty()
+            state.migrateHeroStats()
+            state.recalculateHeroStats()
+            state.deduplicateInventories()
+          }
+        }
+      },
     }
   )
 )
-
-// Repair party on initial mount
-useGameStore.getState().repairParty()
-// Migrate hero stats to add wisdom and charisma
-useGameStore.getState().migrateHeroStats()
-// Recalculate hero stats to ensure equipment bonuses are applied
-useGameStore.getState().recalculateHeroStats()
-// Deduplicate any duplicate items in inventories
-useGameStore.getState().deduplicateInventories()
 
 // HMR cleanup for development
 if (import.meta.hot) {
