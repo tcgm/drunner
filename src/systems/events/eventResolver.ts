@@ -1,4 +1,5 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
+import { healHero } from '@/utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { generateItem, generateSetItemFromTemplate, generateUniqueItemFromTemplate } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem, canUpgradeMaterial, canUpgradeRarity } from '@/systems/loot/itemUpgrader'
@@ -502,8 +503,7 @@ export function resolveEventOutcome(
           const scaledHealing = scaleValue(baseHealing, floor, GAME_CONFIG.scaling.healing)
           const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
           targets.forEach(hero => {
-            const effectiveMaxHp = calculateTotalStats(hero).maxHp
-            hero.stats.hp = Math.min(effectiveMaxHp, hero.stats.hp + healing)
+            hero.stats.hp = healHero(hero, healing).stats.hp
           })
           resolvedEffects.push({
             type: 'heal',

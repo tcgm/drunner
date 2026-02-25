@@ -1,5 +1,6 @@
 import type { Hero, Consumable, GameState } from '@/types'
 import { applyEffect } from '../effects/effectManager'
+import { healHero } from '@/utils/heroUtils'
 import { GiHealthPotion, GiStrong, GiShield, GiRun, GiClover } from 'react-icons/gi'
 import { getConsumableSlotIds } from '@/config/slotConfig'
 import { calculateTotalStats } from '@/utils/statCalculator'
@@ -42,10 +43,7 @@ export function useConsumable(
         if (effect.value) {
           const effectiveMaxHp = calculateTotalStats(updatedHero).maxHp
           const healAmount = Math.min(effect.value, effectiveMaxHp - updatedHero.stats.hp)
-          updatedHero.stats = {
-            ...updatedHero.stats,
-            hp: Math.min(updatedHero.stats.hp + effect.value, effectiveMaxHp),
-          }
+          updatedHero = { ...healHero(updatedHero, effect.value), slots: updatedHero.slots }
           messages.push(`Recovered ${healAmount} HP`)
         }
         break

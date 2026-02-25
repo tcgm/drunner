@@ -1,6 +1,7 @@
 import type { Hero, Ability, AbilityEffect } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { healHero } from '@/utils/heroUtils'
 import { refreshAbilityFromTemplate } from '@/utils/abilityUtils'
 import { resolveAbilityTargets } from '@/systems/combat/targetingResolver'
 import { applyEffect } from '@/systems/effects/effectManager'
@@ -254,20 +255,11 @@ function applyAbilityEffect(
                     const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
                     if (targetIndex !== -1 && updatedParty[targetIndex]) {
                         const currentTarget = updatedParty[targetIndex]!
-                        const totalStats = calculateTotalStats(currentTarget)
                         const currentHp = currentTarget.stats.hp
-                        const maxHp = totalStats.maxHp
-                        const maxPossibleHeal = Math.max(0, maxHp - currentHp)
-                        const healAmount = Math.min(effectValue, maxPossibleHeal)
-                        const newHp = Math.min(currentHp + effectValue, maxHp)
+                        const effectiveMaxHp = calculateTotalStats(currentTarget).maxHp
+                        const healAmount = Math.min(effectValue, Math.max(0, effectiveMaxHp - currentHp))
 
-                        updatedParty[targetIndex] = {
-                            ...currentTarget,
-                            stats: {
-                                ...currentTarget.stats,
-                                hp: newHp
-                            }
-                        }
+                        updatedParty[targetIndex] = healHero(currentTarget, effectValue)
 
                         if (target.id === hero.id) {
                             updatedHero = updatedParty[targetIndex]!

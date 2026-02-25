@@ -37,6 +37,7 @@
 
 import type { Hero, Item, Consumable, ItemRarity } from '@/types'
 import type { ResolvedOutcome } from '@/systems/events/eventResolver'
+import { healHero } from '@/utils/heroUtils'
 import { getRarityConfig } from '@/systems/rarity/raritySystem'
 import { KITSUNE_SET_UNIQUE_EFFECT } from '@/data/items/sets/kitsune/effects'
 import { TITAN_SET_UNIQUE_EFFECT } from '@/data/items/sets/titan/effects'
@@ -296,7 +297,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       party.forEach(hero => {
         if (hero && hero.isAlive) {
           const healAmount = Math.floor(hero.stats.maxHp * 0.08 * effectMultiplier)
-          hero.stats.hp = Math.min(hero.stats.maxHp, hero.stats.hp + healAmount)
+          hero.stats.hp = healHero(hero, healAmount).stats.hp
           healedIds.push(hero.id)
           totalHealed += healAmount
         }
@@ -338,7 +339,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       })
 
       const healAmount = Math.floor(mostWounded.stats.maxHp * 0.25 * effectMultiplier)
-      mostWounded.stats.hp = Math.min(mostWounded.stats.maxHp, mostWounded.stats.hp + healAmount)
+      mostWounded.stats.hp = healHero(mostWounded, healAmount).stats.hp
 
       return {
         party,

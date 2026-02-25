@@ -15,6 +15,7 @@ import { applyPenaltyToParty } from './statActions'
 import { saveRunHistory, loadRunHistory } from './runHistory'
 import { resetPartyCooldowns } from '@/utils/abilityUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { healHero } from '@/utils/heroUtils'
 
 export interface DungeonActionsSlice {
   startDungeon: (startingFloor?: number, alkahestCost?: number) => void
@@ -910,7 +911,9 @@ export const createDungeonActions: StateCreator<
           effect => effect.type === 'heal' && effect.target?.includes(hero.id)
         )
         if (healingEffect && healingEffect.value) {
-          finalHp = Math.min(finalHp + healingEffect.value, hero.stats.maxHp)
+          // Build a temp hero with combat HP so healHero caps to effective maxHp
+          const tempHero = { ...hero, stats: { ...hero.stats, hp: finalHp } }
+          finalHp = healHero(tempHero, healingEffect.value).stats.hp
         }
         
         return {

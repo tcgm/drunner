@@ -8,6 +8,7 @@
 
 import type { UniqueEffectDefinition } from '@/systems/items/uniqueEffects'
 import type { SetBonus } from '@/data/items/sets'
+import { healHero } from '@/utils/heroUtils'
 
 /**
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
@@ -46,10 +47,7 @@ export const SANTA_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
     }
 
     const healAmount = Math.floor(sourceHero.stats.maxHp * 0.15 * effectMultiplier)
-    sourceHero.stats.hp = Math.min(
-      sourceHero.stats.hp + healAmount,
-      sourceHero.stats.maxHp,
-    )
+    sourceHero.stats.hp = healHero(sourceHero, healAmount).stats.hp
 
     return {
       party,

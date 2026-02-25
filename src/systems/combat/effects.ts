@@ -5,7 +5,7 @@
  */
 
 import type { Hero, BossCombatState, CombatEffect, DotEffect } from '@/types'
-import { calculateTotalStats } from '@/utils/statCalculator'
+import { healHero } from '@/utils/heroUtils'
 
 /**
  * Decrement all cooldowns (abilities and items)
@@ -142,8 +142,7 @@ export function processStatusEffects(
                 results.push({ effectName: effect.name, target: hero.name, damage })
             } else if (effect.behavior.type === 'healPerTurn' && effect.behavior.healAmount) {
                 const healing = effect.behavior.healAmount
-                const maxHp = calculateTotalStats(hero).maxHp
-                hero.stats.hp = Math.min(hero.stats.hp + healing, maxHp)
+                hero.stats.hp = healHero(hero, healing).stats.hp
                 results.push({ effectName: effect.name, target: hero.name, healing })
             }
         }
