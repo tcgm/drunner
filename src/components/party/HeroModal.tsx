@@ -31,7 +31,7 @@ import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
 import { getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { refreshHeroAbilities } from '@/utils/abilityUtils'
-import { getAbilityDescription } from '@/utils/abilityDisplay'
+import { getAbilityScalingFormulaWithResult } from '@/utils/abilityDisplay'
 
 interface HeroModalProps {
   hero: Hero
@@ -422,7 +422,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         heroWithIcons.abilities.map((ability, index) => {
                           // Use the ability's icon component directly, fallback to sparkles
                           const AbilityIcon = ability.icon || GameIcons.GiSparkles
-                          const abilityDesc = getAbilityDescription(ability, heroWithIcons)
+                          const formulaWithResult = getAbilityScalingFormulaWithResult(ability, heroWithIcons)
 
                           return (
                             <Box
@@ -443,12 +443,17 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                                   </Text>
                                 </HStack>
                                 <Badge colorScheme="purple" fontSize="2xs" px={1}>
-                                  {ability.cooldown}
+                                  CD:{ability.cooldown}
                                 </Badge>
                               </HStack>
                               <Text fontSize="2xs" color="gray.400" lineHeight="1.2" noOfLines={2}>
-                                {abilityDesc}
+                                {ability.description}
                               </Text>
+                              {formulaWithResult && (
+                                <Text fontSize="2xs" color="cyan.300" fontWeight="semibold" mt={0.5}>
+                                  ⚡ {formulaWithResult}
+                                </Text>
+                              )}
                             </Box>
                           )
                         })

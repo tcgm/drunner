@@ -17,6 +17,7 @@ import { GiSwordman, GiShield, GiSparkles, GiRunningNinja, GiMightySpanner } fro
 import { useMemo } from 'react'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { getAbilityScalingFormulaWithResult } from '@/utils/abilityDisplay'
 import { useOrientation } from '@/contexts/OrientationContext'
 import type { Ability } from '@/types'
 
@@ -91,10 +92,14 @@ function computePowerText(ability: Ability, hero: Hero): string {
  */
 function buildAbilityTooltip(ability: Ability, hero: Hero): string {
     const powerText = computePowerText(ability, hero)
+    const formulaWithResult = getAbilityScalingFormulaWithResult(ability, hero)
     const lines: string[] = []
     lines.push(ability.description)
     if (powerText && powerText !== ability.description) {
         lines.push(`→ ${powerText}`)
+    }
+    if (formulaWithResult) {
+        lines.push(`⚡ Scales: ${formulaWithResult}`)
     }
     if (ability.cooldown > 0) {
         lines.push(`Cooldown: ${ability.cooldown} turn${ability.cooldown !== 1 ? 's' : ''}`)
@@ -328,6 +333,7 @@ export default function CombatActionsPanel({
                                                         </Text>
                                                         {allAbilities.map(({ ability, isUsable, remainingCooldown, hasCharges }) => {
                                                             const powerText = computePowerText(ability, activeHero)
+                                                            const scalingFormula = getAbilityScalingFormulaWithResult(ability, activeHero)
 
                                                             const abilityColor = ability.effect.type === 'heal' ? 'green' :
                                                                 ability.effect.type === 'damage' ? 'orange' :
@@ -373,6 +379,11 @@ export default function CombatActionsPanel({
                                                                         {powerText && (
                                                                             <Text fontSize="xs" color={abilityColor + '.300'} fontWeight="semibold">
                                                                                 → {powerText}
+                                                                            </Text>
+                                                                        )}
+                                                                        {scalingFormula && (
+                                                                            <Text fontSize="2xs" color="cyan.400">
+                                                                                ⚡ {scalingFormula}
                                                                             </Text>
                                                                         )}
                                                                         {ability.cooldown > 0 && (
