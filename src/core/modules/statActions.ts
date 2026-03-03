@@ -18,6 +18,8 @@ export function applyPenaltyToParty(party: (Hero | null)[]): (Hero | null)[] {
     if (!hero) return null
 
     const newHero = { ...hero }
+    // Always clear combat-only effects on run-end so they don't bleed into the next run
+    newHero.combatEffects = undefined
 
     switch (GAME_CONFIG.deathPenalty.type) {
       case 'halve-levels':

@@ -12,7 +12,7 @@ export const NIGHTMARE_TYRANT: DungeonEvent = {
       outcome: {
         text: 'Your deepest terrors come alive! The psychological assault is overwhelming!',
         effects: [
-          { type: 'damage', target: 'all', value: 295 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1130 },
           { type: 'gold', value: 1700 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 23 },
@@ -28,7 +28,7 @@ export const NIGHTMARE_TYRANT: DungeonEvent = {
       outcome: {
         text: 'You master your emotions! Without fear to feed on, it starves!',
         effects: [
-          { type: 'damage', target: 'all', value: 220 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1250 },
           { type: 'gold', value: 1875 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 27 },
@@ -43,7 +43,7 @@ export const NIGHTMARE_TYRANT: DungeonEvent = {
       outcome: {
         text: 'You weave pleasant dreams! The nightmare cannot exist in joy!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 232 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 1270 },
           { type: 'gold', value: 1905 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 28 },

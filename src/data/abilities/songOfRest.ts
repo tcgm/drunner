@@ -14,11 +14,11 @@ export const SONG_OF_REST: Ability = {
     effect: {
         type: 'heal',
         value: 8,
-        target: 'all-allies',
+        targeting: { side: 'party', breadth: 'all' },
         duration: 3,
         scaling: {
             stat: 'charisma',
-            ratio: 0.4
+            ratio: 2
         }
     },
     icon: GiMusicalScore,

@@ -15,7 +15,7 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Dragonfire washes over you! Claws and fangs tear at you as you burn!',
             effects: [
-              { type: 'damage', target: 'all', value: 340 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1260 },
               { type: 'gold', value: 1890 },
               { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 26 },
@@ -27,7 +27,7 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Dragonfire washes over you! As the wyrm falls, a piece of its legendary hoard glows with draconic power!',
             effects: [
-              { type: 'damage', target: 'all', value: 340 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 1260 },
               { type: 'gold', value: 1890 },
               { 
@@ -54,7 +54,7 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You pierce beneath the scales! The ancient wyrm roars its last!',
             effects: [
-              { type: 'damage', target: 'strongest', value: 285 },
+              { type: 'damage', target: 'strongest', value: 2 },
               { type: 'xp', value: 1380 },
               { type: 'gold', value: 2070 },
               { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 32 },
@@ -66,7 +66,7 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You pierce beneath the scales! The ancient wyrm roars its last! A scale falls, forged by dragonfire into legendary armor!',
             effects: [
-              { type: 'damage', target: 'strongest', value: 285 },
+              { type: 'damage', target: 'strongest', value: 2 },
               { type: 'xp', value: 1380 },
               { type: 'gold', value: 2070 },
               { 
@@ -86,13 +86,14 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
       requirements: {
         class: 'Bard',
       },
+      skipsCombat: true, // Diplomatic solution - flattery avoids full combat
       possibleOutcomes: [
         {
           weight: 80,
           outcome: {
             text: 'Your flattery appeals to its vanity! The dragon grants passage for tribute!',
             effects: [
-              { type: 'damage', target: 'all', value: 145 },
+              { type: 'damage', target: 'all', value: 0 },
               { type: 'xp', value: 1300 },
               { type: 'gold', value: 2450 },
               { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 28 },
@@ -104,7 +105,7 @@ export const ANCIENT_RED_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Your flattery appeals to its vanity! The dragon grants passage and a gift from its ancient hoard!',
             effects: [
-              { type: 'damage', target: 'all', value: 145 },
+              { type: 'damage', target: 'all', value: 0 },
               { type: 'xp', value: 1300 },
               { type: 'gold', value: 2450 },
               { 

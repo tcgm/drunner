@@ -9,6 +9,8 @@ export const KITSUNE_SOUL: Omit<Item, 'id'> = {
   description: 'An amulet holding the blessing of the nine-tailed fox. Grants mystical resilience.',
   type: 'accessory2',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiFoxHead,
   stats: {
     maxHp: 80,

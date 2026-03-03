@@ -1,3 +1,4 @@
+import './PartySetupHeader.css'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { Box, HStack, Heading, Text, Button, Icon, Tooltip } from '@chakra-ui/react'
 import { GiShop, GiShoppingCart, GiChest, GiVikingLonghouse, GiTwoCoins, GiStarsStack, GiPowder } from 'react-icons/gi'
@@ -51,7 +52,7 @@ export function PartySetupHeader({ bankGold, metaXp, alkahest, bankInventory, ba
           >
             Bank ({bankInventory}/{bankStorageSlots})
           </Button>
-          <Button 
+          {/* <Button 
             variant="outline" 
             colorScheme="purple" 
             onClick={onOpenShop} 
@@ -68,7 +69,7 @@ export function PartySetupHeader({ bankGold, metaXp, alkahest, bankInventory, ba
             leftIcon={<Icon as={GiVikingLonghouse} />}
           >
             Market Hall
-          </Button>
+          </Button> */}
           <Button variant="outline" colorScheme="gray" onClick={onBack} size="xs">
             Back
           </Button>

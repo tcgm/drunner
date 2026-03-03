@@ -1,0 +1,139 @@
+/* BossDisplay responsive styles */
+
+/* Portrait phones - compact boss display */
+@media (orientation: portrait) and (max-width: 768px) {
+  .boss-display {
+    max-height: 28vh !important;
+    min-height: 200px;
+    padding: 0.75rem !important;
+  }
+
+  .boss-display .chakra-icon {
+    font-size: 3rem !important;
+  }
+
+  .boss-display h2,
+  .boss-display .chakra-heading {
+    font-size: 1.5rem !important;
+  }
+
+  .boss-display .chakra-badge {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+  }
+
+  .boss-display .chakra-progress {
+    height: 1.25rem !important;
+  }
+
+  .boss-display .chakra-text {
+    font-size: 0.875rem !important;
+  }
+
+  /* Stats display - make more compact */
+  .boss-display .chakra-stack {
+    gap: 0.5rem !important;
+  }
+}
+
+/* Small portrait phones - more compact */
+@media (orientation: portrait) and (max-width: 480px) {
+  .boss-display {
+    max-height: 25vh !important;
+    min-height: 180px;
+    padding: 0.5rem !important;
+  }
+
+  .boss-display .chakra-icon {
+    font-size: 2.5rem !important;
+  }
+
+  .boss-display h2,
+  .boss-display .chakra-heading {
+    font-size: 1.25rem !important;
+  }
+
+  .boss-display .chakra-badge {
+    font-size: 0.7rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+
+  .boss-display .chakra-progress {
+    height: 1rem !important;
+  }
+
+  .boss-display .chakra-text {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Very small portrait phones - ultra compact */
+@media (orientation: portrait) and (max-width: 400px) {
+  .boss-display {
+    max-height: 22vh !important;
+    min-height: 160px;
+    padding: 0.375rem !important;
+  }
+
+  .boss-display .chakra-icon {
+    font-size: 2rem !important;
+  }
+
+  .boss-display h2,
+  .boss-display .chakra-heading {
+    font-size: 1.125rem !important;
+  }
+
+  .boss-display .chakra-badge {
+    font-size: 0.65rem !important;
+    padding: 0.125rem 0.25rem !important;
+  }
+
+  .boss-display .chakra-progress {
+    height: 0.875rem !important;
+  }
+
+  .boss-display .chakra-text {
+    font-size: 0.75rem !important;
+  }
+
+  /* Hide some decorative elements on very small screens */
+  .boss-display .boss-stats-detail {
+    display: none !important;
+  }
+}
+
+/* Short portrait screens - even more compact */
+@media (orientation: portrait) and (max-height: 700px) {
+  .boss-display {
+    max-height: 22vh !important;
+    min-height: 150px;
+  }
+}
+
+@media (orientation: portrait) and (max-height: 600px) {
+  .boss-display {
+    max-height: 20vh !important;
+    min-height: 140px;
+    padding: 0.375rem !important;
+  }
+
+  .boss-display .chakra-icon {
+    font-size: 2rem !important;
+  }
+}
+
+/* Landscape - keep compact for short screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .boss-display {
+    padding: 0.5rem !important;
+  }
+
+  .boss-display .chakra-icon {
+    font-size: 2.5rem !important;
+  }
+
+  .boss-display h2 {
+    font-size: 1.25rem !important;
+  }
+}

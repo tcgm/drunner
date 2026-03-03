@@ -12,7 +12,7 @@ export const MINOTAUR_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You brace yourself as the minotaur crashes into you! The impact is devastating!',
         effects: [
-          { type: 'damage', target: 'all', value: 40 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 215 },
           { type: 'gold', value: 305 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 12 },
@@ -27,7 +27,7 @@ export const MINOTAUR_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You sidestep at the last moment! The minotaur crashes into the wall!',
         effects: [
-          { type: 'damage', target: 'random', value: 26 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 255 },
           { type: 'gold', value: 355 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 15 },
@@ -43,7 +43,7 @@ export const MINOTAUR_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You lead him through the maze until he\'s exhausted and disoriented!',
         effects: [
-          { type: 'damage', target: 'all', value: 22 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 245 },
           { type: 'gold', value: 345 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 14 },

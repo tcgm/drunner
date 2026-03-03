@@ -10,7 +10,7 @@ export const SHADOWFANG: Omit<Item, 'id'> = {
   type: 'weapon',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiCurvyKnife,
   stats: {
     attack: 120,

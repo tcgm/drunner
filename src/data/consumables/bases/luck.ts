@@ -9,7 +9,7 @@ export const LUCK_BASE: ConsumableBase = {
   effects: [
     {
       type: 'buff',
-      value: 10,
+      value: 30,
       stat: 'luck',
       duration: 3,
       target: 'self',

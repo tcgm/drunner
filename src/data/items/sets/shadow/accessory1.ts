@@ -7,8 +7,10 @@ import type { Item } from '@/types'
 export const SHADOWS_TOUCH: Omit<Item, 'id'> = {
   name: "Shadow's Touch",
   description: 'Gloves that allow manipulation of shadows themselves.',
-  type: 'accessory',
+  type: 'accessory1',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiShadowGrasp,
   stats: {
     attack: 35,

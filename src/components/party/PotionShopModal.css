@@ -1,0 +1,51 @@
+/* Potion Shop Modal - Item Slot Container Styles */
+
+/* Potion slot container - fixed size, centered in card */
+.shop-item-slot {
+  width: var(--item-slot-md);
+  height: var(--item-slot-md);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Make ItemSlot fill the container */
+.shop-item-slot .item-slot {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Override all size variants to fill container */
+.shop-item-slot .item-slot.item-slot--sm,
+.shop-item-slot .item-slot.item-slot--md,
+.shop-item-slot .item-slot.item-slot--lg,
+.shop-item-slot .item-slot.item-slot--xl {
+  width: 100%;
+  height: 100%;
+}
+
+/* Featured item slot container */
+.shop-featured-slot {
+  width: var(--item-slot-xl2);
+  height: var(--item-slot-xl2);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shop-featured-slot .item-slot {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.shop-featured-slot .item-slot.item-slot--sm,
+.shop-featured-slot .item-slot.item-slot--md,
+.shop-featured-slot .item-slot.item-slot--lg,
+.shop-featured-slot .item-slot.item-slot--xl {
+  width: 100%;
+  height: 100%;
+}

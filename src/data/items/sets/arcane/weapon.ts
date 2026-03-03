@@ -1,5 +1,6 @@
 import { GiWizardStaff } from 'react-icons/gi'
 import type { Item } from '@/types'
+import arcaneConduitSvg from '@/assets/icons/items/arcaneConduit.svg'
 
 /**
  * Arcane Conduit - Set weapon
@@ -9,7 +10,9 @@ export const ARCANE_CONDUIT: Omit<Item, 'id'> = {
   description: 'A staff that channels raw magical energy. Crackles with arcane power.',
   type: 'weapon',
   rarity: 'epic',
-  icon: GiWizardStaff,
+  minRarity: 'rare',
+  maxRarity: 'artifact',
+  icon: arcaneConduitSvg,
   stats: {
     magicPower: 80,
     wisdom: 40,

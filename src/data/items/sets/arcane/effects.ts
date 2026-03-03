@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const ARCANE_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Magical Affinity (2 pieces): +30 Magic Power, +20 Wisdom', stats: { magicPower: 30, wisdom: 20 } },
-  4: { description: 'Arcane Mastery (4 pieces): +60 Magic Power, +40 Wisdom, +30 Charisma', stats: { magicPower: 60, wisdom: 40, charisma: 30 } },
-  6: { description: 'Supreme Sorcery (Full Set): +120 Magic Power, +80 Wisdom, +60 Charisma, +20 Speed', stats: { magicPower: 120, wisdom: 80, charisma: 60, speed: 20 } },
+  2: { description: 'Magical Affinity (2 pieces): +30 Magic Power, +20 Wisdom per piece', stats: { magicPower: 30, wisdom: 20 } },
+  4: { description: 'Arcane Mastery (4 pieces): +50 Magic Power, +30 Wisdom, +20 Charisma per piece', stats: { magicPower: 50, wisdom: 30, charisma: 20 } },
+  6: { description: 'Supreme Sorcery (Full Set): +80 Magic Power, +50 Wisdom, +40 Charisma, +20 Speed per piece', stats: { magicPower: 80, wisdom: 50, charisma: 40, speed: 20 } },
 }
 
 /**
@@ -28,9 +28,9 @@ export const ARCANE_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const ARCANE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
-  description: 'Arcane Surge: 25% chance to gain +80% Magic Power for the battle',
+  description: (m) => `Arcane Surge: 25% chance to gain +${Math.floor(80 * m)}% Magic Power for the battle`,
   handler: (context) => {
-    const { party, sourceHero } = context
+    const { party, sourceHero, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -43,7 +43,7 @@ export const ARCANE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
     
     // Apply magic power surge (temporary for combat)
     const baseMagicPower = sourceHero.stats.magicPower ?? 0
-    const magicBoost = Math.floor(baseMagicPower * 0.8)
+    const magicBoost = Math.floor(baseMagicPower * 0.8 * effectMultiplier)
     sourceHero.stats.magicPower = baseMagicPower + magicBoost
     
     return {

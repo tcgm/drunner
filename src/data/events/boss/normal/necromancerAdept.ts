@@ -12,7 +12,7 @@ export const NECROMANCER_ADEPT: DungeonEvent = {
       outcome: {
         text: 'Skeletons keep rising as fast as you cut them down! The necromancer laughs!',
         effects: [
-          { type: 'damage', target: 'all', value: 37 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 200 },
           { type: 'gold', value: 290 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 11 },
@@ -28,7 +28,7 @@ export const NECROMANCER_ADEPT: DungeonEvent = {
       outcome: {
         text: 'You push past the minions and strike down the necromancer! The undead collapse!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 27 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 240 },
           { type: 'gold', value: 340 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 14 },
@@ -43,7 +43,7 @@ export const NECROMANCER_ADEPT: DungeonEvent = {
       outcome: {
         text: 'Holy light destroys the minions instantly! The necromancer is defenseless!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 250 },
           { type: 'gold', value: 350 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 15 },

@@ -1,0 +1,178 @@
+/**
+ * Combat Animations and Visual Effects Styles
+ * 
+ * CSS animations for epic boss combat
+ */
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.15;
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px currentColor;
+    }
+
+    50% {
+        box-shadow: 0 0 40px currentColor;
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes flash {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Combat-specific animations */
+.combat-hit {
+    animation: shake 0.3s ease-in-out;
+}
+
+.combat-heal {
+    animation: glow 0.5s ease-in-out;
+}
+
+.combat-critical {
+    animation: flash 0.2s ease-in-out 3;
+}
+
+.combat-dodge {
+    animation: float 0.4s ease-in-out;
+}
+
+/* Boss phase transition effects */
+.boss-phase-transition {
+    animation: shake 0.5s ease-in-out, glow 1s ease-in-out;
+}
+
+/* Turn indicator pulse */
+.active-turn {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Health bar transitions */
+.health-bar-damage {
+    transition: width 0.5s ease-out;
+    animation: flash 0.3s ease-in-out;
+}
+
+.health-bar-heal {
+    transition: width 0.3s ease-in;
+    animation: glow 0.5s ease-in-out;
+}
+
+/* Combat log entry animations */
+.log-entry-damage {
+    animation: slideInLeft 0.3s ease-out;
+    border-left-color: #ef4444 !important;
+}
+
+.log-entry-heal {
+    animation: slideInRight 0.3s ease-out;
+    border-left-color: #22c55e !important;
+}
+
+.log-entry-phase {
+    animation: scaleIn 0.5s ease-out;
+    border-left-color: #ec4899 !important;
+}
+
+/* Victory/Defeat overlays */
+.combat-victory {
+    animation: scaleIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.combat-defeat {
+    animation: scaleIn 0.8s ease-out;
+}

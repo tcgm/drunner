@@ -12,7 +12,7 @@ export const AIR_ELEMENTAL_LORD: DungeonEvent = {
       outcome: {
         text: 'Hurricane-force winds tear at your flesh as lightning strikes with the fury of ages! You feel the weight of a thousand storms bearing down upon you, an endless gale that existed before mountains rose and will rage long after they fall!',
         effects: [
-          { type: 'damage', target: 'all', value: 118 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 460 },
           { type: 'gold', value: 610 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 16 },
@@ -27,7 +27,7 @@ export const AIR_ELEMENTAL_LORD: DungeonEvent = {
       outcome: {
         text: 'Your counter-magic scatters the elemental! It dissipates harmlessly!',
         effects: [
-          { type: 'damage', target: 'all', value: 75 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 503 },
           { type: 'gold', value: 663 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 20 },
@@ -43,7 +43,7 @@ export const AIR_ELEMENTAL_LORD: DungeonEvent = {
       outcome: {
         text: 'You stand firm against the gale! Unable to move you, it exhausts itself!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 84 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 498 },
           { type: 'gold', value: 658 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 19 },

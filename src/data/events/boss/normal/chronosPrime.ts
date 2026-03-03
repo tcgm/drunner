@@ -12,7 +12,7 @@ export const CHRONOS_PRIME: DungeonEvent = {
       outcome: {
         text: 'It attacks from past and future simultaneously! Time itself is weaponized!',
         effects: [
-          { type: 'damage', target: 'all', value: 658 },
+          { type: 'damage', target: 'all', value: 49 },
           { type: 'xp', value: 2730 },
           { type: 'gold', value: 4095 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 54 },
@@ -28,7 +28,7 @@ export const CHRONOS_PRIME: DungeonEvent = {
       outcome: {
         text: 'You step beyond the timeline! Chronos has no power over the eternal!',
         effects: [
-          { type: 'damage', target: 'all', value: 638 },
+          { type: 'damage', target: 'all', value: 49 },
           { type: 'xp', value: 2890 },
           { type: 'gold', value: 4335 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 76 },
@@ -43,7 +43,7 @@ export const CHRONOS_PRIME: DungeonEvent = {
       outcome: {
         text: 'You alter causality! In the new timeline, you always win!',
         effects: [
-          { type: 'damage', target: 'all', value: 652 },
+          { type: 'damage', target: 'all', value: 49 },
           { type: 'xp', value: 2920 },
           { type: 'gold', value: 4380 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 77 },

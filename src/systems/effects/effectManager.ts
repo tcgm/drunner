@@ -1,6 +1,6 @@
 import type { Hero, TimedEffect, Stats } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
-import { calculateTotalStats } from '@/utils/statCalculator'
+import { healHero } from '@/utils/heroUtils'
 
 /**
  * Apply a timed effect to a hero
@@ -123,7 +123,6 @@ export function tickEffectsForDepthProgression(heroes: (Hero | null)[], newDepth
     const regenerationEffects = hero.activeEffects.filter((e) => e.type === 'regeneration')
     
     if (regenerationEffects.length > 0) {
-      const effectiveMaxHp = calculateTotalStats(hero).maxHp
       let totalHealing = 0
       
       // Sum all regeneration healing
@@ -131,16 +130,9 @@ export function tickEffectsForDepthProgression(heroes: (Hero | null)[], newDepth
         totalHealing += effect.modifier
       }
       
-      // Apply healing (capped at max HP)
+      // Apply healing (capped at effective max HP)
       if (totalHealing > 0) {
-        const newHp = Math.min(hero.stats.hp + totalHealing, effectiveMaxHp)
-        updatedHero = {
-          ...updatedHero,
-          stats: {
-            ...updatedHero.stats,
-            hp: newHp,
-          }
-        }
+        updatedHero = healHero(updatedHero, totalHealing)
       }
     }
     

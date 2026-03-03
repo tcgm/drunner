@@ -12,7 +12,7 @@ export const CHAOS_HERALD: DungeonEvent = {
       outcome: {
         text: 'Unpredictable attacks from impossible angles! Nothing makes sense!',
         effects: [
-          { type: 'damage', target: 'random', value: 345 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 1270 },
           { type: 'gold', value: 1905 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 27 },
@@ -28,7 +28,7 @@ export const CHAOS_HERALD: DungeonEvent = {
       outcome: {
         text: 'You become unpredictable! Chaos cannot fight chaos effectively!',
         effects: [
-          { type: 'damage', target: 'all', value: 280 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1370 },
           { type: 'gold', value: 2055 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 32 },
@@ -43,7 +43,7 @@ export const CHAOS_HERALD: DungeonEvent = {
       outcome: {
         text: 'Your magic enforces natural laws! The herald cannot exist in order!',
         effects: [
-          { type: 'damage', target: 'all', value: 248 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1390 },
           { type: 'gold', value: 2085 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 33 },

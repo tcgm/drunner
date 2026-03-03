@@ -10,7 +10,7 @@ export const PENDANT_OF_THE_WARRIOR: Omit<Item, 'id'> = {
   type: 'accessory2',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiMedal,
   stats: {
     attack: 45,

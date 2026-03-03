@@ -12,7 +12,7 @@ export const IRON_MAIDEN: DungeonEvent = {
       outcome: {
         text: 'The maiden lunges! Spikes pierce from every angle!',
         effects: [
-          { type: 'damage', target: 'all', value: 128 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 470 },
           { type: 'gold', value: 620 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 17 },
@@ -27,7 +27,7 @@ export const IRON_MAIDEN: DungeonEvent = {
       outcome: {
         text: 'You disable its hinges! The maiden can\'t close or attack!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 80 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 518 },
           { type: 'gold', value: 678 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 21 },
@@ -43,7 +43,7 @@ export const IRON_MAIDEN: DungeonEvent = {
       outcome: {
         text: 'You tear the construct apart piece by piece!',
         effects: [
-          { type: 'damage', target: 'all', value: 94 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 508 },
           { type: 'gold', value: 668 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 20 },

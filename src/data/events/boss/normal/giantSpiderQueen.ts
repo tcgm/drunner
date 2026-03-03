@@ -12,7 +12,7 @@ export const GIANT_SPIDER_QUEEN: DungeonEvent = {
       outcome: {
         text: 'You struggle through the sticky webs while the queen strikes from above!',
         effects: [
-          { type: 'damage', target: 'all', value: 33 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 185 },
           { type: 'gold', value: 275 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 10 },
@@ -27,7 +27,7 @@ export const GIANT_SPIDER_QUEEN: DungeonEvent = {
       outcome: {
         text: 'Flames consume the webbing! The queen falls and you finish her off!',
         effects: [
-          { type: 'damage', target: 'all', value: 21 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 225 },
           { type: 'gold', value: 325 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 13 },
@@ -43,7 +43,7 @@ export const GIANT_SPIDER_QUEEN: DungeonEvent = {
       outcome: {
         text: 'You spot her weak point! Your strike pierces through the chitin!',
         effects: [
-          { type: 'damage', target: 'random', value: 25 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 215 },
           { type: 'gold', value: 315 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 12 },

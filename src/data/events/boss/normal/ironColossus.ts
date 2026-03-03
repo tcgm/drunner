@@ -12,7 +12,7 @@ export const IRON_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'Your strikes barely scratch the iron! Its massive fist nearly crushes you!',
         effects: [
-          { type: 'damage', target: 'all', value: 79 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 332 },
           { type: 'gold', value: 442 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 15 },
@@ -27,7 +27,7 @@ export const IRON_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'You superheat the metal then freeze it! The colossus shatters from thermal shock!',
         effects: [
-          { type: 'damage', target: 'all', value: 56 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 372 },
           { type: 'gold', value: 487 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 18 },
@@ -43,7 +43,7 @@ export const IRON_COLOSSUS: DungeonEvent = {
       outcome: {
         text: 'You find weak points where the plates meet! The colossus topples!',
         effects: [
-          { type: 'damage', target: 'random', value: 63 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 366 },
           { type: 'gold', value: 476 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 17 },

@@ -12,7 +12,7 @@ export const REALITY_ANCHOR: DungeonEvent = {
       outcome: {
         text: 'Reality fractures as you strike! Existence tears at the seams!',
         effects: [
-          { type: 'damage', target: 'random', value: 598 },
+          { type: 'damage', target: 'random', value: 19 },
           { type: 'xp', value: 2505 },
           { type: 'gold', value: 3758 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 49 },
@@ -28,7 +28,7 @@ export const REALITY_ANCHOR: DungeonEvent = {
       outcome: {
         text: 'You understand its structure! You take it apart without breaking reality!',
         effects: [
-          { type: 'damage', target: 'all', value: 545 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2665 },
           { type: 'gold', value: 3998 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 67 },
@@ -43,7 +43,7 @@ export const REALITY_ANCHOR: DungeonEvent = {
       outcome: {
         text: 'You destroy it utterly! Reality holds because you will it!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 558 },
+          { type: 'damage', target: 'strongest', value: 19 },
           { type: 'xp', value: 2695 },
           { type: 'gold', value: 4043 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 68 },

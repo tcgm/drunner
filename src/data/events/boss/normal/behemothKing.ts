@@ -12,7 +12,7 @@ export const BEHEMOTH_KING: DungeonEvent = {
       outcome: {
         text: 'Massive beyond belief! You\'re crushed beneath impossible size!',
         effects: [
-          { type: 'damage', target: 'all', value: 492 },
+          { type: 'damage', target: 'all', value: 12 },
           { type: 'xp', value: 1985 },
           { type: 'gold', value: 2978 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 39 },
@@ -27,7 +27,7 @@ export const BEHEMOTH_KING: DungeonEvent = {
       outcome: {
         text: 'Precision over power! You strike nerves and arteries! The behemoth falls!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 428 },
+          { type: 'damage', target: 'weakest', value: 9 },
           { type: 'xp', value: 2120 },
           { type: 'gold', value: 3180 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 53 },
@@ -43,7 +43,7 @@ export const BEHEMOTH_KING: DungeonEvent = {
       outcome: {
         text: 'You topple the king! Size means nothing before absolute power!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 442 },
+          { type: 'damage', target: 'strongest', value: 9 },
           { type: 'xp', value: 2145 },
           { type: 'gold', value: 3218 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 54 },

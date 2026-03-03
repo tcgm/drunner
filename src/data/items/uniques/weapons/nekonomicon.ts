@@ -1,4 +1,4 @@
-import { GiBookCover, GiCat } from 'react-icons/gi'
+import nekonomiconIcon from '@/assets/icons/items/nekonomicon.svg'
 import type { Item } from '@/types'
 
 /**
@@ -11,7 +11,7 @@ export const NEKONOMICON: Omit<Item, 'id'> = {
   rarity: 'mythicc',
   minRarity: 'legendary',
   maxRarity: 'celestial',
-  icon: GiBookCover,
+  icon: nekonomiconIcon,
   stats: {
     attack: 30,
     magicPower: 120,

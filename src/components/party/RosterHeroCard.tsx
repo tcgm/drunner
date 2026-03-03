@@ -24,11 +24,11 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
       <Text fontSize="xs" color="gray.300">{hero.class.name}</Text>
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
         <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{calculateTotalStats(hero).maxHp}</Text></Text>
-        <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text></Text>
-        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text></Text></Text>
-        <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text></Text>
-        <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{calculateTotalStats(hero).wisdom ?? 0}</Text></Text>
-        <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{calculateTotalStats(hero).charisma ?? 0}</Text></Text>
+        <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>{calculateTotalStats(hero).attack}</Text></Text>
+        <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>{calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text></Text></Text>
+        <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>{calculateTotalStats(hero).speed}</Text></Text>
+        <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>{calculateTotalStats(hero).wisdom ?? 0}</Text></Text>
+        <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>{calculateTotalStats(hero).charisma ?? 0}</Text></Text>
       </SimpleGrid>
       {equippedItems.length > 0 && (
         <VStack align="start" spacing={0.5} pt={2} w="full">
@@ -114,16 +114,16 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
                 <Text color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{calculateTotalStats(hero).maxHp}</Text>
               </HStack>
               <HStack spacing={1}>
-                <Text color={GAME_CONFIG.colors.stats.attack}>⚔</Text>
-                <Text color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text>
+                <Text color={GAME_CONFIG.colors.stats.attack.icon}>⚔</Text>
+                <Text color={GAME_CONFIG.colors.stats.attack.text}>{calculateTotalStats(hero).attack}</Text>
               </HStack>
               <HStack spacing={1}>
-                <Text color={GAME_CONFIG.colors.stats.defense}>🛡</Text>
-                <Text color={GAME_CONFIG.colors.stats.defense}>{calculateTotalStats(hero).defense}</Text>
+                <Text color={GAME_CONFIG.colors.stats.defense.icon}>🛡</Text>
+                <Text color={GAME_CONFIG.colors.stats.defense.text}>{calculateTotalStats(hero).defense}</Text>
               </HStack>
               <HStack spacing={1}>
-                <Text color={GAME_CONFIG.colors.stats.speed}>⚡</Text>
-                <Text color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text>
+                <Text color={GAME_CONFIG.colors.stats.speed.icon}>⚡</Text>
+                <Text color={GAME_CONFIG.colors.stats.speed.text}>{calculateTotalStats(hero).speed}</Text>
               </HStack>
             </HStack>
           </VStack>
@@ -136,7 +136,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
             top={0}
             left={0}
             right={0}
-            h="3px"
+            h="clamp(2px, 0.3vh, 4px)"
             bg="blue.400"
             boxShadow="0 0 12px rgba(59, 130, 246, 0.8)"
           />

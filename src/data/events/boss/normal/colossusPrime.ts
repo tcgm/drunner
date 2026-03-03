@@ -12,7 +12,7 @@ export const COLOSSUS_PRIME: DungeonEvent = {
       outcome: {
         text: 'Advanced weaponry tears through you! Its defenses are impenetrable!',
         effects: [
-          { type: 'damage', target: 'all', value: 360 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1320 },
           { type: 'gold', value: 1980 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 29 },
@@ -27,7 +27,7 @@ export const COLOSSUS_PRIME: DungeonEvent = {
       outcome: {
         text: 'You hack its ancient programming! It follows your commands now!',
         effects: [
-          { type: 'damage', target: 'all', value: 95 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1440 },
           { type: 'gold', value: 2160 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 36 },
@@ -43,7 +43,7 @@ export const COLOSSUS_PRIME: DungeonEvent = {
       outcome: {
         text: 'You locate a flaw in its design! One precise strike and it falls!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 300 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1425 },
           { type: 'gold', value: 2138 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 35 },

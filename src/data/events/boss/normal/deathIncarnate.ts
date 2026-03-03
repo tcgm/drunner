@@ -12,7 +12,7 @@ export const DEATH_INCARNATE: DungeonEvent = {
       outcome: {
         text: 'Death comes for all! No one can fight the inevitable!',
         effects: [
-          { type: 'damage', target: 'all', value: 545 },
+          { type: 'damage', target: 'all', value: 11 },
           { type: 'xp', value: 2240 },
           { type: 'gold', value: 3360 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 44 },
@@ -27,7 +27,7 @@ export const DEATH_INCARNATE: DungeonEvent = {
       outcome: {
         text: 'Life triumphs! Your divine power proves death is not absolute!',
         effects: [
-          { type: 'damage', target: 'all', value: 485 },
+          { type: 'damage', target: 'all', value: 11 },
           { type: 'xp', value: 2370 },
           { type: 'gold', value: 3555 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 60 },
@@ -43,7 +43,7 @@ export const DEATH_INCARNATE: DungeonEvent = {
       outcome: {
         text: 'You assert your own mortality! Death has no power over those who choose!',
         effects: [
-          { type: 'damage', target: 'random', value: 498 },
+          { type: 'damage', target: 'random', value: 8 },
           { type: 'xp', value: 2395 },
           { type: 'gold', value: 3593 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 61 },

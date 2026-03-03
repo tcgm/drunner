@@ -83,7 +83,7 @@ export function MigrationWarningDialog({ isOpen }: MigrationWarningDialogProps) 
       closeOnEsc={false}
     >
       <AlertDialogOverlay bg="blackAlpha.900" backdropFilter="blur(8px)">
-        <AlertDialogContent bg="gray.900" borderWidth="2px" borderColor="orange.500" maxW="600px">
+        <AlertDialogContent bg="gray.900" borderWidth="2px" borderColor="orange.500" maxW="clamp(400px, 60vw, 700px)">
           <AlertDialogHeader fontSize="2xl" fontWeight="bold" color="orange.400">
             <Icon as={FiAlertTriangle} mr={2} />
             Save Migration Required

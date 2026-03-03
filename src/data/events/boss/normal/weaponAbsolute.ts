@@ -12,7 +12,7 @@ export const WEAPON_ABSOLUTE: DungeonEvent = {
       outcome: {
         text: 'The perfect weapon cuts through everything! Nothing can withstand it!',
         effects: [
-          { type: 'damage', target: 'all', value: 565 },
+          { type: 'damage', target: 'all', value: 26 },
           { type: 'xp', value: 2310 },
           { type: 'gold', value: 3465 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 46 },
@@ -27,7 +27,7 @@ export const WEAPON_ABSOLUTE: DungeonEvent = {
       outcome: {
         text: 'The best offense is not being there! You evade and counter!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 505 },
+          { type: 'damage', target: 'weakest', value: 19 },
           { type: 'xp', value: 2440 },
           { type: 'gold', value: 3660 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 63 },
@@ -43,7 +43,7 @@ export const WEAPON_ABSOLUTE: DungeonEvent = {
       outcome: {
         text: 'You surpass perfection! Your power exceeds even the absolute!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 518 },
+          { type: 'damage', target: 'strongest', value: 19 },
           { type: 'xp', value: 2470 },
           { type: 'gold', value: 3705 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 64 },

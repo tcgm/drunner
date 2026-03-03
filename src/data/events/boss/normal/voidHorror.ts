@@ -12,7 +12,7 @@ export const VOID_HORROR: DungeonEvent = {
       outcome: {
         text: 'Your sanity frays as you battle! The void tears at your very soul!',
         effects: [
-          { type: 'damage', target: 'all', value: 135 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 490 },
           { type: 'gold', value: 640 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 19 },
@@ -27,7 +27,7 @@ export const VOID_HORROR: DungeonEvent = {
       outcome: {
         text: 'You close the tear in reality! The horror is pulled back into the void!',
         effects: [
-          { type: 'damage', target: 'all', value: 98 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 535 },
           { type: 'gold', value: 700 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 23 },
@@ -43,7 +43,7 @@ export const VOID_HORROR: DungeonEvent = {
       outcome: {
         text: 'Your mental fortitude protects you! The horror has no power over you!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 105 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 525 },
           { type: 'gold', value: 690 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 22 },

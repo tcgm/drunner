@@ -200,7 +200,7 @@ export default function RunHistoryScreen({ onBack }: RunHistoryScreenProps) {
 
       {/* Main Content */}
       <Box className="run-history-screen-content" flex={1} overflowY="auto" p={6}>
-        <VStack className="run-history-screen-list" spacing={4} maxW="800px" mx="auto">
+        <VStack className="run-history-screen-list" spacing={4} maxW="clamp(600px, 80vw, 900px)" mx="auto">
           {allRuns.length === 0 ? (
             <Box textAlign="center" py={12}>
               <Text fontSize="lg" color="gray.500">

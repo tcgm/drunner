@@ -12,7 +12,7 @@ export const NIGHTMARE_WEAVER: DungeonEvent = {
       outcome: {
         text: 'Your deepest terrors made flesh! Rational thought abandons you!',
         effects: [
-          { type: 'damage', target: 'all', value: 482 },
+          { type: 'damage', target: 'all', value: 12 },
           { type: 'xp', value: 1960 },
           { type: 'gold', value: 2940 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 39 },
@@ -28,7 +28,7 @@ export const NIGHTMARE_WEAVER: DungeonEvent = {
       outcome: {
         text: 'You face your fears without flinching! The weaver has no power!',
         effects: [
-          { type: 'damage', target: 'all', value: 418 },
+          { type: 'damage', target: 'all', value: 12 },
           { type: 'xp', value: 2090 },
           { type: 'gold', value: 3135 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 52 },
@@ -43,7 +43,7 @@ export const NIGHTMARE_WEAVER: DungeonEvent = {
       outcome: {
         text: 'Fear becomes fuel! The weaver created the weapon of its own demise!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 432 },
+          { type: 'damage', target: 'strongest', value: 9 },
           { type: 'xp', value: 2115 },
           { type: 'gold', value: 3173 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 53 },

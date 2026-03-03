@@ -1,13 +1,11 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { GameState, Hero, Run, Item, ItemStorage, Equipment } from '@/types'
-import { MusicContext } from '@/types/audio'
+import type { GameState, Hero, Item, Equipment } from '@/types'
+import type { ItemV3 } from '@/types/items-v3'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { needsMigration, CURRENT_SAVE_VERSION } from '@/utils/migration'
-import { hydrateItem, hydrateItems, hydrateItemsWithCorrupted, hydrateItemsWithDetails, dehydrateItem, dehydrateItems } from '@/utils/itemHydration'
+import { dehydrateItem, dehydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
-import { calculateMaxHp } from '@/utils/heroUtils'
-import { loadSave, applyMigratedState } from '@/core/saveManager'
 import {
   createBackup,
   sanitizeHeroStats,
@@ -61,9 +59,11 @@ const initialState: GameState = {
   bankInventory: [],
   bankStorageSlots: GAME_CONFIG.bank.startingSlots,
   overflowInventory: [],
+  lastRunItems: [],
   corruptedItems: [],
   v2Items: [],
   metaXp: 0,
+  nexusUpgrades: {},
   isGameOver: false,
   isPaused: false,
   hasPendingPenalty: false,
@@ -83,31 +83,54 @@ const initialState: GameState = {
  */
 function dehydrateGameState(state: GameState): GameState {
   const dehydrateHeroItems = (hero: Hero | null): Hero | null => {
-    if (!hero || !hero.equipment) return hero
+    if (!hero) return hero
 
-    const dehydratedEquipment: Equipment = {
-      weapon: hero.equipment.weapon ? dehydrateItem(hero.equipment.weapon) as any : null,
-      armor: hero.equipment.armor ? dehydrateItem(hero.equipment.armor) as any : null,
-      helmet: hero.equipment.helmet ? dehydrateItem(hero.equipment.helmet) as any : null,
-      boots: hero.equipment.boots ? dehydrateItem(hero.equipment.boots) as any : null,
-      accessory1: hero.equipment.accessory1 ? dehydrateItem(hero.equipment.accessory1) as any : null,
-      accessory2: hero.equipment.accessory2 ? dehydrateItem(hero.equipment.accessory2) as any : null,
+    const result = { ...hero } as Hero
+
+    // Handle new slots format (current system)
+    if (hero.slots) {
+      const dehydratedSlots: Record<string, ItemV3 | null> = {}
+      for (const [slotId, item] of Object.entries(hero.slots)) {
+        dehydratedSlots[slotId] = item ? dehydrateItem(item) : null
+      }
+      result.slots = dehydratedSlots as unknown as Hero['slots']
     }
 
-    return {
-      ...hero,
-      equipment: dehydratedEquipment,
+    // Handle legacy equipment format (for backwards compatibility)
+    if (hero.equipment) {
+      const dehydratedEquipment: Equipment = {
+        weapon: hero.equipment.weapon ? dehydrateItem(hero.equipment.weapon) as unknown as Item : null,
+        armor: hero.equipment.armor ? dehydrateItem(hero.equipment.armor) as unknown as Item : null,
+        helmet: hero.equipment.helmet ? dehydrateItem(hero.equipment.helmet) as unknown as Item : null,
+        boots: hero.equipment.boots ? dehydrateItem(hero.equipment.boots) as unknown as Item : null,
+        accessory1: hero.equipment.accessory1 ? dehydrateItem(hero.equipment.accessory1) as unknown as Item : null,
+        accessory2: hero.equipment.accessory2 ? dehydrateItem(hero.equipment.accessory2) as unknown as Item : null,
+      }
+      result.equipment = dehydratedEquipment
     }
+
+    return result
   }
 
-  return {
+  const dehydrated = {
     ...state,
     party: state.party.map(dehydrateHeroItems) as (Hero | null)[],
     heroRoster: state.heroRoster.map(dehydrateHeroItems) as Hero[],
-    bankInventory: dehydrateItems(state.bankInventory) as any,
-    overflowInventory: dehydrateItems(state.overflowInventory) as any,
+    bankInventory: dehydrateItems(state.bankInventory) as unknown as Item[],
+    overflowInventory: dehydrateItems(state.overflowInventory) as unknown as Item[],
+    lastRunItems: dehydrateItems(state.lastRunItems ?? []) as unknown as Item[],
+    dungeon: {
+      ...state.dungeon,
+      inventory: dehydrateItems(state.dungeon.inventory) as unknown as Item[],
+    },
     // Don't save v2Items - it's regenerated from bank scan on load
   }
+
+  // Ensure critical fields are preserved
+  console.log(`[dehydrateGameState] Input - saveVersion: ${state.saveVersion}, alkahest: ${state.alkahest}`)
+  console.log(`[dehydrateGameState] Output - saveVersion: ${dehydrated.saveVersion}, alkahest: ${dehydrated.alkahest}`)
+
+  return dehydrated
 }
 
 export const useGameStore = create<GameStore>()(
@@ -127,10 +150,13 @@ export const useGameStore = create<GameStore>()(
     {
       name: 'dungeon-runner-storage',
       storage: {
-        getItem: (name) => {
+        getItem: async (name) => {
           console.log(`[GameStore] Loading from storage: ${name}`)
           const compressed = localStorage.getItem(name)
           if (!compressed) return null
+
+          // Yield to the browser so React can render before heavy deserialization work
+          await new Promise<void>(resolve => setTimeout(resolve, 0))
 
           // Try to decompress - if it fails, assume it's old uncompressed data
           let str: string
@@ -140,15 +166,16 @@ export const useGameStore = create<GameStore>()(
             str = compressed
           }
 
-          // Create backup before attempting repair
-          createBackup(name)
-
           try {
             const parsedData = JSON.parse(str)
 
             // Access the actual nested state
             const actualState = parsedData?.state
             if (!actualState) return parsedData
+
+            // Log critical values immediately after loading
+            console.log(`[GameStore] Loaded state - saveVersion: ${actualState.saveVersion}, alkahest: ${actualState.alkahest}, bankGold: ${actualState.bankGold}`)
+            console.log(`[GameStore] needsMigration check - CURRENT_SAVE_VERSION: ${CURRENT_SAVE_VERSION}, needs migration: ${needsMigration(actualState)}`)
 
             // Recovery: Fix negative alkahest by converting to positive
             if (actualState.alkahest !== undefined && actualState.alkahest < 0) {
@@ -198,199 +225,32 @@ export const useGameStore = create<GameStore>()(
               })
             }
 
-            // Hydrate and repair item names/icons in inventories
-            // Collect corrupted items that need user resolution
-            const allCorrupted: Item[] = []
-            const allV2: Item[] = []
-
-            console.log(`[GameStore] bankInventory: ${actualState.bankInventory?.length || 0} items`)
-            if (actualState.bankInventory?.length > 0) {
-              console.log(`[GameStore] Hydrating ${actualState.bankInventory.length} bank items`)
-              const { valid, corrupted, v2 } = hydrateItemsWithDetails(actualState.bankInventory as ItemStorage[])
-              console.log(`[GameStore] Bank result: ${valid.length} valid, ${corrupted.length} corrupted, ${v2.length} V2`)
-              actualState.bankInventory = valid
-              allCorrupted.push(...corrupted)
-              allV2.push(...v2)
-            }
-            if (actualState.dungeon?.inventory?.length > 0) {
-              const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.dungeon.inventory as ItemStorage[])
-              actualState.dungeon.inventory = valid
-              allCorrupted.push(...corrupted)
-            }
-            if (actualState.overflowInventory?.length > 0) {
-              const { valid, corrupted } = hydrateItemsWithCorrupted(actualState.overflowInventory as ItemStorage[])
-              actualState.overflowInventory = valid
-              allCorrupted.push(...corrupted)
-            }
-
-            // Hydrate equipped items on heroes in party
-            if (actualState.party?.length > 0) {
-              actualState.party = actualState.party.map((hero: Hero | null) => {
-                if (!hero) return null
-
-                // Handle new slot format
-                if (hero.slots) {
-                  const newSlots = { ...hero.slots }
-                  for (const slotId in newSlots) {
-                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                      const { valid, corrupted } = hydrateItemsWithCorrupted([newSlots[slotId] as ItemStorage])
-                      newSlots[slotId] = valid[0] || null
-                      allCorrupted.push(...corrupted)
-                    }
-                  }
-                  return { ...hero, slots: newSlots }
-                }
-
-                // Handle old equipment format (for backwards compatibility)
-                const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
-                if (equippedItems.length > 0) {
-                  const { valid, corrupted } = hydrateItemsWithCorrupted(equippedItems as ItemStorage[])
-                  allCorrupted.push(...corrupted)
-                  const newEquipment = { ...hero.equipment } as Equipment
-                  let itemIndex = 0
-                  Object.keys(newEquipment).forEach((slot) => {
-                    const key = slot as keyof Equipment
-                    if (newEquipment[key] !== null) {
-                      newEquipment[key] = valid[itemIndex] || null
-                      itemIndex++
-                    }
-                  })
-                  return { ...hero, equipment: newEquipment }
-                }
-                return hero
-              })
-            }
-
-            // Sync roster from party if roster heroes are corrupted
-            // Party data is the source of truth for active heroes
-            if (actualState.party && actualState.heroRoster) {
-              const validPartyHeroes = actualState.party.filter((h: Hero | null): h is Hero => h !== null)
-
-              // For each hero in party, check if roster version is outdated or corrupted
-              validPartyHeroes.forEach((partyHero: Hero) => {
-                const rosterIndex = actualState.heroRoster.findIndex((h: Hero) => h.id === partyHero.id)
-
-                if (rosterIndex !== -1) {
-                  const rosterHero = actualState.heroRoster[rosterIndex]
-
-                  // Check corruption using both old equipment and new slots format
-                  const partyHasItems = partyHero.slots
-                    ? Object.values(partyHero.slots).some(item => item !== null)
-                    : Object.values(partyHero.equipment || {}).some(item => item !== null)
-
-                  const rosterHasItems = rosterHero.slots
-                    ? Object.values(rosterHero.slots).some(item => item !== null)
-                    : Object.values(rosterHero.equipment || {}).some(item => item !== null)
-
-                  // Determine which version has the most complete data
-                  // Priority: higher level > has items > neither (use party as source of truth)
-                  const shouldUseParty = (
-                    partyHero.level > rosterHero.level
-                  ) || (
-                      partyHero.level === rosterHero.level && partyHasItems && !rosterHasItems
-                    )
-
-                  const shouldUseRoster = (
-                    rosterHero.level > partyHero.level
-                  ) || (
-                      rosterHero.level === rosterHero.level && rosterHasItems && !partyHasItems
-                    )
-
-                  if (shouldUseParty) {
-                    // Party has better data, sync roster from party
-                    actualState.heroRoster[rosterIndex] = { ...partyHero }
-                    console.log(`[Repair] Synced roster hero ${partyHero.name} from party (level ${partyHero.level}, items: ${partyHasItems})`)
-                  } else if (shouldUseRoster) {
-                    // Roster has better data, sync party from roster (this prevents item loss!)
-                    const partySlotIndex = actualState.party.findIndex((h: Hero | null) => h?.id === rosterHero.id)
-                    if (partySlotIndex !== -1) {
-                      actualState.party[partySlotIndex] = { ...rosterHero }
-                      console.log(`[Repair] Synced party hero ${rosterHero.name} from roster (level ${rosterHero.level}, items: ${rosterHasItems})`)
-                    }
-                  }
-                } else {
-                  // Hero in party but not in roster, add them
-                  actualState.heroRoster.push({ ...partyHero })
-                  console.log(`[Repair] Added missing hero ${partyHero.name} to roster`)
-                }
-              })
-            }
-
-            // Repair equipped items on heroes in roster
-            if (actualState.heroRoster?.length > 0) {
-              actualState.heroRoster = actualState.heroRoster.map((hero: Hero) => {
-                // Handle new slot format
-                if (hero.slots) {
-                  const newSlots = { ...hero.slots }
-                  for (const slotId in newSlots) {
-                    if (newSlots[slotId] !== null && 'stats' in newSlots[slotId]!) {
-                      const { valid, corrupted } = hydrateItemsWithCorrupted([newSlots[slotId] as ItemStorage])
-                      newSlots[slotId] = valid[0] || null
-                      allCorrupted.push(...corrupted)
-                    }
-                  }
-                  return { ...hero, slots: newSlots }
-                }
-
-                // Handle old equipment format (for backwards compatibility)
-                const equippedItems = Object.values(hero.equipment || {}).filter((item): item is Item => item !== null)
-                if (equippedItems.length > 0) {
-                  const { valid, corrupted } = hydrateItemsWithCorrupted(equippedItems as ItemStorage[])
-                  allCorrupted.push(...corrupted)
-                  const hydratedItems = valid
-                  const newEquipment = { ...hero.equipment } as Equipment
-                  let itemIndex = 0
-                  Object.keys(newEquipment).forEach((slot) => {
-                    const key = slot as keyof Equipment
-                    if (newEquipment[key] !== null) {
-                      newEquipment[key] = hydratedItems[itemIndex] || null
-                      itemIndex++
-                    }
-                  })
-                  return { ...hero, equipment: newEquipment }
-                }
-                return hero
-              })
-            }
-
-            // Update corrupted items with all collected corrupted items
-            actualState.corruptedItems = allCorrupted
-
-            // Always regenerate v2Items from fresh scan
-            // Converted items should not appear in allV2 since they have proper metadata
-            actualState.v2Items = allV2
-
-            if (allV2.length > 0) {
-              console.log(`[GameStore] Found ${allV2.length} V2 format items that can be migrated`)
-            }
-
-            if (allCorrupted.length > 0) {
-              console.warn(`[GameStore] Found ${allCorrupted.length} corrupted items`)
-              allCorrupted.forEach((item, index) => {
-                console.log(`[Corrupted ${index + 1}]`, {
-                  id: item.id,
-                  name: item.name,
-                  type: item.type,
-                  rarity: item.rarity,
-                  hasStats: Object.keys(item.stats || {}).length > 0
-                })
-              })
-            }
+            // corruptedItems / v2Items are populated after render by hydrateLoadedItems()
+            actualState.corruptedItems = []
+            actualState.v2Items = []
 
             // Check if migration is needed BEFORE applying it
             // But skip if we're already in pending migration state (to avoid loop)
             if (needsMigration(actualState) && !actualState.pendingMigration) {
-              console.log('[Migration] Save file needs migration, setting pending state and prompting user')
+              console.log('[Migration] Save file needs migration (saveVersion: ' + actualState.saveVersion + '), setting pending state and prompting user')
               // Return pending state but DON'T save to localStorage yet
               // User must approve first
+              // IMPORTANT: Preserve critical fields like alkahest and bankGold from existing save
               return {
                 state: {
                   ...initialState,
+                  alkahest: actualState.alkahest ?? 0,
+                  bankGold: actualState.bankGold ?? 0,
                   pendingMigration: true,
                   pendingMigrationData: compressed, // Store the compressed data for later
                 }
               }
             }
+
+            // Reset runtime-only state that should not persist across page loads
+            // audioManager is re-initialized fresh every load, so these must be reset
+            // to avoid the "already on context" skip-guard blocking playback on startup.
+            actualState.currentMusicContext = null
 
             // If already in pending migration state, just return it
             if (actualState.pendingMigration) {
@@ -420,17 +280,8 @@ export const useGameStore = create<GameStore>()(
               migratedState.runHistory = []
             }
 
-            // Save the state immediately after hydration to persist any icon/baseTemplateId fixes
-            // Do this silently without going through setItem to avoid triggering backups on every load
-            const replacer = (key: string, val: unknown) => {
-              if (key === 'icon' && typeof val === 'function') {
-                return undefined
-              }
-              return val
-            }
-            const json = JSON.stringify(state, replacer)
-            const compressedOutput = LZString.compressToUTF16(json)
-            localStorage.setItem(name, compressedOutput)
+            // Log critical values before returning from getItem
+            console.log(`[GameStore] Returning state - alkahest: ${state?.state?.alkahest}, bankGold: ${state?.state?.bankGold}`)
 
             return state
           } catch (error) {
@@ -445,11 +296,20 @@ export const useGameStore = create<GameStore>()(
             return
           }
 
+          // Create a backup before overwriting (throttled internally to 5-min intervals)
+          createBackup(name)
+
+          // Log critical values before dehydration
+          console.log(`[Storage] Saving - alkahest: ${value?.state?.alkahest}, bankGold: ${value?.state?.bankGold}`)
+
           // Dehydrate the state to strip computed item data
           const dehydratedValue = {
             ...value,
             state: value.state ? dehydrateGameState(value.state) : value.state
           }
+
+          // Log critical values after dehydration
+          console.log(`[Storage] After dehydration - alkahest: ${dehydratedValue?.state?.alkahest}, bankGold: ${dehydratedValue?.state?.bankGold}`)
 
           // Custom replacer to strip out icon functions that shouldn't be serialized
           const replacer = (key: string, val: unknown) => {
@@ -471,18 +331,29 @@ export const useGameStore = create<GameStore>()(
         },
         removeItem: (name) => localStorage.removeItem(name),
       },
+      onRehydrateStorage: () => {
+        // Called after the async getItem promise resolves and state is applied.
+        // This is the safe place to run post-load repairs; running them synchronously
+        // after store creation would execute on empty initialState since getItem is async.
+        return (state, error) => {
+          if (error) {
+            console.error('[GameStore] Failed to rehydrate:', error)
+            return
+          }
+          if (state) {
+            state.repairParty()
+            state.migrateHeroStats()
+            state.recalculateHeroStats()
+            state.deduplicateInventories()
+            // Hydrate items lazily after render — the heavy per-item work
+            // (stat calculation, icon restoration) now runs off the critical path.
+            state.hydrateLoadedItems()
+          }
+        }
+      },
     }
   )
 )
-
-// Repair party on initial mount
-useGameStore.getState().repairParty()
-// Migrate hero stats to add wisdom and charisma
-useGameStore.getState().migrateHeroStats()
-// Recalculate hero stats to ensure equipment bonuses are applied
-useGameStore.getState().recalculateHeroStats()
-// Deduplicate any duplicate items in inventories
-useGameStore.getState().deduplicateInventories()
 
 // HMR cleanup for development
 if (import.meta.hot) {

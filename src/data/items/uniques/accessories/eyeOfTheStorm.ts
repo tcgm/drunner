@@ -10,7 +10,7 @@ export const EYE_OF_THE_STORM: Omit<Item, 'id'> = {
   type: 'accessory2',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiLightningStorm,
   stats: {
     attack: 60,

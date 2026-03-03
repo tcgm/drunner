@@ -12,7 +12,7 @@ export const FALLEN_SERAPH: DungeonEvent = {
       outcome: {
         text: 'Holy power hurts more when corrupted! Shadow-fire burns your soul!',
         effects: [
-          { type: 'damage', target: 'all', value: 415 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1660 },
           { type: 'gold', value: 2490 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 33 },
@@ -27,7 +27,7 @@ export const FALLEN_SERAPH: DungeonEvent = {
       outcome: {
         text: 'Your purity reminds them of what they lost! They thank you for release!',
         effects: [
-          { type: 'damage', target: 'all', value: 345 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1775 },
           { type: 'gold', value: 2663 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 41 },
@@ -43,7 +43,7 @@ export const FALLEN_SERAPH: DungeonEvent = {
       outcome: {
         text: 'Your goodness is a weapon against corruption! The seraph is purified!',
         effects: [
-          { type: 'damage', target: 'random', value: 358 },
+          { type: 'damage', target: 'random', value: 5 },
           { type: 'xp', value: 1800 },
           { type: 'gold', value: 2700 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 42 },

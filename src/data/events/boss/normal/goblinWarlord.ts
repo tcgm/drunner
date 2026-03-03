@@ -12,7 +12,7 @@ export const GOBLIN_WARLORD: DungeonEvent = {
       outcome: {
         text: 'The warlord accepts! You trade vicious blows while his horde watches!',
         effects: [
-          { type: 'damage', target: 'all', value: 27 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 175 },
           { type: 'gold', value: 260 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 9 },
@@ -27,7 +27,7 @@ export const GOBLIN_WARLORD: DungeonEvent = {
       outcome: {
         text: 'You slip through the shadows and strike! The horde flees leaderless!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 18 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 220 },
           { type: 'gold', value: 310 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 12 },
@@ -43,7 +43,7 @@ export const GOBLIN_WARLORD: DungeonEvent = {
       outcome: {
         text: 'You cut down several goblins! The warlord and his horde scatter in terror!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 210 },
           { type: 'gold', value: 300 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 11 },

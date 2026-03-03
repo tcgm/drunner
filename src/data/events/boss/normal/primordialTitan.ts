@@ -12,7 +12,7 @@ export const PRIMORDIAL_TITAN: DungeonEvent = {
       outcome: {
         text: 'You dig deep into your own strength, matching the titan blow for titanic blow! The battle shakes the very foundations!',
         effects: [
-          { type: 'damage', target: 'all', value: 600 },
+          { type: 'damage', target: 'all', value: 26 },
           { type: 'xp', value: 2400 },
           { type: 'gold', value: 3400 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 38 },
@@ -29,7 +29,7 @@ export const PRIMORDIAL_TITAN: DungeonEvent = {
       outcome: {
         text: 'Your mortal agility proves superior to its ancient power! You dance around its devastating attacks, striking at critical points!',
         effects: [
-          { type: 'damage', target: 'all', value: 480 },
+          { type: 'damage', target: 'all', value: 26 },
           { type: 'xp', value: 2700 },
           { type: 'gold', value: 3700 },
           { type: 'item', itemType: 'random', minRarity: 'mythic', rarityBoost: 45 },
@@ -44,7 +44,7 @@ export const PRIMORDIAL_TITAN: DungeonEvent = {
       outcome: {
         text: 'You channel the power of divinity itself! Even a primordial must bow before the gods it once knew!',
         effects: [
-          { type: 'damage', target: 'all', value: 510 },
+          { type: 'damage', target: 'all', value: 26 },
           { type: 'heal', target: 'all', value: 120 },
           { type: 'xp', value: 2900 },
           { type: 'gold', value: 4000 },

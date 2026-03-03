@@ -9,6 +9,8 @@ export const TITANS_WRATH: Omit<Item, 'id'> = {
   description: 'A colossal hammer forged by the ancient titans. Crushes all in its path.',
   type: 'weapon',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiWarhammer,
   stats: {
     attack: 150,

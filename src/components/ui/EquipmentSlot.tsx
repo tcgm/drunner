@@ -46,11 +46,11 @@ export function EquipmentSlot({
   const isEmpty = !item
   const hasUpgrade = hasUpgradeAvailable(slot, item, availableItems, currentEquipment)
   const canSwap = hasCompatibleItems(slot, availableItems, currentEquipment)
-  const slotSize = size === 'lg' ? '80px' : size === 'sm' ? '60px' : '80px'
+  const slotSize = size === 'lg' ? 'var(--item-slot-md)' : size === 'sm' ? 'var(--item-slot-sm)' : 'var(--item-slot-md)'
 
   // Debug logging
   if (showSwapButton) {
-    console.log('[EquipmentSlot]', slot, '- canSwap:', canSwap, 'availableItems:', availableItems.length, 'showSwapButton:', showSwapButton, 'onSwapClick:', !!onSwapClick)
+    // console.log('[EquipmentSlot]', slot, '- canSwap:', canSwap, 'availableItems:', availableItems.length, 'showSwapButton:', showSwapButton, 'onSwapClick:', !!onSwapClick)
   }
 
   if (isEmpty) {
@@ -102,8 +102,8 @@ export function EquipmentSlot({
               onSwapClick()
             }}
             zIndex={3}
-            minW="28px"
-            h="28px"
+            minW="clamp(24px, 2.5vw, 32px)"
+            h="clamp(24px, 2.5vw, 32px)"
             p={0}
             borderRadius="md"
           />
@@ -152,8 +152,8 @@ export function EquipmentSlot({
             onSwapClick()
           }}
           zIndex={3}
-          minW="28px"
-          h="28px"
+          minW="clamp(24px, 2.5vw, 32px)"
+          h="clamp(24px, 2.5vw, 32px)"
           p={0}
           borderRadius="md"
         />

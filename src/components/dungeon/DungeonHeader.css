@@ -1,0 +1,15 @@
+/* DungeonHeader styles */
+
+/* Base styles - layout handled by component logic */
+.dungeon-header {
+  /* Base styles only */
+}
+
+.dungeon-header-portrait {
+  /* Portrait mode - handled in component JSX */
+}
+
+.dungeon-header-desktop {
+  /* Desktop mode - handled in component JSX */
+}
+

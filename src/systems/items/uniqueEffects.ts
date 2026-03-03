@@ -35,13 +35,16 @@
  * - SET_UNIQUE_EFFECT: Triggered effect when any piece rolls as unique (15% chance)
  */
 
-import type { Hero, Item, Consumable } from '@/types'
+import type { Hero, Item, Consumable, ItemRarity } from '@/types'
 import type { ResolvedOutcome } from '@/systems/events/eventResolver'
+import { healHero } from '@/utils/heroUtils'
+import { getRarityConfig } from '@/systems/rarity/raritySystem'
 import { KITSUNE_SET_UNIQUE_EFFECT } from '@/data/items/sets/kitsune/effects'
 import { TITAN_SET_UNIQUE_EFFECT } from '@/data/items/sets/titan/effects'
 import { ARCANE_SET_UNIQUE_EFFECT } from '@/data/items/sets/arcane/effects'
 import { DRACONIC_SET_UNIQUE_EFFECT } from '@/data/items/sets/draconic/effects'
 import { SHADOW_SET_UNIQUE_EFFECT } from '@/data/items/sets/shadow/effects'
+import { BUNNY_SET_UNIQUE_EFFECT } from '@/data/items/sets/bunny/effects'
 
 export type UniqueEffectTrigger =
   | 'onBossDefeat'        // After defeating a boss (before wipe check)
@@ -65,11 +68,16 @@ export interface UniqueEffectContext {
   eventType?: string
   resolvedOutcome?: ResolvedOutcome
   floor?: number
+  currentDepth?: number
   // Additional context based on trigger
   sourceHero?: Hero       // The hero wearing the item
   targetHero?: Hero       // Target of an effect
   damageAmount?: number
   healAmount?: number
+  // Rarity scaling: normalized so legendary unique = 1.0
+  itemRarity?: ItemRarity
+  isUniqueRoll?: boolean
+  effectMultiplier?: number  // Multiply effect magnitudes by this for rarity scaling
 }
 
 export interface UniqueEffectResult {
@@ -87,10 +95,44 @@ export type UniqueEffectHandler = (
   context: UniqueEffectContext
 ) => UniqueEffectResult | null
 
+/**
+ * Returns a rarity-based effect multiplier normalized so that a common non-unique = 1.0.
+ * Higher-rarity items produce stronger effects; lower-rarity items are slightly weaker.
+ * isUnique should be true for standalone unique items and set items rolled as unique.
+ *
+ * Examples (common = 1.0):
+ *   common          → 1.0
+ *   rare            → 2.0
+ *   epic            → 3.5
+ *   legendary       → 4.0
+ *   legendary+unique→ 5.2
+ *   mythic+unique   → 6.5
+ */
+export function getEffectMultiplier(rarity: ItemRarity, isUnique: boolean): number {
+  const UNIQUE_BOOST = 1.3
+  const rarityMultiplier = getRarityConfig(rarity).statMultiplierBase
+  // Common (statMultiplierBase = 1.0) non-unique is the baseline = 1.0
+  return rarityMultiplier * (isUnique ? UNIQUE_BOOST : 1.0)
+}
+
 export interface UniqueEffectDefinition {
   triggers: UniqueEffectTrigger[]
   handler: UniqueEffectHandler
-  description: string
+  /** Static string or a function that receives effectMultiplier and returns a scaled description */
+  description: string | ((effectMultiplier: number) => string)
+}
+
+/**
+ * Resolve the description for a unique effect, scaling it by effectMultiplier if it\'s a function.
+ * Falls back to 1.0 (common baseline) when no multiplier is supplied.
+ */
+export function resolveEffectDescription(
+  effect: UniqueEffectDefinition,
+  effectMultiplier = 1.0
+): string {
+  return typeof effect.description === 'function'
+    ? effect.description(effectMultiplier)
+    : effect.description
 }
 
 /**
@@ -101,9 +143,9 @@ export interface UniqueEffectDefinition {
 export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   'Heart of the Phoenix': {
     triggers: ['onBossDefeat'],
-    description: 'Resurrects a random dead party member with 50% HP after defeating a boss',
+    description: (m) => `Resurrects a random dead party member with ${Math.min(100, Math.floor(50 * m))}% HP after defeating a boss`,
     handler: (context) => {
-      const { party, sourceHero } = context
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
       
       // Must have an alive hero wearing it
       if (!sourceHero || !sourceHero.isAlive) {
@@ -119,7 +161,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
       
       // Pick a random dead hero
       const randomDead = deadHeroes[Math.floor(Math.random() * deadHeroes.length)]
-      const resurrectionHp = Math.floor(randomDead.stats.maxHp * 0.5)
+      const resurrectionHp = Math.floor(randomDead.stats.maxHp * 0.5 * effectMultiplier)
       
       // Resurrect them
       randomDead.isAlive = true
@@ -140,10 +182,10 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   
   'Demon Coreflail': {
     triggers: ['onCombatStart', 'onDepthAdvance'],
-    description: 'Lethal Radiation: Deals 8 damage to entire party at combat start and every depth advance',
+    description: (m) => `Lethal Radiation: Deals ${Math.max(1, Math.floor(8 * m))} damage to entire party at combat start and every depth advance`,
     handler: (context) => {
-      const { party } = context
-      const radiationDamage = 8
+      const { party, effectMultiplier = 1.0 } = context
+      const radiationDamage = Math.max(1, Math.floor(8 * effectMultiplier))
       const deathMessages: string[] = []
       const affectedHeroes: string[] = []
       let totalDamage = 0
@@ -180,6 +222,190 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
     }
   },
   
+  'Staff of Eternal Flame': {
+    triggers: ['onCombatStart'],
+    description: (m) => `Eternal Flame: 30% chance to surge Magic Power by ${Math.floor(60 * m)}% for the battle`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.30) {
+        return null
+      }
+
+      const baseMagicPower = sourceHero.stats.magicPower ?? 0
+      const surgeAmount = Math.floor(baseMagicPower * 0.60 * effectMultiplier)
+      sourceHero.stats.magicPower = baseMagicPower + surgeAmount
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Staff of Eternal Flame ignites! (+${surgeAmount} Magic Power)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The eternal flame surges through ${sourceHero.name}, granting ${surgeAmount} bonus Magic Power!`
+        }]
+      }
+    }
+  },
+
+  'Orb of Ancient Power': {
+    triggers: ['onBossDefeat'],
+    description: (m) => `Ancient Resonance: After defeating a boss, permanently gain +${Math.max(1, Math.floor(15 * m))} Magic Power`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      const gain = Math.max(1, Math.floor(15 * effectMultiplier))
+      sourceHero.stats.magicPower = (sourceHero.stats.magicPower ?? 0) + gain
+
+      return {
+        party,
+        message: `The Orb of Ancient Power resonates with victory! ${sourceHero.name} gains +${gain} Magic Power permanently.`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The ancient orb absorbs the boss's magical essence, permanently granting ${sourceHero.name} +${gain} Magic Power.`
+        }]
+      }
+    }
+  },
+
+  'Lyre of the Ancients': {
+    triggers: ['onCombatStart'],
+    description: (m) => `Ancient Melody: 35% chance to heal each party member for ${Math.floor(8 * m)}% of their max HP`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.35) {
+        return null
+      }
+
+      const healedIds: string[] = []
+      let totalHealed = 0
+
+      party.forEach(hero => {
+        if (hero && hero.isAlive) {
+          const healAmount = Math.floor(hero.stats.maxHp * 0.08 * effectMultiplier)
+          hero.stats.hp = healHero(hero, healAmount).stats.hp
+          healedIds.push(hero.id)
+          totalHealed += healAmount
+        }
+      })
+
+      if (healedIds.length === 0) return null
+
+      return {
+        party,
+        message: `${sourceHero.name} plays an Ancient Melody, mending the party!`,
+        additionalEffects: [{
+          type: 'heal',
+          target: healedIds,
+          value: Math.floor(totalHealed / healedIds.length),
+          description: `The haunting notes of the Lyre of the Ancients wash over the party, restoring 8% of each member's HP.`
+        }]
+      }
+    }
+  },
+
+  'Diadem of Devotion': {
+    triggers: ['onBossDefeat'],
+    description: (m) => `Radiant Restoration: After defeating a boss, heals the most wounded party member for ${Math.floor(25 * m)}% of their max HP`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      // Find the most wounded (lowest HP as fraction of max) alive hero
+      const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)
+      if (aliveHeroes.length === 0) return null
+
+      const mostWounded = aliveHeroes.reduce((prev, curr) => {
+        const prevRatio = prev.stats.hp / prev.stats.maxHp
+        const currRatio = curr.stats.hp / curr.stats.maxHp
+        return currRatio < prevRatio ? curr : prev
+      })
+
+      const healAmount = Math.floor(mostWounded.stats.maxHp * 0.25 * effectMultiplier)
+      mostWounded.stats.hp = healHero(mostWounded, healAmount).stats.hp
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Diadem of Devotion pulses with healing light! ${mostWounded.name} recovers ${healAmount} HP.`,
+        additionalEffects: [{
+          type: 'heal',
+          target: [mostWounded.id],
+          value: healAmount,
+          description: `The Diadem of Devotion channels restorative power into ${mostWounded.name}, healing ${healAmount} HP.`
+        }]
+      }
+    }
+  },
+
+  "Minstrel's Crown": {
+    triggers: ['onCombatStart'],
+    description: (m) => `Battle Ballad: 40% chance to inspire the party, granting each member +${Math.max(1, Math.floor(25 * m))} Luck for the battle`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.40) {
+        return null
+      }
+
+      const luckBoost = Math.max(1, Math.floor(25 * effectMultiplier))
+      const inspiredIds: string[] = []
+
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      party.forEach(hero => {
+        if (hero && hero.isAlive) {
+          if (!hero.activeEffects) hero.activeEffects = []
+          hero.activeEffects.push({
+            id: `minstrel-luck-${Date.now()}-${hero.id}`,
+            type: 'buff',
+            name: 'Battle Ballad',
+            description: `+${luckBoost} Luck from Battle Ballad`,
+            stat: 'luck',
+            modifier: luckBoost,
+            duration,
+            appliedAtDepth: depth,
+            expiresAtDepth: depth + duration,
+            isPermanent: false,
+          })
+          inspiredIds.push(hero.id)
+        }
+      })
+
+      if (inspiredIds.length === 0) return null
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Minstrel's Crown rings out a Battle Ballad! (+${luckBoost} Luck to all)`,
+        additionalEffects: [{
+          type: 'status',
+          target: inspiredIds,
+          description: `A rousing battle ballad fills the air! The entire party gains +${luckBoost} Luck for this fight.`
+        }]
+      }
+    }
+  },
+
   // Example of other unique effects that could be added:
   // 'Amulet of Last Stand': {
   //   triggers: ['onDeath'],
@@ -189,6 +415,123 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
   //     return null
   //   }
   // },
+
+  'Mage Hat, The Grey': {
+    triggers: ['onCombatStart'],
+    description: (m) => `You Shall Not Pass: 30% chance to deny the first enemy attack entirely (+${Math.floor(60 * m)}% Wisdom for the battle)`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.30) {
+        return null
+      }
+
+      // Grant the wearer a temporary +999 defense spike for the first hit
+      // (represented as a very large defense bonus that gets noted in message)
+      const wisdomBoost = Math.floor(sourceHero.stats.wisdom * 0.60 * effectMultiplier)
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+      sourceHero.activeEffects.push({
+        id: `mage-hat-wis-${Date.now()}`,
+        type: 'buff',
+        name: 'You Shall Not Pass',
+        description: `+${wisdomBoost} Wisdom from You Shall Not Pass`,
+        stat: 'wisdom',
+        modifier: wisdomBoost,
+        duration,
+        appliedAtDepth: depth,
+        expiresAtDepth: depth + duration,
+        isPermanent: false,
+      })
+
+      return {
+        party,
+        message: `${sourceHero.name}'s Mage Hat, The Grey blazes with ancient authority — YOU SHALL NOT PASS! (+${wisdomBoost} WIS, first enemy strike negated)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The brim of the Mage Hat, The Grey radiates blinding power. The enemy's first strike crumbles before it lands. +${wisdomBoost} Wisdom for this battle.`
+        }]
+      }
+    }
+  },
+
+  'Heavy, Metal Guitar': {
+    triggers: ['onCombatStart'],
+    description: (m) => `Face-melting Riff: 45% chance to boost Attack by ${Math.floor(50 * m)}% and Charisma by ${Math.floor(40 * m)}% for the battle`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.45) {
+        return null
+      }
+
+      const attackBoost = Math.floor(sourceHero.stats.attack * 0.50 * effectMultiplier)
+      const charismaBoost = Math.floor(sourceHero.stats.charisma * 0.40 * effectMultiplier)
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+      sourceHero.activeEffects.push(
+        { id: `guitar-atk-${Date.now()}`, type: 'buff' as const, name: 'Face-melting Riff', description: `+${attackBoost} Attack from Face-melting Riff`, stat: 'attack' as const, modifier: attackBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false },
+        { id: `guitar-cha-${Date.now()}`, type: 'buff' as const, name: 'Face-melting Riff', description: `+${charismaBoost} Charisma from Face-melting Riff`, stat: 'charisma' as const, modifier: charismaBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false }
+      )
+
+      return {
+        party,
+        message: `${sourceHero.name} unleashes a FACE-MELTING RIFF! (+${attackBoost} ATK, +${charismaBoost} CHA)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The Heavy, Metal Guitar erupts in thunderous noise. Enemies tremble. Allies weep with joy. +${attackBoost} Attack, +${charismaBoost} Charisma for this battle.`
+        }]
+      }
+    }
+  },
+
+  'Crimson Arc': {
+    triggers: ['onCombatStart'],
+    description: (m) => `Petal Burst: 40% chance to surge Attack by ${Math.floor(45 * m)}% and Speed by ${Math.floor(60 * m)}% for the battle`,
+    handler: (context) => {
+      const { party, sourceHero, effectMultiplier = 1.0 } = context
+
+      if (!sourceHero || !sourceHero.isAlive) {
+        return null
+      }
+
+      if (Math.random() > 0.40) {
+        return null
+      }
+
+      const attackBoost = Math.floor(sourceHero.stats.attack * 0.45 * effectMultiplier)
+      const speedBoost = Math.floor(sourceHero.stats.speed * 0.60 * effectMultiplier)
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+      sourceHero.activeEffects.push(
+        { id: `crimson-atk-${Date.now()}`, type: 'buff' as const, name: 'Petal Burst', description: `+${attackBoost} Attack from Petal Burst`, stat: 'attack' as const, modifier: attackBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false },
+        { id: `crimson-spd-${Date.now()}`, type: 'buff' as const, name: 'Petal Burst', description: `+${speedBoost} Speed from Petal Burst`, stat: 'speed' as const, modifier: speedBoost, duration, appliedAtDepth: depth, expiresAtDepth: depth + duration, isPermanent: false }
+      )
+
+      return {
+        party,
+        message: `${sourceHero.name} launches into a Petal Burst! (+${attackBoost} ATK, +${speedBoost} SPD)`,
+        additionalEffects: [{
+          type: 'status',
+          target: [sourceHero.id],
+          description: `The Crimson Arc erupts in a whirlwind of rose petals. ${sourceHero.name} moves in a crimson blur, striking with terrifying speed and force. +${attackBoost} Attack, +${speedBoost} Speed for this battle.`
+        }]
+      }
+    }
+  },
 }
 
 /**
@@ -211,6 +554,9 @@ export const UNIQUE_SET_EFFECTS: Record<string, UniqueEffectDefinition> = {
   
   // Shadow set effect
   'Shadow': SHADOW_SET_UNIQUE_EFFECT,
+  
+  // Bunny set effect
+  'Bunny': BUNNY_SET_UNIQUE_EFFECT,
 }
 
 /**
@@ -264,11 +610,19 @@ export function processUniqueEffects(
       // Check if this trigger matches
       if (!effectDef.triggers.includes(trigger)) continue
       
+      // Compute rarity-based effect scaling from the triggering item
+      const triggerRarity = itemData.rarity
+      const triggerIsUnique = itemData.isUnique || false
+      const triggerEffectMult = getEffectMultiplier(triggerRarity, triggerIsUnique)
+
       // Execute the effect
       const result = effectDef.handler({
         party: modifiedParty,
         trigger,
         sourceHero: hero,
+        itemRarity: triggerRarity,
+        isUniqueRoll: triggerIsUnique,
+        effectMultiplier: triggerEffectMult,
         ...context
       })
       

@@ -2,6 +2,7 @@ import { VStack, Text, Box, SimpleGrid, Badge, Divider, HStack } from '@chakra-u
 import { motion } from 'framer-motion'
 import type { Hero, Run } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 const MotionBox = motion.create(Box)
 
@@ -68,9 +69,9 @@ export default function PartyDisplay({ party, run }: PartyDisplayProps) {
                   <Divider borderColor="gray.700" />
                   <SimpleGrid columns={2} spacing={2} w="full" fontSize="sm">
                     <Text color="gray.400">HP: <Text as="span" color="green.300">{hero.stats.hp}/{calculateTotalStats(hero).maxHp}</Text></Text>
-                    <Text color="gray.400">ATK: <Text as="span" color="red.300">{calculateTotalStats(hero).attack}</Text></Text>
-                    <Text color="gray.400">DEF: <Text as="span" color="blue.300">{calculateTotalStats(hero).defense}</Text></Text>
-                    <Text color="gray.400">SPD: <Text as="span" color="yellow.300">{calculateTotalStats(hero).speed}</Text></Text>
+                    <Text color="gray.400">ATK: <Text as="span" color={GAME_CONFIG.colors.stats.attack.text}>{calculateTotalStats(hero).attack}</Text></Text>
+                    <Text color="gray.400">DEF: <Text as="span" color={GAME_CONFIG.colors.stats.defense.text}>{calculateTotalStats(hero).defense}</Text></Text>
+                    <Text color="gray.400">SPD: <Text as="span" color={GAME_CONFIG.colors.stats.speed.text}>{calculateTotalStats(hero).speed}</Text></Text>
                   </SimpleGrid>
                 </VStack>
               </Box>

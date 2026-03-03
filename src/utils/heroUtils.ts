@@ -1,6 +1,7 @@
 import type { Hero, HeroClass, Stats } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { getEnabledSlots } from '@/config/slotConfig'
+import { calculateTotalStats } from '@/utils/statCalculator'
 
 /**
  * Calculate HP based on level and base stats
@@ -104,11 +105,12 @@ export function addExperience(hero: Hero, xp: number): Hero {
 }
 
 /**
- * Heal a hero
+ * Heal a hero by amount, capped at effective max HP (includes equipment bonuses).
+ * Always use this instead of manually computing Math.min(hp + n, maxHp) so the
+ * cap is always the *effective* max (base + equipment + effects), not the bare
+ * hero.stats.maxHp.
  */
 export function healHero(hero: Hero, amount: number): Hero {
-  // Import at top of function to avoid circular dependency issues
-  const { calculateTotalStats } = require('@/utils/statCalculator')
   const effectiveMaxHp = calculateTotalStats(hero).maxHp
   return {
     ...hero,

@@ -9,6 +9,8 @@ export const KITSUNE_VISION: Omit<Item, 'id'> = {
   description: 'A mask resembling a fox spirit. Grants mystical perception and cunning.',
   type: 'helmet',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiFox,
   stats: {
     defense: 45,

@@ -12,7 +12,7 @@ export const PRIMAL_AVATAR: DungeonEvent = {
       outcome: {
         text: 'Each form brings new dangers! Bear strength, wolf pack tactics, eagle swoops, serpent venom!',
         effects: [
-          { type: 'damage', target: 'all', value: 402 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1635 },
           { type: 'gold', value: 2453 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 32 },
@@ -24,10 +24,11 @@ export const PRIMAL_AVATAR: DungeonEvent = {
       requirements: {
         class: 'Druid',
       },
+      skipsCombat: true, // Druidic communion - avatar recognizes kindred spirit
       outcome: {
         text: 'You speak to nature\'s heart! The avatar recognizes a kindred spirit!',
         effects: [
-          { type: 'damage', target: 'all', value: 335 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 1755 },
           { type: 'gold', value: 2633 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 40 },
@@ -43,7 +44,7 @@ export const PRIMAL_AVATAR: DungeonEvent = {
       outcome: {
         text: 'You counter each form before it shifts! Your adaptability exceeds the avatar\'s!',
         effects: [
-          { type: 'damage', target: 'random', value: 348 },
+          { type: 'damage', target: 'random', value: 3 },
           { type: 'xp', value: 1780 },
           { type: 'gold', value: 2670 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 41 },

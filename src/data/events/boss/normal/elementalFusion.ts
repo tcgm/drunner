@@ -12,7 +12,7 @@ export const ELEMENTAL_FUSION: DungeonEvent = {
       outcome: {
         text: 'Fire burns, ice freezes, earth crushes, and air suffocates! All at once!',
         effects: [
-          { type: 'damage', target: 'all', value: 355 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1310 },
           { type: 'gold', value: 1965 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 28 },
@@ -28,7 +28,7 @@ export const ELEMENTAL_FUSION: DungeonEvent = {
       outcome: {
         text: 'You disrupt the fusion! Divided, they destroy each other!',
         effects: [
-          { type: 'damage', target: 'all', value: 295 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1410 },
           { type: 'gold', value: 2115 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 34 },
@@ -43,7 +43,7 @@ export const ELEMENTAL_FUSION: DungeonEvent = {
       outcome: {
         text: 'You channel all four elements! The fusion dissipates!',
         effects: [
-          { type: 'damage', target: 'all', value: 265 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1430 },
           { type: 'gold', value: 2145 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 35 },

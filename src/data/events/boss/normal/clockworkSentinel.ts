@@ -12,7 +12,7 @@ export const CLOCKWORK_SENTINEL: DungeonEvent = {
       outcome: {
         text: 'Your weapons dent the metal, but it\'s built to last! Pistons slam into you!',
         effects: [
-          { type: 'damage', target: 'all', value: 67 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 318 },
           { type: 'gold', value: 425 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 14 },
@@ -28,7 +28,7 @@ export const CLOCKWORK_SENTINEL: DungeonEvent = {
       outcome: {
         text: 'You understand its mechanisms! You disassemble it piece by piece!',
         effects: [
-          { type: 'damage', target: 'all', value: 48 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 363 },
           { type: 'gold', value: 473 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 17 },
@@ -43,7 +43,7 @@ export const CLOCKWORK_SENTINEL: DungeonEvent = {
       outcome: {
         text: 'You jam its gears! The sentinel grinds to a halt and explodes!',
         effects: [
-          { type: 'damage', target: 'random', value: 52 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 358 },
           { type: 'gold', value: 468 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 16 },

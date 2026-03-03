@@ -9,6 +9,8 @@ export const TITANS_FIST: Omit<Item, 'id'> = {
   description: 'Gauntlets imbued with titanic strength. Crushes stone effortlessly.',
   type: 'accessory1',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiGauntlet,
   stats: {
     attack: 50,

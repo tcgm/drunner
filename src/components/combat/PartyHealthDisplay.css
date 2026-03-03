@@ -1,0 +1,144 @@
+/* PartyHealthDisplay responsive styles */
+
+/* Portrait phones - compact party display */
+@media (orientation: portrait) and (max-width: 768px) {
+  .party-health-display {
+    gap: 0.5rem !important;
+  }
+
+  .party-health-display > .chakra-stack {
+    gap: 0.5rem !important;
+  }
+
+  .party-health-display .chakra-text {
+    font-size: 0.7rem !important;
+  }
+
+  /* Compact hero cards */
+  .combat-hero-card {
+    padding: 0.5rem !important;
+    min-width: 120px;
+    max-width: 160px;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 2rem !important;
+  }
+
+  .combat-hero-card .chakra-progress {
+    height: 0.625rem !important;
+  }
+
+  .combat-hero-card .chakra-text {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Small portrait phones - more compact */
+@media (orientation: portrait) and (max-width: 480px) {
+  .party-health-display {
+    gap: 0.375rem !important;
+  }
+
+  .party-health-display > .chakra-stack {
+    gap: 0.375rem !important;
+  }
+
+  .party-health-display .chakra-text {
+    font-size: 0.65rem !important;
+  }
+
+  /* More compact hero cards */
+  .combat-hero-card {
+    padding: 0.375rem !important;
+    min-width: 100px;
+    max-width: 140px;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 1.75rem !important;
+  }
+
+  .combat-hero-card .chakra-progress {
+    height: 0.5rem !important;
+  }
+
+  .combat-hero-card .chakra-text {
+    font-size: 0.7rem !important;
+  }
+
+  .combat-hero-card .chakra-badge {
+    font-size: 0.6rem !important;
+    padding: 0.125rem 0.25rem !important;
+  }
+}
+
+/* Very small portrait phones - ultra compact */
+@media (orientation: portrait) and (max-width: 400px) {
+  .party-health-display {
+    gap: 0.25rem !important;
+  }
+
+  .party-health-display > .chakra-stack {
+    gap: 0.25rem !important;
+  }
+
+  .party-health-display .chakra-text {
+    font-size: 0.6rem !important;
+  }
+
+  /* Ultra compact hero cards - stack frontline and backline */
+  .combat-hero-card {
+    padding: 0.25rem !important;
+    min-width: 80px;
+    max-width: 120px;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 1.5rem !important;
+  }
+
+  .combat-hero-card .chakra-progress {
+    height: 0.375rem !important;
+  }
+
+  .combat-hero-card .chakra-text {
+    font-size: 0.65rem !important;
+  }
+
+  .combat-hero-card .chakra-badge {
+    font-size: 0.55rem !important;
+    padding: 0.125rem 0.125rem !important;
+  }
+
+  /* Hide frontline/backline labels on very small screens */
+  .party-health-display > .chakra-stack > .chakra-text:first-child {
+    display: none !important;
+  }
+}
+
+/* Short portrait screens */
+@media (orientation: portrait) and (max-height: 600px) {
+  .party-health-display {
+    gap: 0.25rem !important;
+  }
+
+  .combat-hero-card {
+    padding: 0.25rem !important;
+  }
+}
+
+/* Landscape - keep compact for short screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .party-health-display {
+    gap: 0.5rem !important;
+  }
+
+  .combat-hero-card {
+    padding: 0.375rem !important;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 1.75rem !important;
+  }
+}

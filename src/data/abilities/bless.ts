@@ -10,12 +10,14 @@ export const BLESS: Ability = {
     name: 'Bless',
     description: 'Buff ally stats (scales with wisdom)',
     cooldown: 4,
+    cooldownType: 'depth',
     currentCooldown: 0,
     effect: {
         type: 'buff',
         value: 5,
-        target: 'ally',
+        targeting: { side: 'ally', breadth: 'single', priority: 'random' },
         duration: 2,
+        stat: 'defense',
         scaling: {
             stat: 'wisdom',
             ratio: 0.3

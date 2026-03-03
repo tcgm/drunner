@@ -12,7 +12,7 @@ export const SHADOW_TWIN: DungeonEvent = {
       outcome: {
         text: 'Their coordinated assault is overwhelming! Every move is countered!',
         effects: [
-          { type: 'damage', target: 'all', value: 125 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 475 },
           { type: 'gold', value: 625 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 18 },
@@ -28,7 +28,7 @@ export const SHADOW_TWIN: DungeonEvent = {
       outcome: {
         text: 'You force them apart! Divided, they are much weaker!',
         effects: [
-          { type: 'damage', target: 'random', value: 92 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 520 },
           { type: 'gold', value: 680 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 22 },
@@ -43,7 +43,7 @@ export const SHADOW_TWIN: DungeonEvent = {
       outcome: {
         text: 'Holy light banishes the shadow! The light twin fades without its counterpart!',
         effects: [
-          { type: 'damage', target: 'all', value: 85 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 540 },
           { type: 'gold', value: 710 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 24 },

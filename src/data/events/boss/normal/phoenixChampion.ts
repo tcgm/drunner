@@ -12,7 +12,7 @@ export const PHOENIX_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'Fire engulfs you with every strike! When you kill them, they rise anew!',
         effects: [
-          { type: 'damage', target: 'all', value: 198 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 745 },
           { type: 'gold', value: 1075 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 23 },
@@ -27,7 +27,7 @@ export const PHOENIX_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'You bind the phoenix spirit! The champion cannot be reborn!',
         effects: [
-          { type: 'damage', target: 'all', value: 155 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 815 },
           { type: 'gold', value: 1165 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 28 },
@@ -43,7 +43,7 @@ export const PHOENIX_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'You utterly destroy both warrior and spirit! No resurrection is possible!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 168 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 835 },
           { type: 'gold', value: 1190 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 30 },

@@ -12,7 +12,7 @@ export const FLAME_SALAMANDER: DungeonEvent = {
       outcome: {
         text: 'You push through the scorching flames, but the burns are severe!',
         effects: [
-          { type: 'damage', target: 'all', value: 65 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 320 },
           { type: 'gold', value: 420 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 14 },
@@ -27,7 +27,7 @@ export const FLAME_SALAMANDER: DungeonEvent = {
       outcome: {
         text: 'Steam explodes as you extinguish the salamander! It solidifies and shatters!',
         effects: [
-          { type: 'damage', target: 'all', value: 48 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 365 },
           { type: 'gold', value: 475 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 18 },
@@ -43,7 +43,7 @@ export const FLAME_SALAMANDER: DungeonEvent = {
       outcome: {
         text: 'You pierce through the flames to strike its heart! The fire dims and dies!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 52 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 355 },
           { type: 'gold', value: 465 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 17 },

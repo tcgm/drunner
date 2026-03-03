@@ -12,7 +12,7 @@ export const CRYSTAL_HORROR: DungeonEvent = {
       outcome: {
         text: 'Shattered crystals cut you as you attack! Each shard seems alive!',
         effects: [
-          { type: 'damage', target: 'all', value: 70 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 310 },
           { type: 'gold', value: 410 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 13 },
@@ -27,7 +27,7 @@ export const CRYSTAL_HORROR: DungeonEvent = {
       outcome: {
         text: 'Your resonant tone shatters every crystal! The horror collapses!',
         effects: [
-          { type: 'damage', target: 'all', value: 45 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 360 },
           { type: 'gold', value: 470 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 17 },
@@ -43,7 +43,7 @@ export const CRYSTAL_HORROR: DungeonEvent = {
       outcome: {
         text: 'You realize the flesh is the weak point! You cut it free from the crystals!',
         effects: [
-          { type: 'damage', target: 'random', value: 55 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 350 },
           { type: 'gold', value: 460 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 16 },

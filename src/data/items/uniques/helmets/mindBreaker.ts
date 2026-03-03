@@ -10,7 +10,7 @@ export const MIND_BREAKER: Omit<Item, 'id'> = {
   type: 'helmet',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiBrain,
   stats: {
     magicPower: 60,

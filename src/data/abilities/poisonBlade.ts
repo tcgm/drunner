@@ -3,19 +3,29 @@ import { GiPoisonBottle } from 'react-icons/gi'
 
 /**
  * Rogue: Poison Blade
- * Damage over time
+ * Apply poison damage over time to the boss
  */
 export const POISON_BLADE: Ability = {
     id: 'poison-blade',
     name: 'Poison Blade',
-    description: 'Damage over time',
+    description: 'Poisons the boss for 3 turns (5 + 20% luck dmg/turn). Re-applying refreshes the effect.',
     cooldown: 3,
     currentCooldown: 0,
     effect: {
-        type: 'debuff',
+        type: 'special',
         value: 5,
-        target: 'enemy',
+        targeting: { side: 'enemy', breadth: 'single' },
         duration: 3,
+        dot: {
+            name: 'Poisoned',
+            damage: 5,
+            duration: 3,
+            stacking: 'replace',
+            scaling: {
+                stat: 'luck',
+                ratio: 0.2,
+            },
+        },
     },
     icon: GiPoisonBottle,
 }

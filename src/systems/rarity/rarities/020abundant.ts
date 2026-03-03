@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiRock } from 'react-icons/gi'
 
 export const ABUNDANT: RarityConfig = {
   id: 'abundant',
@@ -8,6 +9,7 @@ export const ABUNDANT: RarityConfig = {
   backgroundColor: '#052E16', // Green-950 (L=0.0165)
   statMultiplierBase: 0.8,
   minFloor: 0,
+  icon: GiRock,
   glow: 'rgba(20, 83, 45, 0.5)',
   text: '#22C55E',         // Green-500
   textLight: '#4ADE80',    // Green-400

@@ -1,3 +1,4 @@
+import './EventDisplay.css'
 import { Box, VStack, Heading, Text, Button, HStack, Badge, Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
@@ -33,21 +34,27 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
 /**
  * Select text from string or weighted text variations
  */
-function selectText(text: string | Array<{ weight: number; text: string }>): string {
+function selectText(text: string | string[] | Array<{ weight: number; text: string }>): string {
   if (typeof text === 'string') {
     return text
   }
-  const totalWeight = text.reduce((sum, item) => sum + item.weight, 0)
+  
+  // Convert string array to weighted format (equal weight)
+  const weighted = Array.isArray(text) && text.length > 0 && typeof text[0] === 'string'
+    ? (text as string[]).map(t => ({ weight: 1, text: t }))
+    : text as Array<{ weight: number; text: string }>
+  
+  const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0)
   let roll = Math.random() * totalWeight
   
-  for (const item of text) {
+  for (const item of weighted) {
     roll -= item.weight
     if (roll <= 0) {
       return item.text
     }
   }
   
-  return text[text.length - 1].text // Fallback to last option
+  return weighted[weighted.length - 1].text // Fallback to last option
 }
 
 export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice }: EventDisplayProps) {
@@ -60,7 +67,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
   const isDangerous = isFloorBoss || isZoneBoss
 
   return (
-    <VStack className="event-display" spacing={3} align="stretch" h="full">
+    <VStack className="event-display" spacing={3} align="stretch" h="full" overflow="hidden">
       {/* Event Header */}
       <MotionBox
         className="event-display-header"
@@ -225,22 +232,69 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
             {event.title}
           </Heading>
         </HStack>
-        <Text 
-          className="event-display-description" 
-          fontSize={isDangerous ? 'md' : 'sm'} 
-          color={isDangerous ? 'gray.200' : 'gray.300'} 
-          lineHeight="short"
-          fontWeight={isDangerous ? 'semibold' : 'normal'}
+        <Box 
+          className="event-display-description-container"
+          maxH="150px"
+          overflowY="auto"
+          pr={2}
+          css={{
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'rgba(0, 0, 0, 0.1)',
+              borderRadius: '3px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'rgba(237, 137, 54, 0.4)',
+              borderRadius: '3px',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              background: 'rgba(237, 137, 54, 0.6)',
+            },
+          }}
         >
-          {description}
-        </Text>
+          <Text 
+            className="event-display-description" 
+            fontSize={isDangerous ? 'md' : 'sm'} 
+            color={isDangerous ? 'gray.200' : 'gray.300'} 
+            lineHeight="short"
+            fontWeight={isDangerous ? 'semibold' : 'normal'}
+          >
+            {description}
+          </Text>
+        </Box>
       </MotionBox>
 
       {/* Choices */}
-      <Heading className="event-display-choices-heading" size="sm" color="gray.400" fontSize="md" mb={1}>
+      <Heading className="event-display-choices-heading" size="sm" color="gray.400" fontSize="md" mb={0.5} flexShrink={0}>
         What will you do?
       </Heading>
-      <VStack className="event-display-choices" spacing={2} align="stretch" flex={1} minH={0} overflowY="auto">
+      <VStack 
+        className="event-display-choices" 
+        spacing={2} 
+        align="stretch" 
+        flex={1} 
+        minH={0} 
+        overflowY="auto"
+        pr={1}
+        css={{
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'rgba(0, 0, 0, 0.2)',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'rgba(237, 137, 54, 0.5)',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: 'rgba(237, 137, 54, 0.7)',
+          },
+        }}
+      >
         {/* Sort choices: available first, unavailable last */}
         {[...event.choices]
           .map((choice, originalIndex) => ({ choice, originalIndex }))

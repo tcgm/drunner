@@ -5,7 +5,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
   id: 'charismatic-leader',
   type: 'choice',
   title: 'Dungeon Denizens',
-  description: 'A ragged band of dungeon creatures huddles in the shadows—goblins, kobolds, and other forsaken beings. Their eyes are desperate, searching for purpose. They look to you for leadership, or perhaps just mercy.',
+  description: 'A ragged band of dungeon creatures huddles in the shadows - goblins, kobolds, and other forsaken beings. Their eyes are desperate, searching for purpose. They look to you for leadership, or perhaps just mercy.',
   choices: [
     {
       text: 'Inspire them with a rousing speech (High Charisma)',
@@ -26,7 +26,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
         ],
       },
       failureOutcome: {
-        text: 'Your speech is too grandiose—they sense insincerity and turn hostile!',
+        text: 'Your speech is too grandiose - they sense insincerity and turn hostile!',
         effects: [
           { type: 'damage', target: 'all', value: 55 },
           { type: 'xp', value: 80 },
@@ -34,7 +34,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
       },
     },
     {
-      text: 'Lead by example—demonstrate strength (High Attack)',
+      text: 'Lead by example - demonstrate strength (High Attack)',
       requirements: { stat: 'attack', minValue: 35 },
       successChance: 0.65,
       statModifier: 'attack',
@@ -52,7 +52,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
         ],
       },
       failureOutcome: {
-        text: 'The duel goes poorly—you barely survive, and they mock your weakness.',
+        text: 'The duel goes poorly - you barely survive, and they mock your weakness.',
         effects: [
           { type: 'damage', target: 'random', value: 70 },
           { type: 'xp', value: 60 },
@@ -77,7 +77,7 @@ export const CHARISMATIC_LEADER: DungeonEvent = {
         ],
       },
       failureOutcome: {
-        text: 'Your lessons are too complex—they grow frustrated and drive you away.',
+        text: 'Your lessons are too complex - they grow frustrated and drive you away.',
         effects: [
           { type: 'damage', target: 'random', value: 35 },
           { type: 'xp', value: 50 },

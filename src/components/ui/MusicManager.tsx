@@ -31,26 +31,47 @@ export function MusicManager({ currentScreen }: { currentScreen: string }) {
   }, [currentScreen, dungeon.currentEvent?.type, dungeon.currentEvent?.isFinalBoss, dungeon.currentEvent?.isZoneBoss, dungeon.bossType])
 
   useEffect(() => {
-    if (!musicEnabled) return
+    if (!musicEnabled) {
+      console.log('[MusicManager] Music disabled, skipping context change for screen:', currentScreen)
+      return
+    }
 
     let newContext: MusicContext | null = null
 
     // Determine music context based on current screen and game state
-    // Only use contexts that have actual music implemented
     switch (currentScreen) {
       case 'menu':
       case 'run-history':
         newContext = MusicContext.MAIN_MENU
         break
 
+      case 'town-hub':
+        newContext = MusicContext.TOWN
+        break
+
+      case 'dungeon-prep':
       case 'party-setup':
         newContext = MusicContext.PARTY_SCREEN
         break
 
       case 'dungeon':
-        // For now, only DUNGEON_NORMAL has music
-        // Boss, shop, rest, etc. use DUNGEON_NORMAL until their music is added
-        newContext = MusicContext.DUNGEON_NORMAL
+        // Use music key to determine the appropriate context
+        if (musicKey === 'final-boss') {
+          newContext = MusicContext.FINAL_BOSS
+        } else if (musicKey === 'zone-boss') {
+          newContext = MusicContext.ZONE_BOSS
+        } else if (musicKey === 'floor-boss') {
+          newContext = MusicContext.FLOOR_BOSS
+        } else if (musicKey === 'dungeon-boss') {
+          newContext = MusicContext.DUNGEON_BOSS
+        } else if (musicKey === 'dungeon-rest') {
+          newContext = MusicContext.REST
+        } else if (musicKey === 'dungeon-merchant') {
+          newContext = MusicContext.SHOP
+        } else {
+          // Default to normal dungeon music for exploration and combat
+          newContext = MusicContext.DUNGEON_NORMAL
+        }
         break
     }
 
@@ -59,6 +80,8 @@ export function MusicManager({ currentScreen }: { currentScreen: string }) {
       console.log('[MusicManager] Changing context to:', newContext)
       lastContextRef.current = newContext
       changeMusicContext(newContext)
+    } else if (!newContext) {
+      console.log('[MusicManager] No music context mapped for screen:', currentScreen)
     }
   }, [musicKey, changeMusicContext, musicEnabled, currentScreen, dungeon.currentEvent, dungeon.bossType])
 

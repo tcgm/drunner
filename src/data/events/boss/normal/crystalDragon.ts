@@ -15,7 +15,7 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Its crystal breath and razor-sharp claws tear through your defenses!',
             effects: [
-              { type: 'damage', target: 'all', value: 150 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 515 },
               { type: 'gold', value: 680 },
               { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 21 },
@@ -27,7 +27,7 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Its crystal breath and razor-sharp claws tear through your defenses! A shard of draconic essence falls from its body!',
             effects: [
-              { type: 'damage', target: 'all', value: 150 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 515 },
               { type: 'gold', value: 680 },
               { 
@@ -53,7 +53,7 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Your sonic magic finds its resonant frequency! The dragon explodes into gems!',
             effects: [
-              { type: 'damage', target: 'all', value: 108 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 555 },
               { type: 'gold', value: 730 },
               { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 25 },
@@ -65,7 +65,7 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
           outcome: {
             text: 'Your sonic magic finds its resonant frequency! The dragon explodes into gems and draconic artifacts!',
             effects: [
-              { type: 'damage', target: 'all', value: 108 },
+              { type: 'damage', target: 'all', value: 2 },
               { type: 'xp', value: 555 },
               { type: 'gold', value: 730 },
               { 
@@ -92,7 +92,7 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You identify structural weak points! Precision strikes crack it apart!',
             effects: [
-              { type: 'damage', target: 'strongest', value: 118 },
+              { type: 'damage', target: 'strongest', value: 1 },
               { type: 'xp', value: 548 },
               { type: 'gold', value: 718 },
               { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 24 },
@@ -104,7 +104,7 @@ export const CRYSTAL_DRAGON: DungeonEvent = {
           outcome: {
             text: 'You identify structural weak points! Precision strikes crack it apart, revealing ancient draconic treasures within!',
             effects: [
-              { type: 'damage', target: 'strongest', value: 118 },
+              { type: 'damage', target: 'strongest', value: 1 },
               { type: 'xp', value: 548 },
               { type: 'gold', value: 718 },
               { 

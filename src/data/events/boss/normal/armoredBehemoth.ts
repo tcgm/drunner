@@ -12,7 +12,7 @@ export const ARMORED_BEHEMOTH: DungeonEvent = {
       outcome: {
         text: 'Your weapons bounce off uselessly! It charges and tramples you!',
         effects: [
-          { type: 'damage', target: 'all', value: 202 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 750 },
           { type: 'gold', value: 1080 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 23 },
@@ -27,7 +27,7 @@ export const ARMORED_BEHEMOTH: DungeonEvent = {
       outcome: {
         text: 'You target the gaps between plates! Precision shots bring it down!',
         effects: [
-          { type: 'damage', target: 'random', value: 158 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 825 },
           { type: 'gold', value: 1180 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 28 },
@@ -43,7 +43,7 @@ export const ARMORED_BEHEMOTH: DungeonEvent = {
       outcome: {
         text: 'With tremendous effort, you overturn it! Its soft underbelly is exposed!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 172 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 840 },
           { type: 'gold', value: 1195 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 30 },

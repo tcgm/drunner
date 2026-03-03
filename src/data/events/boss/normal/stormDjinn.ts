@@ -12,7 +12,7 @@ export const STORM_DJINN: DungeonEvent = {
       outcome: {
         text: 'Lightning bolts and wind blasts buffet you mercilessly! The storm rages!',
         effects: [
-          { type: 'damage', target: 'all', value: 77 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 338 },
           { type: 'gold', value: 448 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 15 },
@@ -27,7 +27,7 @@ export const STORM_DJINN: DungeonEvent = {
       outcome: {
         text: 'You unweave the djinn\'s essence! It dissipates into calm air!',
         effects: [
-          { type: 'damage', target: 'all', value: 54 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 374 },
           { type: 'gold', value: 489 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 19 },
@@ -43,7 +43,7 @@ export const STORM_DJINN: DungeonEvent = {
       outcome: {
         text: 'Your metal armor grounds the strikes! The djinn\'s power is nullified!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 61 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 369 },
           { type: 'gold', value: 479 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 18 },

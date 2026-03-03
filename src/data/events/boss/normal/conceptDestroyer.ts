@@ -12,7 +12,7 @@ export const CONCEPT_DESTROYER: DungeonEvent = {
       outcome: {
         text: 'Parts of you are erased from reality! Your identity fragments!',
         effects: [
-          { type: 'damage', target: 'all', value: 672 },
+          { type: 'damage', target: 'all', value: 47 },
           { type: 'xp', value: 2780 },
           { type: 'gold', value: 4170 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 55 },
@@ -28,7 +28,7 @@ export const CONCEPT_DESTROYER: DungeonEvent = {
       outcome: {
         text: 'I think, therefore I am! Your existence is absolute!',
         effects: [
-          { type: 'damage', target: 'all', value: 645 },
+          { type: 'damage', target: 'all', value: 47 },
           { type: 'xp', value: 2940 },
           { type: 'gold', value: 4410 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 78 },
@@ -43,7 +43,7 @@ export const CONCEPT_DESTROYER: DungeonEvent = {
       outcome: {
         text: 'You erase the eraser! The destroyer is destroyed!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 658 },
+          { type: 'damage', target: 'strongest', value: 35 },
           { type: 'xp', value: 2970 },
           { type: 'gold', value: 4455 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 79 },

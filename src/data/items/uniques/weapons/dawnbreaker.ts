@@ -10,7 +10,7 @@ export const DAWNBREAKER: Omit<Item, 'id'> = {
   type: 'weapon',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiFlangedMace,
   stats: {
     attack: 90,

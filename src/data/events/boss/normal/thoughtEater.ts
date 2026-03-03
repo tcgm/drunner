@@ -12,7 +12,7 @@ export const THOUGHT_EATER: DungeonEvent = {
       outcome: {
         text: 'Every thought feeds it! Your own intelligence becomes a weapon against you!',
         effects: [
-          { type: 'damage', target: 'all', value: 498 },
+          { type: 'damage', target: 'all', value: 12 },
           { type: 'xp', value: 1995 },
           { type: 'gold', value: 2993 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 40 },
@@ -28,7 +28,7 @@ export const THOUGHT_EATER: DungeonEvent = {
       outcome: {
         text: 'You achieve perfect mental void! It starves without thoughts to eat!',
         effects: [
-          { type: 'damage', target: 'all', value: 435 },
+          { type: 'damage', target: 'all', value: 12 },
           { type: 'xp', value: 2135 },
           { type: 'gold', value: 3203 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 54 },
@@ -43,7 +43,7 @@ export const THOUGHT_EATER: DungeonEvent = {
       outcome: {
         text: 'No thought, only action! You destroy it before thinking!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 448 },
+          { type: 'damage', target: 'strongest', value: 9 },
           { type: 'xp', value: 2160 },
           { type: 'gold', value: 3240 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 55 },

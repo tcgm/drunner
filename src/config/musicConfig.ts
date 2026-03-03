@@ -10,6 +10,17 @@ import exploreMusic1 from '@/assets/audio/music/explore2-1.mp3?url';
 import exploreMusic2 from '@/assets/audio/music/explore2-2.mp3?url';
 import exploreMusic3 from '@/assets/audio/music/explore2-3.mp3?url';
 import exploreMusic4 from '@/assets/audio/music/explore2-4.mp3?url';
+import combatMusic1 from '@/assets/audio/music/combat1.mp3?url';
+import combatMusic2 from '@/assets/audio/music/combat2.mp3?url';
+import combatMusic3 from '@/assets/audio/music/combat3.mp3?url';
+import combatMusic4 from '@/assets/audio/music/combat4.mp3?url';
+import combatMusic5 from '@/assets/audio/music/combat5.mp3?url';
+import combatMusic6 from '@/assets/audio/music/combat6.mp3?url';
+import combatMusic7 from '@/assets/audio/music/combat7.mp3?url';
+import combatMusic8 from '@/assets/audio/music/combat8.mp3?url';
+
+import finalBoss1 from '@/assets/audio/music/finalBoss1.mp3?url';
+import finalBoss2 from '@/assets/audio/music/finalBoss2.mp3?url';
 
 /**
  * Music playlists for different game contexts
@@ -26,11 +37,22 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Entrance',
         path: menuMusic,
-        volume: 0.8,
-        loop: true
+        volume: 0.8
       }
     ],
     shuffle: false,
+    loop: 'single', // Loop single track continuously
+    crossfadeDuration: 2000
+  },
+
+  [MusicContext.TOWN]: {
+    context: MusicContext.TOWN,
+    tracks: [
+      // Add town-specific tracks here
+      // e.g. { name: 'Town Theme', path: townMusic1, volume: 0.75 }
+    ],
+    shuffle: true,
+    loop: 'all',
     crossfadeDuration: 2000
   },
 
@@ -40,17 +62,16 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Lanterns Up B2',
         path: partyMusic1,
-        volume: 0.7,
-        loop: true
+        volume: 0.7
       },
       {
         name: 'Lanterns Up B3',
         path: partyMusic2,
-        volume: 0.7,
-        loop: true
+        volume: 0.7
       }
     ],
     shuffle: true,
+    loop: 'all', // Shuffle tracks and loop playlist
     crossfadeDuration: 2000
   },
 
@@ -60,44 +81,76 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       {
         name: 'Dungeon Exploration 1',
         path: exploreMusic1,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       },
       {
         name: 'Dungeon Exploration 2',
         path: exploreMusic2,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       },
       {
         name: 'Dungeon Exploration 3',
         path: exploreMusic3,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       },
       {
         name: 'Dungeon Exploration 4',
         path: exploreMusic4,
-        volume: 0.6,
-        loop: true
+        volume: 0.6
       }
     ],
     shuffle: true,
+    loop: 'all', // Shuffle exploration tracks and loop
     crossfadeDuration: 1500
   },
 
   [MusicContext.DUNGEON_BOSS]: {
     context: MusicContext.DUNGEON_BOSS,
     tracks: [
-      // {
-      //   name: 'Boss Battle',
-      //   path: partyMusic2, // Placeholder - add your boss music
-      //   volume: 0.8,
-      //   loop: true
-      // }
+      {
+        name: 'Combat 1',
+        path: combatMusic1,
+        volume: 0.8
+      },
+      {
+        name: 'Combat 2',
+        path: combatMusic2,
+        volume: 0.8
+      },
+      {
+        name: 'Combat 3',
+        path: combatMusic3,
+        volume: 0.8
+      },
+      {
+        name: 'Combat 4',
+        path: combatMusic4,
+        volume: 0.8
+      },
+      {
+        name: 'Combat 5',
+        path: combatMusic5,
+        volume: 0.8
+      },
+      {
+        name: 'Combat 6',
+        path: combatMusic6,
+        volume: 0.8
+      },
+      {
+        name: 'Combat 7',
+        path: combatMusic7,
+        volume: 0.8
+      },
+      {
+        name: 'Combat 8',
+        path: combatMusic8,
+        volume: 0.8
+      }
     ],
-    shuffle: false,
-    crossfadeDuration: 500 // Faster transition for combat
+    shuffle: true,
+    loop: 'all', // Shuffle combat tracks and loop
+    crossfadeDuration: 100 // Faster transition for combat
   },
 
   [MusicContext.FLOOR_BOSS]: {
@@ -106,12 +159,12 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Floor Boss',
       //   path: partyMusic2, // Placeholder - add your floor boss music
-      //   volume: 0.85,
-      //   loop: true
+      //   volume: 0.85
       // }
     ],
-    shuffle: false,
-    crossfadeDuration: 500
+    shuffle: true,
+    loop: 'all',
+    crossfadeDuration: 100
   },
 
   [MusicContext.ZONE_BOSS]: {
@@ -120,26 +173,31 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Zone Boss',
       //   path: partyMusic2, // Placeholder - add your zone boss music
-      //   volume: 0.9,
-      //   loop: true
+      //   volume: 0.9
       // }
     ],
-    shuffle: false,
-    crossfadeDuration: 500
+    shuffle: true,
+    loop: 'all',
+    crossfadeDuration: 100
   },
 
   [MusicContext.FINAL_BOSS]: {
     context: MusicContext.FINAL_BOSS,
     tracks: [
-      // {
-      //   name: 'Final Confrontation',
-      //   path: partyMusic2, // Placeholder - add your final boss music
-      //   volume: 0.95,
-      //   loop: true
-      // }
+      {
+        name: 'Final Confrontation 1',
+        path: finalBoss1,
+        volume: 0.95
+      },
+      {
+        name: 'Final Confrontation 2',
+        path: finalBoss2,
+        volume: 0.95
+      }
     ],
-    shuffle: false,
-    crossfadeDuration: 1000
+    shuffle: true,
+    loop: 'all',
+    crossfadeDuration: 100
   },
 
   [MusicContext.VICTORY]: {
@@ -148,11 +206,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Victory',
       //   path: partyMusic1, // Placeholder - add your victory music
-      //   volume: 0.8,
-      //   loop: false // Victory music plays once
+      //   volume: 0.8
       // }
     ],
     shuffle: false,
+    loop: 'none', // Play once and stop
     crossfadeDuration: 1000
   },
 
@@ -162,11 +220,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Defeat',
       //   path: partyMusic2, // Placeholder - add your defeat music
-      //   volume: 0.7,
-      //   loop: false // Defeat music plays once
+      //   volume: 0.7
       // }
     ],
     shuffle: false,
+    loop: 'none', // Play once and stop
     crossfadeDuration: 1500
   },
 
@@ -176,11 +234,11 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Merchant\'s Haven',
       //   path: partyMusic1, // Placeholder - add your shop music
-      //   volume: 0.65,
-      //   loop: true
+      //   volume: 0.65
       // }
     ],
     shuffle: false,
+    loop: 'single', // Loop single shop track
     crossfadeDuration: 1500
   },
 
@@ -190,18 +248,50 @@ export const musicPlaylists: Record<MusicContext, MusicPlaylist> = {
       // {
       //   name: 'Peaceful Rest',
       //   path: partyMusic1, // Placeholder - add your rest music
-      //   volume: 0.6,
-      //   loop: true
+      //   volume: 0.6
       // }
     ],
     shuffle: false,
+    loop: 'single', // Loop single peaceful track
     crossfadeDuration: 2000 // Slower transition for peaceful music
   }
 };
 
 /**
  * Helper function to get playlist for a context
+ * Boss contexts with no tracks will fall back to lesser boss types:
+ * FINAL_BOSS → ZONE_BOSS → FLOOR_BOSS → DUNGEON_BOSS
  */
 export function getPlaylistForContext(context: MusicContext): MusicPlaylist {
-  return musicPlaylists[context];
+  const playlist = musicPlaylists[context];
+  
+  // If playlist has tracks, use it
+  if (playlist.tracks && playlist.tracks.length > 0) {
+    return playlist;
+  }
+  
+  // Define fallback hierarchy for boss contexts
+  if (context === MusicContext.FINAL_BOSS) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to ZONE_BOSS`);
+    return getPlaylistForContext(MusicContext.ZONE_BOSS);
+  }
+  
+  if (context === MusicContext.ZONE_BOSS) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to FLOOR_BOSS`);
+    return getPlaylistForContext(MusicContext.FLOOR_BOSS);
+  }
+  
+  if (context === MusicContext.FLOOR_BOSS) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to DUNGEON_BOSS`);
+    return getPlaylistForContext(MusicContext.DUNGEON_BOSS);
+  }
+  
+  // Town falls back to main menu
+  if (context === MusicContext.TOWN) {
+    console.log(`[MusicConfig] ${context} has no tracks, falling back to MAIN_MENU`);
+    return getPlaylistForContext(MusicContext.MAIN_MENU);
+  }
+
+  // No fallback available, return empty playlist
+  return playlist;
 }

@@ -12,7 +12,7 @@ export const REALITY_RIPPER: DungeonEvent = {
       outcome: {
         text: 'Reality fractures around you! You\'re caught in dimensional rifts!',
         effects: [
-          { type: 'damage', target: 'all', value: 178 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 700 },
           { type: 'gold', value: 1015 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -27,7 +27,7 @@ export const REALITY_RIPPER: DungeonEvent = {
       outcome: {
         text: 'Your spells seal the rifts! Trapped in one reality, it\'s vulnerable!',
         effects: [
-          { type: 'damage', target: 'all', value: 140 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 760 },
           { type: 'gold', value: 1085 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -43,7 +43,7 @@ export const REALITY_RIPPER: DungeonEvent = {
       outcome: {
         text: 'You see past the illusions! Its true form is weak and defenseless!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 150 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 785 },
           { type: 'gold', value: 1115 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 25 },

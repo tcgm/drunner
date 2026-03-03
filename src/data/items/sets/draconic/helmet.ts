@@ -9,6 +9,8 @@ export const DRACONIC_CROWN: Omit<Item, 'id'> = {
   description: 'A crown shaped like a dragon\'s head. Grants the wearer draconic vision.',
   type: 'helmet',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiDragonHead,
   stats: {
     defense: 60,

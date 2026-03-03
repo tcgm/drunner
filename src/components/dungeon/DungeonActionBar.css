@@ -1,0 +1,27 @@
+/* DungeonActionBar styles */
+
+/* Base styles - layout handled by component logic */
+.dungeon-action-bar {
+  /* Base styles only */
+}
+
+.dungeon-action-bar-portrait {
+  /* Portrait mode - handled in component JSX */
+}
+
+.dungeon-action-bar-desktop {
+  /* Desktop mode - handled in component JSX */
+
+    gap: 0.5rem !important;
+  }
+
+  .dungeon-action-bar button {
+    font-size: 0.8rem !important;
+    padding: 0.375rem 0.75rem !important;
+    min-height: 32px !important;
+  }
+
+  .dungeon-action-bar button .chakra-icon {
+    width: 14px !important;
+    height: 14px !important;
+  }

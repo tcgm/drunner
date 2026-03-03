@@ -1,3 +1,4 @@
+import './ItemDetailModal.css'
 import { memo, useMemo, useState } from 'react'
 import {
   Modal,
@@ -19,7 +20,8 @@ import { Icon as ChakraIcon } from '@chakra-ui/react'
 import { keyframes } from '@emotion/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Item } from '@/types'
+import type { Item, Consumable, ConsumableEffect } from '@/types'
+import { getConsumableEffects } from '@/utils/itemDataResolver'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { RarityLabel } from './RarityLabel'
 import { getModifierById } from '@/data/items/mods'
@@ -27,35 +29,13 @@ import { getItemSetName, ALL_SETS } from '@/data/items/sets'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { dehydrateItem } from '@/utils/itemHydration'
-import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
-import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/raritySystem'
+import { getUniqueEffectForItem, getEffectMultiplier, resolveEffectDescription } from '@/systems/items/uniqueEffects'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 
-// Gem icons for each rarity - increasing complexity and fanciness
-const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
-  junk: GameIcons.GiStoneBlock,
-  abundant: GameIcons.GiRock,
-  common: GameIcons.GiGems,
-  uncommon: GameIcons.GiCutDiamond,
-  rare: GameIcons.GiDiamondTrophy,
-  veryRare: GameIcons.GiCrystalShine,
-  magical: GameIcons.GiSparkles,
-  elite: GameIcons.GiDiamonds,
-  epic: GameIcons.GiCrystalCluster,
-  legendary: GameIcons.GiCrystalShine,
-  mythic: GameIcons.GiBatwingEmblem,
-  mythicc: GameIcons.GiCrystalEye,
-  artifact: GameIcons.GiCrystalEye,
-  divine: GameIcons.GiAngelWings,
-  celestial: GameIcons.GiStarFormation,
-  realityAnchor: GameIcons.GiChainedHeart,
-  structural: GameIcons.GiCubeforce,
-  singularity: GameIcons.GiBlackHoleBolas,
-  void: GameIcons.GiVortex,
-  elder: GameIcons.GiEvilBook,
-  layer: GameIcons.GiPerspectiveDiceSixFacesRandom,
-  plane: GameIcons.GiCardRandom,
-  author: GameIcons.GiQuillInk,
-}
+// Gem icons derived from rarity configs
+const RARITY_GEM_ICONS = Object.fromEntries(
+  Object.entries(RARITY_CONFIGS).map(([k, v]) => [k, v.icon])
+) as Record<Item['rarity'], IconType>
 
 // Use centralized rarity colors with adapted format for this modal
 const RARITY_COLORS = Object.fromEntries(
@@ -161,6 +141,49 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
   // Get unique effect if this item has one
   const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
 
+  // Compute rarity-scaling multiplier for effect descriptions
+  const effectMultiplier = useMemo(
+    () => getEffectMultiplier(restoredItem.rarity, restoredItem.isUnique ?? false),
+    [restoredItem.rarity, restoredItem.isUnique]
+  )
+
+  // Get consumable effects if this is a consumable (resolves effects from metadata if needed)
+  const consumableEffects = useMemo(() => {
+    if ('consumableType' in restoredItem) {
+      return getConsumableEffects(restoredItem as Consumable)
+    }
+    return null
+  }, [restoredItem])
+
+  const formatConsumableEffect = (effect: ConsumableEffect): string => {
+    const targetStr = effect.target && effect.target !== 'self'
+      ? ` (${effect.target.replace(/-/g, ' ')})`
+      : ''
+    switch (effect.type) {
+      case 'heal':
+        return `Heals ${effect.value ?? 0} HP${targetStr}`
+      case 'hot':
+        return `Regenerates ${effect.value ?? 0} HP per event for ${effect.duration ?? 0} events/turns${targetStr}`
+      case 'buff': {
+        const statName = effect.stat
+          ? effect.stat === 'maxHp' ? 'Max HP' : effect.stat.charAt(0).toUpperCase() + effect.stat.slice(1)
+          : 'STAT'
+        const durationStr = effect.isPermanent ? 'permanently' : `for ${effect.duration ?? 0} events/turns`
+        return `+${effect.value ?? 0} ${statName} ${durationStr}${targetStr}`
+      }
+      case 'revive':
+        return `Revives with ${effect.value ?? 0} HP${targetStr}`
+      case 'cleanse':
+        return `Cleanses all debuffs${targetStr}`
+      case 'damage':
+        return `Deals ${effect.value ?? 0} damage${targetStr}`
+      case 'special':
+        return `Special effect${targetStr}`
+      default:
+        return 'Unknown effect'
+    }
+  }
+
   // Use set theme if item is part of a set
   const effectiveTheme = setName ? RARITY_COLORS.set : rarityTheme
   const borderColor = item.isUnique ? '#FFD700' : effectiveTheme.border
@@ -173,11 +196,11 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
 
   const getStatColor = (stat: string) => {
     if (stat === 'hp' || stat === 'maxHp') return GAME_CONFIG.colors.hp.light
-    if (stat === 'attack') return GAME_CONFIG.colors.stats.attack
-    if (stat === 'defense') return GAME_CONFIG.colors.stats.defense
-    if (stat === 'speed') return GAME_CONFIG.colors.stats.speed
-    if (stat === 'luck') return GAME_CONFIG.colors.stats.luck
-    if (stat === 'magicPower') return GAME_CONFIG.colors.stats.magicPower
+    if (stat === 'attack') return GAME_CONFIG.colors.stats.attack.text
+    if (stat === 'defense') return GAME_CONFIG.colors.stats.defense.text
+    if (stat === 'speed') return GAME_CONFIG.colors.stats.speed.text
+    if (stat === 'luck') return GAME_CONFIG.colors.stats.luck.text
+    if (stat === 'magicPower') return GAME_CONFIG.colors.stats.magicPower.text
     return 'green.300'
   }
 
@@ -200,7 +223,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
         overflow="hidden"
         position="relative"
         maxH="90%"
-        maxW="90%"
+        maxW="clamp(400px, 85vw, 95%)"
         boxShadow={`0 0 20px ${glowColor}`}
         sx={{
           willChange: 'opacity',
@@ -278,8 +301,8 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                     {/* Icon */}
                     <MultIcon
                       icon={IconComponent}
-                      boxSize="65px"
-                      fontSize="65px"
+                      boxSize={item.isUnique ? "clamp(100px, 10vw, 150px)" : "clamp(50px, 5vw, 75px)"}
+                      fontSize={item.isUnique ? "clamp(100px, 10vw, 150px)" : "clamp(50px, 5vw, 75px)"}
                       color={(() => {
                         if (item.modifiers && item.modifiers.length > 0) {
                           const mod = getModifierById(item.modifiers[0]);
@@ -327,7 +350,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                   >
                     <Icon 
                       as={GemIcon} 
-                      boxSize="32px" 
+                      boxSize="clamp(24px, 2.5vw, 36px)" 
                       color={rarityTheme.gem}
                     />
                     <div className="item-detail-modal__gem-glow" />
@@ -357,6 +380,72 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
               </Text>
             </div>
 
+            {/* Consumable Effects */}
+            {consumableEffects && consumableEffects.length > 0 && (
+              <Box
+                className="item-detail-modal-consumable-effects"
+                w="full"
+                bg="rgba(72, 187, 120, 0.12)"
+                p={1}
+                borderRadius="xl"
+                borderWidth="2px"
+                borderColor="green.600"
+                boxShadow="0 0 12px rgba(72, 187, 120, 0.25)"
+                position="relative"
+                overflow="hidden"
+              >
+                <VStack spacing={1} align="start" position="relative" zIndex={1}>
+                  <HStack spacing={2}>
+                    <Icon as={GameIcons.GiHealthPotion} color="green.300" boxSize="clamp(18px, 1.8vw, 24px)" />
+                    <Text fontSize="md" fontWeight="bold" color="green.300">
+                      Effects
+                    </Text>
+                  </HStack>
+                  <VStack align="start" spacing={2} w="full" pl={2}>
+                    {consumableEffects.map((effect, i) => {
+                      const effectColor =
+                        effect.type === 'heal' || effect.type === 'hot' ? 'green.200' :
+                        effect.type === 'buff' ? 'blue.200' :
+                        effect.type === 'revive' ? 'yellow.200' :
+                        effect.type === 'cleanse' ? 'teal.200' :
+                        effect.type === 'damage' ? 'red.200' :
+                        'gray.300'
+                      const effectBorderColor =
+                        effect.type === 'heal' || effect.type === 'hot' ? '#38A169' :
+                        effect.type === 'buff' ? '#3182CE' :
+                        effect.type === 'revive' ? '#D69E2E' :
+                        effect.type === 'cleanse' ? '#319795' :
+                        effect.type === 'damage' ? '#E53E3E' :
+                        '#718096'
+                      return (
+                        <Box
+                          key={i}
+                          w="full"
+                          bg="rgba(0, 0, 0, 0.2)"
+                          p={2}
+                          borderRadius="md"
+                          borderLeft={`3px solid ${effectBorderColor}`}
+                        >
+                          <Text fontSize="sm" color={effectColor} fontWeight="semibold">
+                            {formatConsumableEffect(effect)}
+                          </Text>
+                        </Box>
+                      )
+                    })}
+                  </VStack>
+                  <HStack spacing={2} pl={2} pt={1}>
+                    <Text fontSize="xs" color={(restoredItem as Consumable).usableInCombat ? 'green.300' : 'red.400'}>
+                      {(restoredItem as Consumable).usableInCombat ? '⚔ Usable in combat' : '✗ Not usable in combat'}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">·</Text>
+                    <Text fontSize="xs" color={(restoredItem as Consumable).usableOutOfCombat ? 'green.300' : 'red.400'}>
+                      {(restoredItem as Consumable).usableOutOfCombat ? '🏕 Usable out of combat' : '✗ Not usable out of combat'}
+                    </Text>
+                  </HStack>
+                </VStack>
+              </Box>
+            )}
+
             {/* Set Information */}
             {setDefinition && (
               <Box
@@ -385,31 +474,46 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 />
                 <VStack spacing={1} align="start" position="relative" zIndex={1}>
                   <HStack spacing={2}>
-                    <Icon as={GameIcons.GiCagedBall} color={RARITY_COLORS.set.text} boxSize="24px" />
+                    <Icon as={GameIcons.GiCagedBall} color={RARITY_COLORS.set.text} boxSize="clamp(20px, 2vw, 28px)" />
                     <Text fontSize="md" fontWeight="bold" color={RARITY_COLORS.set.text}>
                       {setName} Set
                     </Text>
                   </HStack>
                   <VStack align="start" spacing={2} w="full" pl={2}>
-                    <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="bold">
-                      Set Bonuses:
-                    </Text>
+                    <HStack spacing={1} w="full">
+                      <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="bold">
+                        Set Bonuses
+                      </Text>
+                      <Text fontSize="xs" color="teal.400" fontStyle="italic">
+                        (base per piece · scales × rarity · stacks)
+                      </Text>
+                    </HStack>
                     {Object.entries(setDefinition.bonuses)
                       .sort(([a], [b]) => parseInt(a) - parseInt(b))
-                      .map(([pieceCount, bonus]) => (
-                        <Box
-                          key={pieceCount}
-                          w="full"
-                          bg="rgba(20, 184, 166, 0.1)"
-                          p={2}
-                          borderRadius="md"
-                          borderLeft={`3px solid ${RARITY_COLORS.set.border}`}
-                        >
-                          <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="semibold">
-                            ({pieceCount} pieces) {bonus.description}
-                          </Text>
-                        </Box>
-                      ))}
+                      .map(([pieceCount, bonus]) => {
+                        const mult = getEffectMultiplier(restoredItem.rarity, restoredItem.isUnique ?? false)
+                        const scaledStats = Object.entries(bonus.stats)
+                          .filter(([, v]) => v)
+                          .map(([k, v]) => `+${Math.floor((v as number) * mult)} ${k === 'maxHp' ? 'HP' : k === 'magicPower' ? 'MP' : k.charAt(0).toUpperCase() + k.slice(1)}`)
+                          .join(', ')
+                        return (
+                          <Box
+                            key={pieceCount}
+                            w="full"
+                            bg="rgba(20, 184, 166, 0.1)"
+                            p={2}
+                            borderRadius="md"
+                            borderLeft={`3px solid ${RARITY_COLORS.set.border}`}
+                          >
+                            <Text fontSize="sm" color={RARITY_COLORS.set.textLight} fontWeight="semibold">
+                              ({pieceCount} pieces) {scaledStats}
+                            </Text>
+                            <Text fontSize="xs" color="teal.500" mt={0.5}>
+                              base: {Object.entries(bonus.stats).filter(([,v])=>v).map(([k,v])=>`+${v} ${k === 'maxHp' ? 'HP' : k === 'magicPower' ? 'MP' : k.charAt(0).toUpperCase() + k.slice(1)}`).join(', ')}
+                            </Text>
+                          </Box>
+                        )
+                      })}
                   </VStack>
                 </VStack>
               </Box>
@@ -443,7 +547,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                 />
                 <VStack spacing={1} align="start" position="relative" zIndex={1}>
                   <HStack spacing={2}>
-                    <Icon as={GameIcons.GiSparkles} color="#FFD700" boxSize="24px" />
+                    <Icon as={GameIcons.GiSparkles} color="#FFD700" boxSize="clamp(20px, 2vw, 28px)" />
                     <Text fontSize="md" fontWeight="bold" color="#FFD700">
                       Unique Effect
                     </Text>
@@ -457,7 +561,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       borderLeft="3px solid #FFD700"
                     >
                       <Text fontSize="sm" color="#FFF8DC" fontWeight="semibold">
-                        {uniqueEffect.description}
+                        {resolveEffectDescription(uniqueEffect, effectMultiplier)}
                       </Text>
                       <Text fontSize="xs" color="#F0E68C" fontStyle="italic" mt={1}>
                         Triggers: {uniqueEffect.triggers.map(t => {
@@ -532,7 +636,7 @@ export const ItemDetailModal = memo(function ItemDetailModal({ item, isOpen, onC
                       borderRadius="md"
                       borderWidth="1px"
                       borderColor={showStorageFormat ? "purple.600" : "cyan.600"}
-                      maxH="300px"
+                      maxH="clamp(200px, 30vh, 400px)"
                       overflowY="auto"
                       w="full"
                     >

@@ -12,7 +12,7 @@ export const REALITY_SAGE: DungeonEvent = {
       outcome: {
         text: 'Reality bends around you! Up is down, pain is pleasure, death might be life!',
         effects: [
-          { type: 'damage', target: 'random', value: 392 },
+          { type: 'damage', target: 'random', value: 3 },
           { type: 'xp', value: 1590 },
           { type: 'gold', value: 2385 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 31 },
@@ -28,7 +28,7 @@ export const REALITY_SAGE: DungeonEvent = {
       outcome: {
         text: 'You impose stable reality through sheer understanding! The sage is trapped!',
         effects: [
-          { type: 'damage', target: 'all', value: 322 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1710 },
           { type: 'gold', value: 2565 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 38 },
@@ -43,7 +43,7 @@ export const REALITY_SAGE: DungeonEvent = {
       outcome: {
         text: 'You channel the warped reality! The sage\'s own power destroys it!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 335 },
+          { type: 'damage', target: 'weakest', value: 3 },
           { type: 'xp', value: 1735 },
           { type: 'gold', value: 2603 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 39 },

@@ -1,4 +1,4 @@
-import { GiClawHammer } from 'react-icons/gi'
+import draconianBootsIcon from '@/assets/icons/items/draconicBoots.svg'
 import type { Item } from '@/types'
 
 /**
@@ -9,7 +9,9 @@ export const DRACONIC_TALONS: Omit<Item, 'id'> = {
   description: 'Boots reinforced with dragon claws. Each step leaves scorched earth.',
   type: 'boots',
   rarity: 'legendary',
-  icon: GiClawHammer,
+  minRarity: 'epic',
+  maxRarity: 'artifact',
+  icon: draconianBootsIcon,
   stats: {
     defense: 50,
     speed: 20,

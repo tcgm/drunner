@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiCubeforce } from 'react-icons/gi'
 
 export const STRUCTURAL: RarityConfig = {
   id: 'structural',
@@ -8,6 +9,7 @@ export const STRUCTURAL: RarityConfig = {
   backgroundColor: '#4C1D95', // Violet-900 (L=0.0459)
   statMultiplierBase: 10.0,
   minFloor: 80,
+  icon: GiCubeforce,
   glow: 'rgba(221, 214, 254, 0.6)',
   text: '#EDE9FE',         // Violet-100
   textLight: '#F5F3FF',    // Violet-50

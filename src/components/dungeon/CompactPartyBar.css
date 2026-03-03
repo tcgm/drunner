@@ -1,0 +1,123 @@
+/* ============================================================================
+   COMPACT PARTY BAR STYLES
+   Component: CompactPartyBar.tsx
+   ============================================================================ */
+
+/* Base compact party bar styles */
+.compact-party-bar {
+  flex-shrink: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Ensure compact party bar displays as flex when visible in portrait */
+@media (orientation: portrait) {
+  .compact-party-bar {
+    display: flex !important;
+  }
+}
+
+/* Custom scrollbar styling */
+.compact-party-bar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.compact-party-bar::-webkit-scrollbar-track {
+  background: var(--chakra-colors-gray-700);
+  border-radius: 2px;
+}
+
+.compact-party-bar::-webkit-scrollbar-thumb {
+  background: var(--chakra-colors-gray-600);
+  border-radius: 2px;
+}
+
+.compact-party-bar::-webkit-scrollbar-thumb:hover {
+  background: var(--chakra-colors-gray-500);
+}
+
+/* Compact party card styling */
+.compact-party-card {
+  transition: all 0.2s ease;
+  /* Ensure proper stacking context */
+  isolation: isolate;
+}
+
+.compact-party-card:hover {
+  /* Removed translateY to prevent z-index stacking issues with popover */
+  box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3);
+}
+
+/* Action buttons (consumables and abilities) */
+.compact-action-button {
+  transition: all 0.15s ease;
+}
+
+.compact-action-button:hover:not([disabled]) {
+  transform: scale(1.1);
+}
+
+.compact-action-button:active:not([disabled]) {
+  transform: scale(0.95);
+}
+
+/* Responsive adjustments for compact party bar */
+@media (orientation: portrait) and (max-width: 480px) {
+  .compact-party-bar {
+    padding: 0.375rem !important;
+    gap: 0.375rem !important;
+  }
+
+  .compact-party-card {
+    padding: 0.375rem !important;
+  }
+
+  .compact-party-card .chakra-icon:first-of-type {
+    font-size: 1.5rem !important;
+  }
+
+  .compact-party-bar .chakra-text {
+    font-size: 0.65rem !important;
+  }
+
+  .compact-party-bar .chakra-progress {
+    height: 3px !important;
+  }
+
+  .compact-action-button {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .compact-action-button .chakra-icon {
+    font-size: 0.65rem !important;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 400px) {
+  .compact-party-bar {
+    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+  }
+
+  .compact-party-card {
+    padding: 0.25rem !important;
+  }
+
+  .compact-party-card .chakra-icon:first-of-type {
+    font-size: 1.25rem !important;
+  }
+
+  .compact-party-bar .chakra-text {
+    font-size: 0.6rem !important;
+  }
+
+  .compact-action-button {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .compact-action-button .chakra-icon {
+    font-size: 0.55rem !important;
+  }
+}

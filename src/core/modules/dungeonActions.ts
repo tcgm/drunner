@@ -4,7 +4,7 @@
  */
 
 import type { StateCreator } from 'zustand'
-import type { GameState, Hero, EventChoice, Run } from '@/types'
+import type { GameState, Hero, EventChoice, Run, DungeonEvent } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getNextEvent } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
@@ -13,7 +13,9 @@ import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { processUniqueEffects } from '@/systems/items/uniqueEffects'
 import { applyPenaltyToParty } from './statActions'
 import { saveRunHistory, loadRunHistory } from './runHistory'
+import { resetPartyCooldowns } from '@/utils/abilityUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { healHero } from '@/utils/heroUtils'
 
 export interface DungeonActionsSlice {
   startDungeon: (startingFloor?: number, alkahestCost?: number) => void
@@ -23,6 +25,7 @@ export interface DungeonActionsSlice {
   victoryGame: () => void
   retreatFromDungeon: () => void
   applyPenalty: () => void
+  applyBossVictoryRewards: (bossEvent: DungeonEvent) => void
 }
 
 export const createDungeonActions: StateCreator<
@@ -33,18 +36,18 @@ export const createDungeonActions: StateCreator<
 > = (set, get) => ({
   startDungeon: (startingFloor = 0, alkahestCost = 0) =>
     set((state) => {
-
+      console.log(`[StartDungeon] Current alkahest: ${state.alkahest}, alkahestCost: ${alkahestCost}, floor: ${startingFloor}`)
 
       // Penalty should already be applied by endGame
-      // Revive all party members and full heal at dungeon start
-      const healedParty = state.party.map(hero => hero ? ({
+      // Revive all party members, full heal, and reset ability cooldowns at dungeon start
+      const healedParty = resetPartyCooldowns(state.party.map(hero => hero ? ({
         ...hero,
         isAlive: true,
         stats: {
           ...hero.stats,
           hp: calculateTotalStats(hero).maxHp
         }
-      }) : null)
+      }) : null))
 
       // Update roster with healed heroes
       const updatedRoster = state.heroRoster.map(rosterHero => {
@@ -98,10 +101,12 @@ export const createDungeonActions: StateCreator<
       ) + GAME_CONFIG.dungeon.minEventsPerFloor
 
       const event = getNextEvent(startingFloor, startingFloor, false, false, [])
+      const newAlkahest = alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest
+      console.log(`[StartDungeon] Setting alkahest to: ${newAlkahest} (was: ${state.alkahest})`)
       return {
         party: healedParty,
         heroRoster: updatedRoster,
-        alkahest: alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest,
+        alkahest: newAlkahest,
         dungeon: {
           depth: startingFloor,
           floor: startingFloor,
@@ -113,11 +118,13 @@ export const createDungeonActions: StateCreator<
           gold: 0, // Reset gold for each new run
           inventory: [], // Reset inventory for each new run
           isNextEventBoss: false,
+          bossType: null, // Explicitly null so advanceDungeon doesn't treat first advance as floor completion
         },
         isGameOver: false,
         hasPendingPenalty: false,
         activeRun: newRun,
         lastOutcome: null,
+        lastRunItems: [], // Reset run item tracking for new run
       }
     }),
 
@@ -300,6 +307,7 @@ export const createDungeonActions: StateCreator<
       } : null
 
       return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         party: updatedParty,
         heroRoster: updatedRoster,
         dungeon: {
@@ -334,7 +342,8 @@ export const createDungeonActions: StateCreator<
       if ((currentEvent.type === 'combat' || currentEvent.type === 'boss') && state.party.some(h => h !== null && h.isAlive)) {
         const uniqueEffectResult = processUniqueEffects(state.party, 'onCombatStart', {
           eventType: currentEvent.type,
-          floor: state.dungeon.floor
+          floor: state.dungeon.floor,
+          currentDepth: state.dungeon.depth
         })
         
         if (uniqueEffectResult) {
@@ -355,6 +364,7 @@ export const createDungeonActions: StateCreator<
             } : null
 
             return {
+              alkahest: state.alkahest, // Explicitly preserve alkahest
               party: partyForCombat,
               dungeon: {
                 ...state.dungeon,
@@ -481,11 +491,11 @@ export const createDungeonActions: StateCreator<
       // Create event log entry
       const eventLogEntry: import('@/types').EventLogEntry = {
         eventId: currentEvent.id,
-        eventTitle: currentEvent.title,
+        eventTitle: Array.isArray(currentEvent.title) ? currentEvent.title[0] : currentEvent.title,
         eventType: currentEvent.type,
         floor: state.dungeon.floor,
         depth: state.dungeon.depth,
-        choiceMade: choice.text,
+        choiceMade: Array.isArray(choice.text) ? choice.text[0] : choice.text,
         outcomeText: resolvedOutcome.text,
         goldChange: updatedGold - state.dungeon.gold,
         itemsGained: resolvedOutcome.items.map(item => item.name),
@@ -518,7 +528,7 @@ export const createDungeonActions: StateCreator<
 
       // Capture death details if party wiped
       const deathDetails = isWiped ? {
-        eventTitle: currentEvent.title,
+        eventTitle: Array.isArray(currentEvent.title) ? currentEvent.title[0] : currentEvent.title,
         eventType: currentEvent.type,
         heroDamage: resolvedOutcome.effects
           .filter(effect => effect.type === 'damage' && effect.target)
@@ -641,9 +651,14 @@ export const createDungeonActions: StateCreator<
       }
 
       const resultState = {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         metaXp: state.metaXp + metaXpGained,
         party: isWiped ? penalizedParty : updatedParty,
         heroRoster: updatedRoster,
+        // Accumulate items found this event into lastRunItems for Shifty Guy tracking
+        lastRunItems: resolvedOutcome.items.length > 0
+          ? [...(state.lastRunItems ?? []), ...resolvedOutcome.items]
+          : (state.lastRunItems ?? []),
         dungeon: {
           ...state.dungeon,
           gold: loseGold ? 0 : updatedGold,
@@ -656,6 +671,8 @@ export const createDungeonActions: StateCreator<
         activeRun: completedRun || updatedRun,
         hasPendingPenalty: false
       }
+
+      console.log(`[ResolveEvent] Before return - alkahest: ${state.alkahest}, resultState.alkahest: ${resultState.alkahest}`)
 
       // Save completed run to separate storage
       if (completedRun) {
@@ -718,6 +735,7 @@ export const createDungeonActions: StateCreator<
       saveRunHistory([completedRun, ...history])
 
       return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         party: penalizedParty,
         heroRoster: updatedRoster,
         isGameOver: true,
@@ -746,27 +764,24 @@ export const createDungeonActions: StateCreator<
         // Add in-run gold to bank on victory
         const goldToBank = Math.max(0, state.dungeon.gold)
 
-        // Handle inventory - items that fit go to bank, overflow goes to temporary storage
-        const availableSlots = state.bankStorageSlots - state.bankInventory.length
-        const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
-        const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
-
+        // Leave dungeon.inventory intact – Shifty Guy intercepts first.
+        // finalizeRunItemTransfer (called after Shifty Guy) distributes items to bank/overflow.
         const resultState = {
           dungeon: {
+            ...state.dungeon,   // preserves inventory
             depth: 0,
             floor: 0,
             eventsThisFloor: 0,
             eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
-            eventLog: [],
+            eventLog: state.dungeon.eventLog,
             gold: 0,
-            inventory: [],
             isNextEventBoss: false,
+            bossType: null,
           },
+          alkahest: state.alkahest, // Explicitly preserve alkahest
           bankGold: state.bankGold + goldToBank,
-          bankInventory: [...state.bankInventory, ...itemsToBank],
-          overflowInventory: [...state.overflowInventory, ...itemsToOverflow],
           isGameOver: true,
           activeRun: completedRun,
         }
@@ -783,6 +798,8 @@ export const createDungeonActions: StateCreator<
 
   retreatFromDungeon: () =>
     set((state) => {
+      console.log(`[Retreat] Starting retreat - alkahest: ${state.alkahest}, bankGold: ${state.bankGold}`)
+      
       // Complete the active run as retreat (no death penalty)
       if (state.activeRun) {
         const completedRun: Run = {
@@ -805,27 +822,29 @@ export const createDungeonActions: StateCreator<
         // Add in-run gold to bank on successful retreat
         const goldToBank = Math.max(0, state.dungeon.gold)
 
-        // Handle inventory - items that fit go to bank, overflow goes to temporary storage
-        const availableSlots = state.bankStorageSlots - state.bankInventory.length
-        const itemsToBank = state.dungeon.inventory.slice(0, availableSlots)
-        const itemsToOverflow = state.dungeon.inventory.slice(availableSlots)
+        const newBankGold = state.bankGold + goldToBank
+        console.log(`[Retreat] Returning - alkahest: ${state.alkahest}, bankGold: ${newBankGold} (was: ${state.bankGold})`)
 
+        // Leave dungeon.inventory intact – Shifty Guy intercepts first.
+        // finalizeRunItemTransfer (called after Shifty Guy) distributes items to bank/overflow.
         return {
+          // Clear combat-only effects from all party members on retreat
+          party: state.party.map(h => h ? { ...h, combatEffects: undefined } : null),
           dungeon: {
+            ...state.dungeon,   // preserves inventory
             depth: 0,
             floor: 0,
             eventsThisFloor: 0,
             eventsRequiredThisFloor: 4,
             currentEvent: null,
             eventHistory: [],
-            eventLog: [],
+            eventLog: state.dungeon.eventLog,
             gold: 0,
-            inventory: [],
             isNextEventBoss: false,
+            bossType: null,
           },
-          bankGold: state.bankGold + goldToBank,
-          bankInventory: [...state.bankInventory, ...itemsToBank],
-          overflowInventory: itemsToOverflow,
+          alkahest: state.alkahest, // Explicitly preserve alkahest
+          bankGold: newBankGold,
           isGameOver: false,
           hasPendingPenalty: false,
           activeRun: null,
@@ -844,9 +863,163 @@ export const createDungeonActions: StateCreator<
         return penalizedVersion || rosterHero
       })
       return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
         party: penalizedParty,
         heroRoster: updatedRoster,
         hasPendingPenalty: false,
+      }
+    }),
+
+  applyBossVictoryRewards: (bossEvent) =>
+    set((state) => {
+      // Determine which choice to use for rewards
+      const choiceIndex = bossEvent.selectedChoiceIndex ?? 0
+      const rewardChoice = bossEvent.choices[choiceIndex]
+      
+      if (!bossEvent || !rewardChoice || !rewardChoice.outcome) {
+        console.error('Invalid boss event for rewards', { bossEvent, choiceIndex, rewardChoice })
+        return state
+      }
+
+      // Preserve HP and status from combat before processing rewards
+      const combatHpState = state.party.map(hero => hero ? {
+        id: hero.id,
+        hp: hero.stats.hp,
+        isAlive: hero.isAlive
+      } : null)
+
+      // Use selected choice's outcome as victory rewards
+      const victoryOutcome = rewardChoice.outcome
+
+      // Process rewards using event resolver
+      const { updatedParty, updatedGold, metaXpGained, resolvedOutcome } = resolveEventOutcome(
+        victoryOutcome,
+        state.party,
+        state.dungeon,
+        bossEvent
+      )
+
+      // Restore HP and status from combat (rewards might have healing, so apply those on top)
+      const finalParty = updatedParty.map((hero, index) => {
+        if (!hero || !combatHpState[index]) return hero
+        
+        // Start with combat HP
+        let finalHp = combatHpState[index]!.hp
+        
+        // Apply any healing from victory rewards
+        const healingEffect = resolvedOutcome.effects.find(
+          effect => effect.type === 'heal' && effect.target?.includes(hero.id)
+        )
+        if (healingEffect && healingEffect.value) {
+          // Build a temp hero with combat HP so healHero caps to effective maxHp
+          const tempHero = { ...hero, stats: { ...hero.stats, hp: finalHp } }
+          finalHp = healHero(tempHero, healingEffect.value).stats.hp
+        }
+        
+        return {
+          ...hero,
+          stats: {
+            ...hero.stats,
+            hp: finalHp
+          },
+          isAlive: combatHpState[index]!.isAlive,
+          // Clear combat-only effects (HoT/DoT, buffs, debuffs) so they don't
+          // persist into out-of-combat events (e.g. Song of Rest Regeneration)
+          combatEffects: undefined,
+        }
+      })
+
+      // Track statistics from resolved outcome
+      let damageDealt = 0
+      let damageTaken = 0
+      let healingReceived = 0
+      let xpGained = metaXpGained
+      let revivals = 0
+      const heroesAffected = new Set<string>()
+
+      resolvedOutcome.effects.forEach(effect => {
+        if (effect.type === 'damage') {
+          damageTaken += effect.value || 0
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = state.party.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        } else if (effect.type === 'heal') {
+          healingReceived += effect.value || 0
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = state.party.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        } else if (effect.type === 'revive') {
+          revivals += effect.target?.length || 0
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = updatedParty.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        } else if (effect.type === 'xp') {
+          if (effect.target) {
+            effect.target.forEach((heroId: string) => {
+              const hero = state.party.find(h => h?.id === heroId)
+              if (hero) heroesAffected.add(hero.name)
+            })
+          }
+        }
+      })
+
+      // Update roster with modified party
+      const updatedRoster = state.heroRoster.map(rosterHero => {
+        const updatedVersion = finalParty.find(h => h?.id === rosterHero.id)
+        return updatedVersion || rosterHero
+      })
+
+      // Create event log entry
+      const eventLogEntry: import('@/types').EventLogEntry = {
+        eventId: bossEvent.id,
+        eventTitle: Array.isArray(bossEvent.title) ? bossEvent.title[0] : bossEvent.title,
+        eventType: bossEvent.type,
+        floor: state.dungeon.floor,
+        depth: state.dungeon.depth,
+        choiceMade: 'Victory',
+        outcomeText: `Defeated ${Array.isArray(bossEvent.title) ? bossEvent.title[0] : bossEvent.title}! ${resolvedOutcome.text}`,
+        goldChange: updatedGold - state.dungeon.gold,
+        itemsGained: resolvedOutcome.items.map(item => item.name),
+        damageDealt,
+        damageTaken,
+        healingReceived,
+        xpGained,
+        heroesAffected: Array.from(heroesAffected)
+      }
+
+      // Update active run
+      const updatedRun = state.activeRun ? {
+        ...state.activeRun,
+        finalDepth: state.dungeon.depth,
+        finalFloor: state.dungeon.floor,
+        eventsCompleted: state.activeRun.eventsCompleted + 1
+      } : null
+
+      return {
+        alkahest: state.alkahest, // Explicitly preserve alkahest
+        party: finalParty,
+        heroRoster: updatedRoster,
+        // Accumulate boss reward items into lastRunItems
+        lastRunItems: resolvedOutcome.items.length > 0
+          ? [...(state.lastRunItems ?? []), ...resolvedOutcome.items]
+          : (state.lastRunItems ?? []),
+        dungeon: {
+          ...state.dungeon,
+          gold: updatedGold,
+          inventory: [...state.dungeon.inventory, ...resolvedOutcome.items],
+          eventLog: [...state.dungeon.eventLog, eventLogEntry],
+        },
+        activeRun: updatedRun,
+        lastOutcome: resolvedOutcome,
       }
     }),
 })

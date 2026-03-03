@@ -12,7 +12,7 @@ export const TWIN_HEADED_DRAKE: DungeonEvent = {
       outcome: {
         text: 'Fire and ice attack simultaneously! You\'re caught between extreme temperatures!',
         effects: [
-          { type: 'damage', target: 'all', value: 175 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 690 },
           { type: 'gold', value: 1000 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -28,7 +28,7 @@ export const TWIN_HEADED_DRAKE: DungeonEvent = {
       outcome: {
         text: 'You turn them against each other! They attack themselves in confusion!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 138 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 755 },
           { type: 'gold', value: 1080 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -43,7 +43,7 @@ export const TWIN_HEADED_DRAKE: DungeonEvent = {
       outcome: {
         text: 'While the heads argue, you strike the vulnerable body! A killing blow!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 148 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 780 },
           { type: 'gold', value: 1110 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 25 },

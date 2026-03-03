@@ -1,12 +1,15 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
+import { healHero } from '@/utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { generateItem } from '@/systems/loot/lootGenerator'
+import { generateItem, generateSetItemFromTemplate, generateUniqueItemFromTemplate } from '@/systems/loot/lootGenerator'
 import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem, canUpgradeMaterial, canUpgradeRarity } from '@/systems/loot/itemUpgrader'
-import { ALL_SET_ITEMS, getRandomSetItemBySetId, getSetIdFromItemName } from '@/data/items/sets'
+import { ALL_SET_ITEMS, getRandomSetItemBySetId } from '@/data/items/sets'
+import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { getConsumableById } from '@/data/consumables'
 import { getMaterialById } from '@/data/items/materials'
 import { applyDefenseReduction } from '@/utils/defenseUtils'
 import { getEffectiveSpeed, getEffectiveLuck, getEffectiveDefense, calculateTotalStats } from '@/utils/statCalculator'
+import { getActiveNexusUpgrades, getNexusBonus } from '@/data/nexus'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface ResolvedOutcome {
@@ -69,11 +72,16 @@ function selectWeightedChoice<T extends { weight: number }>(choices: T[]): T {
 /**
  * Select text from string or weighted text variations
  */
-function selectText(text: string | Array<{ weight: number; text: string }>): string {
+function selectText(text: string | string[] | Array<{ weight: number; text: string }>): string {
   if (typeof text === 'string') {
     return text
   }
-  return selectWeightedChoice(text).text
+  // Check if it's a simple string array (for variance)
+  if (Array.isArray(text) && text.length > 0 && typeof text[0] === 'string') {
+    return text[Math.floor(Math.random() * text.length)] as string
+  }
+  // Otherwise it's weighted text variations
+  return selectWeightedChoice(text as Array<{ weight: number; text: string }>).text
 }
 
 /**
@@ -157,35 +165,64 @@ function generateItemFromSpec(spec: {
   if (spec.setId) {
     const setItemTemplate = getRandomSetItemBySetId(spec.setId)
     if (setItemTemplate) {
-      const setId = getSetIdFromItemName(setItemTemplate.name) || spec.setId.toLowerCase()
-      return {
-        ...setItemTemplate,
-        id: uuidv4(),
-        setId,
-      }
+      return generateSetItemFromTemplate(
+        setItemTemplate,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
     }
     // If set not found, log warning and fall through to random generation
     console.warn(`[Item Generation] setId "${spec.setId}" not found. Generating random item instead.`)
   }
 
-  // Handle literal unique item import
+  // Handle literal unique item import - route through proper V3 generation for rarity rolling & stat scaling
   if (spec.uniqueItem && typeof spec.uniqueItem === 'object') {
+    const template = spec.uniqueItem
+    // Check if it's a set item
+    const isSetItem = ALL_SET_ITEMS.some(item => item.name === template.name)
+    if (isSetItem) {
+      return generateSetItemFromTemplate(
+        template,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
+    }
+    // Check if it's a standalone unique
+    const isUniqueItem = ALL_UNIQUE_ITEMS.some(item => item.name === template.name)
+    if (isUniqueItem) {
+      return generateUniqueItemFromTemplate(
+        template,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
+    }
+    // Fallback: unknown template, spread as-is
     return {
-      ...spec.uniqueItem,
+      ...template,
       id: uuidv4(),
     }
   }
 
   // Handle string reference - try to look up by name in set items
   if (spec.uniqueItem && typeof spec.uniqueItem === 'string') {
+    const uniqueItemName = spec.uniqueItem
     const matchedItem = ALL_SET_ITEMS.find(item => 
-      item.name.toLowerCase() === spec.uniqueItem.toLowerCase()
+      item.name.toLowerCase() === uniqueItemName.toLowerCase()
     )
     if (matchedItem) {
-      return {
-        ...matchedItem,
-        id: uuidv4(),
-      }
+      return generateSetItemFromTemplate(
+        matchedItem,
+        depth,
+        spec.minRarity,
+        spec.maxRarity,
+        spec.modifiers || []
+      )
     }
     // If no match found, log warning and fall through to normal generation
     console.warn(`[Item Generation] uniqueItem string "${spec.uniqueItem}" not found in set items catalog. Generating random item instead.`)
@@ -219,13 +256,15 @@ function generateItemFromSpec(spec: {
           
           // Generate proper name using material prefix
           const materialPrefix = materialObj.prefix || materialObj.name
-          if ('baseNames' in baseTemplate && baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
-            const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
+          if ('baseNames' in baseTemplate && baseTemplate.baseNames && Array.isArray(baseTemplate.baseNames) && baseTemplate.baseNames.length > 0) {
+            const baseNames = baseTemplate.baseNames as string[]
+            const randomName = baseNames[Math.floor(Math.random() * baseNames.length)]
             item.name = `${materialPrefix} ${randomName}`
             
             // Check if there's a specific icon for this baseName
-            if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons) {
-              const specificIcon = baseTemplate.baseNameIcons[randomName]
+            if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && typeof baseTemplate.baseNameIcons === 'object') {
+              const baseNameIcons = baseTemplate.baseNameIcons as Record<string, string>
+              const specificIcon = baseNameIcons[randomName]
               if (specificIcon) {
                 item.icon = specificIcon
               }
@@ -242,13 +281,17 @@ function generateItemFromSpec(spec: {
             }
           }
           
-          // Recalculate stats with the specified material
-          item.attack = Math.floor((baseTemplate.stats.attack || 0) * materialObj.statMultiplier)
-          item.defense = Math.floor((baseTemplate.stats.defense || 0) * materialObj.statMultiplier)
-          item.speed = Math.floor((baseTemplate.stats.speed || 0) * materialObj.statMultiplier)
-          item.luck = Math.floor((baseTemplate.stats.luck || 0) * materialObj.statMultiplier)
-          item.maxHp = Math.floor((baseTemplate.stats.maxHp || 0) * materialObj.statMultiplier)
-          item.value = Math.floor((baseTemplate.baseValue || 0) * materialObj.valueMultiplier)
+          // Recalculate stats with the specified material (only for equipment items)
+          if ('attack' in item && 'defense' in item) {
+            const equipItem = item as Item & { attack: number; defense: number; speed: number; luck: number; maxHp: number }
+            equipItem.attack = Math.floor((baseTemplate.stats.attack || 0) * materialObj.statMultiplier)
+            equipItem.defense = Math.floor((baseTemplate.stats.defense || 0) * materialObj.statMultiplier)
+            equipItem.speed = Math.floor((baseTemplate.stats.speed || 0) * materialObj.statMultiplier)
+            equipItem.luck = Math.floor((baseTemplate.stats.luck || 0) * materialObj.statMultiplier)
+            equipItem.maxHp = Math.floor((baseTemplate.stats.maxHp || 0) * materialObj.statMultiplier)
+          }
+          const baseValue = 'baseValue' in baseTemplate ? (baseTemplate.baseValue as number || 0) : 0
+          item.value = Math.floor(baseValue * materialObj.valueMultiplier)
         }
       }
       
@@ -286,12 +329,12 @@ export function resolveEventOutcome(
   xpMentored: number
   resolvedOutcome: ResolvedOutcome
 } {
-  const updatedParty = party.map(h => h ? ({ 
+  const updatedParty: (Hero | null)[] = party.map(h => h ? ({ 
     ...h, 
     stats: { ...h.stats },
-    equipment: { ...h.equipment },
+    equipment: h.equipment ? { ...h.equipment } : undefined,
     abilities: h.abilities.map(a => ({ ...a }))
-  }) : null)
+  } as Hero) : null)
   let updatedGold = dungeon.gold
   let metaXpGained = 0
   let xpMentored = 0
@@ -310,7 +353,7 @@ export function resolveEventOutcome(
       : GAME_CONFIG.scaling.damage
 
   for (const effect of outcome.effects) {
-    const targets = selectTargets(effect.target || 'all', updatedParty)
+    const targets = selectTargets(typeof effect.target === 'string' ? effect.target as ('random' | 'all' | 'weakest' | 'strongest') : 'all', updatedParty)
     
     switch (effect.type) {
       case 'damage': {
@@ -460,8 +503,7 @@ export function resolveEventOutcome(
           const scaledHealing = scaleValue(baseHealing, floor, GAME_CONFIG.scaling.healing)
           const healing = Math.floor(scaledHealing * GAME_CONFIG.multipliers.healing)
           targets.forEach(hero => {
-            const effectiveMaxHp = calculateTotalStats(hero).maxHp
-            hero.stats.hp = Math.min(effectiveMaxHp, hero.stats.hp + healing)
+            hero.stats.hp = healHero(hero, healing).stats.hp
           })
           resolvedEffects.push({
             type: 'heal',
@@ -476,7 +518,8 @@ export function resolveEventOutcome(
       case 'xp': {
         const baseXp = effect.value || 0
         const scaledXp = scaleValue(baseXp, floor, 0.15) // 15% per floor (rewards scale faster)
-        const xp = Math.floor(scaledXp * GAME_CONFIG.multipliers.xp)
+        const xpGainBonus = 1 + getNexusBonus('xp_gain', getActiveNexusUpgrades()) / 100
+        const xp = Math.floor(scaledXp * GAME_CONFIG.multipliers.xp * xpGainBonus)
         let totalOverflowXp = 0
         
         // First, capture any existing overflow XP from max-level heroes
@@ -559,36 +602,36 @@ export function resolveEventOutcome(
             // Track mentored XP
             xpMentored += mentorXpDistributed
             
-            lowerLevelHeroes.forEach(hero => {
-              hero.xp += mentorXpPerHero
+            lowerLevelHeroes.forEach((mentorHero: Hero) => {
+              mentorHero.xp += mentorXpPerHero
               
               // Check for level up from mentored XP
-              while (hero.xp >= hero.level * 100 && hero.level < GAME_CONFIG.levelUp.maxLevel) {
-                hero.level++
-                hero.xp -= (hero.level - 1) * 100
+              while (mentorHero.xp >= mentorHero.level * 100 && mentorHero.level < GAME_CONFIG.levelUp.maxLevel) {
+                mentorHero.level++
+                mentorHero.xp -= (mentorHero.level - 1) * 100
                 // Use class-specific stat gains
-                const gains = hero.class.statGains
-                hero.stats.attack += gains.attack
-                hero.stats.defense += gains.defense
-                hero.stats.speed += gains.speed
-                hero.stats.luck += gains.luck
-                hero.stats.wisdom += gains.wisdom
-                hero.stats.charisma += gains.charisma
-                hero.stats.maxHp += gains.maxHp
-                if (gains.magicPower !== undefined && hero.stats.magicPower !== undefined) {
-                  hero.stats.magicPower += gains.magicPower
+                const gains = mentorHero.class.statGains
+                mentorHero.stats.attack += gains.attack
+                mentorHero.stats.defense += gains.defense
+                mentorHero.stats.speed += gains.speed
+                mentorHero.stats.luck += gains.luck
+                mentorHero.stats.wisdom += gains.wisdom
+                mentorHero.stats.charisma += gains.charisma
+                mentorHero.stats.maxHp += gains.maxHp
+                if (gains.magicPower !== undefined && mentorHero.stats.magicPower !== undefined) {
+                  mentorHero.stats.magicPower += gains.magicPower
                 }
                 if (GAME_CONFIG.levelUp.healToFull) {
-                  hero.stats.hp = hero.stats.maxHp
+                  mentorHero.stats.hp = mentorHero.stats.maxHp
                 }
               }
               
               // After mentored level-ups, check if hero hit max level with remaining XP
-              if (hero.level >= GAME_CONFIG.levelUp.maxLevel && hero.xp > 0) {
-                const maxXpForLevel = hero.level * 100
-                if (hero.xp > maxXpForLevel) {
-                  totalOverflowXp += (hero.xp - maxXpForLevel)
-                  hero.xp = maxXpForLevel
+              if (mentorHero.level >= GAME_CONFIG.levelUp.maxLevel && mentorHero.xp > 0) {
+                const maxXpForLevel = mentorHero.level * 100
+                if (mentorHero.xp > maxXpForLevel) {
+                  totalOverflowXp += (mentorHero.xp - maxXpForLevel)
+                  mentorHero.xp = maxXpForLevel
                 }
               }
             })
@@ -615,7 +658,8 @@ export function resolveEventOutcome(
       case 'gold': {
         const baseGold = effect.value || 0
         const scaledGold = scaleValue(baseGold, floor, 0.15) // 15% per floor (rewards scale faster)
-        const gold = Math.floor(scaledGold * GAME_CONFIG.multipliers.gold)
+        const goldFindBonus = 1 + getNexusBonus('gold_find', getActiveNexusUpgrades()) / 100
+        const gold = Math.floor(scaledGold * GAME_CONFIG.multipliers.gold * goldFindBonus)
         updatedGold += gold
         // Track negative gold (costs) for potential refunds
         if (gold < 0) {
@@ -652,7 +696,7 @@ export function resolveEventOutcome(
             type: 'item',
             target: [],
             item: generatedItem,
-            description: `Found ${generatedItem.name}`
+            description: `Found `
           })
         }
         break
@@ -667,12 +711,12 @@ export function resolveEventOutcome(
               ...consumable,
               id: uuidv4(),
             }
-            foundItems.push(consumableWithId as any) // Consumables can go in dungeon inventory
+            foundItems.push(consumableWithId as unknown as Item) // Consumables can go in dungeon inventory
             resolvedEffects.push({
               type: 'item',
               target: [],
-              item: consumableWithId as any,
-              description: `Found ${consumable.name}`
+              item: consumableWithId as unknown as Item,
+              description: `Found `
             })
           }
         }
@@ -707,24 +751,20 @@ export function resolveEventOutcome(
         const healAmount = effect.value || 0
         const scaledHeal = scaleValue(healAmount, floor, 0.08)
         
-        toRevive.forEach(hero => {
-          if (hero) {
-            hero.isAlive = true
-            const effectiveMaxHp = calculateTotalStats(hero).maxHp
-            hero.stats.hp = scaledHeal > 0 ? Math.min(effectiveMaxHp, scaledHeal) : Math.floor(effectiveMaxHp * GAME_CONFIG.combat.defaultHealPercent) // Default heal if no value specified
-          }
+        toRevive.forEach((hero: Hero) => {
+          hero.isAlive = true
+          const effectiveMaxHp = calculateTotalStats(hero).maxHp
+          hero.stats.hp = scaledHeal > 0 ? Math.min(effectiveMaxHp, scaledHeal) : Math.floor(effectiveMaxHp * GAME_CONFIG.combat.defaultHealPercent) // Default heal if no value specified
         })
         
         if (toRevive.length > 0) {
-          const firstHero = toRevive[0]
-          if (firstHero) {
-            resolvedEffects.push({
-              type: 'revive',
-              target: toRevive.map(h => h.id),
-              value: scaledHeal,
-              description: `${toRevive.map(h => h.name).join(', ')} revived with ${firstHero.stats.hp} HP`
-            })
-          }
+          const firstHero = toRevive[0]!
+          resolvedEffects.push({
+            type: 'revive',
+            target: toRevive.map((h: Hero) => h.id),
+            value: scaledHeal,
+            description: `${toRevive.map((h: Hero) => h.name).join(', ')} revived with ${firstHero.stats.hp} HP`
+          })
         }
         break
       }
@@ -758,14 +798,12 @@ export function resolveEventOutcome(
         ]
         
         for (const hero of aliveHeroes) {
-          if (hero) {
-            const itemData = findLowestRarityItem(hero)
-            if (itemData) {
-              const rarityIndex = rarityOrder.indexOf(itemData.item.rarity)
-              if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
-                lowestRarityIndex = rarityIndex
-                lowestItemData = { hero, ...itemData }
-              }
+          const itemData = findLowestRarityItem(hero as Hero)
+          if (itemData) {
+            const rarityIndex = rarityOrder.indexOf(itemData.item.rarity)
+            if (rarityIndex !== -1 && rarityIndex < lowestRarityIndex) {
+              lowestRarityIndex = rarityIndex
+              lowestItemData = { hero: hero as Hero, ...itemData }
             }
           }
         }
@@ -789,12 +827,12 @@ export function resolveEventOutcome(
           break
         }
         
-        const { hero, item, slot } = lowestItemData
+        const { hero: upgradeHero, item: upgradeItem, slot: upgradeSlot } = lowestItemData
         const rarityBoost = effect.rarityBoost || 0
         const upgradeType = effect.upgradeType || 'auto' // Default to auto (material first, then rarity)
         
         // Check if upgrade is possible BEFORE charging gold
-        if (!canUpgradeItem(item, upgradeType)) {
+        if (!canUpgradeItem(upgradeItem, upgradeType)) {
           const failureReason = upgradeType === 'material' 
             ? 'maximum material'
             : upgradeType === 'rarity'
@@ -802,8 +840,8 @@ export function resolveEventOutcome(
             : 'maximum rarity and material' // For 'auto' and 'random', both must be maxed
           resolvedEffects.push({
             type: 'upgradeItem',
-            target: [hero.id],
-            description: `${hero.name}'s ${item.name} cannot be upgraded further (${failureReason})`
+            target: [upgradeHero.id],
+            description: `${upgradeHero.name}'s ${upgradeItem.name} cannot be upgraded further (${failureReason})`
           })
           break
         }
@@ -812,28 +850,28 @@ export function resolveEventOutcome(
         
         // Determine which upgrade function to use based on upgradeType
         if (upgradeType === 'material') {
-          upgradedItem = upgradeItemMaterial(item, floor)
+          upgradedItem = upgradeItemMaterial(upgradeItem, floor)
         } else if (upgradeType === 'rarity') {
-          upgradedItem = upgradeItemRarityOnly(item, floor, rarityBoost)
+          upgradedItem = upgradeItemRarityOnly(upgradeItem, floor, rarityBoost)
         } else if (upgradeType === 'random') {
           // random: Randomly choose between material and rarity
-          const canMaterial = canUpgradeMaterial(item)
-          const canRarity = canUpgradeRarity(item)
+          const canMaterial = canUpgradeMaterial(upgradeItem)
+          const canRarity = canUpgradeRarity(upgradeItem)
           
           if (canMaterial && canRarity) {
             // Both possible, pick randomly
             const pickMaterial = Math.random() < 0.5
             upgradedItem = pickMaterial 
-              ? upgradeItemMaterial(item, floor)
-              : upgradeItemRarityOnly(item, floor, rarityBoost)
+              ? upgradeItemMaterial(upgradeItem, floor)
+              : upgradeItemRarityOnly(upgradeItem, floor, rarityBoost)
           } else if (canMaterial) {
-            upgradedItem = upgradeItemMaterial(item, floor)
+            upgradedItem = upgradeItemMaterial(upgradeItem, floor)
           } else if (canRarity) {
-            upgradedItem = upgradeItemRarityOnly(item, floor, rarityBoost)
+            upgradedItem = upgradeItemRarityOnly(upgradeItem, floor, rarityBoost)
           }
         } else {
           // auto: Try material first, then rarity
-          upgradedItem = upgradeItemRarity(item, floor, rarityBoost)
+          upgradedItem = upgradeItemRarity(upgradeItem, floor, rarityBoost)
         }
         
         if (!upgradedItem) {
@@ -854,26 +892,26 @@ export function resolveEventOutcome(
             : 'maximum rarity and material' // For 'auto' and 'random', both must be maxed
           resolvedEffects.push({
             type: 'upgradeItem',
-            target: [hero.id],
-            description: `${hero.name}'s ${item.name} cannot be upgraded further (${failureReason})`
+            target: [upgradeHero.id],
+            description: `${upgradeHero.name}'s ${upgradeItem.name} cannot be upgraded further (${failureReason})`
           })
           break
         }
         
         // Check if this was a rarity upgrade or material upgrade
-        const isRarityUpgrade = upgradedItem.rarity !== item.rarity
+        const isRarityUpgrade = upgradedItem.rarity !== upgradeItem.rarity
         const isMaterialUpgrade = !isRarityUpgrade
 
         // Replace the old item with the upgraded one in hero's slots
-        hero.slots[slot] = upgradedItem
+        upgradeHero.slots[upgradeSlot] = upgradedItem
         
         const upgradeDescription = isMaterialUpgrade
-          ? `${hero.name}'s ${item.name} was upgraded to superior material: ${upgradedItem.name}!`
-          : `${hero.name}'s ${item.name} was upgraded to ${upgradedItem.name}!`
+          ? `${upgradeHero.name}'s ${upgradeItem.name} was upgraded to superior material: ${upgradedItem.name}!`
+          : `${upgradeHero.name}'s ${upgradeItem.name} was upgraded to ${upgradedItem.name}!`
 
         resolvedEffects.push({
           type: 'upgradeItem',
-          target: [hero.id],
+          target: [upgradeHero.id],
           item: upgradedItem,
           description: upgradeDescription
         })
@@ -889,15 +927,17 @@ export function resolveEventOutcome(
         }
         
         const victim = aliveHeroes[Math.floor(Math.random() * aliveHeroes.length)]
-        victim.isAlive = false
-        victim.stats.hp = 0
-        
-        resolvedEffects.push({
-          type: 'damage',
-          target: [victim.id],
-          value: victim.stats.maxHp,
-          description: `${victim.name} was killed!`
-        })
+        if (victim) {
+          victim.isAlive = false
+          victim.stats.hp = 0
+          
+          resolvedEffects.push({
+            type: 'damage',
+            target: [victim.id],
+            value: victim.stats.maxHp,
+            description: `${victim.name} was killed!`
+          })
+        }
         break
       }
     }
@@ -920,7 +960,7 @@ export function resolveEventOutcome(
  * Select target heroes based on targeting rule
  */
 function selectTargets(
-  targeting: 'random' | 'all' | 'weakest' | 'strongest' | undefined,
+  targeting: 'random' | 'all' | 'weakest' | 'strongest',
   party: (Hero | null)[]
 ): Hero[] {
   const aliveHeroes = party.filter((h): h is Hero => h !== null && h.isAlive)

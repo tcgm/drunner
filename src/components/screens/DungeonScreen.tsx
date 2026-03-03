@@ -1,8 +1,10 @@
-import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from '@chakra-ui/react'
+import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, IconButton, Box, VStack } from '@chakra-ui/react'
 import { useRef, useState, useEffect } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import PartySidebar from '@components/dungeon/PartySidebar'
+import CompactPartyBar from '@components/dungeon/CompactPartyBar'
+import PartyMemberCard from '@components/party/PartyMemberCard'
 import DungeonHeader from '@components/dungeon/DungeonHeader'
 import EventArea from '@components/dungeon/EventArea'
 import DungeonActionBar from '@components/dungeon/DungeonActionBar'
@@ -11,21 +13,42 @@ import GameOverScreen from '@components/dungeon/GameOverScreen'
 import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
+import { BossCombatScreen } from '@/components/combat'
+import { refreshPartyAbilities } from '@/utils/abilityUtils'
+import { initializeBossCombatState } from '@/systems/combat'
+import { MusicContext } from '@/types/audio'
+import { GiCardJackHearts, GiInfo } from 'react-icons/gi'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
-import type { EventChoice, Hero } from '@/types'
+import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
 interface DungeonScreenProps {
   onExit: () => void
 }
 
 export default function DungeonScreen({ onExit }: DungeonScreenProps) {
-  const { dungeon, party, advanceDungeon, selectChoice, isGameOver, lastOutcome, retreatFromDungeon, activeRun } = useGameStore()
+  const {
+    dungeon,
+    party,
+    advanceDungeon,
+    selectChoice,
+    isGameOver,
+    lastOutcome,
+    retreatFromDungeon,
+    activeRun,
+    applyBossVictoryRewards,
+    endGame,
+    changeMusicContext
+  } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
+  const { isOpen: isPartyOpen, onOpen: onPartyOpen, onClose: onPartyClose } = useDisclosure()
+  const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
   // const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure() // Disabled
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
+  const [inBossCombat, setInBossCombat] = useState(false)
+  const [bossEvent, setBossEvent] = useState<DungeonEvent | null>(null)
   
   // When outcome changes, create floating numbers
   useEffect(() => {
@@ -68,7 +91,35 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }, [lastOutcome])
   
   const handleSelectChoice = (choice: EventChoice) => {
-    selectChoice(choice)
+    // Capture current event before selectChoice clears it
+    const currentEvent = dungeon.currentEvent
+    // If floorBossesHaveCombat is disabled, only zone bosses and the final boss engage turn-based combat
+    const bossNeedsCombat = !currentEvent
+      ? false
+      : (currentEvent.isZoneBoss || currentEvent.isFinalBoss || GAME_CONFIG.combat.turnBased.floorBossesHaveCombat)
+    const shouldInitiateCombat = currentEvent && currentEvent.type === 'boss' && !choice.skipsCombat && bossNeedsCombat
+    
+    // If this choice initiates combat, don't resolve it yet - just store it for after combat victory
+    if (shouldInitiateCombat && currentEvent) {
+      // Find which choice index this is
+      const choiceIndex = currentEvent.choices.findIndex(c => c === choice)
+      
+      // Initialize combat state and store the selected choice index
+      const eventWithCombatState = {
+        ...currentEvent,
+        combatState: initializeBossCombatState(currentEvent, dungeon),
+        selectedChoiceIndex: choiceIndex // Store which choice was selected
+      }
+      
+      // Small delay to show choice feedback before combat
+      setTimeout(() => {
+        setBossEvent(eventWithCombatState)
+        setInBossCombat(true)
+      }, 100)
+    } else {
+      // Non-combat choice or choice that skips combat - resolve normally
+      selectChoice(choice)
+    }
   }
   
   const handleContinue = () => {
@@ -80,7 +131,51 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     onClose()
     onExit()
   }
-  
+
+  // Boss combat handlers
+  const handleBossVictory = () => {
+    console.log('[DungeonScreen] handleBossVictory called')
+    // Capture bossEvent before clearing it
+    const currentBossEvent = bossEvent
+    
+    // Apply rewards and advance dungeon FIRST 
+    if (currentBossEvent) {
+      console.log('[DungeonScreen] Applying boss victory rewards')
+      applyBossVictoryRewards(currentBossEvent)
+    }
+    console.log('[DungeonScreen] Advancing dungeon')
+    advanceDungeon()
+    changeMusicContext(MusicContext.DUNGEON_NORMAL)
+    
+    // THEN unmount combat screen in next tick after store updates have propagated
+    setTimeout(() => {
+      console.log('[DungeonScreen] Unmounting combat screen')
+      setInBossCombat(false)
+      setBossEvent(null)
+    }, 50) // Small delay to ensure store updates have rendered
+  }
+
+  const handleBossDefeat = () => {
+    setInBossCombat(false)
+    setBossEvent(null)
+    // Trigger game over
+    endGame()
+  }
+
+  const handleBossFlee = () => {
+    setInBossCombat(false)
+    setBossEvent(null)
+    retreatFromDungeon()
+    onExit()
+  }
+
+  // Boss combat is now initiated after choice selection in handleSelectChoice
+  // This allows showing the boss event narrative and choices first
+  // Combat only triggers if the choice doesn't have skipsCombat: true
+
+  // Note: Store sync removed - CombatManager now handles all combat state
+  // DevTools or other external updates should go through the manager's updateState method
+
   // Victory check - player completed max floors (check floor, not depth!)
   if (dungeon.floor > GAME_CONFIG.dungeon.maxFloors) {
     return <VictoryScreen depth={dungeon.depth} onExit={onExit} />
@@ -99,11 +194,36 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   // Filter out null heroes for components that expect Hero[]
   const activeParty = party.filter((hero): hero is Hero => hero !== null)
   
+  // Render boss combat screen if in boss combat
+  if (inBossCombat && bossEvent) {
+    // Refresh party abilities to ensure current definitions and icons are loaded
+    const refreshedParty = refreshPartyAbilities(party)
+    
+    return (
+      <BossCombatScreen
+        event={bossEvent}
+        dungeon={dungeon}
+        party={refreshedParty}
+        onVictory={handleBossVictory}
+        onDefeat={handleBossDefeat}
+        onFlee={handleBossFlee}
+      />
+    )
+  }
+
   return (
-    <Flex className="dungeon-screen" h="100vh" gap={2} p={2}>
+    <Flex 
+      className="dungeon-screen flex-responsive" 
+      h="100vh"
+      gap={2}
+      p={2}
+    >
       <PartySidebar party={activeParty} heroEffects={heroEffects} />
       
       <Flex className="dungeon-screen-main" direction="column" flex={1} gap={2} minH={0}>
+        {/* Compact Party Bar - Mobile/Portrait Only */}
+        <CompactPartyBar party={activeParty} onClick={onPartyOpen} />
+        
         <DungeonHeader 
           floor={dungeon.floor}
           maxFloors={GAME_CONFIG.dungeon.maxFloors}
@@ -180,6 +300,65 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
 
       {/* Combat Log Modal - Disabled (functionality merged into Journal, but component preserved for future use) */}
       {/* <CombatLogModal isOpen={isCombatLogOpen} onClose={onCombatLogClose} /> */}
+
+      {/* Party Modal - Mobile/Portrait Only */}
+      <Modal isOpen={isPartyOpen} onClose={onPartyClose} size="md" scrollBehavior="inside">
+        <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
+        <ModalContent bg="gray.800" maxH="90vh" mx={2}>
+          <ModalHeader color="orange.400">Party ({activeParty.length})</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6} px={2}>
+            <VStack className="party-sidebar-modal" spacing={2} align="stretch">
+              {activeParty.map((hero) => (
+                <PartyMemberCard 
+                  key={hero.id} 
+                  hero={hero} 
+                  floatingEffects={heroEffects[hero.id] || []}
+                  isDungeon={true}
+                />
+              ))}
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Info Modal - Mobile/Portrait Only */}
+      <Modal isOpen={isInfoOpen} onClose={onInfoClose} size="md" scrollBehavior="inside">
+        <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
+        <ModalContent bg="gray.800" maxH="90vh" mx={2}>
+          <ModalHeader color="orange.400">Info</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <InfoSidebar party={activeParty} activeRun={activeRun} isInModal={true} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Floating Action Buttons - Mobile/Portrait Only */}
+      <Box className="mobile-fab-container portrait-only">
+        <IconButton
+          className="mobile-fab mobile-fab-party"
+          aria-label="View Party"
+          icon={<GiCardJackHearts size={24} />}
+          colorScheme="orange"
+          size="lg"
+          isRound
+          onClick={onPartyOpen}
+          boxShadow="0 4px 12px rgba(251, 146, 60, 0.5)"
+          _active={{ transform: "scale(0.9)" }}
+        />
+        <IconButton
+          className="mobile-fab mobile-fab-info"
+          aria-label="View Info"
+          icon={<GiInfo size={24} />}
+          colorScheme="purple"
+          size="lg"
+          isRound
+          onClick={onInfoOpen}
+          boxShadow="0 4px 12px rgba(139, 92, 246, 0.5)"
+          _active={{ transform: "scale(0.9)" }}
+        />
+      </Box>
     </Flex>
   )
 }

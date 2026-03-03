@@ -22,32 +22,17 @@ export const ALL_UNIQUE_ITEMS: Array<Omit<Item, 'id'>> = [
   ...UNIQUE_ACCESSORIES,
 ]
 
-// Unique items by rarity
-export const UNIQUE_ITEMS_BY_RARITY: Record<ItemRarity, Array<Omit<Item, 'id'>>> = {
-  junk: [],
-  abundant: [],
-  common: [],
-  uncommon: [],
-  rare: [],
-  veryRare: [],
-  magical: [],
-  elite: [],
-  epic: ALL_UNIQUE_ITEMS.filter(item => item.rarity === 'epic'),
-  legendary: ALL_UNIQUE_ITEMS.filter(item => item.rarity === 'legendary'),
-  mythic: ALL_UNIQUE_ITEMS.filter(item => item.rarity === 'mythic'),
-  mythicc: [],
-  artifact: [],
-  divine: [],
-  celestial: [],
-  realityAnchor: [],
-  structural: [],
-  singularity: [],
-  void: [],
-  elder: [],
-  layer: [],
-  plane: [],
-  author: [],
-}
+// Unique items grouped by rarity – built dynamically so any unique added at
+// any rarity tier is automatically included without manual bookkeeping here.
+export const UNIQUE_ITEMS_BY_RARITY: Partial<Record<ItemRarity, Array<Omit<Item, 'id'>>>> =
+  ALL_UNIQUE_ITEMS.reduce<Partial<Record<ItemRarity, Array<Omit<Item, 'id'>>>>>(
+    (acc, item) => {
+      if (!acc[item.rarity]) acc[item.rarity] = []
+      acc[item.rarity]!.push(item)
+      return acc
+    },
+    {}
+  )
 
 // Unique items by type
 export const UNIQUE_ITEMS_BY_TYPE: Record<string, Array<Omit<Item, 'id'>>> = {
@@ -85,12 +70,52 @@ export function getUniquesByRarityAndType(rarity: ItemRarity, type: ItemSlot): A
 }
 
 /**
- * Get a random unique item for a given rarity (if any exist)
+ * Get a random unique item for a given rarity (if any exist).
+ * Picks uniformly from the full pool regardless of dropChance overrides.
+ * Use this for non-loot systems (events, quests, direct drops).
  */
 export function getRandomUnique(rarity: ItemRarity): Omit<Item, 'id'> | undefined {
   const uniques = getUniquesByRarity(rarity)
   if (uniques.length === 0) return undefined
   return uniques[Math.floor(Math.random() * uniques.length)]
+}
+
+/**
+ * Two-phase unique item selection for loot drops.
+ *
+ * Phase 1 – Override items (those with a `dropChance` set):
+ *   Each item rolls its own individual chance independently.
+ *   If any succeed, one is chosen randomly from all winners.
+ *   These items are NEVER selected via Phase 2.
+ *
+ * Phase 2 – General pool (items without a `dropChance`):
+ *   A single roll against `baseChance` decides whether this pool fires.
+ *   If it hits, a random item from the general pool is returned.
+ *
+ * Returns undefined if nothing fires (caller falls through to procedural generation).
+ */
+export function selectUniqueForLoot(
+  rarity: ItemRarity,
+  baseChance: number,
+): Omit<Item, 'id'> | undefined {
+  const all = getUniquesByRarity(rarity)
+  if (all.length === 0) return undefined
+
+  const overrides = all.filter(u => u.dropChance !== undefined)
+  const general   = all.filter(u => u.dropChance === undefined)
+
+  // Phase 1: each override item rolls its own independent chance
+  const winners = overrides.filter(u => Math.random() < u.dropChance!)
+  if (winners.length > 0) {
+    return winners[Math.floor(Math.random() * winners.length)]
+  }
+
+  // Phase 2: single roll against the rarity-wide base chance for the general pool
+  if (general.length > 0 && baseChance > 0 && Math.random() < baseChance) {
+    return general[Math.floor(Math.random() * general.length)]
+  }
+
+  return undefined
 }
 
 /**

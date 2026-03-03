@@ -10,7 +10,7 @@ export const HELM_OF_ETERNAL_GUARDIAN: Omit<Item, 'id'> = {
   type: 'helmet',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiWingedEmblem,
   stats: {
     defense: 60,

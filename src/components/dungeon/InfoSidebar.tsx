@@ -9,9 +9,10 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 interface InfoSidebarProps {
   party: Hero[]
   activeRun: Run | null
+  isInModal?: boolean
 }
 
-export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
+export default function InfoSidebar({ party, activeRun, isInModal = false }: InfoSidebarProps) {
   const aliveCount = party.filter(h => h.isAlive).length
   const avgLevel = party.length > 0 
     ? Math.floor(party.reduce((sum, h) => sum + h.level, 0) / party.length) 
@@ -36,11 +37,19 @@ export default function InfoSidebar({ party, activeRun }: InfoSidebarProps) {
   const maxCharisma = party.length > 0 ? Math.max(...party.map(h => calculateTotalStats(h).charisma ?? 0)) : 0
 
   return (
-    <Box className="info-sidebar" w="250px" bg="gray.800" borderRadius="lg" p={4} overflowY="auto" maxH="100%">
+    <Box 
+      className={isInModal ? "info-sidebar" : "info-sidebar landscape-only"}
+      w={isInModal ? "100%" : "clamp(200px, 20vw, 300px)"}
+      bg={isInModal ? "transparent" : "gray.800"}
+      borderRadius="lg" 
+      p={isInModal ? 0 : 4}
+      overflowY="auto"
+      maxH="100%"
+    >
       <VStack spacing={4} align="stretch">
-        <Heading size="md" color="orange.400">Info</Heading>
+        {/* <Heading size="md" color="orange.400">Info</Heading> */}
         
-        <Box>
+        <Box className="floor-stats-section">
           <FloorStats 
             eventsCleared={0} 
             enemiesDefeated={0} 

@@ -1,6 +1,10 @@
 import type { Hero, Ability, AbilityEffect } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { healHero } from '@/utils/heroUtils'
+import { refreshAbilityFromTemplate } from '@/utils/abilityUtils'
+import { resolveAbilityTargets } from '@/systems/combat/targetingResolver'
+import { applyEffect } from '@/systems/effects/effectManager'
 
 /**
  * Check if an ability can be used at the current floor/depth
@@ -15,6 +19,10 @@ export function canUseAbility(
     if (cooldownType === 'depth') {
         if (ability.lastUsedDepth === undefined || currentDepth === undefined) {
             // Never used before or no depth provided - can use
+            return true
+        }
+        // If lastUsedDepth is higher than current depth, it's stale data from previous run - treat as available
+        if (ability.lastUsedDepth > currentDepth) {
             return true
         }
         const depthsSinceLastUse = currentDepth - ability.lastUsedDepth
@@ -39,22 +47,28 @@ export function getRemainingCooldown(
 ): number {
     const cooldownType = ability.cooldownType || 'depth' // Default to depth
 
-    console.log('[CD Debug]', ability.name, '- Type:', cooldownType, 'Floor:', currentFloor, 'Depth:', currentDepth, 'LastUsedFloor:', ability.lastUsedFloor, 'LastUsedDepth:', ability.lastUsedDepth)
+    // console.log('[CD Debug]', ability.name, '- Type:', cooldownType, 'Floor:', currentFloor, 'Depth:', currentDepth, 'LastUsedFloor:', ability.lastUsedFloor, 'LastUsedDepth:', ability.lastUsedDepth)
 
     if (cooldownType === 'depth') {
         if (ability.lastUsedDepth === undefined || currentDepth === undefined) {
             return 0
         }
+        // If lastUsedDepth is higher than current depth, it's stale data from previous run - no cooldown
+        if (ability.lastUsedDepth > currentDepth) {
+            return 0
+        }
         const depthsSinceLastUse = currentDepth - ability.lastUsedDepth
         const remaining = ability.cooldown - depthsSinceLastUse
-        return Math.max(0, remaining)
+        // Cap at max cooldown (safety check for edge cases)
+        return Math.min(Math.max(0, remaining), ability.cooldown)
     } else {
         if (ability.lastUsedFloor === undefined) {
             return 0
         }
         const floorsSinceLastUse = currentFloor - ability.lastUsedFloor
         const remaining = ability.cooldown - floorsSinceLastUse
-        return Math.max(0, remaining)
+        // Cap at max cooldown (safety check for edge cases)
+        return Math.min(Math.max(0, remaining), ability.cooldown)
     }
 }
 
@@ -88,9 +102,9 @@ export function useAbility(
     success: boolean
 } {
     // Find the ability
-    const ability = hero.abilities.find(a => a.id === abilityId)
+    const savedAbility = hero.abilities.find(a => a.id === abilityId)
 
-    if (!ability) {
+    if (!savedAbility) {
         return {
             hero,
             party,
@@ -98,6 +112,9 @@ export function useAbility(
             success: false
         }
     }
+
+    // Refresh ability from template to ensure current definition with scaling
+    const ability = refreshAbilityFromTemplate(savedAbility)
 
     const cooldownType = ability.cooldownType || 'depth'
     const unitName = cooldownType === 'depth' ? 'depth' : 'floor'
@@ -124,20 +141,25 @@ export function useAbility(
     }
 
     // Apply the ability effect
-    const result = applyAbilityEffect(hero, ability, party, currentFloor)
+    const result = applyAbilityEffect(hero, ability, party, currentFloor, currentDepth)
 
-    // Update ability usage tracking
+    // Update ability usage tracking - refresh all abilities to ensure current definitions
     const updatedAbilities = hero.abilities.map(a => {
+        // Refresh all abilities from template to ensure current definitions
+        const refreshed = refreshAbilityFromTemplate(a)
+
         if (a.id === abilityId) {
-            console.log('[CD Debug] Using ability:', a.name, 'Setting lastUsedFloor:', currentFloor, 'lastUsedDepth:', currentDepth)
+            const cooldownType = ability.cooldownType || 'depth'
+            console.log('[CD Debug] Using ability:', a.name, 'Setting lastUsedFloor:', currentFloor, 'lastUsedDepth:', currentDepth, 'cooldownType:', cooldownType)
+            // Update runtime state for the used ability
             return {
-                ...a,
+                ...refreshed,
                 lastUsedFloor: currentFloor,
                 lastUsedDepth: currentDepth,
                 chargesUsed: (a.chargesUsed || 0) + (a.charges ? 1 : 0)
             }
         }
-        return a
+        return refreshed
     })
 
     const updatedHero = {
@@ -145,7 +167,7 @@ export function useAbility(
         abilities: updatedAbilities
     }
 
-    console.log('[CD Debug] Updated hero abilities:', updatedHero.abilities.find(a => a.id === abilityId))
+    // console.log('[CD Debug] Updated hero abilities:', updatedHero.abilities.find(a => a.id === abilityId))
 
     return {
         hero: updatedHero,
@@ -175,7 +197,8 @@ function applyAbilityEffect(
     hero: Hero,
     ability: Ability,
     party: (Hero | null)[],
-    currentFloor: number
+    currentFloor: number,
+    currentDepth?: number
 ): {
     hero: Hero
     party: (Hero | null)[]
@@ -191,32 +214,61 @@ function applyAbilityEffect(
 
     switch (effect.type) {
         case 'heal': {
-            const targets = selectTargets(effect.target, hero, party)
-            targets.forEach(target => {
-                const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
-                if (targetIndex !== -1 && updatedParty[targetIndex]) {
-                    const currentTarget = updatedParty[targetIndex]!
-                    const totalStats = calculateTotalStats(currentTarget)
-                    const currentHp = currentTarget.stats.hp
-                    const maxHp = totalStats.maxHp
-                    const healAmount = Math.min(effectValue, maxHp - currentHp)
-                    const newHp = Math.min(currentHp + effectValue, maxHp)
-
-                    updatedParty[targetIndex] = {
-                        ...currentTarget,
-                        stats: {
-                            ...currentTarget.stats,
-                            hp: newHp
+            const targets = resolveAbilityTargets(effect.targeting, hero, party).heroes
+            
+            // Check if this is a heal-over-time effect (has duration > 1)
+            if (effect.duration && effect.duration > 1) {
+                // Apply HoT as an activeEffects regeneration TimedEffect so
+                // tickEffectsForDepthProgression heals on every depth increase
+                const healPerTurn = effectValue
+                const depth = currentDepth ?? currentFloor
+                targets.forEach(target => {
+                    const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
+                    if (targetIndex !== -1 && updatedParty[targetIndex]) {
+                        const currentTarget = updatedParty[targetIndex]!
+                        
+                        const withRegen = applyEffect(
+                            currentTarget,
+                            {
+                                name: 'Regeneration',
+                                description: `Regenerating ${healPerTurn} HP per event`,
+                                type: 'regeneration',
+                                modifier: healPerTurn,
+                                duration: effect.duration,
+                                isPermanent: false,
+                            },
+                            depth
+                        )
+                        
+                        updatedParty[targetIndex] = withRegen
+                        
+                        if (target.id === hero.id) {
+                            updatedHero = updatedParty[targetIndex]!
                         }
+                        
+                        message += ` ${target.name} will regenerate ${healPerTurn} HP per event for ${effect.duration} events!`
                     }
+                })
+            } else {
+                // Instant heal
+                targets.forEach(target => {
+                    const targetIndex = updatedParty.findIndex(h => h?.id === target.id)
+                    if (targetIndex !== -1 && updatedParty[targetIndex]) {
+                        const currentTarget = updatedParty[targetIndex]!
+                        const currentHp = currentTarget.stats.hp
+                        const effectiveMaxHp = calculateTotalStats(currentTarget).maxHp
+                        const healAmount = Math.min(effectValue, Math.max(0, effectiveMaxHp - currentHp))
 
-                    if (target.id === hero.id) {
-                        updatedHero = updatedParty[targetIndex]!
+                        updatedParty[targetIndex] = healHero(currentTarget, effectValue)
+
+                        if (target.id === hero.id) {
+                            updatedHero = updatedParty[targetIndex]!
+                        }
+
+                        message += ` Healed ${target.name} for ${healAmount} HP!`
                     }
-
-                    message += ` Healed ${target.name} for ${healAmount} HP!`
-                }
-            })
+                })
+            }
             break
         }
 
@@ -257,38 +309,6 @@ function applyAbilityEffect(
 /**
  * Select targets based on targeting rule
  */
-function selectTargets(
-    target: AbilityEffect['target'],
-    caster: Hero,
-    party: (Hero | null)[]
-): Hero[] {
-    const aliveParty = party.filter((h): h is Hero => h !== null && h.isAlive)
-
-    switch (target) {
-        case 'self':
-            return [caster]
-
-        case 'ally': {
-            // For now, select random ally (could add UI for selection later)
-            const allies = aliveParty.filter(h => h.id !== caster.id)
-            if (allies.length === 0) return [caster]
-            return [allies[Math.floor(Math.random() * allies.length)]]
-        }
-
-        case 'all-allies':
-            return aliveParty
-
-        case 'enemy':
-        case 'all-enemies':
-            // Enemy targeting would be for combat events
-            // Return empty for now
-            return []
-
-        default:
-            return [caster]
-    }
-}
-
 /**
  * Tick cooldowns when floor increases
  * Called when the party advances to the next floor

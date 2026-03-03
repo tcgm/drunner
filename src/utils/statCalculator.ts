@@ -1,32 +1,57 @@
 import type { Hero, Stats, Item } from '@/types'
 import { calculateEffectModifiers } from '@/systems/effects'
+import { getActiveNexusUpgrades, getNexusStatModifiers } from '@/data/nexus'
 import { getItemSetName, getSetBonuses } from '@data/items/sets'
 import { MATERIALS_BY_RARITY } from '@data/items/materials'
+import { getEffectMultiplier } from '@/systems/items/uniqueEffects'
 
 /**
  * Calculate total stats for a hero including equipment and active effects
  */
 export function calculateTotalStats(hero: Hero): Stats {
-  const baseStats = { ...hero.stats }
-  
+  // Nexus permanent bonuses baked into base stats first, so all subsequent
+  // scaling (equipment multipliers, effect layers, combat modifiers) builds on top.
+  const nexusMods = getNexusStatModifiers(getActiveNexusUpgrades())
+  const baseStats = {
+    ...hero.stats,
+    maxHp:      hero.stats.maxHp      + (nexusMods.maxHp      || 0),
+    attack:     hero.stats.attack     + (nexusMods.attack     || 0),
+    defense:    hero.stats.defense    + (nexusMods.defense    || 0),
+    luck:       hero.stats.luck       + (nexusMods.luck       || 0),
+    magicPower: hero.stats.magicPower != null
+      ? hero.stats.magicPower + (nexusMods.magicPower || 0)
+      : hero.stats.magicPower,
+  }
+
   // Add equipment bonuses
   const equipmentStats = calculateEquipmentStats(hero)
   
-  // Add effect modifiers
+  // Add out-of-combat timed effect modifiers (activeEffects)
   const effectModifiers = calculateEffectModifiers(hero)
-  
+
+  // Add in-combat buff/debuff modifiers (combatEffects)
+  // Values are already signed: buffs store positive values, debuffs store negative values.
+  // No sign flip needed  -  just sum them directly.
+  const combatModifiers: Partial<Stats> = {}
+  for (const effect of (hero.combatEffects || [])) {
+    if ((effect.type === 'buff' || effect.type === 'debuff') && effect.stat && effect.value !== undefined) {
+      const key = effect.stat as keyof Stats
+      combatModifiers[key] = ((combatModifiers[key] as number) || 0) + effect.value
+    }
+  }
+
   // Combine all stat sources
   return {
     hp: baseStats.hp, // HP is not modified by equipment or effects
-    maxHp: baseStats.maxHp + (equipmentStats.maxHp || 0) + (effectModifiers.maxHp || 0),
-    attack: baseStats.attack + (equipmentStats.attack || 0) + (effectModifiers.attack || 0),
-    defense: baseStats.defense + (equipmentStats.defense || 0) + (effectModifiers.defense || 0),
-    speed: baseStats.speed + (equipmentStats.speed || 0) + (effectModifiers.speed || 0),
-    luck: baseStats.luck + (equipmentStats.luck || 0) + (effectModifiers.luck || 0),
-    wisdom: baseStats.wisdom + (equipmentStats.wisdom || 0) + (effectModifiers.wisdom || 0),
-    charisma: baseStats.charisma + (equipmentStats.charisma || 0) + (effectModifiers.charisma || 0),
+    maxHp: baseStats.maxHp + (equipmentStats.maxHp || 0) + (effectModifiers.maxHp || 0) + (combatModifiers.maxHp || 0),
+    attack: baseStats.attack + (equipmentStats.attack || 0) + (effectModifiers.attack || 0) + (combatModifiers.attack || 0),
+    defense: baseStats.defense + (equipmentStats.defense || 0) + (effectModifiers.defense || 0) + (combatModifiers.defense || 0),
+    speed: baseStats.speed + (equipmentStats.speed || 0) + (effectModifiers.speed || 0) + (combatModifiers.speed || 0),
+    luck: baseStats.luck + (equipmentStats.luck || 0) + (effectModifiers.luck || 0) + (combatModifiers.luck || 0),
+    wisdom: baseStats.wisdom + (equipmentStats.wisdom || 0) + (effectModifiers.wisdom || 0) + (combatModifiers.wisdom || 0),
+    charisma: baseStats.charisma + (equipmentStats.charisma || 0) + (effectModifiers.charisma || 0) + (combatModifiers.charisma || 0),
     magicPower: baseStats.magicPower 
-      ? baseStats.magicPower + (equipmentStats.magicPower || 0) + (effectModifiers.magicPower || 0)
+      ? baseStats.magicPower + (equipmentStats.magicPower || 0) + (effectModifiers.magicPower || 0) + (combatModifiers.magicPower || 0)
       : undefined,
   }
 }
@@ -55,7 +80,8 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
   }
   
   // Calculate set bonuses
-  // 1. Named set bonuses (e.g., Kitsune set)
+  // 1. Named set bonuses — each equipped piece contributes the current tier's bonus
+  //    scaled by that piece's own rarity multiplier (stacks across all pieces).
   const setCounts: Record<string, number> = {}
   equippedItems.forEach(item => {
     const setName = getItemSetName(item.name)
@@ -64,20 +90,24 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
     }
   })
 
-  // Apply named set bonuses
-  Object.entries(setCounts).forEach(([setName, count]) => {
+  // Apply per-item set bonuses: each piece contributes bonus × its rarity multiplier
+  equippedItems.forEach(item => {
+    const setName = getItemSetName(item.name)
+    if (!setName) return
+    const count = setCounts[setName]
     const setBonus = getSetBonuses(setName, count)
-    if (setBonus?.stats) {
-      if (setBonus.stats.attack) equipmentStats.attack = (equipmentStats.attack || 0) + setBonus.stats.attack
-      if (setBonus.stats.defense) equipmentStats.defense = (equipmentStats.defense || 0) + setBonus.stats.defense
-      if (setBonus.stats.speed) equipmentStats.speed = (equipmentStats.speed || 0) + setBonus.stats.speed
-      if (setBonus.stats.luck) equipmentStats.luck = (equipmentStats.luck || 0) + setBonus.stats.luck
-      if (setBonus.stats.maxHp) equipmentStats.maxHp = (equipmentStats.maxHp || 0) + setBonus.stats.maxHp
-      if (setBonus.stats.wisdom) equipmentStats.wisdom = (equipmentStats.wisdom || 0) + setBonus.stats.wisdom
-      if (setBonus.stats.charisma) equipmentStats.charisma = (equipmentStats.charisma || 0) + setBonus.stats.charisma
-      if (setBonus.stats.magicPower && equipmentStats.magicPower !== undefined) {
-        equipmentStats.magicPower = (equipmentStats.magicPower || 0) + setBonus.stats.magicPower
-      }
+    if (!setBonus?.stats) return
+    const mult = getEffectMultiplier(item.rarity, item.isUnique ?? false)
+    const s = setBonus.stats
+    if (s.attack)     equipmentStats.attack     = (equipmentStats.attack     || 0) + Math.floor(s.attack     * mult)
+    if (s.defense)    equipmentStats.defense    = (equipmentStats.defense    || 0) + Math.floor(s.defense    * mult)
+    if (s.speed)      equipmentStats.speed      = (equipmentStats.speed      || 0) + Math.floor(s.speed      * mult)
+    if (s.luck)       equipmentStats.luck       = (equipmentStats.luck       || 0) + Math.floor(s.luck       * mult)
+    if (s.maxHp)      equipmentStats.maxHp      = (equipmentStats.maxHp      || 0) + Math.floor(s.maxHp      * mult)
+    if (s.wisdom)     equipmentStats.wisdom     = (equipmentStats.wisdom     || 0) + Math.floor(s.wisdom     * mult)
+    if (s.charisma)   equipmentStats.charisma   = (equipmentStats.charisma   || 0) + Math.floor(s.charisma   * mult)
+    if (s.magicPower && equipmentStats.magicPower !== undefined) {
+      equipmentStats.magicPower = (equipmentStats.magicPower || 0) + Math.floor(s.magicPower * mult)
     }
   })
 

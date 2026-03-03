@@ -2,7 +2,7 @@ import { HStack, Input, Select, Spacer } from '@chakra-ui/react'
 import { memo } from 'react'
 
 export type SortOption = 'name' | 'rarity' | 'type' | 'value'
-export type FilterOption = 'all' | 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2' | 'consumable'
+export type FilterOption = 'all' | 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2' | 'consumable' | 'unique'
 
 interface InventoryControlsProps {
   searchQuery: string
@@ -36,7 +36,7 @@ export const InventoryControls = memo(function InventoryControls({
         bg="gray.800"
         borderColor="gray.700"
         _hover={{ borderColor: 'gray.600' }}
-        maxW="300px"
+        maxW="clamp(200px, 30vw, 350px)"
       />
       
       <Select
@@ -46,7 +46,7 @@ export const InventoryControls = memo(function InventoryControls({
         size="sm"
         bg="gray.800"
         borderColor="gray.700"
-        maxW="150px"
+        maxW="clamp(100px, 15vw, 180px)"
       >
         <option value="rarity">Sort: Rarity</option>
         <option value="name">Sort: Name</option>
@@ -62,7 +62,7 @@ export const InventoryControls = memo(function InventoryControls({
           size="sm"
           bg="gray.800"
           borderColor="gray.700"
-          maxW="150px"
+          maxW="clamp(100px, 15vw, 180px)"
         >
           <option value="all">All Items</option>
           <option value="weapon">Weapons</option>
@@ -71,6 +71,7 @@ export const InventoryControls = memo(function InventoryControls({
           <option value="boots">Boots</option>
           <option value="accessory1">Accessories</option>
           <option value="consumable">Consumables</option>
+          <option value="unique">Unique Items</option>
         </Select>
       )}
 

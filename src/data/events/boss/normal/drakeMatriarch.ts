@@ -12,7 +12,7 @@ export const DRAKE_MATRIARCH: DungeonEvent = {
       outcome: {
         text: 'The protective mother fights with savage desperation! Her bite is vicious!',
         effects: [
-          { type: 'damage', target: 'all', value: 78 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 335 },
           { type: 'gold', value: 445 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 15 },
@@ -24,10 +24,11 @@ export const DRAKE_MATRIARCH: DungeonEvent = {
       requirements: {
         class: 'Ranger',
       },
+      skipsCombat: true, // Peaceful animal handling - drake allows passage
       outcome: {
         text: 'You show no threat to her eggs! She allows you to pass peacefully!',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 380 },
           { type: 'gold', value: 500 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 20 },
@@ -43,7 +44,7 @@ export const DRAKE_MATRIARCH: DungeonEvent = {
       outcome: {
         text: 'You target the gaps in her scales! Critical hits bring her down fast!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 62 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 372 },
           { type: 'gold', value: 487 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 19 },

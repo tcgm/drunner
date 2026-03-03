@@ -12,7 +12,7 @@ export const FROST_WRAITH_KING: DungeonEvent = {
       outcome: {
         text: 'Your movements slow in the frigid air! Frostbite sets in quickly!',
         effects: [
-          { type: 'damage', target: 'all', value: 68 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 315 },
           { type: 'gold', value: 415 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 13 },
@@ -27,7 +27,7 @@ export const FROST_WRAITH_KING: DungeonEvent = {
       outcome: {
         text: 'Flames melt the wraith! It screams as it evaporates!',
         effects: [
-          { type: 'damage', target: 'all', value: 50 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 360 },
           { type: 'gold', value: 470 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 17 },
@@ -43,7 +43,7 @@ export const FROST_WRAITH_KING: DungeonEvent = {
       outcome: {
         text: 'Your constitution withstands the freezing! You shatter the wraith!',
         effects: [
-          { type: 'damage', target: 'all', value: 53 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 350 },
           { type: 'gold', value: 460 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 16 },

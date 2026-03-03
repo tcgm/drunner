@@ -12,7 +12,7 @@ export const MECH_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'Every weakness exploited! Every mistake punished! Perfect combat calculation!',
         effects: [
-          { type: 'damage', target: 'all', value: 455 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1880 },
           { type: 'gold', value: 2820 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 37 },
@@ -28,7 +28,7 @@ export const MECH_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'You act in ways it cannot compute! The overlord cannot adapt!',
         effects: [
-          { type: 'damage', target: 'random', value: 388 },
+          { type: 'damage', target: 'random', value: 4 },
           { type: 'xp', value: 2010 },
           { type: 'gold', value: 3015 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 48 },
@@ -43,7 +43,7 @@ export const MECH_OVERLORD: DungeonEvent = {
       outcome: {
         text: 'Magic overwhelms its logic circuits! The overlord self-destructs!',
         effects: [
-          { type: 'damage', target: 'all', value: 402 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2035 },
           { type: 'gold', value: 3053 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 49 },

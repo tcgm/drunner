@@ -1,75 +1,47 @@
 /**
  * Defense calculation utilities
+ * 
+ * Uses the curve-based system from defenseConfig.ts
+ * The curve automatically scales based on theoretical max defense
  */
 
-import { GAME_CONFIG } from '@/config/gameConfig'
+import { calculateBlockPercent, formatBlockPercent } from '@/config/defenseConfig'
 
 /**
- * Calculate damage reduction percentage based on defense value and current formula
+ * Calculate damage reduction percentage based on defense value
+ * 
+ * This now uses the curve system from defenseConfig.ts which:
+ * - Automatically scales to theoretical max defense
+ * - Supports multiple curve types (linear, diminishing, logarithmic, exponential)
+ * - Is easily tunable without changing formulas
+ * 
+ * @param defense - Current defense stat
+ * @returns Block percentage (0.0 to maxBlockPercent, default 0.95)
  */
 export function calculateDefenseReduction(defense: number): number {
-    const formula = GAME_CONFIG.combat.defenseFormula
-
-    switch (formula) {
-        case 'flat':
-            // Flat reduction doesn't have a percentage - return 0
-            return 0
-
-        case 'percentage':
-            return defense / (defense + GAME_CONFIG.combat.percentageBase)
-
-        case 'logarithmic':
-            const factor = GAME_CONFIG.combat.logFactor
-            const uncapped = (defense * factor) / (1 + defense * factor)
-            return Math.min(uncapped, GAME_CONFIG.combat.maxLogReduction)
-
-        case 'hybrid':
-            return Math.min(
-                GAME_CONFIG.combat.maxReduction,
-                defense / (defense + GAME_CONFIG.combat.hybridBase)
-            )
-
-        default:
-            return 0
-    }
+    return calculateBlockPercent(defense)
 }
 
 /**
  * Format defense reduction as a percentage string
+ * 
+ * @param defense - Current defense stat
+ * @returns Formatted string like "42.5%"
  */
 export function formatDefenseReduction(defense: number): string {
-    const formula = GAME_CONFIG.combat.defenseFormula
-
-    if (formula === 'flat') {
-        // For flat formula, show flat reduction value instead
-        return `(-${Math.floor(defense * GAME_CONFIG.combat.defenseReduction)})`
-    }
-
-    const reduction = calculateDefenseReduction(defense)
-    return `(${(reduction * 100).toFixed(1)}%)`
+    return `(${formatBlockPercent(defense)})`
 }
 
 /**
  * Apply defense to reduce incoming damage
+ * Uses the curve-based percentage reduction system
+ * 
+ * @param incomingDamage - Damage before defense
+ * @param defense - Defense stat value
+ * @returns Damage after defense reduction (minimum 1)
  */
 export function applyDefenseReduction(incomingDamage: number, defense: number): number {
-    const formula = GAME_CONFIG.combat.defenseFormula
-
-    switch (formula) {
-        case 'flat':
-            // Flat reduction: subtract defense * factor
-            return Math.max(1, incomingDamage - Math.floor(defense * GAME_CONFIG.combat.defenseReduction))
-
-        case 'percentage':
-        case 'logarithmic':
-        case 'hybrid': {
-            // All percentage-based formulas: reduce by percentage
-            const reductionPercent = calculateDefenseReduction(defense)
-            const reducedDamage = incomingDamage * (1 - reductionPercent)
-            return Math.max(1, Math.floor(reducedDamage))
-        }
-
-        default:
-            return Math.max(1, incomingDamage)
-    }
+    const reductionPercent = calculateDefenseReduction(defense)
+    const reducedDamage = incomingDamage * (1 - reductionPercent)
+    return Math.max(1, Math.floor(reducedDamage))
 }

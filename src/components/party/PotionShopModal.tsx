@@ -11,27 +11,32 @@ import {
   HStack,
   Text,
   Grid,
+  SimpleGrid,
   Box,
   Icon,
   Badge,
   Tooltip,
+  Divider,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
+import { useOrientation } from '@/contexts/OrientationContext'
 import type { Consumable, Hero, Item } from '@/types'
 import { generatePotionForFloor } from '@/systems/consumables/consumableGenerator'
 import { generateItem } from '@/systems/loot/lootGenerator'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { GiShoppingCart, GiCycle, GiShop, GiBarbedSun, GiGoldBar } from 'react-icons/gi'
 import { ItemSlot } from '@/components/ui/ItemSlot'
+import './PotionShopModal.css'
 import { restoreItemIcon } from '@/utils/itemUtils'
+import { getShopPrice, getShopRefreshCost } from '@/systems/shop/shopUtils'
 
 interface PotionShopModalProps {
   isOpen: boolean
   onClose: () => void
   bankGold: number
   party: (Hero | null)[]
-  onPurchase: (potion: Consumable) => void
-  onPurchaseItem: (item: Item) => void
+  onPurchase: (potion: Consumable, price: number) => void
+  onPurchaseItem: (item: Item, price: number) => void
   onSpendGold: (amount: number) => boolean
   bankInventory: Item[]
   bankStorageSlots: number
@@ -53,12 +58,15 @@ const getRarityColor = (rarity: string): string => {
 }
 
 export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, onPurchaseItem, onSpendGold, bankInventory, bankStorageSlots }: PotionShopModalProps) {
+  const { isPortrait } = useOrientation()
   const [potions, setPotions] = useState<Consumable[]>([])
   const [featuredItem, setFeaturedItem] = useState<Item | null>(null)
   const [selectedPotion, setSelectedPotion] = useState<Consumable | null>(null)
   const [hasInitialized, setHasInitialized] = useState(false)
   const [purchasedPotionIds, setPurchasedPotionIds] = useState<Set<string>>(new Set())
   const [featuredItemPurchased, setFeaturedItemPurchased] = useState(false)
+  const [isRefreshOnCooldown, setIsRefreshOnCooldown] = useState(false)
+  const [cooldownRemaining, setCooldownRemaining] = useState(0)
 
   // Calculate effective floor based on party's average level
   const getEffectiveFloor = () => {
@@ -93,6 +101,14 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, hasInitialized])
 
+  // Reset cooldown when modal closes
+  useEffect(() => {
+    if (!isOpen && (isRefreshOnCooldown || cooldownRemaining > 0)) {
+      setIsRefreshOnCooldown(false)
+      setCooldownRemaining(0)
+    }
+  }, [isOpen, isRefreshOnCooldown, cooldownRemaining])
+
   const generateShopInventory = () => {
     const floor = getEffectiveFloor()
     const newPotions: Consumable[] = []
@@ -111,22 +127,46 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
     setFeaturedItemPurchased(false)
   }
 
-  // Calculate shop price (don't modify the item itself)
-  const getShopPrice = (item: Item | Consumable) => {
-    return Math.floor(item.value * GAME_CONFIG.shop.priceMultiplier)
-  }
-
   const handleRefresh = () => {
+    if (isRefreshOnCooldown) return
+    
     const refreshCost = getRefreshCost()
     if (bankGold >= refreshCost && onSpendGold(refreshCost)) {
       generateShopInventory()
+      
+      // Start cooldown
+      setIsRefreshOnCooldown(true)
+      setCooldownRemaining(GAME_CONFIG.shop.refreshCooldown)
     }
   }
+
+  // Handle cooldown timer
+  useEffect(() => {
+    if (!isRefreshOnCooldown || cooldownRemaining <= 0) {
+      if (isRefreshOnCooldown) {
+        setIsRefreshOnCooldown(false)
+        setCooldownRemaining(0)
+      }
+      return
+    }
+
+    const interval = setInterval(() => {
+      setCooldownRemaining(prev => {
+        const next = Math.max(0, prev - 100)
+        if (next === 0) {
+          setIsRefreshOnCooldown(false)
+        }
+        return next
+      })
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [isRefreshOnCooldown, cooldownRemaining])
 
   const handlePurchase = (potion: Consumable) => {
     const shopPrice = getShopPrice(potion)
     if (bankGold >= shopPrice && !purchasedPotionIds.has(potion.id)) {
-      onPurchase(potion)
+      onPurchase(potion, shopPrice)
       setPurchasedPotionIds(prev => new Set(prev).add(potion.id))
       setSelectedPotion(null)
     }
@@ -139,11 +179,11 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
         // Check if bank is full
         if (bankInventory.length >= bankStorageSlots) {
           // Bank is full, onPurchaseItem will handle opening the buy slots modal
-          onPurchaseItem(featuredItem)
+          onPurchaseItem(featuredItem, shopPrice)
           return
         }
         
-        onPurchaseItem(featuredItem)
+        onPurchaseItem(featuredItem, shopPrice)
         setFeaturedItemPurchased(true)
       }
     }
@@ -166,10 +206,7 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
     }
     
     // Calculate cost: base + (remaining value * multiplier)
-    const cost = Math.ceil(
-      GAME_CONFIG.shop.refreshBaseCost + 
-      (remainingValue * GAME_CONFIG.shop.refreshCostMultiplier)
-    )
+    const cost = getShopRefreshCost(remainingValue)
     
     return cost
   }
@@ -178,9 +215,9 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
   const canAfford = (potion: Consumable) => bankGold >= getShopPrice(potion)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="5xl" isCentered scrollBehavior="inside">
+    <Modal isOpen={isOpen} onClose={onClose} size={isPortrait ? 'full' : '5xl'} isCentered scrollBehavior="outside">
       <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
-      <ModalContent bg="gray.900" color="white" borderWidth="2px" borderColor="purple.500" h="95vh" maxH="95vh">
+      <ModalContent bg="gray.900" color="white" borderWidth="2px" borderColor="purple.500" h={isPortrait ? '100%' : '95vh'} maxH={isPortrait ? '100%' : '95vh'} display="flex" flexDirection="column">
         <ModalHeader color="purple.400" borderBottom="1px solid" borderColor="gray.700">
           <HStack justify="space-between">
             <HStack>
@@ -189,7 +226,10 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
             </HStack>
             <HStack spacing={4}>
               <Tooltip 
-                label={canAffordRefresh ? `Refresh shop for ${getRefreshCost()} gold` : 'Not enough gold'} 
+                label={
+                  isRefreshOnCooldown ? `Cooldown: ${(cooldownRemaining / 1000).toFixed(1)}s` :
+                  canAffordRefresh ? `Refresh shop for ${getRefreshCost()} gold` : 'Not enough gold'
+                } 
                 placement="left"
               >
                 <Button
@@ -197,9 +237,9 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                   leftIcon={<Icon as={GiCycle} />}
                   colorScheme="purple"
                   onClick={handleRefresh}
-                  isDisabled={!canAffordRefresh}
+                  isDisabled={!canAffordRefresh || isRefreshOnCooldown}
                 >
-                  Refresh ({getRefreshCost()}g)
+                  {isRefreshOnCooldown ? `Cooldown (${(cooldownRemaining / 1000).toFixed(1)}s)` : `Refresh (${getRefreshCost()}g)`}
                 </Button>
               </Tooltip>
               <HStack spacing={2} bg="gray.800" px={3} py={1} borderRadius="md">
@@ -210,65 +250,53 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
           </HStack>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody py={2} px={3}>
-          <Grid templateColumns="1fr 2fr 1fr" gap={2}>
-            {/* Left Column - Potions */}
-            <VStack spacing={1.5}>
-              {potions.slice(0, Math.ceil(potions.length / 2)).map((potion) => {
-                const isPurchased = purchasedPotionIds.has(potion.id)
-                const affordable = canAfford(potion) && !isPurchased
-                const isSelected = selectedPotion?.id === potion.id
-                const potionWithIcon = restoreItemIcon(potion)
+        <ModalBody py={2} px={3} flex="1" minH="0" overflow={isPortrait ? 'auto' : 'hidden'} display="flex" flexDirection="column">
+          {isPortrait ? (
+            /* Portrait: top potion row → featured item → bottom potion row */
+            <VStack spacing={2} align="stretch">
+              {/* Top potion row */}
+              <SimpleGrid columns={Math.ceil(potions.length / 2)} spacing={1.5}>
+                {potions.slice(0, Math.ceil(potions.length / 2)).map((potion) => {
+                  const isPurchased = purchasedPotionIds.has(potion.id)
+                  const affordable = canAfford(potion) && !isPurchased
+                  const potionWithIcon = restoreItemIcon(potion)
+                  return (
+                    <Box
+                      key={potion.id}
+                      bg={isPurchased ? 'gray.900' : 'gray.800'}
+                      borderWidth="2px"
+                      borderColor={isPurchased ? 'gray.700' : affordable ? 'gray.600' : 'red.500'}
+                      borderRadius="md"
+                      p={1.5}
+                      cursor={affordable ? 'pointer' : 'not-allowed'}
+                      onClick={() => affordable && handlePurchase(potion)}
+                      _hover={affordable ? { borderColor: 'purple.400', bg: 'gray.700', transform: 'scale(1.05)', transition: 'all 0.2s' } : {}}
+                      transition="all 0.2s"
+                      opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
+                    >
+                      <VStack spacing={1}>
+                        <Box className="shop-item-slot">
+                          <ItemSlot item={potionWithIcon} isClickable={true} size="sm" />
+                        </Box>
+                        <Divider borderColor="gray.600" />
+                        <Button
+                          size="xs"
+                          colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}
+                          onClick={(e) => { e.stopPropagation(); handlePurchase(potion) }}
+                          isDisabled={!affordable}
+                          width="100%"
+                          fontSize="2xs"
+                        >
+                          {isPurchased ? 'Bought' : affordable ? `${getShopPrice(potion)}g` : 'X'}
+                        </Button>
+                      </VStack>
+                    </Box>
+                  )
+                })}
+              </SimpleGrid>
 
-                return (
-                  <Box
-                    key={potion.id}
-                    position="relative"
-                    bg={isSelected ? 'gray.700' : 'gray.800'}
-                    borderWidth="2px"
-                    borderColor={isPurchased ? 'gray.700' : isSelected ? 'purple.400' : affordable ? 'gray.600' : 'red.500'}
-                    borderRadius="md"
-                    p={1}
-                    cursor={affordable ? 'pointer' : 'not-allowed'}
-                    onClick={() => affordable && handlePurchase(potion)}
-                    _hover={affordable ? { 
-                      borderColor: 'purple.400', 
-                      bg: 'gray.700',
-                      transform: 'scale(1.05)',
-                      transition: 'all 0.2s'
-                    } : {}}
-                    transition="all 0.2s"
-                    opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
-                    w="100%"
-                  >
-                    <VStack spacing={0.5}>
-                      <ItemSlot
-                        item={potionWithIcon}
-                        isClickable={true}
-                        size="sm"
-                      />
-                      <Button
-                        size="xs"
-                        colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handlePurchase(potion)
-                        }}
-                        isDisabled={!affordable}
-                        width="100%"
-                        fontSize="2xs"
-                      >
-                        {isPurchased ? 'Bought' : affordable ? `${potion.value}g` : 'X'}
-                      </Button>
-                    </VStack>
-                  </Box>
-                )
-              })}
-            </VStack>
-
-            {/* Center Column - Featured Item */}
-            <Box>
-              {featuredItem ? (
+              {/* Featured item row */}
+              {featuredItem && (
                 <Box
                   bg="gray.800"
                   borderWidth="3px"
@@ -276,103 +304,241 @@ export function PotionShopModal({ isOpen, onClose, bankGold, party, onPurchase, 
                   borderRadius="lg"
                   p={3}
                   boxShadow={featuredItemPurchased ? 'none' : '0 0 20px rgba(251, 146, 60, 0.3)'}
-                  h="100%"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
                   opacity={featuredItemPurchased ? 0.4 : 1}
                 >
-                  <VStack spacing={2}>
-                    <Text fontSize="sm" fontWeight="bold" color="orange.400" textTransform="uppercase">
-                      Featured Item
-                    </Text>
-                    <ItemSlot
-                      item={featuredItem}
-                      isClickable={true}
-                      size="xl"
-                    />
-                    <Tooltip 
-                      label={bankGold < getShopPrice(featuredItem) && !featuredItemPurchased ? `Need ${getShopPrice(featuredItem) - bankGold} more gold` : ''}
-                      isDisabled={bankGold >= getShopPrice(featuredItem) || featuredItemPurchased}
-                    >
-                      <Button
-                        size="md"
-                        colorScheme={featuredItemPurchased ? 'gray' : bankGold >= getShopPrice(featuredItem) ? 'orange' : 'gray'}
-                        onClick={handleFeaturedItemPurchase}
-                        isDisabled={featuredItemPurchased || bankGold < getShopPrice(featuredItem)}
-                        width="200px"
-                        // leftIcon={<Icon as={GiGoldBar} />}
+                  <HStack spacing={4} justify="center">
+                    <Box className="shop-featured-slot">
+                      <ItemSlot item={featuredItem} isClickable={true} size="xl" />
+                    </Box>
+                    <VStack spacing={2} align="start">
+                      <Text fontSize="sm" fontWeight="bold" color="orange.400" textTransform="uppercase">
+                        Featured Item
+                      </Text>
+                      <Tooltip
+                        label={bankGold < getShopPrice(featuredItem) && !featuredItemPurchased ? `Need ${getShopPrice(featuredItem) - bankGold} more gold` : ''}
+                        isDisabled={bankGold >= getShopPrice(featuredItem) || featuredItemPurchased}
                       >
-                        {featuredItemPurchased ? 'Bought' : (
-                          <Text color={bankGold >= getShopPrice(featuredItem) ? 'gray.900' : 'red.400'} fontWeight="bold">
-                            {getShopPrice(featuredItem)}g
-                          </Text>
-                        )}
-                      </Button>
-                    </Tooltip>
-                  </VStack>
-                </Box>
-              ) : (
-                <Box textAlign="center" py={8}>
-                  <Text color="gray.500">No featured item available</Text>
+                        <Button
+                          size="md"
+                          colorScheme={featuredItemPurchased ? 'gray' : bankGold >= getShopPrice(featuredItem) ? 'orange' : 'gray'}
+                          onClick={handleFeaturedItemPurchase}
+                          isDisabled={featuredItemPurchased || bankGold < getShopPrice(featuredItem)}
+                        >
+                          {featuredItemPurchased ? 'Bought' : (
+                            <Text color={bankGold >= getShopPrice(featuredItem) ? 'gray.900' : 'red.400'} fontWeight="bold">
+                              {getShopPrice(featuredItem)}g
+                            </Text>
+                          )}
+                        </Button>
+                      </Tooltip>
+                    </VStack>
+                  </HStack>
                 </Box>
               )}
-            </Box>
 
-            {/* Right Column - More Potions */}
-            <VStack spacing={1.5}>
-              {potions.slice(Math.ceil(potions.length / 2)).map((potion) => {
-                const isPurchased = purchasedPotionIds.has(potion.id)
-                const affordable = canAfford(potion) && !isPurchased
-                const isSelected = selectedPotion?.id === potion.id
-                const potionWithIcon = restoreItemIcon(potion)
+              {/* Bottom potion row */}
+              <SimpleGrid columns={potions.length - Math.ceil(potions.length / 2)} spacing={1.5}>
+                {potions.slice(Math.ceil(potions.length / 2)).map((potion) => {
+                  const isPurchased = purchasedPotionIds.has(potion.id)
+                  const affordable = canAfford(potion) && !isPurchased
+                  const potionWithIcon = restoreItemIcon(potion)
+                  return (
+                    <Box
+                      key={potion.id}
+                      bg={isPurchased ? 'gray.900' : 'gray.800'}
+                      borderWidth="2px"
+                      borderColor={isPurchased ? 'gray.700' : affordable ? 'gray.600' : 'red.500'}
+                      borderRadius="md"
+                      p={1.5}
+                      cursor={affordable ? 'pointer' : 'not-allowed'}
+                      onClick={() => affordable && handlePurchase(potion)}
+                      _hover={affordable ? { borderColor: 'purple.400', bg: 'gray.700', transform: 'scale(1.05)', transition: 'all 0.2s' } : {}}
+                      transition="all 0.2s"
+                      opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
+                    >
+                      <VStack spacing={1}>
+                        <Box className="shop-item-slot">
+                          <ItemSlot item={potionWithIcon} isClickable={true} size="sm" />
+                        </Box>
+                        <Divider borderColor="gray.600" />
+                        <Button
+                          size="xs"
+                          colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}
+                          onClick={(e) => { e.stopPropagation(); handlePurchase(potion) }}
+                          isDisabled={!affordable}
+                          width="100%"
+                          fontSize="2xs"
+                        >
+                          {isPurchased ? 'Bought' : affordable ? `${getShopPrice(potion)}g` : 'X'}
+                        </Button>
+                      </VStack>
+                    </Box>
+                  )
+                })}
+              </SimpleGrid>
+            </VStack>
+          ) : (
+            /* Landscape: 3 columns  -  left potions | featured | right potions */
+            <Grid templateColumns="1fr 2fr 1fr" gap={2} flex="1" minH="0">
+              {/* Left Column - Potions */}
+              <VStack spacing={1.5} h="100%" overflow="hidden">
+                {potions.slice(0, Math.ceil(potions.length / 2)).map((potion) => {
+                  const isPurchased = purchasedPotionIds.has(potion.id)
+                  const affordable = canAfford(potion) && !isPurchased
+                  const isSelected = selectedPotion?.id === potion.id
+                  const potionWithIcon = restoreItemIcon(potion)
 
-                return (
+                  return (
+                    <Box
+                      key={potion.id}
+                      position="relative"
+                      bg={isSelected ? 'gray.700' : 'gray.800'}
+                      borderWidth="2px"
+                      borderColor={isPurchased ? 'gray.700' : isSelected ? 'purple.400' : affordable ? 'gray.600' : 'red.500'}
+                      borderRadius="md"
+                      p={1}
+                      cursor={affordable ? 'pointer' : 'not-allowed'}
+                      onClick={() => affordable && handlePurchase(potion)}
+                      _hover={affordable ? { 
+                        borderColor: 'purple.400', 
+                        bg: 'gray.700',
+                        transform: 'scale(1.05)',
+                        transition: 'all 0.2s'
+                      } : {}}
+                      transition="all 0.2s"
+                      opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
+                      w="100%"
+                      flex="1"
+                      minH="0"
+                      display="flex"
+                      flexDirection="column"
+                      justifyContent="center"
+                    >
+                      <VStack spacing={0.5}>
+                        <Box className="shop-item-slot">
+                          <ItemSlot item={potionWithIcon} isClickable={true} size="sm" />
+                        </Box>
+                        <Button
+                          size="xs"
+                          colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}
+                          onClick={(e) => { e.stopPropagation(); handlePurchase(potion) }}
+                          isDisabled={!affordable}
+                          width="100%"
+                          fontSize="2xs"
+                        >
+                          {isPurchased ? 'Bought' : affordable ? `${potion.value}g` : 'X'}
+                        </Button>
+                      </VStack>
+                    </Box>
+                  )
+                })}
+              </VStack>
+
+              {/* Center Column - Featured Item */}
+              <Box>
+                {featuredItem ? (
                   <Box
-                    key={potion.id}
-                    position="relative"
-                    bg={isSelected ? 'gray.700' : 'gray.800'}
-                    borderWidth="2px"
-                    borderColor={isPurchased ? 'gray.700' : isSelected ? 'purple.400' : affordable ? 'gray.600' : 'red.500'}
-                    borderRadius="md"
-                    p={1}
-                    cursor={affordable ? 'pointer' : 'not-allowed'}
-                    onClick={() => affordable && handlePurchase(potion)}
-                    _hover={affordable ? { 
-                      borderColor: 'purple.400', 
-                      bg: 'gray.700',
-                      transform: 'scale(1.05)',
-                      transition: 'all 0.2s'
-                    } : {}}
-                    transition="all 0.2s"
-                    opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
-                    w="100%"
+                    bg="gray.800"
+                    borderWidth="3px"
+                    borderColor={featuredItemPurchased ? 'gray.700' : 'orange.500'}
+                    borderRadius="lg"
+                    p={3}
+                    boxShadow={featuredItemPurchased ? 'none' : '0 0 20px rgba(251, 146, 60, 0.3)'}
+                    h="100%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    opacity={featuredItemPurchased ? 0.4 : 1}
                   >
-                    <VStack spacing={0.5}>
-                      <ItemSlot
-                        item={potionWithIcon}
-                        isClickable={true}
-                        size="sm"
-                      />
-                      <Button
-                        size="xs"
-                        colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handlePurchase(potion)
-                        }}
-                        isDisabled={!affordable}
-                        width="100%"
-                        fontSize="2xs"
+                    <VStack spacing={2}>
+                      <Text fontSize="sm" fontWeight="bold" color="orange.400" textTransform="uppercase">
+                        Featured Item
+                      </Text>
+                      <Box className="shop-featured-slot">
+                        <ItemSlot item={featuredItem} isClickable={true} size="xl" />
+                      </Box>
+                      <Tooltip
+                        label={bankGold < getShopPrice(featuredItem) && !featuredItemPurchased ? `Need ${getShopPrice(featuredItem) - bankGold} more gold` : ''}
+                        isDisabled={bankGold >= getShopPrice(featuredItem) || featuredItemPurchased}
                       >
-                        {isPurchased ? 'Bought' : affordable ? `${getShopPrice(potion)}g` : 'X'}
-                      </Button>
+                        <Button
+                          size="md"
+                          colorScheme={featuredItemPurchased ? 'gray' : bankGold >= getShopPrice(featuredItem) ? 'orange' : 'gray'}
+                          onClick={handleFeaturedItemPurchase}
+                          isDisabled={featuredItemPurchased || bankGold < getShopPrice(featuredItem)}
+                          width="clamp(150px, 20vw, 220px)"
+                        >
+                          {featuredItemPurchased ? 'Bought' : (
+                            <Text color={bankGold >= getShopPrice(featuredItem) ? 'gray.900' : 'red.400'} fontWeight="bold">
+                              {getShopPrice(featuredItem)}g
+                            </Text>
+                          )}
+                        </Button>
+                      </Tooltip>
                     </VStack>
                   </Box>
-                )
-              })}
-            </VStack>
-          </Grid>
+                ) : (
+                  <Box textAlign="center" py={8}>
+                    <Text color="gray.500">No featured item available</Text>
+                  </Box>
+                )}
+              </Box>
+
+              {/* Right Column - More Potions */}
+              <VStack spacing={1.5} h="100%" overflow="hidden">
+                {potions.slice(Math.ceil(potions.length / 2)).map((potion) => {
+                  const isPurchased = purchasedPotionIds.has(potion.id)
+                  const affordable = canAfford(potion) && !isPurchased
+                  const isSelected = selectedPotion?.id === potion.id
+                  const potionWithIcon = restoreItemIcon(potion)
+
+                  return (
+                    <Box
+                      key={potion.id}
+                      position="relative"
+                      bg={isSelected ? 'gray.700' : 'gray.800'}
+                      borderWidth="2px"
+                      borderColor={isPurchased ? 'gray.700' : isSelected ? 'purple.400' : affordable ? 'gray.600' : 'red.500'}
+                      borderRadius="md"
+                      p={1}
+                      cursor={affordable ? 'pointer' : 'not-allowed'}
+                      onClick={() => affordable && handlePurchase(potion)}
+                      _hover={affordable ? { 
+                        borderColor: 'purple.400', 
+                        bg: 'gray.700',
+                        transform: 'scale(1.05)',
+                        transition: 'all 0.2s'
+                      } : {}}
+                      transition="all 0.2s"
+                      opacity={isPurchased ? 0.4 : affordable ? 1 : 0.6}
+                      w="100%"
+                      flex="1"
+                      minH="0"
+                      display="flex"
+                      flexDirection="column"
+                      justifyContent="center"
+                    >
+                      <VStack spacing={0.5}>
+                        <Box className="shop-item-slot">
+                          <ItemSlot item={potionWithIcon} isClickable={true} size="sm" />
+                        </Box>
+                        <Button
+                          size="xs"
+                          colorScheme={isPurchased ? 'gray' : affordable ? 'green' : 'red'}
+                          onClick={(e) => { e.stopPropagation(); handlePurchase(potion) }}
+                          isDisabled={!affordable}
+                          width="100%"
+                          fontSize="2xs"
+                        >
+                          {isPurchased ? 'Bought' : affordable ? `${getShopPrice(potion)}g` : 'X'}
+                        </Button>
+                      </VStack>
+                    </Box>
+                  )
+                })}
+              </VStack>
+            </Grid>
+          )}
         </ModalBody>
         <ModalFooter borderTop="1px solid" borderColor="gray.700">
           <Button colorScheme="gray" onClick={onClose}>

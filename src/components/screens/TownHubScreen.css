@@ -1,0 +1,265 @@
+/* ============================================================================
+   TOWN HUB SCREEN - 2.5D TOWN SQUARE
+   Component: TownHubScreen.tsx
+   ============================================================================ */
+
+.town-hub-screen {
+  background: #0f172a;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+}
+
+/* Sky gradient animation */
+.town-hub-sky {
+  animation: skyShift 20s ease-in-out infinite;
+}
+
+@keyframes skyShift {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Ground texture */
+.town-hub-ground {
+  background-image: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 50px,
+      rgba(0, 0, 0, 0.1) 50px,
+      rgba(0, 0, 0, 0.1) 51px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(0, 0, 0, 0.1) 50px,
+      rgba(0, 0, 0, 0.1) 51px
+    );
+}
+
+.town-square {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  animation: townSquareEntrance 1.2s ease-out;
+  /* occupy full viewport, header is overlayed */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10; /* place behind header */
+}
+
+@keyframes townSquareEntrance {
+  from {
+    opacity: 0;
+    transform: rotateX(5deg) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: rotateX(0) translateY(0);
+  }
+}
+
+/* Background layer depth */
+.layer-background {
+  filter: blur(1.5px);
+  animation: floatBackground 12s ease-in-out infinite;
+}
+
+@keyframes floatBackground {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+/* Building cards - common styles */
+.building-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  /* only transition CSS-side properties; transform is owned by framer-motion */
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* Grid container for stable layout */
+/* grid-template-columns and grid-template-rows are set as inline styles from townLayout.ts */
+.town-grid {
+  display: grid;
+  /* columns/rows driven by townLayout.ts via inline style */
+  height: 50%;
+  width: 100%;
+  position: absolute;
+  justify-items: center;
+  align-items: start;
+  overflow: visible;
+  top: 25%;
+  bottom: 25%;
+}
+
+/* castle positioned above center columns – grid position set via inline style from townLayout.ts */
+.building-castle {
+  justify-self: center;
+  align-self: start;
+  margin-top: -40px; /* lift above its tiny row */
+  z-index: 1;
+}
+
+/* perspective scaling by row: further rows appear smaller */
+/* Row depth scaling is handled by framer-motion depthScale prop in BuildingCard */
+
+/* explicit positions for core buildings – now set via inline styles from townLayout.ts */
+
+/* right-side midground buildings occupy distinct cells */
+/* (grid positions are now defined in src/data/buildings/townLayout.ts and applied as inline styles) */
+
+/* dungeon gate – grid position set via inline style from townLayout.ts */
+
+/* development debug outlines */
+/* debug resizing no longer needed; overlay handles visuals */
+.town-grid.show-grid {
+}
+
+/* only show empty cell borders */
+.grid-cell {
+  border: 1px dashed lime;
+  pointer-events: none;
+}
+
+/* overlay container sits absolutely above grid */
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: inherit;
+  grid-template-rows: inherit;
+}
+
+/* ground plane shading for all rows – entire grid is ground */
+.grid-cell {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+/* hide any content outlines when debugging cells */
+.town-grid.show-grid > *:not(.grid-cell) {
+  outline: none;
+}
+
+/* generic upward overflow for all building cards */
+.town-grid .building-card {
+  /* pull icons up by half their size so base sits at ground level */
+  margin-top: -50%;
+  z-index: 5;
+}
+
+/* ensure dungeon gate still aligns at bottom of its row */
+.dungeon-gate-container.grid-item {
+  margin-top: -20px;
+}
+
+/* ensure cards inside grid stay relative and centered */
+.town-grid .building-card {
+  position: relative;
+  margin: 0 auto;
+}
+
+/* tilt the scale wrapper, not the svg, so bob animation has no competing transform */
+.building-card-left .icon-scale-wrapper {
+  transform: scale(var(--icon-scale, 1)) perspective(600px) rotateY(5deg);
+}
+
+.building-card-right .icon-scale-wrapper {
+  transform: scale(var(--icon-scale, 1)) perspective(600px) rotateY(-5deg);
+}
+
+.building-card:hover svg, .building-card:hover img {
+  animation: buildingBob 0.8s ease-in-out;
+}
+
+@keyframes buildingBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Dungeon gate - largest, foreground */
+.dungeon-gate-container {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center bottom;
+}
+
+.dungeon-gate-container svg {
+  animation: gateGlow 3s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes gateGlow {
+  0%, 100% {
+    filter: drop-shadow(0 8px 25px rgba(251, 146, 60, 0.8));
+  }
+  50% {
+    filter: drop-shadow(0 12px 35px rgba(251, 146, 60, 1));
+  }
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1200px) {
+  .building-card svg {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  .dungeon-gate-container svg {
+    width: 150px !important;
+    height: 150px !important;
+  }
+  
+  /* Slight scale for smaller screens */
+  .building-card {
+    transform: scale(0.9);
+  }
+}
+
+/* Responsive - Narrow screens: shrink icons */
+@media (max-width: 768px) {
+  .building-card svg,
+  .building-card img {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  .grid-overlay { display: none; }
+  .layer-background { display: none; }
+}
+
+/* Responsive - Very small/mobile portrait: further shrink */
+@media (max-width: 480px) {
+  .building-card svg,
+  .building-card img {
+    width: 64px !important;
+    height: 64px !important;
+  }
+  .grid-overlay { display: none; }
+}
+
+/* Portrait mode - Most compact */
+@media (orientation: portrait) and (max-width: 768px) {
+  .town-hub-header {
+    padding: 12px;
+  }
+  .town-square {
+    padding: 0px;
+  }
+}

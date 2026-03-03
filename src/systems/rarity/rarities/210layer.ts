@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi'
 
 export const LAYER: RarityConfig = {
   id: 'layer',
@@ -8,6 +9,7 @@ export const LAYER: RarityConfig = {
   backgroundColor: '#713F12', // Yellow-900 (L=0.0621)
   statMultiplierBase: 20.0,
   minFloor: 96,
+  icon: GiPerspectiveDiceSixFacesRandom,
   glow: 'rgba(253, 224, 71, 0.6)',
   text: '#FEF08A',         // Yellow-200
   textLight: '#FEF9C3',    // Yellow-100

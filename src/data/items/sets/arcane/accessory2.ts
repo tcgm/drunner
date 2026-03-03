@@ -9,6 +9,8 @@ export const ARCANE_ORB: Omit<Item, 'id'> = {
   description: 'A sphere of pure magical energy. Amplifies all spellcasting.',
   type: 'accessory2',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiCrystalBall,
   stats: {
     magicPower: 70,

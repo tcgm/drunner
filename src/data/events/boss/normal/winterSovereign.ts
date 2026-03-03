@@ -12,7 +12,7 @@ export const WINTER_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'Cold beyond imagining! Your blood freezes as hypothermia sets in!',
         effects: [
-          { type: 'damage', target: 'all', value: 345 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1275 },
           { type: 'gold', value: 1913 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 27 },
@@ -27,7 +27,7 @@ export const WINTER_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'Your nature magic brings warmth and life! Winter cannot exist in spring!',
         effects: [
-          { type: 'damage', target: 'all', value: 270 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1385 },
           { type: 'gold', value: 2078 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 33 },
@@ -43,7 +43,7 @@ export const WINTER_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'Your attacks generate intense heat! The sovereign melts away!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 290 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1405 },
           { type: 'gold', value: 2108 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 34 },

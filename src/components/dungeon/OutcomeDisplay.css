@@ -1,0 +1,95 @@
+/* OutcomeDisplay responsive styles */
+
+/* Portrait phones - make outcome display readable and continue button accessible */
+@media (orientation: portrait) and (max-width: 768px) {
+  .outcome-display {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+  }
+
+  .outcome-display-text {
+    flex-shrink: 0;
+    padding: 1rem !important;
+  }
+
+  .outcome-display-effects {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 0.25rem;
+  }
+
+  .outcome-display-effect {
+    min-height: 48px;
+    padding: 0.875rem !important;
+  }
+
+  /* Continue button - touch friendly */
+  .outcome-display button {
+    min-height: 48px !important;
+    font-size: 1rem !important;
+    padding: 0.875rem 2rem !important;
+  }
+}
+
+/* Small portrait phones */
+@media (orientation: portrait) and (max-width: 480px) {
+  .outcome-display {
+    gap: 0.75rem;
+  }
+
+  .outcome-display-text {
+    padding: 0.875rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .outcome-display-effect {
+    min-height: 44px;
+    padding: 0.75rem !important;
+  }
+
+  .outcome-display-effect .chakra-text {
+    font-size: 0.875rem !important;
+  }
+
+  .outcome-display button {
+    min-height: 44px !important;
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Very small portrait phones */
+@media (orientation: portrait) and (max-width: 400px) {
+  .outcome-display {
+    gap: 0.5rem;
+  }
+
+  .outcome-display-text {
+    padding: 0.75rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .outcome-display-effect {
+    padding: 0.625rem !important;
+  }
+
+  .outcome-display-effect .chakra-text {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Landscape orientation - keep compact */
+@media (orientation: landscape) and (max-height: 500px) {
+  .outcome-display-effect {
+    min-height: 40px;
+    padding: 0.5rem !important;
+  }
+
+  .outcome-display button {
+    min-height: 40px !important;
+    padding: 0.625rem 1.5rem !important;
+  }
+}

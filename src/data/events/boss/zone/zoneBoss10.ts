@@ -16,7 +16,7 @@ export const ZONE_BOSS_10: DungeonEvent = {
       outcome: {
         text: 'You hammer away at its stone armor until it finally cracks and crumbles! The warden falls, and the path deeper opens.',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 5 },
           { type: 'xp', value: 300 },
           { type: 'gold', value: 500 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 5 },
@@ -29,7 +29,7 @@ export const ZONE_BOSS_10: DungeonEvent = {
       outcome: {
         text: 'Your quick reflexes let you spot a gap in its armor. A precise strike brings it down efficiently!',
         effects: [
-          { type: 'damage', target: 'all', value: 15 },
+          { type: 'damage', target: 'all', value: 5 },
           { type: 'xp', value: 350 },
           { type: 'gold', value: 600 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', maxRarity: 'rare', rarityBoost: 8 },
@@ -42,7 +42,7 @@ export const ZONE_BOSS_10: DungeonEvent = {
       outcome: {
         text: 'You weather its devastating blows until the ancient construct finally runs out of power!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 5 },
           { type: 'heal', target: 'all', value: 30 },
           { type: 'xp', value: 320 },
           { type: 'gold', value: 550 },

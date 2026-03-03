@@ -12,7 +12,7 @@ export const ANCIENT_LICH: DungeonEvent = {
       outcome: {
         text: 'Breaking the phylactery weakens the lich significantly!',
         effects: [
-          { type: 'damage', target: 'all', value: 30 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 400 },
           { type: 'gold', value: 500 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 15 },
@@ -27,7 +27,7 @@ export const ANCIENT_LICH: DungeonEvent = {
       outcome: {
         text: 'You match the lich spell for spell!',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 450 },
           { type: 'gold', value: 550 },
           { type: 'item', itemType: 'accessory1', minRarity: 'rare', rarityBoost: 18 },
@@ -42,7 +42,7 @@ export const ANCIENT_LICH: DungeonEvent = {
       outcome: {
         text: 'Your minions swarm the lich!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 480 },
           { type: 'gold', value: 600 },
           { type: 'item', itemType: 'accessory2', minRarity: 'rare', rarityBoost: 20 },
@@ -54,7 +54,7 @@ export const ANCIENT_LICH: DungeonEvent = {
       outcome: {
         text: 'The lich\'s death magic ravages your party!',
         effects: [
-          { type: 'damage', target: 'all', value: 50 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 350 },
           { type: 'gold', value: 450 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 10 },

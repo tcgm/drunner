@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiEvilBook } from 'react-icons/gi'
 
 export const ELDER: RarityConfig = {
   id: 'elder',
@@ -8,6 +9,7 @@ export const ELDER: RarityConfig = {
   backgroundColor: '#450A0A', // Red-950 (L=0.0089)
   statMultiplierBase: 18.0,
   minFloor: 93,
+  icon: GiEvilBook,
   glow: 'rgba(127, 29, 29, 0.6)',
   text: '#DC2626',         // Red-600
   textLight: '#EF4444',    // Red-500

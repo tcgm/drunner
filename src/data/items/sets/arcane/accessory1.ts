@@ -7,8 +7,10 @@ import type { Item } from '@/types'
 export const ARCANE_TOME: Omit<Item, 'id'> = {
   name: "Arcane Tome",
   description: 'An ancient spellbook containing forgotten magical secrets.',
-  type: 'accessory',
+  type: 'accessory1',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiSpellBook,
   stats: {
     wisdom: 45,

@@ -12,7 +12,7 @@ export const GEAR_TYRANT: DungeonEvent = {
       outcome: {
         text: 'Perfect mechanical precision! Every strike calculated, every movement optimized!',
         effects: [
-          { type: 'damage', target: 'all', value: 368 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1510 },
           { type: 'gold', value: 2265 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 29 },
@@ -27,7 +27,7 @@ export const GEAR_TYRANT: DungeonEvent = {
       outcome: {
         text: 'You find the weak point! One thrown bolt and the whole system seizes!',
         effects: [
-          { type: 'damage', target: 'all', value: 292 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1625 },
           { type: 'gold', value: 2438 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 34 },
@@ -43,7 +43,7 @@ export const GEAR_TYRANT: DungeonEvent = {
       outcome: {
         text: 'Brute force breaks precision! You smash through its defenses!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 305 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1645 },
           { type: 'gold', value: 2468 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 35 },

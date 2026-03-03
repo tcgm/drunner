@@ -12,7 +12,7 @@ export const DEMON_WARLORD: DungeonEvent = {
       outcome: {
         text: 'Perfectly coordinated attacks! The warlord\'s tactics overwhelm you!',
         effects: [
-          { type: 'damage', target: 'all', value: 338 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1250 },
           { type: 'gold', value: 1875 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 26 },
@@ -27,7 +27,7 @@ export const DEMON_WARLORD: DungeonEvent = {
       outcome: {
         text: 'You assassinate the warlord! The leaderless army flees!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 268 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 1370 },
           { type: 'gold', value: 2055 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 32 },
@@ -43,7 +43,7 @@ export const DEMON_WARLORD: DungeonEvent = {
       outcome: {
         text: 'Your tactics are superior! You turn their strategy against them!',
         effects: [
-          { type: 'damage', target: 'random', value: 282 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 1390 },
           { type: 'gold', value: 2085 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 33 },

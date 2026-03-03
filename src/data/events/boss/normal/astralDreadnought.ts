@@ -12,7 +12,7 @@ export const ASTRAL_DREADNOUGHT: DungeonEvent = {
       outcome: {
         text: 'It tries to swallow you whole! Reality bends as you resist!',
         effects: [
-          { type: 'damage', target: 'all', value: 300 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1140 },
           { type: 'gold', value: 1710 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 23 },
@@ -27,7 +27,7 @@ export const ASTRAL_DREADNOUGHT: DungeonEvent = {
       outcome: {
         text: 'You teleport repeatedly! The dreadnought exhausts itself chasing!',
         effects: [
-          { type: 'damage', target: 'all', value: 225 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1255 },
           { type: 'gold', value: 1883 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 27 },
@@ -43,7 +43,7 @@ export const ASTRAL_DREADNOUGHT: DungeonEvent = {
       outcome: {
         text: 'Let it swallow you, then tear your way out from inside!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 252 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1280 },
           { type: 'gold', value: 1920 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 28 },

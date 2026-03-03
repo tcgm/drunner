@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiBatwingEmblem } from 'react-icons/gi'
 
 export const MYTHIC: RarityConfig = {
   id: 'mythic',
@@ -8,6 +9,7 @@ export const MYTHIC: RarityConfig = {
   backgroundColor: '#713F12', // Yellow-900 (L=0.0621)
   statMultiplierBase: 5.0,
   minFloor: 50,
+  icon: GiBatwingEmblem,
   glow: 'rgba(254, 240, 138, 0.6)',
   text: '#FEF9C3',         // Yellow-100
   textLight: '#FEFCE8',    // Yellow-50

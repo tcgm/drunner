@@ -17,6 +17,6 @@ export const POWER_ORB_BASE: ConsumableBase = {
   ],
   icon: GiConcentrationOrb,
   baseGoldValue: 35,
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
 }

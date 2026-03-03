@@ -1,0 +1,8 @@
+# Prevent formatter from breaking inline scripts
+index.html
+
+# Other common ignores
+dist/
+build/
+*.min.js
+*.min.css

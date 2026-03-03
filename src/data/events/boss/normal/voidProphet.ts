@@ -12,7 +12,7 @@ export const VOID_PROPHET: DungeonEvent = {
       outcome: {
         text: 'Every action predicted! The prophecy becomes self-fulfilling!',
         effects: [
-          { type: 'damage', target: 'random', value: 395 },
+          { type: 'damage', target: 'random', value: 3 },
           { type: 'xp', value: 1610 },
           { type: 'gold', value: 2415 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 31 },
@@ -27,7 +27,7 @@ export const VOID_PROPHET: DungeonEvent = {
       outcome: {
         text: 'No thought, only action! Prophecy cannot predict mindless fury!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 318 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1730 },
           { type: 'gold', value: 2595 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 39 },
@@ -43,7 +43,7 @@ export const VOID_PROPHET: DungeonEvent = {
       outcome: {
         text: 'Your will surpasses prophecy! The prophet cannot foresee free will!',
         effects: [
-          { type: 'damage', target: 'all', value: 332 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1755 },
           { type: 'gold', value: 2633 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 40 },

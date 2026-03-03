@@ -9,7 +9,7 @@ export interface BaseItemTemplate extends Omit<Item, 'id' | 'name' | 'rarity' | 
   id: string // Base identifier (e.g., "sword", "crown") - combined with type to form full baseTemplateId
   materialBlacklist?: string[] // Material IDs this base can't use
   baseNames?: string[] // Possible base names for variety (e.g., ["Staff", "Stave"])
-  baseNameIcons?: Record<string, IconType> // Optional icon mapping for specific baseNames
+  baseNameIcons?: Record<string, IconType | string> // Optional icon mapping for specific baseNames (IconType or SVG path string)
 }
 
 export * from './weapon'

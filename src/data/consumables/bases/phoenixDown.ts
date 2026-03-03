@@ -9,7 +9,7 @@ export const PHOENIX_DOWN_BASE: ConsumableBase = {
   effects: [
     {
       type: 'revive',
-      value: 30,
+      value: 50,
       target: 'ally',
     }
   ],

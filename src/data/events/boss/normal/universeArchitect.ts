@@ -12,7 +12,7 @@ export const UNIVERSE_ARCHITECT: DungeonEvent = {
       outcome: {
         text: 'It unmakes you with a thought! You were designed to lose!',
         effects: [
-          { type: 'damage', target: 'all', value: 652 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2710 },
           { type: 'gold', value: 4065 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 54 },
@@ -28,7 +28,7 @@ export const UNIVERSE_ARCHITECT: DungeonEvent = {
       outcome: {
         text: 'You transcend your design! Free will defeats determinism!',
         effects: [
-          { type: 'damage', target: 'all', value: 625 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2900 },
           { type: 'gold', value: 4350 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 76 },
@@ -43,7 +43,7 @@ export const UNIVERSE_ARCHITECT: DungeonEvent = {
       outcome: {
         text: 'You learn to create! The student surpasses the master!',
         effects: [
-          { type: 'damage', target: 'all', value: 638 },
+          { type: 'damage', target: 'all', value: 48 },
           { type: 'xp', value: 2930 },
           { type: 'gold', value: 4395 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 77 },

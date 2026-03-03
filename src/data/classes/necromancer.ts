@@ -24,6 +24,7 @@ export const NECROMANCER: HeroClass = {
     charisma: 2,
     magicPower: 10,
   },
+  primaryStats: ['magicPower', 'wisdom'],
   abilities: NECROMANCER_ABILITIES,
   icon: 'GiDeathSkull',
 }

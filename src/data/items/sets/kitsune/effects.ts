@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const KITSUNE_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Fox Spirit (2 pieces): +10 Speed, +5 Luck', stats: { speed: 10, luck: 5 } },
-  4: { description: 'Fox Cunning (4 pieces): +20 Speed, +15 Luck, +20 Magic Power', stats: { speed: 20, luck: 15, magicPower: 20 } },
-  6: { description: 'Nine-Tailed Power (Full Set): +40 Speed, +30 Luck, +50 Magic Power, +30 Attack', stats: { speed: 40, luck: 30, magicPower: 50, attack: 30 } },
+  2: { description: 'Fox Spirit (2 pieces): +10 Speed, +10 Luck per piece', stats: { speed: 10, luck: 10 } },
+  4: { description: 'Fox Cunning (4 pieces): +20 Speed, +10 Luck, +20 Magic Power per piece', stats: { speed: 20, luck: 10, magicPower: 20 } },
+  6: { description: 'Nine-Tailed Power (Full Set): +30 Speed, +20 Luck, +40 Magic Power, +20 Attack per piece', stats: { speed: 30, luck: 20, magicPower: 40, attack: 20 } },
 }
 
 /**
@@ -28,9 +28,9 @@ export const KITSUNE_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const KITSUNE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onCombatStart'],
-  description: 'Fox Spirit: 20% chance to gain +50% Speed for the battle',
+  description: (m) => `Fox Spirit: 20% chance to gain +${Math.floor(50 * m)}% Speed for the battle`,
   handler: (context) => {
-    const { party, sourceHero } = context
+    const { party, sourceHero, effectMultiplier = 1.0, currentDepth } = context
     
     if (!sourceHero || !sourceHero.isAlive) {
       return null
@@ -41,9 +41,23 @@ export const KITSUNE_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
       return null
     }
     
-    // Apply speed boost (temporary for combat)
-    const speedBoost = Math.floor(sourceHero.stats.speed * 0.5)
-    sourceHero.stats.speed += speedBoost
+    // Apply speed boost (1-event TimedEffect - works in both events and combat)
+    const speedBoost = Math.floor(sourceHero.stats.speed * 0.5 * effectMultiplier)
+    const depth = currentDepth ?? 0
+    const duration = 1
+    if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+    sourceHero.activeEffects.push({
+      id: `kitsune-speed-${Date.now()}`,
+      type: 'buff',
+      name: 'Fox Spirit',
+      description: `+${speedBoost} Speed from Fox Spirit`,
+      stat: 'speed',
+      modifier: speedBoost,
+      duration,
+      appliedAtDepth: depth,
+      expiresAtDepth: depth + duration,
+      isPermanent: false,
+    })
     
     return {
       party,

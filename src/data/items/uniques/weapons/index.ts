@@ -9,6 +9,11 @@ export * from './infinityEdge'
 export * from './necronomicon'
 export * from './nekonomicon'
 export * from './demonCoreflail'
+export * from './staffOfEternalFlame'
+export * from './lyreOfTheAncients'
+export * from './heavyMetalGuitar'
+export * from './crimsonArc'
+export * from './emberblade'
 
 import { EXCALIBUR } from './excalibur'
 import { SHADOWFANG } from './shadowfang'
@@ -20,6 +25,11 @@ import { INFINITY_EDGE } from './infinityEdge'
 import { NECRONOMICON } from './necronomicon'
 import { NEKONOMICON } from './nekonomicon'
 import { DEMON_COREFLAIL } from './demonCoreflail'
+import { STAFF_OF_ETERNAL_FLAME } from './staffOfEternalFlame'
+import { LYRE_OF_THE_ANCIENTS } from './lyreOfTheAncients'
+import { HEAVY_METAL_GUITAR } from './heavyMetalGuitar'
+import { CRIMSON_ARC } from './crimsonArc'
+import { EMBERBLADE } from './emberblade'
 
 export const UNIQUE_WEAPONS = [
   EXCALIBUR,
@@ -32,4 +42,9 @@ export const UNIQUE_WEAPONS = [
   NECRONOMICON,
   NEKONOMICON,
   DEMON_COREFLAIL,
+  STAFF_OF_ETERNAL_FLAME,
+  LYRE_OF_THE_ANCIENTS,
+  HEAVY_METAL_GUITAR,
+  CRIMSON_ARC,
+  EMBERBLADE,
 ]

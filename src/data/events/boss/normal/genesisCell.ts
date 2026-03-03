@@ -12,7 +12,7 @@ export const GENESIS_CELL: DungeonEvent = {
       outcome: {
         text: 'It adapts faster than you can attack! Every strike makes it stronger!',
         effects: [
-          { type: 'damage', target: 'random', value: 618 },
+          { type: 'damage', target: 'random', value: 19 },
           { type: 'xp', value: 2570 },
           { type: 'gold', value: 3855 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 50 },
@@ -27,7 +27,7 @@ export const GENESIS_CELL: DungeonEvent = {
       outcome: {
         text: 'One perfect strike before it can evolve! The cell dies!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 565 },
+          { type: 'damage', target: 'weakest', value: 19 },
           { type: 'xp', value: 2730 },
           { type: 'gold', value: 4095 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 69 },
@@ -43,7 +43,7 @@ export const GENESIS_CELL: DungeonEvent = {
       outcome: {
         text: 'You reverse its evolution! The genesis cell becomes inert!',
         effects: [
-          { type: 'damage', target: 'all', value: 578 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2760 },
           { type: 'gold', value: 4140 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 70 },

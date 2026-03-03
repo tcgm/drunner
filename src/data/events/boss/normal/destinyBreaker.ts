@@ -12,7 +12,7 @@ export const DESTINY_BREAKER: DungeonEvent = {
       outcome: {
         text: 'Fate shatters! Your destined victory becomes impossible defeat!',
         effects: [
-          { type: 'damage', target: 'random', value: 592 },
+          { type: 'damage', target: 'random', value: 19 },
           { type: 'xp', value: 2485 },
           { type: 'gold', value: 3728 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 48 },
@@ -28,7 +28,7 @@ export const DESTINY_BREAKER: DungeonEvent = {
       outcome: {
         text: 'You need no destiny! You choose your own future!',
         effects: [
-          { type: 'damage', target: 'all', value: 532 },
+          { type: 'damage', target: 'all', value: 26 },
           { type: 'xp', value: 2615 },
           { type: 'gold', value: 3923 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 66 },
@@ -43,7 +43,7 @@ export const DESTINY_BREAKER: DungeonEvent = {
       outcome: {
         text: 'Your will is stronger than any destiny! The breaker is broken!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 545 },
+          { type: 'damage', target: 'strongest', value: 19 },
           { type: 'xp', value: 2645 },
           { type: 'gold', value: 3968 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 67 },

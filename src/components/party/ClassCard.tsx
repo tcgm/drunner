@@ -55,14 +55,14 @@ export default function ClassCard({
           <Text fontSize="xs" fontWeight="bold" color="gray.400">Base Stats</Text>
           <SimpleGrid className="class-card-tooltip-stats" columns={2} spacing={2} fontSize="xs">
             <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{maxHp}</Text></Text>
-            <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{heroClass.baseStats.attack}</Text></Text>
-            <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>{heroClass.baseStats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(heroClass.baseStats.defense)}</Text></Text></Text>
-            <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{heroClass.baseStats.speed}</Text></Text>
-            <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>{heroClass.baseStats.luck}</Text></Text>
-            <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{heroClass.baseStats.wisdom}</Text></Text>
-            <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{heroClass.baseStats.charisma}</Text></Text>
+            <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>{heroClass.baseStats.attack}</Text></Text>
+            <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>{heroClass.baseStats.defense} <Text as="span" fontSize="2xs" color="gray.400">{formatDefenseReduction(heroClass.baseStats.defense)}</Text></Text></Text>
+            <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>{heroClass.baseStats.speed}</Text></Text>
+            <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck.text}>{heroClass.baseStats.luck}</Text></Text>
+            <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>{heroClass.baseStats.wisdom}</Text></Text>
+            <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>{heroClass.baseStats.charisma}</Text></Text>
             {heroClass.baseStats.magicPower !== undefined && (
-              <Text>MAG: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower}>{heroClass.baseStats.magicPower}</Text></Text>
+              <Text>MAG: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower.text}>{heroClass.baseStats.magicPower}</Text></Text>
             )}
           </SimpleGrid>
         </VStack>
@@ -70,14 +70,14 @@ export default function ClassCard({
           <Text fontSize="xs" fontWeight="bold" color="gray.400">Per Level</Text>
           <SimpleGrid className="class-card-tooltip-gains" columns={2} spacing={2} fontSize="xs">
             <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>+{heroClass.statGains.maxHp}</Text></Text>
-            <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>+{heroClass.statGains.attack}</Text></Text>
-            <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>+{heroClass.statGains.defense}</Text></Text>
-            <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>+{heroClass.statGains.speed}</Text></Text>
-            <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>+{heroClass.statGains.luck}</Text></Text>
-            <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>+{heroClass.statGains.wisdom}</Text></Text>
-            <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>+{heroClass.statGains.charisma}</Text></Text>
+            <Text>ATK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>+{heroClass.statGains.attack}</Text></Text>
+            <Text>DEF: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>+{heroClass.statGains.defense}</Text></Text>
+            <Text>SPD: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>+{heroClass.statGains.speed}</Text></Text>
+            <Text>LCK: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck.text}>+{heroClass.statGains.luck}</Text></Text>
+            <Text>WIS: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>+{heroClass.statGains.wisdom}</Text></Text>
+            <Text>CHA: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>+{heroClass.statGains.charisma}</Text></Text>
             {heroClass.statGains.magicPower !== undefined && (
-              <Text>MAG: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower}>+{heroClass.statGains.magicPower}</Text></Text>
+              <Text>MAG: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower.text}>+{heroClass.statGains.magicPower}</Text></Text>
             )}
           </SimpleGrid>
         </VStack>
@@ -154,7 +154,7 @@ export default function ClassCard({
             top={0}
             left={0}
             right={0}
-            h="2px"
+            h="clamp(1px, 0.2vh, 3px)"
             bg="orange.400"
             boxShadow="0 0 8px rgba(251, 146, 60, 0.8)"
           />

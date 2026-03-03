@@ -8,14 +8,17 @@ import { GiMicrophone } from 'react-icons/gi'
 export const DISCORDANT_NOTE: Ability = {
     id: 'discordant-note',
     name: 'Discordant Note',
-    description: 'Debuff enemy stats',
+    description: 'Debuff enemy stats (scales with charisma)',
     cooldown: 3,
     currentCooldown: 0,
     effect: {
         type: 'debuff',
         value: 4,
-        target: 'enemy',
-        duration: 2,
+        targeting: { side: 'enemy', breadth: 'single' },
+        duration: 2,        stat: 'attack',        scaling: {
+            stat: 'charisma',
+            ratio: 0.2
+        }
     },
     icon: GiMicrophone,
 }

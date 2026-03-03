@@ -12,7 +12,7 @@ export const OOZE_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'Your weapon passes through harmlessly! The acid burns your flesh!',
         effects: [
-          { type: 'damage', target: 'all', value: 80 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 340 },
           { type: 'gold', value: 450 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 16 },
@@ -27,7 +27,7 @@ export const OOZE_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'Ice magic crystallizes the ooze! You shatter it into pieces!',
         effects: [
-          { type: 'damage', target: 'all', value: 58 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 378 },
           { type: 'gold', value: 495 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 19 },
@@ -43,7 +43,7 @@ export const OOZE_SOVEREIGN: DungeonEvent = {
       outcome: {
         text: 'Your armor holds! You destroy its core from within!',
         effects: [
-          { type: 'damage', target: 'all', value: 64 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 373 },
           { type: 'gold', value: 488 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 18 },

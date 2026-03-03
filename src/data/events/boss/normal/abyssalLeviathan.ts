@@ -12,7 +12,7 @@ export const ABYSSAL_LEVIATHAN: DungeonEvent = {
       outcome: {
         text: 'Crushing force! Your bones creak under impossible weight!',
         effects: [
-          { type: 'damage', target: 'all', value: 472 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1930 },
           { type: 'gold', value: 2895 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 38 },
@@ -27,7 +27,7 @@ export const ABYSSAL_LEVIATHAN: DungeonEvent = {
       outcome: {
         text: 'Magic balances the forces! The leviathan implodes!',
         effects: [
-          { type: 'damage', target: 'all', value: 408 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2060 },
           { type: 'gold', value: 3090 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 50 },
@@ -43,7 +43,7 @@ export const ABYSSAL_LEVIATHAN: DungeonEvent = {
       outcome: {
         text: 'Your constitution withstands any pressure! Victory!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 422 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2085 },
           { type: 'gold', value: 3128 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 51 },

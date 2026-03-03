@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiCrystalEye } from 'react-icons/gi'
 
 export const ARTIFACT: RarityConfig = {
   id: 'artifact',
@@ -8,6 +9,7 @@ export const ARTIFACT: RarityConfig = {
   backgroundColor: '#78350F',
   statMultiplierBase: 6.0,
   minFloor: 60,
+  icon: GiCrystalEye,
   glow: 'rgba(253, 230, 138, 0.6)',
   text: '#FEF3C7',
   textLight: '#FFFBEB',

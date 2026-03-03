@@ -1,0 +1,99 @@
+/* CombatLog responsive styles */
+
+/* Portrait phones - modal layout for combat log */
+@media (orientation: portrait) and (max-width: 768px) {
+  .combat-log {
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .combat-log .chakra-text {
+    font-size: 0.75rem !important;
+  }
+
+  .combat-log-entry {
+    padding: 0.375rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .combat-log-entry .chakra-badge {
+    font-size: 0.65rem !important;
+  }
+}
+
+/* Small portrait phones - more compact */
+@media (orientation: portrait) and (max-width: 480px) {
+  .combat-log {
+    max-height: 55vh !important;
+  }
+
+  .combat-log .chakra-text {
+    font-size: 0.7rem !important;
+  }
+
+  .combat-log-entry {
+    padding: 0.25rem !important;
+    margin-bottom: 0.125rem !important;
+  }
+
+  .combat-log-entry .chakra-badge {
+    font-size: 0.6rem !important;
+  }
+}
+
+/* Very small portrait phones - ultra compact */
+@media (orientation: portrait) and (max-width: 400px) {
+  .combat-log {
+    max-height: 50vh !important;
+  }
+
+  .combat-log .chakra-text {
+    font-size: 0.65rem !important;
+  }
+
+  .combat-log-entry {
+    padding: 0.125rem !important;
+  }
+
+  .combat-log-entry .chakra-badge {
+    font-size: 0.55rem !important;
+  }
+}
+
+/* Combat log FAB button for portrait mode */
+.combat-log-fab {
+  position: fixed !important;
+  bottom: 1rem !important;
+  left: 1rem !important;
+  z-index: 999 !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.5) !important;
+}
+
+@media (orientation: portrait) and (max-width: 480px) {
+  .combat-log-fab {
+    width: 48px !important;
+    height: 48px !important;
+    bottom: 0.75rem !important;
+    left: 0.75rem !important;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 400px) {
+  .combat-log-fab {
+    width: 44px !important;
+    height: 44px !important;
+    bottom: 0.5rem !important;
+    left: 0.5rem !important;
+  }
+}
+
+/* Landscape - hide FAB, use sidebar */
+@media (orientation: landscape) {
+  .combat-log-fab {
+    display: none !important;
+  }
+}

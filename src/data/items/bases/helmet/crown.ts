@@ -1,4 +1,5 @@
-import { GiCircle, GiCrown, GiTiara } from 'react-icons/gi'
+import { GiCrown, GiTiara } from 'react-icons/gi'
+import circletIcon from '@/assets/icons/items/circlet.svg'
 import type { BaseItemTemplate } from '../index'
 
 /**
@@ -13,10 +14,11 @@ export const CROWN_BASE: BaseItemTemplate = {
   baseNameIcons: {
     'Crown': GiCrown,
     'Tiara': GiTiara,
-    'Circlet': GiCircle
+    'Circlet': circletIcon
   },
   stats: {
     defense: 4,
     luck: 3,
+    charisma: 3,
   },
 }

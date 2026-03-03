@@ -376,6 +376,44 @@ export default function DevTools() {
     })
   }
 
+  const handleInstantKillBoss = () => {
+    const state = useGameStore.getState()
+    const currentEvent = state.dungeon.currentEvent
+    
+    if (!currentEvent) {
+      alert('No active event!')
+      return
+    }
+
+    if (currentEvent.type !== 'boss' || !currentEvent.combatState) {
+      alert('Not in active boss combat!')
+      return
+    }
+
+    // Deal true damage equal to boss's current HP (instant kill)
+    const combatState = currentEvent.combatState
+    const damageDealt = combatState.currentHp
+    combatState.currentHp = 0
+
+    // Update the state to trigger victory check
+    // Force a new object reference to trigger React updates
+    useGameStore.setState({
+      dungeon: {
+        ...state.dungeon,
+        currentEvent: {
+          ...currentEvent,
+          combatState: { 
+            ...combatState,
+            currentHp: 0 // Explicitly set to ensure update
+          }
+        }
+      }
+    })
+
+    console.log(`[DevTools] Instant kill dealt ${damageDealt} damage, boss HP now 0`)
+    alert(`Dealt ${damageDealt} true damage to boss! Victory condition triggered.`)
+  }
+
   const handleLoadBackups = () => {
     const availableBackups = listBackups()
     setBackups(availableBackups)
@@ -626,7 +664,7 @@ export default function DevTools() {
                             value={selectedMaterial}
                             onChange={(e) => setSelectedMaterial(e.target.value)}
                             bg="gray.900"
-                            maxH="200px"
+                            maxH="clamp(150px, 20vh, 250px)"
                           >
                             {filteredMaterials.map(mat => (
                               <option key={mat.id} value={mat.id}>{mat.prefix} ({mat.rarity}+)</option>
@@ -768,6 +806,11 @@ export default function DevTools() {
                             Kill Enemy (Fight Choice)
                           </Button>
                         )}
+                        {dungeon.currentEvent.type === 'boss' && dungeon.currentEvent.combatState && (
+                          <Button size="sm" colorScheme="red" onClick={handleInstantKillBoss}>
+                            ⚡ Instant Kill Boss (True Damage)
+                          </Button>
+                        )}
                         <Button size="sm" colorScheme="yellow" onClick={handleSkipEvent}>
                           Skip Event (Force Continue)
                         </Button>
@@ -813,7 +856,7 @@ export default function DevTools() {
                       Load Backup List ({backups.length})
                     </Button>
                     {backups.length > 0 && (
-                      <VStack align="stretch" spacing={2} maxH="300px" overflowY="auto" bg="gray.900" p={2} borderRadius="md">
+                      <VStack align="stretch" spacing={2} maxH="clamp(200px, 30vh, 400px)" overflowY="auto" bg="gray.900" p={2} borderRadius="md">
                         {backups.map(backup => (
                           <HStack key={backup} spacing={2}>
                             <Button

@@ -1,0 +1,136 @@
+/* CombatHeroCard responsive styles */
+
+/* Portrait phones - compact hero cards */
+@media (orientation: portrait) and (max-width: 768px) {
+  .combat-hero-card {
+    padding: 0.5rem !important;
+    border-width: 2px !important;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 2rem !important;
+  }
+
+  .combat-hero-card .chakra-heading,
+  .combat-hero-card h3 {
+    font-size: 0.875rem !important;
+  }
+
+  .combat-hero-card .chakra-text {
+    font-size: 0.75rem !important;
+  }
+
+  .combat-hero-card .chakra-progress {
+    height: 0.625rem !important;
+  }
+
+  .combat-hero-card .chakra-badge {
+    font-size: 0.65rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+}
+
+/* Small portrait phones - more compact */
+@media (orientation: portrait) and (max-width: 480px) {
+  .combat-hero-card {
+    padding: 0.375rem !important;
+    border-width: 1.5px !important;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 1.75rem !important;
+  }
+
+  .combat-hero-card .chakra-heading,
+  .combat-hero-card h3 {
+    font-size: 0.8rem !important;
+  }
+
+  .combat-hero-card .chakra-text {
+    font-size: 0.7rem !important;
+  }
+
+  .combat-hero-card .chakra-progress {
+    height: 0.5rem !important;
+  }
+
+  .combat-hero-card .chakra-badge {
+    font-size: 0.6rem !important;
+    padding: 0.125rem 0.25rem !important;
+  }
+
+  /* Compact status effects display */
+  .combat-hero-card .status-effects {
+    gap: 0.125rem !important;
+  }
+
+  .combat-hero-card .status-effect-icon {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+/* Very small portrait phones - ultra compact */
+@media (orientation: portrait) and (max-width: 400px) {
+  .combat-hero-card {
+    padding: 0.25rem !important;
+    border-width: 1px !important;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 1.5rem !important;
+  }
+
+  .combat-hero-card .chakra-heading,
+  .combat-hero-card h3 {
+    font-size: 0.75rem !important;
+  }
+
+  .combat-hero-card .chakra-text {
+    font-size: 0.65rem !important;
+  }
+
+  .combat-hero-card .chakra-progress {
+    height: 0.375rem !important;
+  }
+
+  .combat-hero-card .chakra-badge {
+    font-size: 0.55rem !important;
+    padding: 0.0625rem 0.1875rem !important;
+  }
+
+  /* Hide some details on very small screens */
+  .combat-hero-card .hero-level {
+    display: none !important;
+  }
+
+  .combat-hero-card .status-effects {
+    display: none !important;
+  }
+}
+
+/* Short portrait screens */
+@media (orientation: portrait) and (max-height: 600px) {
+  .combat-hero-card {
+    padding: 0.25rem !important;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Landscape - keep compact for short screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .combat-hero-card {
+    padding: 0.375rem !important;
+  }
+
+  .combat-hero-card .chakra-icon {
+    font-size: 1.75rem !important;
+  }
+
+  .combat-hero-card .chakra-progress {
+    height: 0.5rem !important;
+  }
+}

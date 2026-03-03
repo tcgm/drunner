@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import type { Hero } from '@/types'
 import HeroModal from '@/components/party/HeroModal'
+import { useGameStore } from '@/core/gameStore'
+
+// HMR: context identity must be stable — force full page reload when this module changes
+if (import.meta.hot) {
+  import.meta.hot.decline()
+}
 
 interface HeroModalContextType {
   openHeroModal: (hero: Hero, isDungeon?: boolean) => void
@@ -14,25 +20,33 @@ interface HeroModalProviderProps {
 }
 
 export function HeroModalProvider({ children }: HeroModalProviderProps) {
-  const [selectedHero, setSelectedHero] = useState<Hero | null>(null)
+  const [selectedHeroId, setSelectedHeroId] = useState<string | null>(null)
   const [isDungeon, setIsDungeon] = useState(false)
 
+  // Derive the live hero from the store so equipment updates are reflected immediately
+  const liveHero = useGameStore(useCallback(
+    (state) => selectedHeroId
+      ? (state.party.find(h => h?.id === selectedHeroId) ?? null)
+      : null,
+    [selectedHeroId]
+  ))
+
   const openHeroModal = useCallback((hero: Hero, isDungeon = false) => {
-    setSelectedHero(hero)
+    setSelectedHeroId(hero.id)
     setIsDungeon(isDungeon)
   }, [])
 
   const closeHeroModal = useCallback(() => {
-    setSelectedHero(null)
+    setSelectedHeroId(null)
     setIsDungeon(false)
   }, [])
 
   return (
     <HeroModalContext.Provider value={{ openHeroModal, closeHeroModal }}>
       {children}
-      {selectedHero && (
+      {liveHero && (
         <HeroModal
-          hero={selectedHero}
+          hero={liveHero}
           isOpen={true}
           onClose={closeHeroModal}
           isDungeon={isDungeon}

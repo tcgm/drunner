@@ -12,7 +12,7 @@ export const TOXIC_ABOMINATION: DungeonEvent = {
       outcome: {
         text: 'Toxins overwhelm your system! Every breath brings more corruption!',
         effects: [
-          { type: 'damage', target: 'all', value: 165 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 675 },
           { type: 'gold', value: 990 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 19 },
@@ -28,7 +28,7 @@ export const TOXIC_ABOMINATION: DungeonEvent = {
       outcome: {
         text: 'You understand its chemistry! Counter-agents render it harmless!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 125 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 740 },
           { type: 'gold', value: 1060 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 22 },
@@ -43,7 +43,7 @@ export const TOXIC_ABOMINATION: DungeonEvent = {
       outcome: {
         text: 'Natural magic cleanses the corruption! The abomination dissolves!',
         effects: [
-          { type: 'damage', target: 'all', value: 130 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 758 },
           { type: 'gold', value: 1083 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 23 },

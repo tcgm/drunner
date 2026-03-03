@@ -12,7 +12,7 @@ export const GRANITE_JUGGERNAUT: DungeonEvent = {
       outcome: {
         text: 'Your weapons chip uselessly at the granite! Its crushing blows devastate you!',
         effects: [
-          { type: 'damage', target: 'all', value: 148 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 510 },
           { type: 'gold', value: 670 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 20 },
@@ -28,7 +28,7 @@ export const GRANITE_JUGGERNAUT: DungeonEvent = {
       outcome: {
         text: 'You deliver a massive blow to existing cracks! The juggernaut crumbles!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 112 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 550 },
           { type: 'gold', value: 725 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 24 },
@@ -43,7 +43,7 @@ export const GRANITE_JUGGERNAUT: DungeonEvent = {
       outcome: {
         text: 'The stone obeys your will! The juggernaut becomes inert once more!',
         effects: [
-          { type: 'damage', target: 'all', value: 95 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 545 },
           { type: 'gold', value: 715 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 23 },

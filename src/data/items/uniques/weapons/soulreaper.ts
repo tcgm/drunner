@@ -10,7 +10,7 @@ export const SOULREAPER: Omit<Item, 'id'> = {
   type: 'weapon',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: GiScythe,
   stats: {
     attack: 140,

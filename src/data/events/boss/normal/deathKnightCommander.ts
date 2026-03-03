@@ -12,7 +12,7 @@ export const DEATH_KNIGHT_COMMANDER: DungeonEvent = {
       outcome: {
         text: 'Their dark powers and martial prowess combine devastatingly! Each strike drains your life!',
         effects: [
-          { type: 'damage', target: 'all', value: 195 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 740 },
           { type: 'gold', value: 1070 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 23 },
@@ -27,7 +27,7 @@ export const DEATH_KNIGHT_COMMANDER: DungeonEvent = {
       outcome: {
         text: 'Your divine power shatters their curse! They thank you as they find peace!',
         effects: [
-          { type: 'damage', target: 'all', value: 152 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 805 },
           { type: 'gold', value: 1150 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 27 },
@@ -43,7 +43,7 @@ export const DEATH_KNIGHT_COMMANDER: DungeonEvent = {
       outcome: {
         text: 'Pure might shatters their defenses! You destroy them utterly!',
         effects: [
-          { type: 'damage', target: 'random', value: 165 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 825 },
           { type: 'gold', value: 1180 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 29 },

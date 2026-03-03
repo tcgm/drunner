@@ -1,0 +1,32 @@
+/* EventArea responsive styles */
+
+/* Portrait phones - ensure event area is usable */
+@media (orientation: portrait) and (max-width: 768px) {
+  .event-area {
+    /* Let flex layout handle height, remove max-height constraint */
+    padding: 1rem !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 480px) {
+  .event-area {
+    /* More compact on small screens */
+    padding: 0.75rem !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Very small portrait phones */
+@media (orientation: portrait) and (max-width: 400px) {
+  .event-area {
+    padding: 0.5rem !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+}

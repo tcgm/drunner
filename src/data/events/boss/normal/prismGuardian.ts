@@ -12,7 +12,7 @@ export const PRISM_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'Dozens of copies attack! Laser beams crisscross the chamber!',
         effects: [
-          { type: 'damage', target: 'all', value: 325 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1210 },
           { type: 'gold', value: 1815 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 25 },
@@ -28,7 +28,7 @@ export const PRISM_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You identify the real guardian! Destroy it and the copies vanish!',
         effects: [
-          { type: 'damage', target: 'random', value: 272 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 1355 },
           { type: 'gold', value: 2033 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 31 },
@@ -43,7 +43,7 @@ export const PRISM_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You destroy every crystal! Without reflections, it\'s powerless!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 265 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1375 },
           { type: 'gold', value: 2063 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 32 },

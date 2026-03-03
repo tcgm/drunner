@@ -10,7 +10,7 @@ export const BOOTS_OF_WIND_WALKER: Omit<Item, 'id'> = {
   type: 'boots',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiWingedEmblem,
   stats: {
     speed: 35,

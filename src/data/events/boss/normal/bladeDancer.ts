@@ -12,7 +12,7 @@ export const BLADE_DANCER: DungeonEvent = {
       outcome: {
         text: 'You can barely track their movements! Cuts appear from impossible angles!',
         effects: [
-          { type: 'damage', target: 'all', value: 122 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 468 },
           { type: 'gold', value: 618 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 17 },
@@ -27,7 +27,7 @@ export const BLADE_DANCER: DungeonEvent = {
       outcome: {
         text: 'Your quick hands snatch their weapons mid-dance! They\'re helpless!',
         effects: [
-          { type: 'damage', target: 'random', value: 78 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 513 },
           { type: 'gold', value: 673 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 21 },
@@ -43,7 +43,7 @@ export const BLADE_DANCER: DungeonEvent = {
       outcome: {
         text: 'You see the pattern in their dance! You counter perfectly!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 86 },
+          { type: 'damage', target: 'weakest', value: 1 },
           { type: 'xp', value: 505 },
           { type: 'gold', value: 665 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 20 },

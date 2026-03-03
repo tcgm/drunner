@@ -67,6 +67,28 @@ export function getRaritiesForFloor(floor: number): ItemRarity[] {
     .map(([rarity]) => rarity as ItemRarity)
 }
 
+/** All rarities in ascending tier order (junk → author). */
+export const RARITY_ORDER: ItemRarity[] = [
+  'junk', 'abundant', 'common', 'uncommon',
+  'rare', 'veryRare', 'magical', 'elite',
+  'epic', 'legendary', 'mythic', 'mythicc',
+  'artifact', 'divine', 'celestial',
+  'realityAnchor', 'structural', 'singularity', 'void', 'elder',
+  'layer', 'plane', 'author',
+]
+
+/** Returns the numeric tier index of a rarity (0 = junk, highest = author). */
+export function getRarityIndex(rarity: ItemRarity): number {
+  return RARITY_ORDER.indexOf(rarity)
+}
+
+/** Returns true if `rarity` is at or below `threshold` in the tier order. */
+export function isRarityAtOrBelow(rarity: ItemRarity, threshold: ItemRarity): boolean {
+  const idx = getRarityIndex(rarity)
+  const threshIdx = getRarityIndex(threshold)
+  return idx !== -1 && threshIdx !== -1 && idx <= threshIdx
+}
+
 // Build RARITY_COLORS from individual rarity configs for UI components
 // This provides the same interface as the old rarityColors.ts file
 export interface RarityColorScheme {

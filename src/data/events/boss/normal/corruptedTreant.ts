@@ -12,7 +12,7 @@ export const CORRUPTED_TREANT: DungeonEvent = {
       outcome: {
         text: 'Your axe bites deep, but the treant\'s branches batter you relentlessly!',
         effects: [
-          { type: 'damage', target: 'all', value: 76 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 328 },
           { type: 'gold', value: 438 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 15 },
@@ -24,10 +24,11 @@ export const CORRUPTED_TREANT: DungeonEvent = {
       requirements: {
         class: 'Druid',
       },
+      skipsCombat: true, // Druidic purification - treant returns to peaceful rest
       outcome: {
         text: 'You cleanse the corruption! The treant returns to peaceful slumber!',
         effects: [
-          { type: 'damage', target: 'all', value: 51 },
+          { type: 'damage', target: 'all', value: 0 },
           { type: 'xp', value: 370 },
           { type: 'gold', value: 485 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 18 },
@@ -43,7 +44,7 @@ export const CORRUPTED_TREANT: DungeonEvent = {
       outcome: {
         text: 'Fire consumes the tainted wood! The treant falls in a blaze!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 59 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 362 },
           { type: 'gold', value: 472 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 17 },

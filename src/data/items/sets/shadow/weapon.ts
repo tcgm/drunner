@@ -9,6 +9,8 @@ export const SHADOWS_EDGE: Omit<Item, 'id'> = {
   description: 'A blade forged in pure darkness. Strikes from the shadows unseen.',
   type: 'weapon',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiShadowFollower,
   stats: {
     attack: 120,

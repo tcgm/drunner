@@ -10,7 +10,7 @@ export const BAND_OF_THE_ARCHMAGE: Omit<Item, 'id'> = {
   type: 'accessory1',
   rarity: 'epic',
   minRarity: 'uncommon',
-  maxRarity: 'mythic',
+  maxRarity: 'artifact',
   icon: GiGlobeRing,
   stats: {
     magicPower: 50,

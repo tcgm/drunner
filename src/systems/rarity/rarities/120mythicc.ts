@@ -1,4 +1,5 @@
 import type { RarityConfig } from '@/systems/rarity/types'
+import { GiDragonHead } from 'react-icons/gi'
 
 export const MYTHICC: RarityConfig = {
   id: 'mythicc',
@@ -8,6 +9,7 @@ export const MYTHICC: RarityConfig = {
   backgroundColor: '#450A0A',
   statMultiplierBase: 5.5,
   minFloor: 55,
+  icon: GiDragonHead,
   glow: 'rgba(127, 29, 29, 0.5)',
   text: '#DC2626',
   textLight: '#EF4444',

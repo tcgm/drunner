@@ -12,7 +12,7 @@ export const ANCIENT_MIMIC_LORD: DungeonEvent = {
       outcome: {
         text: 'The mimic\'s bite is vicious! Its acidic saliva burns your skin!',
         effects: [
-          { type: 'damage', target: 'all', value: 62 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 305 },
           { type: 'gold', value: 405 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 12 },
@@ -28,7 +28,7 @@ export const ANCIENT_MIMIC_LORD: DungeonEvent = {
       outcome: {
         text: 'Flames force the mimic to release you! It tries to flee but you finish it!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 47 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 345 },
           { type: 'gold', value: 450 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 16 },
@@ -43,7 +43,7 @@ export const ANCIENT_MIMIC_LORD: DungeonEvent = {
       outcome: {
         text: 'You spotted the trap! You kill it before it can react!',
         effects: [
-          { type: 'damage', target: 'all', value: 38 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 370 },
           { type: 'gold', value: 485 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 19 },

@@ -17,6 +17,6 @@ export const TORCH_BASE: ConsumableBase = {
   ],
   icon: GiTorch,
   baseGoldValue: 15,
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
 }

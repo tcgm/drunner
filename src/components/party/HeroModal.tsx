@@ -31,7 +31,7 @@ import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
 import { getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { refreshHeroAbilities } from '@/utils/abilityUtils'
-import { getAbilityDescription } from '@/utils/abilityDisplay'
+import { getAbilityScalingFormulaWithResult } from '@/utils/abilityDisplay'
 
 interface HeroModalProps {
   hero: Hero
@@ -158,8 +158,8 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
             fontSize="2xs"
             borderRadius="full"
             minW="auto"
-            w="24px"
-            h="24px"
+            w="clamp(20px, 2vw, 28px)"
+            h="clamp(20px, 2vw, 28px)"
             p={0}
             zIndex={3}
           >
@@ -320,10 +320,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                   <Grid templateColumns="1fr 1fr" gap="2%">
                     <GridItem>
                       <HStack spacing={1.5}>
-                        <Icon as={GameIcons.GiSwordman} color="red.400" boxSize={4} />
+                        <Icon as={GameIcons.GiSwordman} color={GAME_CONFIG.colors.stats.attack.icon} boxSize={4} />
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Attack</Text>
-                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>
                             {calculateTotalStats(hero).attack}
                           </Text>
                         </VStack>
@@ -332,10 +332,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
                     <GridItem>
                       <HStack spacing={1.5}>
-                        <Icon as={GameIcons.GiShield} color="blue.400" boxSize={4} />
+                        <Icon as={GameIcons.GiShield} color={GAME_CONFIG.colors.stats.defense.icon} boxSize={4} />
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Defense</Text>
-                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>
                             {calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text>
                           </Text>
                         </VStack>
@@ -344,10 +344,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
                     <GridItem>
                       <HStack spacing={1.5}>
-                        <Icon as={GameIcons.GiRun} color="yellow.400" boxSize={4} />
+                        <Icon as={GameIcons.GiRun} color={GAME_CONFIG.colors.stats.speed.icon} boxSize={4} />
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Speed</Text>
-                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>
                             {calculateTotalStats(hero).speed}
                           </Text>
                         </VStack>
@@ -356,10 +356,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
                     <GridItem>
                       <HStack spacing={1.5}>
-                        <Icon as={GameIcons.GiPerspectiveDiceSixFacesRandom} color="green.400" boxSize={4} />
+                        <Icon as={GameIcons.GiPerspectiveDiceSixFacesRandom} color={GAME_CONFIG.colors.stats.luck.icon} boxSize={4} />
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Luck</Text>
-                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck}>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.luck.text}>
                             {calculateTotalStats(hero).luck}
                           </Text>
                         </VStack>
@@ -368,10 +368,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
                     <GridItem>
                       <HStack spacing={1.5}>
-                        <Icon as={GameIcons.GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom} boxSize={4} />
+                        <Icon as={GameIcons.GiSpellBook} color={GAME_CONFIG.colors.stats.wisdom.icon} boxSize={4} />
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Wisdom</Text>
-                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>
                             {calculateTotalStats(hero).wisdom ?? 0}
                           </Text>
                         </VStack>
@@ -380,10 +380,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
                     <GridItem>
                       <HStack spacing={1.5}>
-                        <Icon as={GameIcons.GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma} boxSize={4} />
+                        <Icon as={GameIcons.GiTiedScroll} color={GAME_CONFIG.colors.stats.charisma.icon} boxSize={4} />
                         <VStack spacing={0} align="start" flex={1}>
                           <Text fontSize="2xs" color="gray.500">Charisma</Text>
-                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>
+                          <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>
                             {calculateTotalStats(hero).charisma ?? 0}
                           </Text>
                         </VStack>
@@ -393,10 +393,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                     {calculateTotalStats(hero).magicPower !== undefined && (
                       <GridItem colSpan={2}>
                         <HStack spacing={1.5}>
-                          <Icon as={GameIcons.GiMagicSwirl} color="purple.400" boxSize={4} />
+                          <Icon as={GameIcons.GiMagicSwirl} color={GAME_CONFIG.colors.stats.magicPower.icon} boxSize={4} />
                           <VStack spacing={0} align="start" flex={1}>
                             <Text fontSize="2xs" color="gray.500">Magic Power</Text>
-                            <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower}>
+                            <Text fontSize="md" fontWeight="bold" color={GAME_CONFIG.colors.stats.magicPower.text}>
                               {calculateTotalStats(hero).magicPower}
                             </Text>
                           </VStack>
@@ -422,7 +422,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         heroWithIcons.abilities.map((ability, index) => {
                           // Use the ability's icon component directly, fallback to sparkles
                           const AbilityIcon = ability.icon || GameIcons.GiSparkles
-                          const abilityDesc = getAbilityDescription(ability, heroWithIcons)
+                          const formulaWithResult = getAbilityScalingFormulaWithResult(ability, heroWithIcons)
 
                           return (
                             <Box
@@ -443,12 +443,17 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                                   </Text>
                                 </HStack>
                                 <Badge colorScheme="purple" fontSize="2xs" px={1}>
-                                  {ability.cooldown}
+                                  CD:{ability.cooldown}
                                 </Badge>
                               </HStack>
                               <Text fontSize="2xs" color="gray.400" lineHeight="1.2" noOfLines={2}>
-                                {abilityDesc}
+                                {ability.description}
                               </Text>
+                              {formulaWithResult && (
+                                <Text fontSize="2xs" color="cyan.300" fontWeight="semibold" mt={0.5}>
+                                  ⚡ {formulaWithResult}
+                                </Text>
+                              )}
                             </Box>
                           )
                         })

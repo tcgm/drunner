@@ -22,11 +22,11 @@ import {
   Badge,
   useToast,
   Icon,
-  Spacer,
+  Tooltip,
   useDisclosure,
 } from '@chakra-ui/react'
 import { useState, useCallback, useMemo } from 'react'
-import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion, GiUpgrade } from 'react-icons/gi'
+import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion, GiUpgrade, GiStack, GiVisoredHelm, GiBoots, GiNecklace, GiPowder } from 'react-icons/gi'
 import type { Item } from '../../types'
 // HMR Test - checking bank inventory item restoration
 import { useGameStore } from '@/core/gameStore'
@@ -177,55 +177,61 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   return (
     <Modal isOpen={isOpen} onClose={handleClose} size="6xl" scrollBehavior="inside" isCentered={false}>
       <ModalOverlay bg="blackAlpha.700" />
-      <ModalContent className="bank-inventory-modal" bg="gray.900" maxH="90vh" border="2px solid" borderColor="gray.700" mt={4}>
-        <ModalHeader bg="gray.800" borderBottom="2px solid" borderColor="gray.700">
-          <Flex align="center" gap={4}>
-            <Icon as={GiSwapBag} boxSize={8} color="orange.400" />
-            <VStack align="start" spacing={0}>
-              <Text color="orange.400" fontSize="xl">
+      <ModalContent className="bank-inventory-modal" bg="gray.900" maxH="90vh" border="2px solid" borderColor="gray.700" mt={4} maxW={{ base: '95vw', md: '6xl' }} overflow="hidden">
+        <ModalHeader bg="gray.800" borderBottom="2px solid" borderColor="gray.700" px={{ base: 2, md: 6 }} py={{ base: 2, md: 4 }}>
+          <Flex align="center" gap={{ base: 2, md: 4 }} overflow="hidden">
+            <Icon as={GiSwapBag} boxSize={{ base: 6, md: 8 }} color="orange.400" flexShrink={0} />
+            <VStack align="start" spacing={0} minW={0} flex={1} overflow="hidden">
+              <Text color="orange.400" fontSize={{ base: 'sm', md: 'xl' }} noOfLines={1}>
                 {pendingSlot ? `Select ${pendingSlot}` : 'Bank Inventory'}
               </Text>
-              <HStack spacing={4} fontSize="sm">
-                <Text color="gray.400">
-                  {bankInventory.length} / {bankStorageSlots} slots
+              <HStack spacing={{ base: 1, md: 4 }} fontSize="sm" flexWrap="wrap">
+                <Text color="gray.400" fontSize={{ base: 'xs', md: 'sm' }}>
+                  {bankInventory.length} / {bankStorageSlots}
                 </Text>
-                <Badge colorScheme="green" display="flex" alignItems="center" gap={1}>
-                  {bankGold} Gold
-                </Badge>
-                <Badge colorScheme="yellow" display="flex" alignItems="center" gap={1}>
-                  <Icon as={GiTwoCoins} />
-                  {alkahest} Alkahest
-                </Badge>
+                <Tooltip label="Gold" placement="bottom" hasArrow>
+                  <HStack spacing={1} bg="gray.700" px={2} py={0.5} borderRadius="md" cursor="help">
+                    <Icon as={GiTwoCoins} color={GAME_CONFIG.colors.gold.light} boxSize={3} />
+                    <Text fontSize={{ base: 'xs', md: 'sm' }} fontWeight="bold" color={GAME_CONFIG.colors.gold.light}>{bankGold}</Text>
+                  </HStack>
+                </Tooltip>
+                <Tooltip label="Alkahest" placement="bottom" hasArrow>
+                  <HStack spacing={1} bg="gray.700" px={2} py={0.5} borderRadius="md" cursor="help">
+                    <Icon as={GiPowder} color={GAME_CONFIG.colors.alkahest.light} boxSize={3} />
+                    <Text fontSize={{ base: 'xs', md: 'sm' }} fontWeight="bold" color={GAME_CONFIG.colors.alkahest.light}>{alkahest}</Text>
+                  </HStack>
+                </Tooltip>
                 {isSelectionMode && hasSelection && (
-                  <Badge colorScheme="blue">
-                    {selectedCount} Selected
+                  <Badge colorScheme="blue" fontSize={{ base: 'xs', md: 'sm' }}>
+                    {selectedCount}
                   </Badge>
                 )}
               </HStack>
             </VStack>
-            <Spacer />
-            {!pendingSlot && v2Items.length > 0 && (
-              <Button
-                size="sm"
-                colorScheme="cyan"
-                onClick={onReviewV2Open}
-                leftIcon={<Icon as={GiUpgrade} />}
-              >
-                Review Old Items ({v2Items.length})
-              </Button>
-            )}
-            {!pendingSlot && (
-              <VStack align="end" spacing={1} mr={8}>
+            <HStack spacing={1} flexShrink={0} mr={8}>
+              {!pendingSlot && v2Items.length > 0 && (
+                <Button
+                  size="sm"
+                  colorScheme="cyan"
+                  onClick={onReviewV2Open}
+                  leftIcon={<Icon as={GiUpgrade} />}
+                  className="bank-header-btn"
+                >
+                  <span className="bank-header-btn-label">Review Old ({v2Items.length})</span>
+                </Button>
+              )}
+              {!pendingSlot && (
                 <Button
                   size="sm"
                   colorScheme="purple"
                   onClick={onBuySlotsOpen}
                   leftIcon={<Icon as={GiSwapBag} />}
+                  className="bank-header-btn"
                 >
-                  Buy Bank Slots
+                  <span className="bank-header-btn-label">Buy Slots</span>
                 </Button>
-              </VStack>
-            )}
+              )}
+            </HStack>
           </Flex>
         </ModalHeader>
         <ModalCloseButton color="gray.400" />
@@ -280,29 +286,33 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
             {/* Tabs - only show when not filtering and has items */}
             {!pendingSlot && filterBy === 'all' && bankInventory.length > 0 && filteredAndSortedItems.length > 0 && (
               <TabList className="inventory-tab-list" borderColor="gray.700" mb={0}>
-                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                  All ({itemsByType.all?.length || 0})
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2} title="All">
+                  <Icon as={GiStack} mr={{ base: 0, md: 2 }} />
+                  <span className="bank-tab-label">All ({itemsByType.all?.length || 0})</span>
                 </Tab>
-                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                  <Icon as={GiCrossedSwords} mr={2} />
-                  Weapons ({itemsByType.weapon?.length || 0})
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2} title="Weapons">
+                  <Icon as={GiCrossedSwords} mr={{ base: 0, md: 2 }} />
+                  <span className="bank-tab-label">Weapons ({itemsByType.weapon?.length || 0})</span>
                 </Tab>
-                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                  <Icon as={GiCheckedShield} mr={2} />
-                  Armor ({itemsByType.armor?.length || 0})
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2} title="Armor">
+                  <Icon as={GiCheckedShield} mr={{ base: 0, md: 2 }} />
+                  <span className="bank-tab-label">Armor ({itemsByType.armor?.length || 0})</span>
                 </Tab>
-                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                  Helmets ({itemsByType.helmet?.length || 0})
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2} title="Helmets">
+                  <Icon as={GiVisoredHelm} mr={{ base: 0, md: 2 }} />
+                  <span className="bank-tab-label">Helmets ({itemsByType.helmet?.length || 0})</span>
                 </Tab>
-                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                  Boots ({itemsByType.boots?.length || 0})
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2} title="Boots">
+                  <Icon as={GiBoots} mr={{ base: 0, md: 2 }} />
+                  <span className="bank-tab-label">Boots ({itemsByType.boots?.length || 0})</span>
                 </Tab>
-                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                  Accessories ({itemsByType.accessories?.length || 0})
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2} title="Accessories">
+                  <Icon as={GiNecklace} mr={{ base: 0, md: 2 }} />
+                  <span className="bank-tab-label">Accessories ({itemsByType.accessories?.length || 0})</span>
                 </Tab>
-                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2}>
-                  <Icon as={GiHealthPotion} mr={2} />
-                  Consumables ({itemsByType.consumables?.length || 0})
+                <Tab _selected={{ bg: 'gray.800', color: 'orange.400' }} fontSize="sm" py={2} title="Consumables">
+                  <Icon as={GiHealthPotion} mr={{ base: 0, md: 2 }} />
+                  <span className="bank-tab-label">Consumables ({itemsByType.consumables?.length || 0})</span>
                 </Tab>
               </TabList>
             )}

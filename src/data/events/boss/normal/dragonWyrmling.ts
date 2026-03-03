@@ -12,7 +12,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
       outcome: {
         text: 'The dragon breathes fire! The battle is fierce!',
         effects: [
-          { type: 'damage', target: 'all', value: 40 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 300 },
           { type: 'gold', value: 400 },
         ],
@@ -26,7 +26,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
       outcome: {
         text: 'Your spells pierce the dragon\'s magical resistance!',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 350 },
           { type: 'gold', value: 450 },
         ],
@@ -37,6 +37,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
       requirements: {
         gold: 200,
       },
+      skipsCombat: true, // Pay tribute to avoid the fight
       outcome: {
         text: 'The dragon is amused but demands tribute.',
         effects: [
@@ -53,7 +54,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
       outcome: {
         text: 'Your precise shots ground the dragon!',
         effects: [
-          { type: 'damage', target: 'all', value: 30 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 320 },
           { type: 'gold', value: 420 },
         ],
@@ -61,6 +62,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
     },
     {
       text: 'Attempt to hug the dragon',
+      skipsCombat: true, // Unconventional diplomatic approach - skips combat
       possibleOutcomes: [
         {
           weight: 85,

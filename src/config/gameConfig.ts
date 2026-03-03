@@ -51,15 +51,43 @@ export const GAME_CONFIG = {
       glow: 'rgba(72, 187, 120, 0.8)', // #48bb78
       hex: '#48bb78',
     },
-    // Stat colors
+    // Stat colors (for consistent stat display across UI)
     stats: {
-      attack: 'red.400',
-      defense: 'blue.400',
-      speed: 'yellow.400',
-      luck: 'purple.400',
-      magicPower: 'purple.400',
-      wisdom: 'cyan.400',
-      charisma: 'pink.400',
+      attack: {
+        icon: 'red.500',
+        text: 'red.300',
+        base: 'red.400',
+      },
+      defense: {
+        icon: 'blue.500',
+        text: 'blue.300',
+        base: 'blue.400',
+      },
+      speed: {
+        icon: 'green.500',
+        text: 'green.300',
+        base: 'green.400',
+      },
+      luck: {
+        icon: 'yellow.500',
+        text: 'yellow.300',
+        base: 'yellow.400',
+      },
+      magicPower: {
+        icon: 'purple.500',
+        text: 'purple.300',
+        base: 'purple.400',
+      },
+      wisdom: {
+        icon: 'cyan.500',
+        text: 'cyan.300',
+        base: 'cyan.400',
+      },
+      charisma: {
+        icon: 'pink.500',
+        text: 'pink.300',
+        base: 'pink.400',
+      },
     },
     // Rarity colors (Chakra tokens - map to closest Chakra colors)
     rarity: {
@@ -183,17 +211,118 @@ export const GAME_CONFIG = {
 
     mentorXpShare: 0.5, // 50% of overflow XP shared with lower level heroes
     defaultHealPercent: 0.5, // 50% max HP when no heal amount specified
+    
+    // Turn-based boss combat
+    turnBased: {
+      enabled: true, // Feature flag for turn-based combat
+      floorBossesHaveCombat: false, // If false, only zone bosses and the final boss trigger turn-based combat
+      
+      // Boss base stats by tier
+      bossStats: {
+        floorBoss: {
+          baseHp: 200,
+          baseAttack: 30,
+          baseDefense: 10,
+          baseSpeed: 15,
+          baseLuck: 10,
+        },
+        zoneBoss: {
+          baseHp: 500,
+          baseAttack: 50,
+          baseDefense: 20,
+          baseSpeed: 20,
+          baseLuck: 15,
+        },
+        finalBoss: {
+          baseHp: 2000,
+          baseAttack: 100,
+          baseDefense: 40,
+          baseSpeed: 30,
+          baseLuck: 25,
+        },
+      },
+      
+      // Danger contribution weights
+      dangerWeights: {
+        floor: 1.0, // Floors contribute 1:1 to danger
+        depth: 0.05, // Events contribute minimally to danger
+        combatDepth: 0.05, // Combat turns contribute same as events to danger
+      },
+      
+      // Early boss scaling (reduced difficulty for floors 1-10, tapering)
+      earlyBossScaling: {
+        enabled: true,
+        maxFloor: 10, // Scaling applies up to floor 10 (zone boss)
+        // Danger reduction per floor (linear taper from floor 1 to 10)
+        // Floor 1: 60% reduction, Floor 2: 50%, Floor 3: 40%, ..., Floor 10: 0%
+        baseReduction: 0.60, // Starting reduction at floor 1 (60%)
+        taperPerFloor: 0.06, // Reduction decreases by 6% per floor (reaches 0% at floor 10)
+        description: 'Early bosses are easier, tapering off until the first zone boss',
+      },
+      
+      // Stat scaling per danger point
+      bossScaling: {
+        // Locked at combat start
+        hp: 3, // 150% HP per danger point (fixed when combat begins)
+        
+        // Dynamic scaling during combat
+        attack: 0.05, // 5% attack per danger point (recalculated each turn)
+        defense: 0.9, // 9% defense per danger point (recalculated each turn)
+        speed: 1, // 1% speed per danger point (recalculated each turn)
+        luck: 2.5, // 2.5% luck per danger point (recalculated each turn)
+      },
+    },
   },
 
   // Loot Generation
   loot: {
     baseItemValue: 50, // Base value for crafted items
+    // Base chance to roll a unique instead of a procedural item when a given rarity is picked.
+    // Items with a per-item `dropChance` field are excluded from this pool and roll independently.
+    // Rarities omitted here (or set to 0) produce no uniques via the general pool.
     uniqueChances: {
-      epic: 0.15, // 15% chance for epic uniques
-      legendary: 0.30, // 30% chance for legendary uniques
-      mythic: 0.50, // 50% chance for mythic uniques
-    },
+      rare:          0.02, // 2%
+      veryRare:      0.04, // 4%
+      magical:       0.06, // 6%
+      elite:         0.08, // 8%
+      epic:          0.15, // 15%
+      legendary:     0.30, // 30%
+      mythic:        0.50, // 50%
+      mythicc:       0.55, // 55%
+      artifact:      0.60, // 60%
+      divine:        0.65, // 65%
+      celestial:     0.70, // 70%
+      realityAnchor: 0.75, // 75%
+      structural:    0.80, // 80%
+      singularity:   0.85, // 85%
+      void:          0.90, // 90%
+      elder:         0.90, // 90%
+      layer:         0.95, // 95%
+      plane:         0.95, // 95%
+      author:        1.00, // 100% – author-tier items are always unique
+    } as Partial<Record<import('@/types').ItemRarity, number>>,
     setChance: 0.05, // 5% chance for set item drops
+
+    // Rarities that can never appear in procedural loot drops regardless of floor
+    excludedFromLoot: ['narrative', 'author', 'plane', 'layer', 'elder', 'void', 'singularity', 'structural', 'realityAnchor'] as const,
+
+    // The available rarity list at a given floor (all rarities with minFloor <= floor,
+    // minus excludedFromLoot) is divided into this many equal-size bucket segments,
+    // ordered from lowest tier (bucket 0) to highest tier (bucket N-1).
+    lootRarityBuckets: 4,
+
+    // Floor bands: each band is active from minFloor until the next band's minFloor.
+    // bucketWeights[0] = bottom segment of available rarities (lowest tiers),
+    // bucketWeights[N-1] = top segment (highest tiers unlocked at this floor).
+    // Values are relative weights — normalised automatically at runtime.
+    // No rarity names needed: the bucket boundaries shift as new rarities unlock.
+    floorBands: [
+      { minFloor: 1,  bucketWeights: [70, 30,  0,  0] },
+      { minFloor: 15, bucketWeights: [30, 45, 25,  0] },
+      { minFloor: 30, bucketWeights: [ 5, 35, 45, 15] },
+      { minFloor: 55, bucketWeights: [ 0, 10, 45, 45] },
+      { minFloor: 80, bucketWeights: [ 0,  0, 30, 70] },
+    ],
   },
 
   // Multipliers (adjustable game balance)
@@ -231,6 +360,7 @@ export const GAME_CONFIG = {
     priceMultiplier: 2.0, // Shop items cost 2x their base value
     refreshBaseCost: 50, // Base cost to refresh shop inventory
     refreshCostMultiplier: 0.25, // Multiplier of remaining unpurchased items value for refresh cost
+    refreshCooldown: 600, // Cooldown in milliseconds before refresh button can be used again
     inventorySize: 6, // Number of potions in shop
     floorScaling: 3, // Multiplier for converting party level to effective floor for potion quality
   },
@@ -266,6 +396,7 @@ export const GAME_CONFIG = {
     },
     refreshBaseCost: 50, // Base cost to refresh market inventory (more stalls = higher cost)
     refreshCostMultiplier: 0.05, // Multiplier of remaining unpurchased items value for refresh cost
+    refreshCooldown: 600, // Cooldown in milliseconds before refresh button can be used again
     stallSize: 7, // Number of items per stall
     stallCount: 3, // Number of stalls in the market
     floorScaling: 3, // Multiplier for converting party level to effective floor for item quality
@@ -279,5 +410,50 @@ export const GAME_CONFIG = {
     // 'reset-levels': Heroes reset to level 1
     // 'lose-equipment': Heroes keep levels but lose all equipment
     loseAllGoldOnDefeat: true, // Whether defeated heroes lose all gold
+  },
+
+  // Shifty Guy – post-run bulk scrapper that appears when returning to town
+  shiftyGuy: {
+    enabled: true,
+    // Gold fee charged by the Shifty Guy as a fraction of selected items' total gold value
+    goldCostPercent: 0.08, // 8% – "modest gold fee"
+    // Fraction of the normal manual-discard alkahest you actually receive (Shifty Guy takes a cut)
+    alkahestReturnPercent: 0.75, // 75% of what manual discarding would give
+    // Default rarity threshold shown in the UI when the modal first opens.
+    // Items AT or BELOW this rarity are pre-selected for scrapping.
+    defaultRarityThreshold: 'common' as import('@/types').ItemRarity,
+    // Default toggle states
+    defaultIncludeUnique: false, // Unique items excluded by default
+    defaultIncludeSet: false,    // Set items excluded by default
+    defaultIncludeMods: false,   // Modded items excluded by default
+  },
+
+  // Nexus – permanent meta-progression upgrades purchased with Meta XP
+  nexus: {
+    /** Global multiplier applied to every tier's Meta XP cost. Tune globally here. */
+    costMultiplier: 1.0,
+    /** Global multiplier applied to every tier's stat bonus. */
+    bonusMultiplier: 1.0,
+    /** Number of upgrade tiers within each rarity phase before advancing to the next. */
+    tiersPerRarity: 5,
+    /**
+     * Rarity phases in ascending order. Uses ItemRarity string values from the rarity system.
+     * Each completed phase gates entry to the next at dramatically higher costs.
+     */
+    rarityProgression: [
+      'common', 'uncommon', 'rare', 'elite',
+      'epic', 'legendary', 'mythic', 'artifact',
+    ] as const,
+    /**
+     * Exponent applied to the 1-based tier index within a rarity phase.
+     * Formula: baseCost * magnitudeMultiplier^rarityIndex * tierWithinRarity^intraRarityExponent * costMultiplier
+     * Higher value = steeper within-phase cost ramp.
+     */
+    intraRarityExponent: 1.8,
+    /**
+     * How many times more expensive each successive rarity phase is relative to the previous one.
+     * 10 means Uncommon tier-1 costs 10× Common tier-1, Rare costs 100×, etc.
+     */
+    rarityMagnitudeMultiplier: 10,
   },
 } as const

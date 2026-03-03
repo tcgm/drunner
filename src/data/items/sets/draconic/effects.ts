@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const DRACONIC_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Dragon Blood (2 pieces): +50 HP, +10 Defense', stats: { maxHp: 50, defense: 10 } },
-  4: { description: 'Dragon Might (4 pieces): +100 HP, +25 Defense, +30 Attack', stats: { maxHp: 100, defense: 25, attack: 30 } },
-  6: { description: 'Ancient Dragon (Full Set): +200 HP, +50 Defense, +60 Attack, +40 Magic Power', stats: { maxHp: 200, defense: 50, attack: 60, magicPower: 40 } },
+  2: { description: 'Dragon Blood (2 pieces): +50 HP, +10 Defense per piece', stats: { maxHp: 50, defense: 10 } },
+  4: { description: 'Dragon Might (4 pieces): +90 HP, +20 Defense, +30 Attack per piece', stats: { maxHp: 90, defense: 20, attack: 30 } },
+  6: { description: 'Ancient Dragon (Full Set): +140 HP, +40 Defense, +50 Attack, +30 Magic Power per piece', stats: { maxHp: 140, defense: 40, attack: 50, magicPower: 30 } },
 }
 
 /**
@@ -28,9 +28,9 @@ export const DRACONIC_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const DRACONIC_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onDamageTaken'],
-  description: "Dragon's Wrath: 30% chance to retaliate with fire damage when hit",
+  description: (m) => `Dragon's Wrath: 30% chance to retaliate with ${m > 1 ? 'amplified ' : ''}fire damage (50% ATK + 30% Magic Power × ${m.toFixed(1)}×) when hit`,
   handler: (context) => {
-    const { party, sourceHero, damageAmount } = context
+    const { party, sourceHero, damageAmount, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive || !damageAmount) {
       return null
@@ -43,7 +43,7 @@ export const DRACONIC_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
     
     // Retaliation damage scales with attack and magic power
     const baseMagicPower = sourceHero.stats.magicPower ?? 0
-    const retaliationDamage = Math.floor((sourceHero.stats.attack * 0.5) + (baseMagicPower * 0.3))
+    const retaliationDamage = Math.floor(((sourceHero.stats.attack * 0.5) + (baseMagicPower * 0.3)) * effectMultiplier)
     
     return {
       party,

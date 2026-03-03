@@ -101,25 +101,29 @@ export const MusicControls: FC = () => {
         ref={buttonRef}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
-        onMouseLeave={() => {
+        onMouseLeave={(e) => {
+        // Clear long press timer
           if (longPressTimer) {
             clearTimeout(longPressTimer)
             setLongPressTimer(null)
           }
+          // Reset hover styles
+          e.currentTarget.style.transform = 'scale(1)'
+          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)'
         }}
         onContextMenu={handleContextMenu}
         style={{
           position: 'fixed',
-          bottom: '20px',
-          left: '20px',
-          width: '48px',
-          height: '48px',
+          bottom: 'clamp(10px, 2vh, 20px)',
+          left: 'clamp(10px, 2vw, 20px)',
+          width: 'clamp(40px, 4vw, 56px)',
+          height: 'clamp(40px, 4vw, 56px)',
           borderRadius: '50%',
           border: 'none',
           background: 'rgba(0, 0, 0, 0.6)',
           backdropFilter: 'blur(10px)',
           color: musicEnabled ? '#fff' : '#888',
-          fontSize: '24px',
+          fontSize: 'clamp(20px, 2vw, 28px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -132,10 +136,6 @@ export const MusicControls: FC = () => {
           e.currentTarget.style.transform = 'scale(1.1)'
           e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)'
         }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)'
-          e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)'
-        }}
         title={musicEnabled ? 'Click to mute | Long press for volume' : 'Click to unmute | Long press for volume'}
       >
         {musicEnabled ? <GiSpeaker /> : <GiSpeakerOff />}
@@ -147,13 +147,13 @@ export const MusicControls: FC = () => {
           ref={sliderRef}
           style={{
             position: 'fixed',
-            bottom: '80px',
-            left: '20px',
-            width: '48px',
-            height: '150px',
+            bottom: 'clamp(50px, 8vh, 80px)',
+            left: 'clamp(10px, 2vw, 20px)',
+            width: 'clamp(40px, 4vw, 56px)',
+            height: 'clamp(120px, 15vh, 180px)',
             background: 'rgba(0, 0, 0, 0.8)',
             backdropFilter: 'blur(10px)',
-            borderRadius: '24px',
+            borderRadius: 'clamp(20px, 2vw, 28px)',
             padding: '12px 0',
             display: 'flex',
             flexDirection: 'column',
@@ -180,7 +180,7 @@ export const MusicControls: FC = () => {
           </style>
           
           <span style={{
-            fontSize: '12px',
+            fontSize: 'clamp(10px, 1vw, 14px)',
             color: '#fff',
             fontWeight: 'bold',
           }}>
@@ -195,8 +195,8 @@ export const MusicControls: FC = () => {
             onChange={handleVolumeChange}
             disabled={!musicEnabled}
             style={{
-              width: '120px',
-              height: '24px',
+              width: 'clamp(100px, 12vw, 140px)',
+              height: 'clamp(20px, 2vw, 28px)',
               cursor: musicEnabled ? 'pointer' : 'not-allowed',
               opacity: musicEnabled ? 1 : 0.5,
               transform: 'rotate(-90deg)',

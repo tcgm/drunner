@@ -1,3 +1,4 @@
+import './PartySetupScreen.css'
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../core/gameStore'
 import { CORE_CLASSES } from '../../data/classes'
@@ -17,6 +18,7 @@ import { MarketHallModal } from '../party/MarketHallModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
+import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 
 interface PartySetupScreenProps {
   onBack: () => void
@@ -34,7 +36,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     bankGold,
     alkahest,
     bankStorageSlots,
-    expandBankStorage,
     equipItemFromBank,
     unequipItemFromHero,
     moveItemToBank,
@@ -49,7 +50,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     deleteCorruptedItem,
     metaXp,
     healParty,
-    purchasePotion,
     spendBankGold,
   } = useGameStore()
 
@@ -68,6 +68,17 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
   const [tabIndex, setTabIndex] = useState(0)
   const [pendingSlotIndex, setPendingSlotIndex] = useState<number | null>(null)
   const [pendingSlot, setPendingSlot] = useState<string | null>(null)
+  const [isPortrait, setIsPortrait] = useState(false)
+
+  // Detect orientation
+  useEffect(() => {
+    const checkOrientation = () => {
+      setIsPortrait(window.innerWidth <= 768 && window.matchMedia('(orientation: portrait)').matches)
+    }
+    checkOrientation()
+    window.addEventListener('resize', checkOrientation)
+    return () => window.removeEventListener('resize', checkOrientation)
+  }, [])
 
   // Bank modal
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -86,9 +97,6 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Market Hall modal
   const { isOpen: isMarketOpen, onOpen: onMarketOpen, onClose: onMarketClose } = useDisclosure()
-
-  // Buy bank slots modal
-  const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
 
   // Corrupted items modal
   const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
@@ -130,6 +138,20 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     } else if (selectedClass) {
       // Create new hero from class in the clicked slot
       addHeroByClass(selectedClass, index)
+    }
+  }
+
+  const handleAddHeroByClassDirect = (classId: string, index: number) => {
+    const cls = CORE_CLASSES.find(c => c.id === classId)
+    if (cls) {
+      addHeroByClass(cls, index)
+    }
+  }
+
+  const handleAddHeroFromRosterDirect = (rosterIndex: number, slotIndex: number) => {
+    const hero = heroRoster[rosterIndex]
+    if (hero) {
+      addHero(hero, slotIndex)
     }
   }
 
@@ -213,40 +235,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     onStart(floor)
   }
 
-  const handlePurchasePotion = (potion: Consumable) => {
-    purchasePotion(potion)
-  }
-
-  const handlePurchaseConsumable = (consumable: Consumable) => {
-    // Check if bank is full
-    if (bankInventory.length >= bankStorageSlots) {
-      onBuySlotsOpen()
-      return
-    }
-    purchasePotion(consumable)
-  }
-
-  const handlePurchaseItem = (item: Item) => {
-    // Check if bank is full
-    if (bankInventory.length >= bankStorageSlots) {
-      onBuySlotsOpen()
-      return
-    }
-    
-    if (bankGold >= item.value) {
-      moveItemToBank(item)
-      spendBankGold(item.value)
-    }
-  }
-
-  const handleExpandBank = (slots: number) => {
-    const costPerSlot = GAME_CONFIG.bank.costPerSlot
-    const totalCost = slots * costPerSlot
-    
-    if (bankGold >= totalCost) {
-      expandBankStorage(slots)
-    }
-  }
+  const { handlePurchasePotion, handlePurchaseConsumable, handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
 
   return (
     <Box className="party-setup-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
@@ -278,18 +267,62 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         />
 
         {/* Center - Party Slots */}
-        <Box className="party-setup-screen-center" flex={1} minW={0} display="flex" flexDirection="column">
-          <PartySetupSlots
-            party={party}
-            onAddHero={handleAddHeroClick}
-            onRemoveHero={handleRemoveHero}
-            onSelectHero={setSelectedHeroIndex}
-          />
-          <PartySummary party={party.filter((h): h is Hero => h !== null)} />
+        <Box className="party-setup-screen-center" flex={1} minW={0} minH={0} display="flex" flexDirection="column">
+          {isPortrait ? (
+            // Portrait Layout - PartySummary outside scroll area
+            <>
+              <PartySetupSlots
+                party={party}
+                selectedClass={selectedClass}
+                selectedHeroFromRoster={selectedHeroFromRoster}
+                storedHeroes={heroRoster}
+                bankInventory={bankInventory}
+                tabIndex={tabIndex}
+                onTabChange={setTabIndex}
+                onClassSelect={handleClassSelect}
+                onRosterHeroClick={handleRosterHeroClick}
+                onAddHero={handleAddHeroClick}
+                onAddHeroByClass={handleAddHeroByClassDirect}
+                onAddHeroFromRoster={handleAddHeroFromRosterDirect}
+                onRemoveHero={handleRemoveHero}
+                onSelectHero={setSelectedHeroIndex}
+                onSlotClick={handleOpenBankForSlot}
+                onUnequipItem={handleUnequipItem}
+                onEquipItem={handleEquipItemDirect}
+                isBankModalOpen={isOpen}
+              />
+              <PartySummary party={party.filter((h): h is Hero => h !== null)} />
+            </>
+          ) : (
+            // Desktop Layout - PartySummary below slots
+            <>
+              <PartySetupSlots
+                party={party}
+                selectedClass={selectedClass}
+                selectedHeroFromRoster={selectedHeroFromRoster}
+                storedHeroes={heroRoster}
+                bankInventory={bankInventory}
+                tabIndex={tabIndex}
+                onTabChange={setTabIndex}
+                onClassSelect={handleClassSelect}
+                onRosterHeroClick={handleRosterHeroClick}
+                onAddHero={handleAddHeroClick}
+                onAddHeroByClass={handleAddHeroByClassDirect}
+                onAddHeroFromRoster={handleAddHeroFromRosterDirect}
+                onRemoveHero={handleRemoveHero}
+                onSelectHero={setSelectedHeroIndex}
+                onSlotClick={handleOpenBankForSlot}
+                onUnequipItem={handleUnequipItem}
+                onEquipItem={handleEquipItemDirect}
+                isBankModalOpen={isOpen}
+              />
+              <PartySummary party={party.filter((h): h is Hero => h !== null)} />
+            </>
+          )}
         </Box>
 
         {/* Right Sidebar - Equipment */}
-        <EquipmentPanel
+        {isPortrait? null : <EquipmentPanel
           selectedHeroIndex={selectedHeroIndex}
           party={party}
           bankInventory={bankInventory}
@@ -299,6 +332,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
           onEquipItem={handleEquipItemDirect}
           isBankModalOpen={isOpen}
         />
+        }
       </Flex>
 
       {/* Bank Inventory Modal */}

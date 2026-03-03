@@ -16,12 +16,14 @@ import {
   Icon,
   Spacer,
   useToast,
+  useDisclosure,
   Tabs,
   TabList,
   Tab,
   TabPanels,
   TabPanel,
 } from '@chakra-ui/react'
+import BuyBankSlotsModal from './BuyBankSlotsModal'
 import { useState, useCallback } from 'react'
 import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCheckMark, GiCrossedSwords, GiCheckedShield } from 'react-icons/gi'
 import type { Item } from '../../types'
@@ -62,6 +64,12 @@ export function OverflowInventoryModal({
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('rarity')
   const toast = useToast()
+  const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
+
+  const handleExpandBank = (slots: number) => {
+    onExpandBank(slots)
+    onBuySlotsClose()
+  }
 
   // Use shared hooks
   const visibleCount = useLazyLoading({
@@ -196,6 +204,7 @@ export function OverflowInventoryModal({
   }
 
   return (
+    <>
     <Modal isOpen={isOpen} onClose={handleClose} size="6xl" scrollBehavior="inside" isCentered={false}>
       <ModalOverlay bg="blackAlpha.700" />
       <ModalContent className="overflow-inventory-modal" bg="gray.900" maxH="90vh" border="2px solid" borderColor="gray.700" mt={4}>
@@ -224,26 +233,14 @@ export function OverflowInventoryModal({
                 <Text color="yellow.400" fontWeight="bold">{bankGold.toLocaleString()}</Text>
               </HStack>
               {slotsNeeded > 0 && (
-                <HStack spacing={2}>
-                  <Button
-                    size="xs"
-                    colorScheme="green"
-                    onClick={() => onExpandBank(5)}
-                    isDisabled={bankGold < GAME_CONFIG.bank.costPerSlot * 5}
-                    leftIcon={<Icon as={GiTwoCoins} />}
-                  >
-                    +5 Slots ({(5 * GAME_CONFIG.bank.costPerSlot).toLocaleString()}g)
-                  </Button>
-                  <Button
-                    size="xs"
-                    colorScheme="green"
-                    onClick={() => onExpandBank(10)}
-                    isDisabled={bankGold < GAME_CONFIG.bank.costPerSlot * 10}
-                    leftIcon={<Icon as={GiTwoCoins} />}
-                  >
-                    +10 Slots ({(10 * GAME_CONFIG.bank.costPerSlot).toLocaleString()}g)
-                  </Button>
-                </HStack>
+                <Button
+                  size="xs"
+                  colorScheme="green"
+                  onClick={onBuySlotsOpen}
+                  leftIcon={<Icon as={GiTwoCoins} />}
+                >
+                  Buy Slots
+                </Button>
               )}
             </VStack>
           </Flex>
@@ -385,5 +382,14 @@ export function OverflowInventoryModal({
         </ModalBody>
       </ModalContent>
     </Modal>
+
+    <BuyBankSlotsModal
+      isOpen={isBuySlotsOpen}
+      onClose={onBuySlotsClose}
+      onConfirm={handleExpandBank}
+      bankGold={bankGold}
+      currentSlots={bankStorageSlots}
+    />
+    </>
   )
 }

@@ -12,7 +12,7 @@ export const STORM_TYRANT: DungeonEvent = {
       outcome: {
         text: 'The mother of all storms! Lightning, wind, and rain devastate you!',
         effects: [
-          { type: 'damage', target: 'all', value: 572 },
+          { type: 'damage', target: 'all', value: 26 },
           { type: 'xp', value: 2410 },
           { type: 'gold', value: 3615 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 46 },
@@ -27,7 +27,7 @@ export const STORM_TYRANT: DungeonEvent = {
       outcome: {
         text: 'You command perfect stillness! The tyrant has no power in calm!',
         effects: [
-          { type: 'damage', target: 'all', value: 512 },
+          { type: 'damage', target: 'all', value: 26 },
           { type: 'xp', value: 2540 },
           { type: 'gold', value: 3810 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 64 },
@@ -43,7 +43,7 @@ export const STORM_TYRANT: DungeonEvent = {
       outcome: {
         text: 'Your fortitude is unshakeable! No storm can break you!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 525 },
+          { type: 'damage', target: 'strongest', value: 19 },
           { type: 'xp', value: 2565 },
           { type: 'gold', value: 3848 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 65 },

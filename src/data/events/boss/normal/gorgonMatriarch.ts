@@ -12,7 +12,7 @@ export const GORGON_MATRIARCH: DungeonEvent = {
       outcome: {
         text: 'Fighting blind is nearly impossible! You glimpse her eyes and feel stone creeping through your limbs!',
         effects: [
-          { type: 'damage', target: 'all', value: 182 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 710 },
           { type: 'gold', value: 1030 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 21 },
@@ -27,7 +27,7 @@ export const GORGON_MATRIARCH: DungeonEvent = {
       outcome: {
         text: 'You reflect her gaze back! She turns herself to stone!',
         effects: [
-          { type: 'damage', target: 'all', value: 135 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 770 },
           { type: 'gold', value: 1100 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 25 },
@@ -43,7 +43,7 @@ export const GORGON_MATRIARCH: DungeonEvent = {
       outcome: {
         text: 'Your fortitude resists the curse! You strike her down while immune!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 155 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 790 },
           { type: 'gold', value: 1120 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 26 },

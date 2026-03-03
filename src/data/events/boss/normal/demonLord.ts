@@ -12,7 +12,7 @@ export const DEMON_LORD: DungeonEvent = {
       outcome: {
         text: 'You battle the demon in a clash of steel and fire!',
         effects: [
-          { type: 'damage', target: 'all', value: 45 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 350 },
           { type: 'gold', value: 350 },
           { type: 'item', itemType: 'random', material: 'demon', minRarity: 'epic', rarityBoost: 5 },
@@ -27,7 +27,7 @@ export const DEMON_LORD: DungeonEvent = {
       outcome: {
         text: 'Your divine power forces the demon back to the abyss!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 400 },
           { type: 'gold', value: 400 },
           { type: 'item', itemType: 'random', material: 'demon', minRarity: 'epic', rarityBoost: 10 },
@@ -42,7 +42,7 @@ export const DEMON_LORD: DungeonEvent = {
       outcome: {
         text: 'You trap the demon in mystical chains!',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 380 },
           { type: 'gold', value: 380 },
           { type: 'item', itemType: 'accessory1', material: 'demon', minRarity: 'epic', rarityBoost: 7 },
@@ -54,7 +54,7 @@ export const DEMON_LORD: DungeonEvent = {
       outcome: {
         text: 'The demon\'s flames catch you as you escape!',
         effects: [
-          { type: 'damage', target: 'all', value: 30 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 80 },
         ],
       },

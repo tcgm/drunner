@@ -12,7 +12,7 @@ export const TIME_EATER: DungeonEvent = {
       outcome: {
         text: 'Years pass in seconds! You age rapidly as it devours your timeline!',
         effects: [
-          { type: 'damage', target: 'all', value: 290 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1120 },
           { type: 'gold', value: 1680 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 22 },
@@ -28,7 +28,7 @@ export const TIME_EATER: DungeonEvent = {
       outcome: {
         text: 'You transcend the timestream! It cannot age what doesn\'t exist in time!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 218 },
+          { type: 'damage', target: 'weakest', value: 2 },
           { type: 'xp', value: 1240 },
           { type: 'gold', value: 1860 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 26 },
@@ -43,7 +43,7 @@ export const TIME_EATER: DungeonEvent = {
       outcome: {
         text: 'You create a paradox! The time eater is caught in endless recursion!',
         effects: [
-          { type: 'damage', target: 'all', value: 210 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 1265 },
           { type: 'gold', value: 1898 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 27 },

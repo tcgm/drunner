@@ -12,7 +12,7 @@ export const DEMON_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'The concentrated evil of the Abyss! Demonic power beyond mortal comprehension!',
         effects: [
-          { type: 'damage', target: 'all', value: 605 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2525 },
           { type: 'gold', value: 3788 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 49 },
@@ -27,7 +27,7 @@ export const DEMON_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'Holy power sends it home! Even emperors cannot resist divine command!',
         effects: [
-          { type: 'damage', target: 'all', value: 552 },
+          { type: 'damage', target: 'all', value: 25 },
           { type: 'xp', value: 2685 },
           { type: 'gold', value: 4028 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 68 },
@@ -43,7 +43,7 @@ export const DEMON_EMPEROR: DungeonEvent = {
       outcome: {
         text: 'You defeat the emperor in single combat! You could rule the Abyss!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 565 },
+          { type: 'damage', target: 'strongest', value: 19 },
           { type: 'xp', value: 2715 },
           { type: 'gold', value: 4073 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 69 },

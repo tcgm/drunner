@@ -3,8 +3,9 @@ import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3 } from '@/t
 import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
+import type { BaseItemTemplate } from '@data/items/bases'
 import { getRandomMaterial, getCompatibleMaterial, getMaterialsByRarity, getMaterialById, allMaterials } from '@data/items/materials'
-import { getRandomUnique, ALL_UNIQUE_ITEMS, getUniqueItemRarityConstraints } from '@data/items/uniques'
+import { selectUniqueForLoot, getRandomUnique, ALL_UNIQUE_ITEMS, getUniqueItemRarityConstraints } from '@data/items/uniques'
 import { getRandomSetItem, ALL_SET_ITEMS, getSetIdFromItemName, getSetItemRarityConstraints } from '@data/items/sets'
 import { applyModifiers, getModifierById } from '@data/items/mods'
 import { hydrateItem } from '@/utils/itemHydration'
@@ -26,19 +27,6 @@ function getRarityOrder(): ItemRarity[] {
  * Loot generation configuration
  */
 const LOOT_CONFIG = {
-  // Base rarity weights (will be modified by depth)
-  baseRarityWeights: {
-    junk: 15,
-    common: 40,
-    uncommon: 25,
-    rare: 12,
-    epic: 5,
-    legendary: 2.5,
-    mythic: 0.5,
-    artifact: 0,  // Stretch goal - not yet implemented
-    set: 0,       // Handled separately
-  },
-
   // Item type weights (what kind of item to generate)
   itemTypeWeights: {
     weapon: 20,
@@ -49,9 +37,6 @@ const LOOT_CONFIG = {
     accessory2: 15,
   },
 
-  // Chance for a unique item instead of procedural (by rarity)
-  uniqueChance: GAME_CONFIG.loot.uniqueChances,
-
   // Chance for set items (independent roll, very rare)
   setChance: GAME_CONFIG.loot.setChance,
   
@@ -61,51 +46,50 @@ const LOOT_CONFIG = {
 }
 
 /**
- * Adjust rarity weights based on dungeon depth
+ * Adjust rarity weights based on dungeon depth.
+ *
+ * Available rarities at `depth` = all rarities with minFloor <= depth, minus
+ * excludedFromLoot, sorted by minFloor (ascending).
+ * That list is divided into `lootRarityBuckets` equal-size segments.
+ * The active floor band's bucketWeights[i] is distributed evenly across all
+ * rarities inside segment i — no rarity names appear in the config.
  */
 function getDepthAdjustedWeights(depth: number): Partial<Record<ItemRarity, number>> {
-  const weights: Partial<Record<ItemRarity, number>> = { ...LOOT_CONFIG.baseRarityWeights }
+  const { floorBands, lootRarityBuckets, excludedFromLoot } = GAME_CONFIG.loot
+  const excluded = new Set<string>(excludedFromLoot)
 
-  if (depth <= 5) {
-    // Early floors: mostly junk and common
-    weights.junk = 40
-    weights.common = 40
-    weights.uncommon = 20
-    weights.rare = 0
-    weights.epic = 0
-    weights.legendary = 0
-    weights.mythic = 0
-    weights.artifact = 0
-  } else if (depth <= 10) {
-    // Early-mid floors
-    weights.junk = 20
-    weights.common = 40
-    weights.uncommon = 30
-    weights.rare = 10
-    weights.epic = 0
-    weights.legendary = 0
-    weights.mythic = 0
-    weights.artifact = 0
-  } else if (depth <= 20) {
-    // Mid floors
-    weights.junk = 5
-    weights.common = 25
-    weights.uncommon = 40
-    weights.rare = 20
-    weights.epic = 8
-    weights.legendary = 2
-    weights.mythic = 0
-    weights.artifact = 0
-  } else {
-    // Deep floors: shift toward higher rarities
-    weights.junk = 0
-    weights.common = 10
-    weights.uncommon = 20
-    weights.rare = 30
-    weights.epic = 25
-    weights.legendary = 12
-    weights.mythic = 3
-    weights.artifact = 0
+  // Find highest band whose minFloor has been reached
+  let activeBand = floorBands[0]
+  for (const band of floorBands) {
+    if (depth >= band.minFloor) activeBand = band
+  }
+
+  // Build the live rarity list: unlocked at this floor, not excluded, sorted low→high
+  const available = (Object.entries(RARITY_CONFIGS) as [ItemRarity, { minFloor: number }][])
+    .filter(([rarity, cfg]) => depth >= cfg.minFloor && !excluded.has(rarity))
+    .sort(([, a], [, b]) => a.minFloor - b.minFloor)
+    .map(([rarity]) => rarity)
+
+  if (available.length === 0) return {}
+
+  const bucketCount = lootRarityBuckets
+  const weights: Partial<Record<ItemRarity, number>> = {}
+
+  for (let b = 0; b < bucketCount; b++) {
+    const bucketWeight = activeBand.bucketWeights[b] ?? 0
+    if (bucketWeight <= 0) continue
+
+    // Slice this bucket's rarities from the sorted list
+    const start = Math.round((b / bucketCount) * available.length)
+    const end   = Math.round(((b + 1) / bucketCount) * available.length)
+    const bucket = available.slice(start, end)
+    if (bucket.length === 0) continue
+
+    // Spread the bucket's total weight evenly across its members
+    const perRarity = bucketWeight / bucket.length
+    for (const rarity of bucket) {
+      weights[rarity] = (weights[rarity] ?? 0) + perRarity
+    }
   }
 
   return weights
@@ -115,20 +99,24 @@ function getDepthAdjustedWeights(depth: number): Partial<Record<ItemRarity, numb
  * Select a random rarity based on weights
  */
 function selectRarity(depth: number, minRarity?: ItemRarity, maxRarity?: ItemRarity): ItemRarity {
+  // weights already exclude `excludedFromLoot` rarities (handled in getDepthAdjustedWeights)
   const weights = getDepthAdjustedWeights(depth)
-  
+  const excluded = new Set<string>(GAME_CONFIG.loot.excludedFromLoot)
+
   // Get rarity order dynamically from the rarity system (sorted by minFloor)
   const rarityOrder = getRarityOrder()
   const minIndex = minRarity ? rarityOrder.indexOf(minRarity) : 0
   const maxIndex = maxRarity ? rarityOrder.indexOf(maxRarity) : rarityOrder.length - 1
-  
-  // If min/max rarities are specified but not in weights, use them directly
+
+  // If min/max rarities are specified but not in weights, pick randomly from that range
+  // (events can force high-tier rarities that are above the current floor band)
   if (minRarity && maxRarity && minIndex >= 0 && maxIndex >= 0) {
-    // For high-tier rarities not in the weight table, pick randomly from the range
-    const validRarities = rarityOrder.slice(minIndex, maxIndex + 1)
-    return validRarities[Math.floor(Math.random() * validRarities.length)]
+    const validRarities = rarityOrder
+      .slice(minIndex, maxIndex + 1)
+      .filter(r => !excluded.has(r))
+    return validRarities[Math.floor(Math.random() * validRarities.length)] ?? (minRarity || 'common')
   }
-  
+
   const filteredWeights: Record<string, number> = {}
   for (const [rarity, weight] of Object.entries(weights)) {
     const rarityIndex = rarityOrder.indexOf(rarity as ItemRarity)
@@ -255,7 +243,7 @@ function generateBaseTemplateId(base: Omit<Item, 'id' | 'name' | 'rarity' | 'val
  * Generate item name from material and base template
  * Returns both the name and the appropriate icon for that specific baseName
  */
-function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): { name: string; icon?: IconType } {
+function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' | 'name' | 'rarity' | 'value'>): { name: string; icon?: IconType | string } {
   // If base template has explicit baseNames, randomly pick one
   if ('baseNames' in baseTemplate && Array.isArray(baseTemplate.baseNames) && baseTemplate.baseNames.length > 0) {
     const randomName = baseTemplate.baseNames[Math.floor(Math.random() * baseTemplate.baseNames.length)]
@@ -264,7 +252,7 @@ function generateItemName(materialPrefix: string, baseTemplate: Omit<Item, 'id' 
     // Check if there's a specific icon for this baseName
     let icon = baseTemplate.icon
     if ('baseNameIcons' in baseTemplate && baseTemplate.baseNameIcons && typeof baseTemplate.baseNameIcons === 'object') {
-      const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType>)[randomName]
+      const specificIcon = (baseTemplate.baseNameIcons as Record<string, IconType | string>)[randomName]
       if (specificIcon) {
         icon = specificIcon
       }
@@ -388,44 +376,42 @@ export function generateItem(
     }
   }
   
-  // Check if we should generate a unique item
-  const uniqueChances: Record<string, number> = LOOT_CONFIG.uniqueChance
-  if (rarity in uniqueChances && Math.random() < uniqueChances[rarity]) {
-    const uniqueTemplate = getRandomUnique(rarity)
-    if (uniqueTemplate) {
-      // Generate unique item with proper type matching if possible
-      if (!forceType || 
-          uniqueTemplate.type === forceType ||
-          ((forceType === 'accessory1' || forceType === 'accessory2') && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
-        
-        // Get rarity constraints for this unique item
-        const { minRarity: uniqueMinRarity, maxRarity: uniqueMaxRarity } = getUniqueItemRarityConstraints(uniqueTemplate)
+  // Check if we should generate a unique item (two-phase: overrides first, then general pool)
+  const baseUniqueChance = (GAME_CONFIG.loot.uniqueChances as Partial<Record<string, number>>)[rarity] ?? 0
+  const uniqueTemplate = selectUniqueForLoot(rarity, baseUniqueChance)
+  if (uniqueTemplate) {
+    // Generate unique item with proper type matching if possible
+    if (!forceType || 
+        uniqueTemplate.type === forceType ||
+        ((forceType === 'accessory1' || forceType === 'accessory2') && (uniqueTemplate.type === 'accessory1' || uniqueTemplate.type === 'accessory2'))) {
+      
+      // Get rarity constraints for this unique item
+      const { minRarity: uniqueMinRarity, maxRarity: uniqueMaxRarity } = getUniqueItemRarityConstraints(uniqueTemplate)
 
-        // Roll rarity within the item's allowed range
-        const itemRarity = selectRarity(adjustedDepth, uniqueMinRarity, uniqueMaxRarity)
+      // Roll rarity within the item's allowed range
+      const itemRarity = selectRarity(adjustedDepth, uniqueMinRarity, uniqueMaxRarity)
 
-        // Generate V3 unique item
-        const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
-        
-        const v3Item: UniqueItemV3 = {
-          version: 3,
-          id: uuidv4(),
-          itemType: 'unique',
-          templateId,
-          rarity: itemRarity,  // Store rolled rarity to scale stats
-          modifiers: modifiers.length > 0 ? modifiers : undefined
-        }
-        
-        // Hydrate and return
-        return hydrateItem(v3Item)
+      // Generate V3 unique item
+      const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
+      
+      const v3Item: UniqueItemV3 = {
+        version: 3,
+        id: uuidv4(),
+        itemType: 'unique',
+        templateId,
+        rarity: itemRarity,  // Store rolled rarity to scale stats
+        modifiers: modifiers.length > 0 ? modifiers : undefined
       }
-      // If forced type doesn't match unique, generate procedural item instead
+      
+      // Hydrate and return
+      return hydrateItem(v3Item)
     }
+    // If forced type doesn't match unique, fall through to procedural generation
   }
   
   // Determine if we have a forced base template or material
   let material: Material | undefined
-  let baseTemplate: BaseTemplate | undefined
+  let baseTemplate: BaseTemplate | BaseItemTemplate | undefined
 
   if (forceMaterialOrBase) {
     // Check if it's a BaseTemplate (has 'description' and 'stats')
@@ -483,7 +469,7 @@ export function generateItem(
 
   // Select random variant from baseNames array if available
   let variantName: string
-  if (baseTemplate.baseNames && baseTemplate.baseNames.length > 0) {
+  if ('baseNames' in baseTemplate && Array.isArray(baseTemplate.baseNames) && baseTemplate.baseNames.length > 0) {
     const randomIndex = Math.floor(Math.random() * baseTemplate.baseNames.length)
     variantName = baseTemplate.baseNames[randomIndex]
   } else {
@@ -493,7 +479,9 @@ export function generateItem(
   }
   
   // Construct baseTemplateId in new dot format: "type.id"
-  const baseTemplateId = `${baseTemplate.type}.${baseTemplate.id}`
+  const baseTemplateId = 'id' in baseTemplate
+    ? `${baseTemplate.type}.${baseTemplate.id}`
+    : generateBaseTemplateId(baseTemplate as Omit<Item, 'id' | 'name' | 'rarity' | 'value'>)
   
   // Create V3 procedural item
   const v3Item: ProceduralItemV3 = {
@@ -517,6 +505,70 @@ export function generateItem(
  */
 export function generateItems(count: number, depth: number): Item[] {
   return Array.from({ length: count }, () => generateItem(depth))
+}
+
+/**
+ * Generate a specific set item from a template with proper rarity rolling and V3 generation.
+ * Used by event systems that need to create a guaranteed set item with correct rarity variance.
+ */
+export function generateSetItemFromTemplate(
+  setTemplate: Omit<Item, 'id'>,
+  depth: number,
+  overrideMinRarity?: ItemRarity,
+  overrideMaxRarity?: ItemRarity,
+  modifiers: string[] = []
+): Item {
+  const { minRarity: templateMin, maxRarity: templateMax } = getSetItemRarityConstraints(setTemplate)
+  const itemRarity = selectRarity(
+    depth,
+    overrideMinRarity || templateMin,
+    overrideMaxRarity || templateMax
+  )
+  const templateId = setTemplate.name.toUpperCase().replace(/['\s]/g, '_')
+  const rollAsUnique = Math.random() < LOOT_CONFIG.setUniqueChance
+
+  const v3Item: SetItemV3 = {
+    version: 3,
+    id: uuidv4(),
+    itemType: 'set',
+    templateId,
+    rarity: itemRarity,
+    isUniqueRoll: rollAsUnique,
+    modifiers: modifiers.length > 0 ? modifiers : undefined
+  }
+
+  return hydrateItem(v3Item)
+}
+
+/**
+ * Generate a specific unique item from a template with proper rarity rolling and V3 generation.
+ * Used by event systems that need to create a guaranteed unique item with correct rarity variance.
+ */
+export function generateUniqueItemFromTemplate(
+  uniqueTemplate: Omit<Item, 'id'>,
+  depth: number,
+  overrideMinRarity?: ItemRarity,
+  overrideMaxRarity?: ItemRarity,
+  modifiers: string[] = []
+): Item {
+  const { minRarity: templateMin, maxRarity: templateMax } = getUniqueItemRarityConstraints(uniqueTemplate)
+  const itemRarity = selectRarity(
+    depth,
+    overrideMinRarity || templateMin,
+    overrideMaxRarity || templateMax
+  )
+  const templateId = uniqueTemplate.name.toUpperCase().replace(/['\s]/g, '_')
+
+  const v3Item: UniqueItemV3 = {
+    version: 3,
+    id: uuidv4(),
+    itemType: 'unique',
+    templateId,
+    rarity: itemRarity,
+    modifiers: modifiers.length > 0 ? modifiers : undefined
+  }
+
+  return hydrateItem(v3Item)
 }
 
 /**

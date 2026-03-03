@@ -127,7 +127,7 @@ export default function BuyBankSlotsModal({
                                     }}
                                     min={1}
                                     max={1000}
-                                    w="120px"
+                                    w="clamp(100px, 12vw, 140px)"
                                     onWheel={(e) => {
                                         e.preventDefault()
                                         const delta = e.deltaY > 0 ? -1 : 1

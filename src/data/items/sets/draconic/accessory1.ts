@@ -1,4 +1,4 @@
-import { GiDiamondRing } from 'react-icons/gi'
+import { GiDiamondRing, GiHeartOrgan } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -7,9 +7,11 @@ import type { Item } from '@/types'
 export const DRACONIC_HEART: Omit<Item, 'id'> = {
   name: "Draconic Heart",
   description: 'A crystallized dragon heart. Pulses with ancient power.',
-  type: 'accessory',
+  type: 'accessory1',
   rarity: 'legendary',
-  icon: GiDiamondRing,
+  minRarity: 'epic',
+  maxRarity: 'artifact',
+  icon: GiHeartOrgan,
   stats: {
     maxHp: 100,
     attack: 30,

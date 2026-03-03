@@ -1,3 +1,4 @@
+import './ItemSlot.css'
 import {
   Box,
   Text,
@@ -14,44 +15,22 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { GiGoldBar as GiTreasure, GiSparkles, GiCursedStar } from 'react-icons/gi'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-import type { Item } from '@/types'
+import type { Item, Consumable, ConsumableEffect } from '@/types'
 import { useItemDetailModal } from '@/contexts/ItemDetailModalContext'
 import { getItemSetName } from '@/data/items/sets'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { getModifierById } from '@/data/items/mods'
 import { MultIcon } from '@/components/ui/MultIcon'
 import { resolveItemData } from '@/utils/itemDataResolver'
-import { getUniqueEffectForItem } from '@/systems/items/uniqueEffects'
-import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS } from '@/systems/rarity/raritySystem'
+import { getUniqueEffectForItem, getEffectMultiplier, resolveEffectDescription } from '@/systems/items/uniqueEffects'
+import { RARITY_COLORS as CENTRALIZED_RARITY_COLORS, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 
 const MotionBox = motion.create(Box)
 
-// Gem icons for each rarity - matching ItemDetailModal
-const RARITY_GEM_ICONS: Record<Item['rarity'], IconType> = {
-  junk: GameIcons.GiStoneBlock,
-  abundant: GameIcons.GiRock,
-  common: GameIcons.GiGems,
-  uncommon: GameIcons.GiCutDiamond,
-  rare: GameIcons.GiDiamondTrophy,
-  veryRare: GameIcons.GiCrystalShine,
-  magical: GameIcons.GiSparkles,
-  elite: GameIcons.GiDiamonds,
-  epic: GameIcons.GiCrystalCluster,
-  legendary: GameIcons.GiCrystalShine,
-  mythic: GameIcons.GiBatwingEmblem,
-  mythicc: GameIcons.GiCrystalEye,
-  artifact: GameIcons.GiCrystalEye,
-  divine: GameIcons.GiAngelWings,
-  celestial: GameIcons.GiStarFormation,
-  realityAnchor: GameIcons.GiChainedHeart,
-  structural: GameIcons.GiCubeforce,
-  singularity: GameIcons.GiBlackHoleBolas,
-  void: GameIcons.GiVortex,
-  elder: GameIcons.GiEvilBook,
-  layer: GameIcons.GiPerspectiveDiceSixFacesRandom,
-  plane: GameIcons.GiCardRandom,
-  author: GameIcons.GiQuillInk,
-}
+// Gem icons derived from rarity configs
+const RARITY_GEM_ICONS = Object.fromEntries(
+  Object.entries(RARITY_CONFIGS).map(([k, v]) => [k, v.icon])
+) as Record<Item['rarity'], IconType>
 
 interface ItemSlotProps {
   item: Item
@@ -83,6 +62,35 @@ RARITY_GLOW_COLORS.cursed = 'rgba(75, 85, 99, 0.4)'
 RARITY_GLOW_COLORS.set = 'rgba(20, 184, 166, 0.5)'
 RARITY_COLORS.cursed = { text: '#6B7280', bg: '#111827', gem: '#4B5563' }
 RARITY_COLORS.set = { text: '#5EEAD4', bg: '#134E4A', gem: '#14B8A6' }
+
+function formatConsumableEffect(effect: ConsumableEffect): string {
+  const targetStr = effect.target && effect.target !== 'self'
+    ? ` (${effect.target.replace(/-/g, ' ')})`
+    : ''
+  switch (effect.type) {
+    case 'heal':
+      return `Heals ${effect.value ?? 0} HP${targetStr}`
+    case 'hot':
+      return `Regenerates ${effect.value ?? 0} HP/event for ${effect.duration ?? 0} events/turns${targetStr}`
+    case 'buff': {
+      const statName = effect.stat
+        ? effect.stat === 'maxHp' ? 'Max HP' : effect.stat.charAt(0).toUpperCase() + effect.stat.slice(1)
+        : 'STAT'
+      const durationStr = effect.isPermanent ? 'permanently' : `for ${effect.duration ?? 0} events/turns`
+      return `+${effect.value ?? 0} ${statName} ${durationStr}${targetStr}`
+    }
+    case 'revive':
+      return `Revives with ${effect.value ?? 0} HP${targetStr}`
+    case 'cleanse':
+      return `Cleanses all debuffs${targetStr}`
+    case 'damage':
+      return `Deals ${effect.value ?? 0} damage${targetStr}`
+    case 'special':
+      return `Special effect${targetStr}`
+    default:
+      return 'Unknown effect'
+  }
+}
 
 export const ItemSlot = memo(function ItemSlot({
   item,
@@ -159,13 +167,19 @@ export const ItemSlot = memo(function ItemSlot({
   // Get unique effect if this item has one
   const uniqueEffect = useMemo(() => getUniqueEffectForItem(restoredItem), [restoredItem])
 
+  // Rarity-scaling multiplier for effect descriptions
+  const effectMultiplier = useMemo(
+    () => getEffectMultiplier(item.rarity, item.isUnique ?? false),
+    [item.rarity, item.isUnique]
+  )
+
   // Get rarity gem icon
   const GemIcon = useMemo(() => RARITY_GEM_ICONS[item.rarity] || GameIcons.GiCutDiamond, [item.rarity])
   // const gemColor = useMemo(() => item.isUnique ? '#FFD700' : (RARITY_COLORS[item.rarity]?.gem || '#6B7280'), [item.rarity, item.isUnique])
  const gemColor = useMemo(() => (RARITY_COLORS[item.rarity]?.gem || '#6B7280'), [item.rarity])
   // Memoize tooltip content to avoid recreation on every render
   const tooltipContent = useMemo(() => (
-    <VStack align="start" spacing={1} maxW="300px">
+    <VStack align="start" spacing={1} maxW="clamp(250px, 35vw, 350px)">
       <HStack justify="space-between" w="full">
         <Text fontSize="sm" fontWeight="bold" color={RARITY_COLORS[item.rarity]?.text || '#9CA3AF'}>
           {displayName}
@@ -285,6 +299,31 @@ export const ItemSlot = memo(function ItemSlot({
           )}
         </>
       )}
+      {'consumableType' in item && Array.isArray((item as Consumable).effects) && (item as Consumable).effects.length > 0 && (
+        <Box
+          w="full"
+          mt={1}
+          p={1}
+          bg="rgba(72, 187, 120, 0.12)"
+          borderRadius="md"
+          borderWidth="1px"
+          borderColor="green.600"
+        >
+          <Text fontSize="2xs" color="green.300" fontWeight="bold" mb={0.5}>
+            Effects:
+          </Text>
+          <VStack align="start" spacing={0}>
+            {(item as Consumable).effects.map((effect, i) => (
+              <Text key={i} fontSize="2xs" color="green.200">
+                • {formatConsumableEffect(effect)}
+              </Text>
+            ))}
+          </VStack>
+          <Text fontSize="2xs" color="gray.400" mt={0.5}>
+            {[(item as Consumable).usableInCombat && '⚔ Combat', (item as Consumable).usableOutOfCombat && '🏕 Camp'].filter(Boolean).join(' · ')}
+          </Text>
+        </Box>
+      )}
       {item.isUnique && uniqueEffect && (
         <Box
           w="full"
@@ -302,7 +341,7 @@ export const ItemSlot = memo(function ItemSlot({
             </Text>
           </HStack>
           <Text fontSize="2xs" color="#FFF8DC">
-            {uniqueEffect.description}
+            {resolveEffectDescription(uniqueEffect, effectMultiplier)}
           </Text>
         </Box>
       )}
@@ -315,7 +354,7 @@ export const ItemSlot = memo(function ItemSlot({
   // Build className string
   const slotClassName = [
     'item-slot',
-    `item-slot--${size}`,
+    !iconOnly && `item-slot--${size}`,
     setName ? 'item-slot--set' : `item-slot--${item.rarity}`,
     item.isUnique && 'item-slot--unique',
     isSelected && 'item-slot--selected',
@@ -337,8 +376,6 @@ export const ItemSlot = memo(function ItemSlot({
       >
         <MotionBox
           className={slotClassName}
-          width={iconOnly ? '100%' : undefined}
-          height={iconOnly ? '100%' : undefined}
           data-item-name={item.name}
           data-item-rarity={item.rarity}
           data-item-icon={item.icon?.length || 'unknown'}
@@ -384,6 +421,22 @@ export const ItemSlot = memo(function ItemSlot({
             />
           )}
 
+          {/* Unique persistent glow - fills slot with radial gradient */}
+          {item.isUnique && (
+            <motion.div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '8px',
+                background: `radial-gradient(circle, ${RARITY_GLOW_COLORS[item.rarity] || 'rgba(255, 215, 0, 0.5)'} 0%, transparent 75%)`,
+                pointerEvents: 'none',
+                zIndex: 0
+              }}
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+
           {/* Rarity Glow Animation */}
           <AnimatePresence>
             {isHovered && (
@@ -413,10 +466,10 @@ export const ItemSlot = memo(function ItemSlot({
             <motion.div
               style={{
                 position: 'absolute',
-                top: '4px',
-                left: '4px',
-                bottom: '4px',
-                right: '4px',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
                 zIndex: 0,
                 pointerEvents: 'none'
               }}
@@ -549,8 +602,12 @@ export const ItemSlot = memo(function ItemSlot({
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
               width: iconOnly ? '100%' : undefined,
-              height: iconOnly ? '100%' : undefined
+              height: iconOnly ? '100%' : undefined,
+              maxWidth: iconOnly ? '100%' : undefined,
+              maxHeight: iconOnly ? '100%' : undefined,
+              overflow: iconOnly ? 'hidden' : 'visible'
             }}
             animate={{
               scale: isHovered ? 1.1 : 1,
@@ -565,14 +622,21 @@ export const ItemSlot = memo(function ItemSlot({
               icon={ItemIcon}
               boxSize={iconOnly 
                 ? '100%'
-                : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')
+                : (size === 'sm' ? 'clamp(16px, 2vw, 24px)' : size === 'md' ? 'clamp(22px, 2.5vw, 32px)' : size === 'xl' ? 'clamp(40px, 4vw, 56px)' : 'clamp(28px, 3vw, 40px)')
               }
-              fontSize={iconOnly ? '100%' : (size === 'sm' ? '20px' : size === 'md' ? '28px' : size === 'xl' ? '48px' : '36px')}
+              fontSize={iconOnly ? '100%' : (size === 'sm' ? 'clamp(16px, 2vw, 24px)' : size === 'md' ? 'clamp(22px, 2.5vw, 32px)' : size === 'xl' ? 'clamp(40px, 4vw, 56px)' : 'clamp(28px, 3vw, 40px)')}
               color={item.isUnique ? '#FFFFFF' : RARITY_COLORS[item.rarity]?.gem || '#6B7280'}
               mb={iconOnly ? 0 : 0.5}
-              style={item.isUnique ? {
-                filter: `drop-shadow(0 0 4px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 8px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 12px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'})`
-              } : undefined}
+              style={{
+                ...(item.isUnique ? {
+                  filter: `drop-shadow(0 0 4px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'}) drop-shadow(0 0 8px ${RARITY_COLORS[item.rarity]?.gem || '#FFD700'})`
+                } : {}),
+                ...(iconOnly ? {
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  objectFit: 'contain'
+                } : {})
+              }}
             />
           </motion.div>
           
@@ -639,32 +703,38 @@ export const ItemSlot = memo(function ItemSlot({
 
           {/* Rarity Gem Icon - Bottom Center (Card Game style) */}
           {!iconOnly && (
-            <MotionBox
+            <Box
               position="absolute"
-              bottom="-20%"
-              left="50%"
-              marginLeft={size === 'sm' ? '-6px' : size === 'md' ? '-9px' : size === 'xl' ? '-12px' : '-10px'}
+              bottom="0"
+              left="0"
+              right="0"
+              display="flex"
+              justifyContent="center"
+              transform="translateY(50%)"
               zIndex={20}
               pointerEvents="none"
-              animate={{
-                scale: isHovered ? [1, 1.15, 1] : 1,
-              }}
-              transition={{
-                scale: {
-                  duration: 0.6,
-                  repeat: isHovered ? Infinity : 0,
-                  ease: "easeInOut"
-                }
-              }}
             >
-              <Icon
-                as={GemIcon}
-                boxSize={size === 'sm' ? '12px' : size === 'md' ? '18px' : size === 'xl' ? '24px' : '20px'}
-                size={"xs"}
-                color={gemColor}
-                filter={`drop-shadow(0 0 4px ${gemColor}) drop-shadow(0 0 8px ${gemColor}80)`}
-              />
-            </MotionBox>
+              <MotionBox
+                animate={{
+                  scale: isHovered ? [1, 1.15, 1] : 1,
+                }}
+                transition={{
+                  scale: {
+                    duration: 0.6,
+                    repeat: isHovered ? Infinity : 0,
+                    ease: "easeInOut"
+                  }
+                }}
+              >
+                <Icon
+                  as={GemIcon}
+                  boxSize={size === 'sm' ? 'clamp(10px, 1vw, 14px)' : size === 'md' ? 'clamp(14px, 1.5vw, 20px)' : size === 'xl' ? 'clamp(20px, 2vw, 28px)' : 'clamp(16px, 1.8vw, 24px)'}
+                  size={"xs"}
+                  color={gemColor}
+                  filter={`drop-shadow(0 0 4px ${gemColor}) drop-shadow(0 0 8px ${gemColor}80)`}
+                />
+              </MotionBox>
+            </Box>
           )}
         </MotionBox>
       </Tooltip>

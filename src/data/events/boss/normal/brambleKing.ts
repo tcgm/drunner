@@ -12,7 +12,7 @@ export const BRAMBLE_KING: DungeonEvent = {
       outcome: {
         text: 'The thorns regrow instantly! Each cut draws blood from razor-sharp barbs!',
         effects: [
-          { type: 'damage', target: 'all', value: 382 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1570 },
           { type: 'gold', value: 2355 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 30 },
@@ -27,7 +27,7 @@ export const BRAMBLE_KING: DungeonEvent = {
       outcome: {
         text: 'You reach the trapped fey lord within! He helps you end his cursed existence!',
         effects: [
-          { type: 'damage', target: 'all', value: 312 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1690 },
           { type: 'gold', value: 2535 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 37 },
@@ -43,7 +43,7 @@ export const BRAMBLE_KING: DungeonEvent = {
       outcome: {
         text: 'Fire consumes the cursed brambles! The king is finally free!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 325 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1710 },
           { type: 'gold', value: 2565 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 38 },

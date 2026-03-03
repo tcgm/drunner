@@ -17,6 +17,6 @@ export const WHETSTONE_BASE: ConsumableBase = {
   ],
   icon: GiStoneWheel,
   baseGoldValue: 22,
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
 }

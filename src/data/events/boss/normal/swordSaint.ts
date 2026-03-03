@@ -12,7 +12,7 @@ export const SWORD_SAINT: DungeonEvent = {
       outcome: {
         text: 'Outclassed! The saint\'s skill is centuries beyond yours!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 425 },
+          { type: 'damage', target: 'strongest', value: 5 },
           { type: 'xp', value: 1690 },
           { type: 'gold', value: 2535 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 33 },
@@ -28,7 +28,7 @@ export const SWORD_SAINT: DungeonEvent = {
       outcome: {
         text: 'You grasp the ultimate technique! The saint smiles and passes the torch!',
         effects: [
-          { type: 'damage', target: 'all', value: 372 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1835 },
           { type: 'gold', value: 2753 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 44 },
@@ -43,7 +43,7 @@ export const SWORD_SAINT: DungeonEvent = {
       outcome: {
         text: 'The saint respects your dedication! They test you fully and acknowledge your worth!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 358 },
+          { type: 'damage', target: 'strongest', value: 5 },
           { type: 'xp', value: 1810 },
           { type: 'gold', value: 2715 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 43 },

@@ -12,7 +12,7 @@ export const ELDER_BRAIN: DungeonEvent = {
       outcome: {
         text: 'Psychic waves crash over you! Your thoughts become weapons against yourself!',
         effects: [
-          { type: 'damage', target: 'all', value: 310 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1170 },
           { type: 'gold', value: 1755 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 24 },
@@ -28,7 +28,7 @@ export const ELDER_BRAIN: DungeonEvent = {
       outcome: {
         text: 'Your mind is unbreachable! The brain recoils in pain!',
         effects: [
-          { type: 'damage', target: 'random', value: 258 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 1290 },
           { type: 'gold', value: 1935 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 29 },
@@ -43,7 +43,7 @@ export const ELDER_BRAIN: DungeonEvent = {
       outcome: {
         text: 'You wade through psychic assault and hack the brain apart!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 275 },
+          { type: 'damage', target: 'strongest', value: 2 },
           { type: 'xp', value: 1320 },
           { type: 'gold', value: 1980 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 30 },

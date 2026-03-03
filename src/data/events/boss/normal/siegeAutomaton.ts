@@ -12,7 +12,7 @@ export const SIEGE_AUTOMATON: DungeonEvent = {
       outcome: {
         text: 'Bolts and crushing blows rain down! You\'re pummeled by siege weaponry!',
         effects: [
-          { type: 'damage', target: 'all', value: 190 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 730 },
           { type: 'gold', value: 1060 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 22 },
@@ -27,7 +27,7 @@ export const SIEGE_AUTOMATON: DungeonEvent = {
       outcome: {
         text: 'You infiltrate and disable key systems! It tears itself apart!',
         effects: [
-          { type: 'damage', target: 'random', value: 148 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 800 },
           { type: 'gold', value: 1140 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 26 },
@@ -43,7 +43,7 @@ export const SIEGE_AUTOMATON: DungeonEvent = {
       outcome: {
         text: 'You break through to its power source and overload it! It explodes spectacularly!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 160 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 820 },
           { type: 'gold', value: 1170 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 28 },

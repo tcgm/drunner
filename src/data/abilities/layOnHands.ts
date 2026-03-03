@@ -14,7 +14,7 @@ export const LAY_ON_HANDS: Ability = {
     effect: {
         type: 'heal',
         value: 15,
-        target: 'ally',
+        targeting: { side: 'ally', breadth: 'single', priority: 'lowest', priorityStat: 'hpPercent', includesSelf: true },
         scaling: {
             stat: 'wisdom',
             ratio: 0.5

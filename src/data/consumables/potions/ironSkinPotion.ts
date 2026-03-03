@@ -4,7 +4,7 @@ import { GiShield } from 'react-icons/gi'
 export const IRON_SKIN_POTION: Consumable = {
   id: 'iron-skin-potion',
   name: 'Iron Skin Potion',
-  description: 'Increases defense by 8 for 5 events.',
+  description: 'Increases defense by 25 for 5 events.',
   type: 'consumable',
   rarity: 'uncommon',
   stats: {},
@@ -15,12 +15,12 @@ export const IRON_SKIN_POTION: Consumable = {
     {
       type: 'buff',
       stat: 'defense',
-      value: 8,
+      value: 25,
       duration: 5,
       target: 'self',
     }
   ],
-  usableInCombat: false,
+  usableInCombat: true,
   usableOutOfCombat: true,
   stackable: true,
   stackCount: 1,

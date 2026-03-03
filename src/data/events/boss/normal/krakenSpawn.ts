@@ -12,7 +12,7 @@ export const KRAKEN_SPAWN: DungeonEvent = {
       outcome: {
         text: 'Tentacles regenerate as fast as you cut them! You\'re grabbed and crushed!',
         effects: [
-          { type: 'damage', target: 'all', value: 126 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 472 },
           { type: 'gold', value: 622 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 18 },
@@ -28,7 +28,7 @@ export const KRAKEN_SPAWN: DungeonEvent = {
       outcome: {
         text: 'You push through the tentacles and destroy its vulnerable beak!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 90 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 520 },
           { type: 'gold', value: 680 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 22 },
@@ -43,7 +43,7 @@ export const KRAKEN_SPAWN: DungeonEvent = {
       outcome: {
         text: 'You drain the chamber! The kraken suffocates without water!',
         effects: [
-          { type: 'damage', target: 'all', value: 82 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 522 },
           { type: 'gold', value: 687 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 21 },

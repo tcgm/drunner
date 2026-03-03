@@ -12,7 +12,7 @@ export const ARACHNID_MATRON: DungeonEvent = {
       outcome: {
         text: 'Trapped! Spiders swarm while you struggle in the sticky threads!',
         effects: [
-          { type: 'damage', target: 'all', value: 385 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1580 },
           { type: 'gold', value: 2370 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 31 },
@@ -27,7 +27,7 @@ export const ARACHNID_MATRON: DungeonEvent = {
       outcome: {
         text: 'Fire consumes web and spawn! The matron burns with her brood!',
         effects: [
-          { type: 'damage', target: 'all', value: 308 },
+          { type: 'damage', target: 'all', value: 4 },
           { type: 'xp', value: 1700 },
           { type: 'gold', value: 2550 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 37 },
@@ -43,7 +43,7 @@ export const ARACHNID_MATRON: DungeonEvent = {
       outcome: {
         text: 'You slice through webs faster than she can spin! Victory!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 320 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1720 },
           { type: 'gold', value: 2580 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 38 },

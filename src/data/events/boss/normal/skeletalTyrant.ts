@@ -12,7 +12,7 @@ export const SKELETAL_TYRANT: DungeonEvent = {
       outcome: {
         text: 'The skeletal behemoth is relentless! Its massive jaws nearly crush you!',
         effects: [
-          { type: 'damage', target: 'all', value: 137 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 492 },
           { type: 'gold', value: 642 },
           { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 19 },
@@ -27,7 +27,7 @@ export const SKELETAL_TYRANT: DungeonEvent = {
       outcome: {
         text: 'Your holy power severs the magic! The bones collapse into dust!',
         effects: [
-          { type: 'damage', target: 'all', value: 92 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 535 },
           { type: 'gold', value: 700 },
           { type: 'item', itemType: 'weapon', minRarity: 'epic', rarityBoost: 23 },
@@ -43,7 +43,7 @@ export const SKELETAL_TYRANT: DungeonEvent = {
       outcome: {
         text: 'You shatter its spine and legs! The tyrant can\'t move!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 100 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 528 },
           { type: 'gold', value: 693 },
           { type: 'item', itemType: 'armor', minRarity: 'epic', rarityBoost: 22 },

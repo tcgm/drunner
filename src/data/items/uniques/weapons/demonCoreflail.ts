@@ -11,7 +11,7 @@ export const DEMON_COREFLAIL: Omit<Item, 'id'> = {
   type: 'weapon',
   rarity: 'legendary',
   minRarity: 'rare',
-  maxRarity: 'mythicc',
+  maxRarity: 'artifact',
   icon: demonCoreflailLight,
   stats: {
     attack: 165, // Incredibly powerful

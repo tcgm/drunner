@@ -1,5 +1,5 @@
 import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon, Collapse, IconButton } from '@chakra-ui/react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
@@ -120,6 +120,20 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     }
   }
 
+  const getRelativeTime = useMemo(() => {
+    return (timestamp: number) => {
+      const diff = Date.now() - timestamp
+      const minutes = Math.floor(diff / 60000)
+      const hours = Math.floor(diff / 3600000)
+      const days = Math.floor(diff / 86400000)
+      
+      if (minutes < 1) return 'Just now'
+      if (minutes < 60) return `${minutes}m ago`
+      if (hours < 24) return `${hours}h ago`
+      return `${days}d ago`
+    }
+  }, [])
+
   const formatBackupDate = (key: string) => {
     const timestamp = parseInt(key.split('-').pop() || '0')
     const date = new Date(timestamp)
@@ -128,18 +142,6 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
       time: date.toLocaleTimeString(),
       relative: getRelativeTime(timestamp)
     }
-  }
-
-  const getRelativeTime = (timestamp: number) => {
-    const diff = Date.now() - timestamp
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days = Math.floor(diff / 86400000)
-    
-    if (minutes < 1) return 'Just now'
-    if (minutes < 60) return `${minutes}m ago`
-    if (hours < 24) return `${hours}h ago`
-    return `${days}d ago`
   }
 
   const handleExportSave = () => {
@@ -236,8 +238,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         top="0"
         left="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderLeft="3px solid"
         borderTop="3px solid"
         borderColor="orange.500"
@@ -258,8 +260,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         top="0"
         right="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderRight="3px solid"
         borderTop="3px solid"
         borderColor="orange.500"
@@ -280,8 +282,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         bottom="0"
         left="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderLeft="3px solid"
         borderBottom="3px solid"
         borderColor="orange.500"
@@ -302,8 +304,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         position="absolute"
         bottom="0"
         right="0"
-        width="200px"
-        height="200px"
+        width="clamp(100px, 15vw, 200px)"
+        height="clamp(100px, 15vw, 200px)"
         borderRight="3px solid"
         borderBottom="3px solid"
         borderColor="orange.500"
@@ -384,21 +386,21 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             Descend into Dorkness
           </Text>
           <Box 
-            width="300px" 
-            height="2px" 
+            width="clamp(200px, 30vw, 300px)" 
+            height="clamp(1px, 0.2vh, 3px)" 
             bgGradient="linear(to-r, transparent, orange.500, transparent)" 
             mt={2}
           />
         </VStack>
 
         {/* Menu Buttons */}
-        <VStack className="main-menu-buttons" spacing={4} width="300px">
+        <VStack className="main-menu-buttons" spacing={4} width="clamp(250px, 30vw, 350px)">
           <Button 
             className="btn-new-run" 
             colorScheme="orange" 
             size="lg" 
             width="100%"
-            height="60px"
+            height="clamp(50px, 6vh, 60px)"
             fontSize="xl"
             fontWeight="bold"
             letterSpacing="wide"
@@ -412,7 +414,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             transition="all 0.2s"
             leftIcon={<Icon as={GiCryptEntrance} boxSize={6} />}
           >
-            New Run
+            Town
           </Button>
           {hasActiveRun && (
             <Button 
@@ -421,7 +423,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
               variant="outline"
               size="lg" 
               width="100%"
-              height="60px"
+              height="clamp(50px, 6vh, 60px)"
               fontSize="xl"
               fontWeight="bold"
               letterSpacing="wide"
@@ -443,7 +445,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             variant="outline"
             size="lg" 
             width="100%"
-            height="60px"
+            height="clamp(50px, 6vh, 60px)"
             fontSize="lg"
             fontWeight="semibold"
             letterSpacing="wide"
@@ -465,7 +467,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
             variant="outline"
             size="lg" 
             width="100%"
-            height="60px"
+            height="clamp(50px, 6vh, 60px)"
             fontSize="lg"
             fontWeight="semibold"
             letterSpacing="wide"
@@ -498,9 +500,9 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
       </VStack>
 
       {/* Save Management Modal */}
-      <Modal className="save-management-modal" isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
+      <Modal id="save-management-modal" isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
         <ModalOverlay bg="blackAlpha.700" />
-        <ModalContent className="save-management-content" bg="gray.800" maxW="700px">
+        <ModalContent className="save-management-content" bg="gray.800" maxW="clamp(400px, 70vw, 800px)">
           <ModalHeader className="save-management-header" color="orange.400" fontSize="2xl" pb={3}>
             <HStack>
               <Icon as={GiSave} boxSize={6} />

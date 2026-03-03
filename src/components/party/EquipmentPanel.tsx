@@ -179,8 +179,8 @@ export function EquipmentPanel({
           fontSize="2xs"
           borderRadius="full"
           minW="auto"
-          w="24px"
-          h="24px"
+          w="clamp(20px, 2vw, 28px)"
+          h="clamp(20px, 2vw, 28px)"
           p={0}
           zIndex={3}
         >
@@ -191,7 +191,7 @@ export function EquipmentPanel({
   }
 
   return (
-    <Box className="equipment-panel" w="300px" minW="300px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={3} overflowY="auto">
+    <Box className="equipment-panel" w="clamp(250px, 25vw, 350px)" minW="250px" bg="gray.900" borderLeft="2px solid" borderColor="gray.800" p={3} overflowY="auto">
       <VStack spacing={2} h="full">
         <Text fontSize="sm" fontWeight="bold" color="orange.300">
           Equipment
@@ -210,7 +210,7 @@ export function EquipmentPanel({
                     colorScheme="orange"
                     onClick={() => onSelectHero(index)}
                     flex={1}
-                    minW="60px"
+                    minW="clamp(50px, 6vw, 70px)"
                   >
                     {hero.name.split(' ')[0]}
                   </Button>
@@ -306,22 +306,22 @@ export function EquipmentPanel({
                     return (
                       <SimpleGrid columns={2} spacing={0.5} fontSize="2xs">
                         {equipmentBonuses.attack > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.attack}>
+                          <Text color={GAME_CONFIG.colors.stats.attack.text}>
                             ATK: +{equipmentBonuses.attack}
                           </Text>
                         )}
                         {equipmentBonuses.defense > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.defense}>
+                          <Text color={GAME_CONFIG.colors.stats.defense.text}>
                             DEF: +{equipmentBonuses.defense}
                           </Text>
                         )}
                         {equipmentBonuses.speed > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.speed}>
+                          <Text color={GAME_CONFIG.colors.stats.speed.text}>
                             SPD: +{equipmentBonuses.speed}
                           </Text>
                         )}
                         {equipmentBonuses.luck > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.luck}>
+                          <Text color={GAME_CONFIG.colors.stats.luck.text}>
                             LUCK: +{equipmentBonuses.luck}
                           </Text>
                         )}
@@ -331,17 +331,17 @@ export function EquipmentPanel({
                           </Text>
                         )}
                         {equipmentBonuses.magicPower > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.magicPower}>
+                          <Text color={GAME_CONFIG.colors.stats.magicPower.text}>
                             MP: +{equipmentBonuses.magicPower}
                           </Text>
                         )}
                         {equipmentBonuses.wisdom > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.wisdom}>
+                          <Text color={GAME_CONFIG.colors.stats.wisdom.text}>
                             WIS: +{equipmentBonuses.wisdom}
                           </Text>
                         )}
                         {equipmentBonuses.charisma > 0 && (
-                          <Text color={GAME_CONFIG.colors.stats.charisma}>
+                          <Text color={GAME_CONFIG.colors.stats.charisma.text}>
                             CHA: +{equipmentBonuses.charisma}
                           </Text>
                         )}

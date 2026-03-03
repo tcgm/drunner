@@ -9,6 +9,8 @@ export const SHADOWS_WHISPER: Omit<Item, 'id'> = {
   description: 'Boots that make no sound. Walk through darkness undetected.',
   type: 'boots',
   rarity: 'epic',
+  minRarity: 'rare',
+  maxRarity: 'artifact',
   icon: GiRunningNinja,
   stats: {
     speed: 50,

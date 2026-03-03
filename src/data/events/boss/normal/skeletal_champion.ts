@@ -12,7 +12,7 @@ export const SKELETAL_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'Your weapon shatters bone after bone, but the champion fights on!',
         effects: [
-          { type: 'damage', target: 'all', value: 30 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 200 },
           { type: 'gold', value: 280 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 10 },
@@ -28,7 +28,7 @@ export const SKELETAL_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'You crush its skull with a mighty blow! The necromantic energy dissipates!',
         effects: [
-          { type: 'damage', target: 'random', value: 22 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 230 },
           { type: 'gold', value: 330 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 13 },
@@ -43,7 +43,7 @@ export const SKELETAL_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'Divine light floods the chamber! The skeleton crumbles to dust!',
         effects: [
-          { type: 'damage', target: 'all', value: 12 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 250 },
           { type: 'gold', value: 350 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 15 },

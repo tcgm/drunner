@@ -47,7 +47,7 @@ export default function HeroSlot({
       boxShadow={isEmpty ? 'none' : '0 4px 16px rgba(0,0,0,0.4)'}
     >
       {isEmpty ? (
-        <Flex className="hero-slot-empty" h="120px" align="center" justify="center" direction="column">
+        <Flex className="hero-slot-empty" h="clamp(100px, 12vh, 140px)" align="center" justify="center" direction="column">
           <ChakraIcon className="hero-slot-empty-icon" as={GameIcons.GiCircle} boxSize={12} color="gray.600" mb={2} />
           <Text className="hero-slot-empty-text" color="gray.500" fontSize="sm" fontWeight="bold" textAlign="center" px={2}>
             {selectedClass ? selectedClass.name : 'Empty Slot'}
@@ -117,25 +117,25 @@ export default function HeroSlot({
                 </VStack>
                 <VStack className="hero-slot-stat hero-slot-stat--attack" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">ATK</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack}>{calculateTotalStats(hero).attack}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.attack.text}>{calculateTotalStats(hero).attack}</Text>
                 </VStack>
                 <VStack className="hero-slot-stat hero-slot-stat--defense" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">DEF</Text>
-                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense}>
+                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.defense.text}>
                       {calculateTotalStats(hero).defense} <Text as="span" fontSize="2xs" color="gray.500">{formatDefenseReduction(calculateTotalStats(hero).defense)}</Text>
                     </Text>
                 </VStack>
                 <VStack className="hero-slot-stat hero-slot-stat--speed" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                   <Text color="gray.500">SPD</Text>
-                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed}>{calculateTotalStats(hero).speed}</Text>
+                  <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.speed.text}>{calculateTotalStats(hero).speed}</Text>
                 </VStack>
                   <VStack className="hero-slot-stat hero-slot-stat--wisdom" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                     <Text color="gray.500">WIS</Text>
-                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
+                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.wisdom.text}>{calculateTotalStats(hero).wisdom ?? 0}</Text>
                   </VStack>
                   <VStack className="hero-slot-stat hero-slot-stat--charisma" spacing={0} bg="gray.900" borderRadius="md" p={1}>
                     <Text color="gray.500">CHA</Text>
-                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma}>{calculateTotalStats(hero).charisma ?? 0}</Text>
+                    <Text fontWeight="bold" color={GAME_CONFIG.colors.stats.charisma.text}>{calculateTotalStats(hero).charisma ?? 0}</Text>
                   </VStack>
               </SimpleGrid>
             </VStack>

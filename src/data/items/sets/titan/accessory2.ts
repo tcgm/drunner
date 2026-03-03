@@ -9,6 +9,8 @@ export const TITANS_AEGIS: Omit<Item, 'id'> = {
   description: 'A shield fragment from the great titan war. Absorbs devastating blows.',
   type: 'accessory2',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiShieldBash,
   stats: {
     defense: 60,

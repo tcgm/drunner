@@ -12,7 +12,7 @@ export const STORM_LICH: DungeonEvent = {
       outcome: {
         text: 'Lightning bolts and hurricane winds batter you relentlessly! The storm is unending!',
         effects: [
-          { type: 'damage', target: 'all', value: 305 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1150 },
           { type: 'gold', value: 1750 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 24 },
@@ -28,7 +28,7 @@ export const STORM_LICH: DungeonEvent = {
       outcome: {
         text: 'You channel the electricity harmlessly! Without lightning, the lich is vulnerable!',
         effects: [
-          { type: 'damage', target: 'all', value: 242 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1280 },
           { type: 'gold', value: 1920 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 28 },
@@ -43,7 +43,7 @@ export const STORM_LICH: DungeonEvent = {
       outcome: {
         text: 'You locate their soul vessel! The lich and its storm dissipate together!',
         effects: [
-          { type: 'damage', target: 'all', value: 228 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1320 },
           { type: 'gold', value: 1980 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 30 },

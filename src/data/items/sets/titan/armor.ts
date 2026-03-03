@@ -9,6 +9,8 @@ export const TITANS_GUARD: Omit<Item, 'id'> = {
   description: 'Armor carved from living stone. Immovable as a mountain.',
   type: 'armor',
   rarity: 'legendary',
+  minRarity: 'epic',
+  maxRarity: 'artifact',
   icon: GiFullMetalBucketHandle,
   stats: {
     defense: 110,

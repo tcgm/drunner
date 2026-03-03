@@ -1,0 +1,88 @@
+/* ============================================================================
+   PARTY SETUP SLOTS RESPONSIVE STYLES
+   Component: PartySetupSlots.tsx
+   ============================================================================ */
+
+/* Portrait mode - single column layout */
+@media (orientation: portrait) and (max-width: 768px) {
+  .party-setup-slots {
+    padding: 0.375rem !important;
+  }
+  
+  /* Slots are now in VStack, ensure they have reasonable height */
+  .party-setup-slots > .chakra-stack > .chakra-stack:last-child {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Individual slot adjustments for portrait single column - more compact */
+  .party-slot {
+    width: 100% !important;
+    min-height: 100px !important;
+    max-height: 120px !important;
+    height: auto !important;
+    padding: 0.5rem !important;
+  }
+  
+  /* Compact the contents to fit smaller height */
+  .party-slot .chakra-icon {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+  }
+  
+  .party-slot .chakra-text {
+    font-size: 0.8rem !important;
+  }
+  
+  .party-slot .chakra-badge {
+    font-size: 0.65rem !important;
+  }
+  
+  /* Reduce button sizes */
+  .party-slot .chakra-button {
+    padding: 0.375rem 0.5rem !important;
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Very small portrait screens */
+@media (orientation: portrait) and (max-width: 400px) {
+  .party-setup-slots {
+    padding: 0.375rem !important;
+  }
+  
+  .party-slot {
+    min-height: 90px !important;
+    max-height: 110px !important;
+  }
+  
+  /* Further compact slot contents */
+  .party-slot .chakra-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+  
+  .party-slot .chakra-text {
+    font-size: 0.7rem !important;
+  }
+  
+  .party-slot .chakra-badge {
+    font-size: 0.6rem !important;
+  }
+  
+  .party-slot .chakra-button {
+    padding: 0.25rem 0.375rem !important;
+    font-size: 0.65rem !important;
+  }
+}
+
+/* Landscape - keep horizontal but compact */
+@media (orientation: landscape) and (max-height: 600px) {
+  .party-setup-slots {
+    padding: 0.5rem !important;
+  }
+  
+  .party-slot {
+    padding: 0.5rem !important;
+  }
+}

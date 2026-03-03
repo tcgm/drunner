@@ -17,9 +17,9 @@ import type { SetBonus } from '@/data/items/sets'
  * PASSIVE Set Bonuses - stat boosts for equipping multiple pieces (always active)
  */
 export const TITAN_SET_BONUSES: Record<number, SetBonus> = {
-  2: { description: 'Titan Strength (2 pieces): +40 Attack, +30 Defense', stats: { attack: 40, defense: 30 } },
-  4: { description: 'Titan Fortitude (4 pieces): +80 Attack, +60 Defense, +80 HP', stats: { attack: 80, defense: 60, maxHp: 80 } },
-  6: { description: 'Primordial Might (Full Set): +140 Attack, +100 Defense, +150 HP', stats: { attack: 140, defense: 100, maxHp: 150 } },
+  2: { description: 'Titan Strength (2 pieces): +30 Attack, +20 Defense per piece', stats: { attack: 30, defense: 20 } },
+  4: { description: 'Titan Fortitude (4 pieces): +50 Attack, +40 Defense, +60 HP per piece', stats: { attack: 50, defense: 40, maxHp: 60 } },
+  6: { description: 'Primordial Might (Full Set): +80 Attack, +60 Defense, +100 HP per piece', stats: { attack: 80, defense: 60, maxHp: 100 } },
 }
 
 /**
@@ -28,9 +28,9 @@ export const TITAN_SET_BONUSES: Record<number, SetBonus> = {
  */
 export const TITAN_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
   triggers: ['onDamageTaken'],
-  description: 'Titan Endurance: 20% chance to reduce incoming damage by 50%',
+  description: (m) => `Titan Endurance: 20% chance to reduce incoming damage by ${Math.min(100, Math.floor(50 * m))}%`,
   handler: (context) => {
-    const { party, sourceHero, damageAmount } = context
+    const { party, sourceHero, damageAmount, effectMultiplier = 1.0 } = context
     
     if (!sourceHero || !sourceHero.isAlive || !damageAmount) {
       return null
@@ -41,7 +41,7 @@ export const TITAN_SET_UNIQUE_EFFECT: UniqueEffectDefinition = {
       return null
     }
     
-    const damageReduction = Math.floor(damageAmount * 0.5)
+    const damageReduction = Math.floor(damageAmount * 0.5 * effectMultiplier)
     
     return {
       party,

@@ -19,6 +19,7 @@ import {
   SimpleGrid,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
+import { useOrientation } from '@/contexts/OrientationContext'
 import type { Consumable, Hero, Item } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { 
@@ -32,8 +33,11 @@ import {
   GiTwoCoins
 } from 'react-icons/gi'
 import { ItemSlot } from '@/components/ui/ItemSlot'
+import './MarketHallModal.css'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { generateMarketInventory } from '@/systems/market/marketGenerator'
+import { getMarketPrice, getMarketRefreshCost } from '@/systems/shop/shopUtils'
+import type { MarketStallId } from '@/systems/shop/shopUtils'
 import type { IconType } from 'react-icons'
 
 interface MarketHallModalProps {
@@ -41,12 +45,12 @@ interface MarketHallModalProps {
   onClose: () => void
   bankGold: number
   party: (Hero | null)[]
-  onPurchase: (consumable: Consumable) => void
+  onPurchase: (consumable: Consumable, price: number) => void
   onSpendGold: (amount: number) => boolean
 }
 
 interface Stall {
-  id: string
+  id: MarketStallId
   name: string
   icon: IconType
   items: Consumable[]
@@ -61,9 +65,12 @@ export function MarketHallModal({
   onPurchase, 
   onSpendGold 
 }: MarketHallModalProps) {
+  const { isPortrait } = useOrientation()
   const [stalls, setStalls] = useState<Stall[]>([])
   const [hasInitialized, setHasInitialized] = useState(false)
   const [purchasedItemIds, setPurchasedItemIds] = useState<Set<string>>(new Set())
+  const [isRefreshOnCooldown, setIsRefreshOnCooldown] = useState(false)
+  const [cooldownRemaining, setCooldownRemaining] = useState(0)
 
   // Generate stall inventory using market generator
   const generateStalls = () => {
@@ -105,25 +112,57 @@ export function MarketHallModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, hasInitialized])
 
+  // Reset cooldown when modal closes
+  useEffect(() => {
+    if (!isOpen && (isRefreshOnCooldown || cooldownRemaining > 0)) {
+      setIsRefreshOnCooldown(false)
+      setCooldownRemaining(0)
+    }
+  }, [isOpen, isRefreshOnCooldown, cooldownRemaining])
+
   // Calculate market price based on stall type
-  const getMarketPrice = (item: Consumable, stallId: string) => {
-    const multiplier = stallId === 'food' ? GAME_CONFIG.market.priceMultipliers.food :
-                       stallId === 'supplies' ? GAME_CONFIG.market.priceMultipliers.supplies :
-                       GAME_CONFIG.market.priceMultipliers.premium
-    return Math.floor(item.value * multiplier)
-  }
+  // (getMarketPrice imported from shopUtils)
 
   const handleRefresh = () => {
+    if (isRefreshOnCooldown) return
+    
     const refreshCost = getRefreshCost()
     if (bankGold >= refreshCost && onSpendGold(refreshCost)) {
       generateStalls()
+      
+      // Start cooldown
+      setIsRefreshOnCooldown(true)
+      setCooldownRemaining(GAME_CONFIG.market.refreshCooldown)
     }
   }
 
-  const handlePurchase = (item: Consumable, stallId: string) => {
+  // Handle cooldown timer
+  useEffect(() => {
+    if (!isRefreshOnCooldown || cooldownRemaining <= 0) {
+      if (isRefreshOnCooldown) {
+        setIsRefreshOnCooldown(false)
+        setCooldownRemaining(0)
+      }
+      return
+    }
+
+    const interval = setInterval(() => {
+      setCooldownRemaining(prev => {
+        const next = Math.max(0, prev - 100)
+        if (next === 0) {
+          setIsRefreshOnCooldown(false)
+        }
+        return next
+      })
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [isRefreshOnCooldown, cooldownRemaining])
+
+  const handlePurchase = (item: Consumable, stallId: MarketStallId) => {
     const marketPrice = getMarketPrice(item, stallId)
     if (bankGold >= marketPrice && !purchasedItemIds.has(item.id)) {
-      onPurchase(item)
+      onPurchase(item, marketPrice)
       setPurchasedItemIds(prev => new Set(prev).add(item.id))
     }
   }
@@ -135,32 +174,31 @@ export function MarketHallModal({
     stalls.forEach(stall => {
       stall.items.forEach(item => {
         if (!purchasedItemIds.has(item.id)) {
-          remainingValue += getMarketPrice(item, stall.id)
+          remainingValue += getMarketPrice(item, stall.id as MarketStallId)
         }
       })
     })
     
-    const cost = Math.ceil(
-      GAME_CONFIG.market.refreshBaseCost + 
-      (remainingValue * GAME_CONFIG.market.refreshCostMultiplier)
-    )
+    const cost = getMarketRefreshCost(remainingValue)
     
     return cost
   }
 
   const canAffordRefresh = bankGold >= getRefreshCost()
-  const canAfford = (item: Consumable, stallId: string) => bankGold >= getMarketPrice(item, stallId)
+  const canAfford = (item: Consumable, stallId: MarketStallId) => bankGold >= getMarketPrice(item, stallId)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="6xl" isCentered scrollBehavior="inside">
+    <Modal isOpen={isOpen} onClose={onClose} size={isPortrait ? 'full' : '6xl'} isCentered scrollBehavior="inside">
       <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
       <ModalContent 
         bg="gray.900" 
         color="white" 
         borderWidth="3px" 
         borderColor="green.600" 
-        h="95vh" 
-        maxH="95vh"
+        h={isPortrait ? '100%' : '95vh'} 
+        maxH={isPortrait ? '100%' : '95vh'}
+        display={isPortrait ? 'flex' : undefined}
+        flexDirection={isPortrait ? 'column' : undefined}
         boxShadow="0 0 30px rgba(72, 187, 120, 0.3)"
       >
         <ModalHeader 
@@ -180,7 +218,10 @@ export function MarketHallModal({
             </HStack>
             <HStack spacing={4}>
               <Tooltip 
-                label={canAffordRefresh ? `Refresh market for ${getRefreshCost()} gold` : 'Not enough gold'} 
+                label={
+                  isRefreshOnCooldown ? `Cooldown: ${(cooldownRemaining / 1000).toFixed(1)}s` :
+                  canAffordRefresh ? `Refresh market for ${getRefreshCost()} gold` : 'Not enough gold'
+                } 
                 placement="left"
               >
                 <Button
@@ -189,9 +230,9 @@ export function MarketHallModal({
                   colorScheme="green"
                   variant="solid"
                   onClick={handleRefresh}
-                  isDisabled={!canAffordRefresh}
+                  isDisabled={!canAffordRefresh || isRefreshOnCooldown}
                 >
-                  Refresh ({getRefreshCost()}g)
+                  {isRefreshOnCooldown ? `Cooldown (${(cooldownRemaining / 1000).toFixed(1)}s)` : `Refresh (${getRefreshCost()}g)`}
                 </Button>
               </Tooltip>
               <HStack spacing={2} bg="green.900" px={4} py={2} borderRadius="md" borderWidth="1px" borderColor="green.700">
@@ -202,106 +243,221 @@ export function MarketHallModal({
           </HStack>
         </ModalHeader>
         <ModalCloseButton color="green.300" />
-        <ModalBody py={4} px={4} bg="gray.850">
-          <VStack spacing={4} align="stretch">
-            {stalls.map((stall) => (
-              <Box 
-                key={stall.id}
-                bg="gray.800"
-                borderWidth="2px"
-                borderColor={`${stall.color}.700`}
-                borderRadius="lg"
-                p={3}
-                boxShadow={`0 2px 8px rgba(0, 0, 0, 0.3)`}
-              >
-                {/* Stall Header */}
-                <HStack mb={3} pb={2} borderBottom="1px solid" borderColor="gray.700">
-                  <Icon as={stall.icon} boxSize={5} color={`${stall.color}.400`} />
-                  <Text fontSize="md" fontWeight="bold" color={`${stall.color}.300`}>
-                    {stall.name}
-                  </Text>
-                  <Badge colorScheme={stall.color} fontSize="xs">
-                    {stall.items.filter(item => !purchasedItemIds.has(item.id)).length} available
-                  </Badge>
-                </HStack>
+        <ModalBody
+          py={isPortrait ? 1.5 : 4}
+          px={isPortrait ? 1.5 : 4}
+          bg="gray.850"
+          display={isPortrait ? 'flex' : undefined}
+          flexDirection={isPortrait ? 'column' : undefined}
+          flex={isPortrait ? '1' : undefined}
+          minH={isPortrait ? '0' : undefined}
+          overflow={isPortrait ? 'hidden' : undefined}
+        >
+          {isPortrait ? (
+            /* Portrait: three vertical stall columns side-by-side */
+            <HStack spacing={1.5} align="stretch" h="100%" overflow="hidden">
+              {stalls.map((stall) => (
+                <Box
+                  key={stall.id}
+                  flex="1"
+                  w="0"
+                  bg="gray.800"
+                  borderWidth="2px"
+                  borderColor={`${stall.color}.700`}
+                  borderRadius="lg"
+                  overflow="hidden"
+                  display="flex"
+                  flexDirection="column"
+                  boxShadow={`0 2px 8px rgba(0, 0, 0, 0.3)`}
+                >
+                  {/* Compact portrait stall header */}
+                  <VStack spacing={0.5} px={1.5} py={2} borderBottom="1px solid" borderColor="gray.700" flexShrink={0}>
+                    <Icon as={stall.icon} boxSize={4} color={`${stall.color}.400`} />
+                    <Text fontSize="2xs" fontWeight="bold" color={`${stall.color}.300`} textAlign="center" noOfLines={1}>
+                      {stall.name}
+                    </Text>
+                    <Badge colorScheme={stall.color} fontSize="2xs">
+                      {stall.items.filter(item => !purchasedItemIds.has(item.id)).length}
+                    </Badge>
+                  </VStack>
+                  {/* Stall items  -  scrollable vertical list */}
+                  <VStack spacing={1.5} p={1.5} overflowY="auto" flex="1" align="stretch">
+                    {stall.items.map((item) => {
+                      const isPurchased = purchasedItemIds.has(item.id)
+                      const affordable = canAfford(item, stall.id) && !isPurchased
+                      const itemWithIcon = restoreItemIcon(item)
+                      const marketPrice = getMarketPrice(item, stall.id)
+                      return (
+                        <Box
+                          key={item.id}
+                          bg={isPurchased ? 'gray.900' : 'gray.700'}
+                          borderWidth="2px"
+                          borderColor={
+                            isPurchased ? 'gray.600' :
+                            affordable ? `${stall.color}.500` :
+                            'red.600'
+                          }
+                          borderRadius="md"
+                          p={1.5}
+                          cursor={affordable ? 'pointer' : 'not-allowed'}
+                          onClick={() => affordable && handlePurchase(item, stall.id)}
+                          _hover={affordable ? {
+                            borderColor: `${stall.color}.400`,
+                            bg: 'gray.600',
+                            transform: 'translateY(-2px)',
+                            boxShadow: `0 4px 12px rgba(0, 0, 0, 0.4)`,
+                            transition: 'all 0.2s'
+                          } : {}}
+                          transition="all 0.2s"
+                          opacity={isPurchased ? 0.4 : 1}
+                          position="relative"
+                        >
+                          <VStack spacing={1}>
+                            <Box className="market-item-slot">
+                              <ItemSlot item={itemWithIcon} isClickable={false} size="md" />
+                            </Box>
+                            <Divider borderColor="gray.600" />
+                            <Button
+                              size="xs"
+                              colorScheme={isPurchased ? 'gray' : affordable ? stall.color : 'red'}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handlePurchase(item, stall.id)
+                              }}
+                              isDisabled={!affordable}
+                              width="100%"
+                              fontSize="2xs"
+                              leftIcon={isPurchased ? undefined : <Icon as={GiCoinsPile} boxSize={3} />}
+                            >
+                              {isPurchased ? 'Sold' : `${marketPrice}g`}
+                            </Button>
+                          </VStack>
+                          {item.rarity !== 'common' && !isPurchased && (
+                            <Badge
+                              position="absolute"
+                              top={1}
+                              right={1}
+                              colorScheme={
+                                item.rarity === 'uncommon' ? 'green' :
+                                item.rarity === 'rare' ? 'blue' :
+                                item.rarity === 'epic' ? 'purple' : 'orange'
+                              }
+                              fontSize="2xs"
+                            >
+                              {item.rarity}
+                            </Badge>
+                          )}
+                        </Box>
+                      )
+                    })}
+                  </VStack>
+                </Box>
+              ))}
+            </HStack>
+          ) : (
+            /* Landscape: stalls stacked vertically with 7-column item grid */
+            <VStack spacing={4} align="stretch">
+              {stalls.map((stall) => (
+                <Box 
+                  key={stall.id}
+                  bg="gray.800"
+                  borderWidth="2px"
+                  borderColor={`${stall.color}.700`}
+                  borderRadius="lg"
+                  p={3}
+                  boxShadow={`0 2px 8px rgba(0, 0, 0, 0.3)`}
+                >
+                  {/* Stall Header */}
+                  <HStack mb={3} pb={2} borderBottom="1px solid" borderColor="gray.700">
+                    <Icon as={stall.icon} boxSize={5} color={`${stall.color}.400`} />
+                    <Text fontSize="md" fontWeight="bold" color={`${stall.color}.300`}>
+                      {stall.name}
+                    </Text>
+                    <Badge colorScheme={stall.color} fontSize="xs">
+                      {stall.items.filter(item => !purchasedItemIds.has(item.id)).length} available
+                    </Badge>
+                  </HStack>
 
-                {/* Stall Items */}
-                <SimpleGrid columns={7} spacing={2}>
-                  {stall.items.map((item) => {
-                    const isPurchased = purchasedItemIds.has(item.id)
-                    const affordable = canAfford(item, stall.id) && !isPurchased
-                    const itemWithIcon = restoreItemIcon(item)
-                    const marketPrice = getMarketPrice(item, stall.id)
+                  {/* Stall Items */}
+                  <SimpleGrid columns={7} spacing={2}>
+                    {stall.items.map((item) => {
+                      const isPurchased = purchasedItemIds.has(item.id)
+                      const affordable = canAfford(item, stall.id) && !isPurchased
+                      const itemWithIcon = restoreItemIcon(item)
+                      const marketPrice = getMarketPrice(item, stall.id)
 
-                    return (
-                      <Box
-                        key={item.id}
-                        bg={isPurchased ? 'gray.900' : 'gray.700'}
-                        borderWidth="2px"
-                        borderColor={
-                          isPurchased ? 'gray.600' : 
-                          affordable ? `${stall.color}.500` : 
-                          'red.600'
-                        }
-                        borderRadius="md"
-                        p={2}
-                        cursor={affordable ? 'pointer' : 'not-allowed'}
-                        onClick={() => affordable && handlePurchase(item, stall.id)}
-                        _hover={affordable ? { 
-                          borderColor: `${stall.color}.400`,
-                          bg: 'gray.600',
-                          transform: 'translateY(-2px)',
-                          boxShadow: `0 4px 12px rgba(0, 0, 0, 0.4)`,
-                          transition: 'all 0.2s'
-                        } : {}}
-                        transition="all 0.2s"
-                        opacity={isPurchased ? 0.4 : 1}
-                        position="relative"
-                      >
-                        <VStack spacing={1}>
-                          <ItemSlot
-                            item={itemWithIcon}
-                            isClickable={false}
-                            size="md"
-                          />
-                          <Divider borderColor="gray.600" />
-                          <Button
-                            size="xs"
-                            colorScheme={isPurchased ? 'gray' : affordable ? stall.color : 'red'}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handlePurchase(item, stall.id)
-                            }}
-                            isDisabled={!affordable}
-                            width="100%"
-                            fontSize="xs"
-                            leftIcon={isPurchased ? undefined : <Icon as={GiCoinsPile} boxSize={3} />}
-                          >
-                            {isPurchased ? 'Sold' : `${marketPrice}g`}
-                          </Button>
-                        </VStack>
-                        {item.rarity !== 'common' && !isPurchased && (
-                          <Badge
-                            position="absolute"
-                            top={1}
-                            right={1}
-                            colorScheme={
-                              item.rarity === 'uncommon' ? 'green' :
-                              item.rarity === 'rare' ? 'blue' :
-                              item.rarity === 'epic' ? 'purple' : 'orange'
-                            }
-                            fontSize="2xs"
-                          >
-                            {item.rarity}
-                          </Badge>
-                        )}
-                      </Box>
-                    )
-                  })}
-                </SimpleGrid>
-              </Box>
-            ))}
-          </VStack>
+                      return (
+                        <Box
+                          key={item.id}
+                          bg={isPurchased ? 'gray.900' : 'gray.700'}
+                          borderWidth="2px"
+                          borderColor={
+                            isPurchased ? 'gray.600' : 
+                            affordable ? `${stall.color}.500` : 
+                            'red.600'
+                          }
+                          borderRadius="md"
+                          p={2}
+                          cursor={affordable ? 'pointer' : 'not-allowed'}
+                          onClick={() => affordable && handlePurchase(item, stall.id)}
+                          _hover={affordable ? { 
+                            borderColor: `${stall.color}.400`,
+                            bg: 'gray.600',
+                            transform: 'translateY(-2px)',
+                            boxShadow: `0 4px 12px rgba(0, 0, 0, 0.4)`,
+                            transition: 'all 0.2s'
+                          } : {}}
+                          transition="all 0.2s"
+                          opacity={isPurchased ? 0.4 : 1}
+                          position="relative"
+                        >
+                          <VStack spacing={1}>
+                            <Box className="market-item-slot">
+                              <ItemSlot
+                                item={itemWithIcon}
+                                isClickable={false}
+                                size="md"
+                              />
+                            </Box>
+                            <Divider borderColor="gray.600" />
+                            <Button
+                              size="xs"
+                              colorScheme={isPurchased ? 'gray' : affordable ? stall.color : 'red'}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handlePurchase(item, stall.id)
+                              }}
+                              isDisabled={!affordable}
+                              width="100%"
+                              fontSize="xs"
+                              leftIcon={isPurchased ? undefined : <Icon as={GiCoinsPile} boxSize={3} />}
+                            >
+                              {isPurchased ? 'Sold' : `${marketPrice}g`}
+                            </Button>
+                          </VStack>
+                          {item.rarity !== 'common' && !isPurchased && (
+                            <Badge
+                              position="absolute"
+                              top={1}
+                              right={1}
+                              colorScheme={
+                                item.rarity === 'uncommon' ? 'green' :
+                                item.rarity === 'rare' ? 'blue' :
+                                item.rarity === 'epic' ? 'purple' : 'orange'
+                              }
+                              fontSize="2xs"
+                            >
+                              {item.rarity}
+                            </Badge>
+                          )}
+                        </Box>
+                      )
+                    })}
+                  </SimpleGrid>
+                </Box>
+              ))}
+            </VStack>
+          )}
         </ModalBody>
         <ModalFooter 
           borderTop="2px solid" 

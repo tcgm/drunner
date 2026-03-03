@@ -12,7 +12,7 @@ export const BLADE_SERAPH: DungeonEvent = {
       outcome: {
         text: 'Six legendary weapons strike as one! Celestial skill overwhelms you!',
         effects: [
-          { type: 'damage', target: 'all', value: 468 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1920 },
           { type: 'gold', value: 2880 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 38 },
@@ -28,7 +28,7 @@ export const BLADE_SERAPH: DungeonEvent = {
       outcome: {
         text: 'You match blade for blade! The seraph acknowledges your mastery!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 405 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2050 },
           { type: 'gold', value: 3075 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 50 },
@@ -43,7 +43,7 @@ export const BLADE_SERAPH: DungeonEvent = {
       outcome: {
         text: 'You disarm one blade after another! The seraph is powerless!',
         effects: [
-          { type: 'damage', target: 'weakest', value: 418 },
+          { type: 'damage', target: 'weakest', value: 4 },
           { type: 'xp', value: 2075 },
           { type: 'gold', value: 3113 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 51 },

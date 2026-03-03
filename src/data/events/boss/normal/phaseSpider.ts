@@ -12,7 +12,7 @@ export const PHASE_SPIDER: DungeonEvent = {
       outcome: {
         text: 'It phases away from your attacks! You\'re struck from impossible angles!',
         effects: [
-          { type: 'damage', target: 'all', value: 66 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 316 },
           { type: 'gold', value: 416 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 14 },
@@ -28,7 +28,7 @@ export const PHASE_SPIDER: DungeonEvent = {
       outcome: {
         text: 'You anticipate where it will phase! Your strike catches it mid-shift!',
         effects: [
-          { type: 'damage', target: 'random', value: 48 },
+          { type: 'damage', target: 'random', value: 1 },
           { type: 'xp', value: 358 },
           { type: 'gold', value: 468 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 17 },
@@ -43,7 +43,7 @@ export const PHASE_SPIDER: DungeonEvent = {
       outcome: {
         text: 'Your dimensional anchor locks it in place! It\'s helpless!',
         effects: [
-          { type: 'damage', target: 'all', value: 45 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 364 },
           { type: 'gold', value: 474 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 18 },

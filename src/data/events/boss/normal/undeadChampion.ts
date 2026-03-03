@@ -12,7 +12,7 @@ export const UNDEAD_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'You engage in brutal combat with the undead champion!',
         effects: [
-          { type: 'damage', target: 'all', value: 35 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 200 },
           { type: 'gold', value: 250 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 5 },
@@ -27,7 +27,7 @@ export const UNDEAD_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'Your holy power is devastating against the undead!',
         effects: [
-          { type: 'damage', target: 'all', value: 20 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 250 },
           { type: 'gold', value: 300 },
           { type: 'item', itemType: 'armor', minRarity: 'uncommon', rarityBoost: 10 },
@@ -39,7 +39,7 @@ export const UNDEAD_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'You fall back, regrouping for another day.',
         effects: [
-          { type: 'damage', target: 'random', value: 15 },
+          { type: 'damage', target: 'random', value: 2 },
           { type: 'xp', value: 50 },
         ],
       },
@@ -53,7 +53,7 @@ export const UNDEAD_CHAMPION: DungeonEvent = {
       outcome: {
         text: 'Your precise strikes shatter the champion!',
         effects: [
-          { type: 'damage', target: 'all', value: 25 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 230 },
           { type: 'gold', value: 280 },
           { type: 'item', itemType: 'weapon', minRarity: 'uncommon', rarityBoost: 8 },

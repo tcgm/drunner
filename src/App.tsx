@@ -2,6 +2,8 @@ import { Box, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
+import TownHubScreen from '@components/screens/TownHubScreen'
+import { DungeonPrepScreen } from '@components/screens/DungeonPrepScreen'
 import { PartySetupScreen } from '@components/screens/PartySetupScreen'
 import DungeonScreen from '@components/screens/DungeonScreen'
 import RunHistoryScreen from '@components/screens/RunHistoryScreen'
@@ -11,12 +13,15 @@ import { MusicManager } from '@components/ui/MusicManager'
 import { MigrationWarningDialog } from '@components/ui/MigrationWarningDialog'
 import { ItemDetailModalProvider } from '@/contexts/ItemDetailModalContext'
 import { HeroModalProvider } from '@/contexts/HeroModalContext'
+import { OrientationProvider } from '@/contexts/OrientationContext'
 import { useGameStore } from '@/core/gameStore'
+import { setActiveNexusUpgrades } from '@/data/nexus'
+import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
 import type { Hero } from '@/types'
 
 const MotionBox = motion.create(Box)
 
-type Screen = 'menu' | 'party-setup' | 'dungeon' | 'run-history'
+type Screen = 'menu' | 'town-hub' | 'dungeon-prep' | 'party-setup' | 'dungeon' | 'run-history'
 
 const screenVariants = {
   initial: { opacity: 0, x: 20 },
@@ -39,10 +44,35 @@ const screenVariants = {
   }
 }
 
+// Zoom transition for town hub and dungeon prep
+const zoomVariants = {
+  initial: { opacity: 0, scale: 0.9 },
+  animate: { 
+    opacity: 1, 
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 80,
+      damping: 12,
+      duration: 0.5
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 1.1,
+    transition: {
+      duration: 0.3
+    }
+  }
+}
+
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
   const [hmrCounter, setHmrCounter] = useState(0)
-  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration } = useGameStore()
+  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration, nexusUpgrades } = useGameStore()
+
+  // Sync nexus upgrades into the module-level context used by game systems
+  useEffect(() => { setActiveNexusUpgrades(nexusUpgrades ?? {}) }, [nexusUpgrades])
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   // HMR: Force component remount on module reload to restore item icons
@@ -73,18 +103,14 @@ function App() {
   }, [])
   
   const handleStartDungeon = (startingFloor: number = 0) => {
-    // Calculate alkahest cost
-    const activeHeroes = party.filter((h): h is Hero => h !== null)
-    const partyAvgLevel = activeHeroes.length > 0
-      ? Math.floor(activeHeroes.reduce((sum, h) => sum + h.level, 0) / activeHeroes.length)
-      : 1
-    const freeFloorThreshold = Math.floor(partyAvgLevel * 0.5) // Using the config value
+    // Calculate alkahest cost using shared utility
+    const freeFloorThreshold = calculateFreeFloorThreshold(party)
+    const alkahestCost = calculateFloorSkipCost(startingFloor, freeFloorThreshold)
     
-    let alkahestCost = 0
-    if (startingFloor > freeFloorThreshold) {
-      const floorsSkipped = startingFloor - freeFloorThreshold
-      alkahestCost = Math.floor(100 * Math.pow(1.5, floorsSkipped - 1))
-    }
+    const activeHeroes = party.filter((h): h is Hero => h !== null)
+    console.log(`[HandleStartDungeon] activeHeroes:`, activeHeroes.map(h => ({ name: h.name, level: h.level })))
+    console.log(`[HandleStartDungeon] freeFloorThreshold: ${freeFloorThreshold}, startingFloor: ${startingFloor}`)
+    console.log(`[HandleStartDungeon] alkahestCost: ${alkahestCost}${alkahestCost === 0 ? ' (FREE)' : ''}`)
     
     startDungeon(startingFloor, alkahestCost) // Actually start the dungeon in the game store
     setCurrentScreen('dungeon')
@@ -97,7 +123,8 @@ function App() {
     if (activeRun && activeRun.result === 'active') {
       onOpen()
     } else {
-      setCurrentScreen('party-setup')
+      // Go to town hub instead of directly to party setup
+      setCurrentScreen('town-hub')
     }
   }
   
@@ -105,7 +132,8 @@ function App() {
     // Retreat from current run before starting new one
     retreatFromDungeon()
     onClose()
-    setCurrentScreen('party-setup')
+    // Go to town hub instead of directly to party setup
+    setCurrentScreen('town-hub')
   }
 
   const handleContinue = () => {
@@ -113,10 +141,31 @@ function App() {
     setCurrentScreen('dungeon')
   }
 
+  const handleEnterDungeonPrep = () => {
+    // If there's an active run in progress, resume it via the same path as main menu "Continue"
+    if (activeRun && activeRun.result === 'active') {
+      handleContinue()
+    } else {
+      // Navigate from town hub to dungeon prep to start a new run
+      setCurrentScreen('dungeon-prep')
+    }
+  }
+
+  const handleBackToTown = () => {
+    // Navigate back to town hub from dungeon prep
+    setCurrentScreen('town-hub')
+  }
+
+  const handleBackToMenu = () => {
+    // Navigate back to main menu from town hub
+    setCurrentScreen('menu')
+  }
+
   return (
-    <ItemDetailModalProvider>
-      <HeroModalProvider>
-        <Box h="100vh" w="100vw" bg="gray.900" overflow="hidden" key={hmrCounter}>
+    <OrientationProvider>
+      <ItemDetailModalProvider>
+        <HeroModalProvider>
+          <Box position="fixed" top={0} left={0} right={0} bottom={0} bg="gray.900" overflow="hidden" key={hmrCounter}>
         {/* Centralized Music Manager */}
         <MusicManager currentScreen={currentScreen} />
 
@@ -135,6 +184,38 @@ function App() {
                 onNewRun={handleNewRun}
                 onContinue={handleContinue}
                 onRunHistory={() => setCurrentScreen('run-history')}
+              />
+            </MotionBox>
+          )}
+          {currentScreen === 'town-hub' && (
+            <MotionBox
+              key="town-hub"
+              h="full"
+              w="full"
+              variants={zoomVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <TownHubScreen
+                onEnterDungeon={handleEnterDungeonPrep}
+                onBack={handleBackToMenu}
+              />
+            </MotionBox>
+          )}
+          {currentScreen === 'dungeon-prep' && (
+            <MotionBox
+              key="dungeon-prep"
+              h="full"
+              w="full"
+              variants={zoomVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <DungeonPrepScreen
+                onStart={handleStartDungeon}
+                onBack={handleBackToTown}
               />
             </MotionBox>
           )}
@@ -164,7 +245,7 @@ function App() {
               animate="animate"
               exit="exit"
             >
-              <DungeonScreen onExit={() => setCurrentScreen('menu')} />
+              <DungeonScreen onExit={() => setCurrentScreen('town-hub')} />
             </MotionBox>
           )}
           {currentScreen === 'run-history' && (
@@ -218,9 +299,10 @@ function App() {
         <MusicControls />
 
         <DevTools />
-      </Box>
-      </HeroModalProvider>
-    </ItemDetailModalProvider>
+        </Box>
+        </HeroModalProvider>
+      </ItemDetailModalProvider>
+    </OrientationProvider>
   )
 }
 

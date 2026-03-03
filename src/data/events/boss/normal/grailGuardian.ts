@@ -12,7 +12,7 @@ export const GRAIL_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'Divine power empowers every strike! The guardian is unstoppable!',
         effects: [
-          { type: 'damage', target: 'all', value: 458 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1890 },
           { type: 'gold', value: 2835 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 37 },
@@ -27,7 +27,7 @@ export const GRAIL_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'Your purity is recognized! The guardian stands aside!',
         effects: [
-          { type: 'damage', target: 'all', value: 395 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2020 },
           { type: 'gold', value: 3030 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 48 },
@@ -43,7 +43,7 @@ export const GRAIL_GUARDIAN: DungeonEvent = {
       outcome: {
         text: 'You shatter the binding! Without its oath, the guardian is merely mortal!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 408 },
+          { type: 'damage', target: 'strongest', value: 4 },
           { type: 'xp', value: 2045 },
           { type: 'gold', value: 3068 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 49 },

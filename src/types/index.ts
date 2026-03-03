@@ -30,15 +30,94 @@ export interface Ability {
   icon?: IconType // react-icons icon component
 }
 
+export type PrimaryStat = 'attack' | 'defense' | 'speed' | 'luck' | 'wisdom' | 'charisma' | 'magicPower'
+
+// --- Ability Targeting System ---
+
+/** Which side of combat to target (from the caster's perspective) */
+export type TargetSide =
+  | 'self'   // Caster only
+  | 'ally'   // Other party members (excludes caster unless includesSelf=true)
+  | 'enemy'  // Boss / enemy combatants
+  | 'party'  // All alive party members (includes caster)
+
+/** Whether the effect hits one or all valid targets */
+export type TargetBreadth = 'single' | 'all'
+
+/** How to select a single target from the valid pool */
+export type TargetPriority =
+  | 'lowest'   // Lowest value of priorityStat
+  | 'highest'  // Highest value of priorityStat
+  | 'first'    // First in party-slot order
+  | 'last'     // Last in party-slot order
+  | 'random'   // Uniformly at random
+
+/** Stat used when priority is 'lowest' or 'highest' */
+export type TargetPriorityStat =
+  | 'currentHp'  // hero.stats.hp (absolute)
+  | 'hpPercent'  // hero.stats.hp / maxHp (proportional  -  best for "most wounded")
+  | 'maxHp'
+  | PrimaryStat
+
+/** Filter targets by their party position */
+export type TargetPosition = 'any' | 'frontline' | 'backline'
+
+export interface TargetingSpec {
+  side: TargetSide
+  breadth: TargetBreadth
+  /** For single breadth: how to pick from the pool. Default: 'random' */
+  priority?: TargetPriority
+  /** Stat used for lowest/highest comparison. Default: 'currentHp' */
+  priorityStat?: TargetPriorityStat
+  /** Party position filter. Default: 'any' */
+  position?: TargetPosition
+  /** When side='ally': whether the caster is eligible. Default: false */
+  includesSelf?: boolean
+}
+
+/**
+ * Defines a damage-over-time effect applied by an ability.
+ * Replaces the old global burnStacks/BURN_STACK_DAMAGE mechanism so each
+ * ability can fully specify its own DoT parameters.
+ */
+export interface DotEffect {
+  /** Display name of the status (e.g. 'Burning', 'Poisoned', 'Bleeding') */
+  name: string
+  /** Base damage per turn. Scaled up by `scaling` when applied if provided. */
+  damage: number
+  /** Duration in combat rounds */
+  duration: number
+  /**
+   * How this interacts with an already-active effect of the same name:
+   *  - 'additive'  (default): adds damage on top, refreshes to max(existing, new) duration
+   *  - 'replace'  : removes current effect and applies fresh
+   *  - 'refresh'  : keeps current damage, resets duration
+   */
+  stacking?: 'additive' | 'replace' | 'refresh'
+  /**
+   * Optional stat scaling for the dot damage (independent of the main effect scaling).
+   * Final dot damage = damage + floor(stat * ratio).
+   */
+  scaling?: {
+    stat: PrimaryStat
+    ratio: number
+  }
+}
+
 export interface AbilityEffect {
   type: 'damage' | 'heal' | 'buff' | 'debuff' | 'special'
   value: number // Base value
-  target: 'self' | 'ally' | 'enemy' | 'all-allies' | 'all-enemies'
-  duration?: number // For buffs/debuffs
+  targeting: TargetingSpec
+  duration?: number // For buffs/debuffs/status effects
+  stat?: PrimaryStat // Which stat to buff/debuff
   scaling?: { // Optional stat scaling
-    stat: 'attack' | 'defense' | 'wisdom' | 'magicPower' | 'charisma' | 'luck'
+    stat: PrimaryStat
     ratio: number // Multiplier (e.g., 0.5 = 50% of stat added to base value)
   }
+  /** Per-ability DoT effect.  Replaces the legacy burnStacks approach. */
+  dot?: DotEffect
+  /** @deprecated Use dot instead. Number of burning stacks (each = BURN_STACK_DAMAGE dmg/turn) */
+  burnStacks?: number
 }
 
 export interface HeroClass {
@@ -47,6 +126,7 @@ export interface HeroClass {
   description: string
   baseStats: Omit<Stats, 'hp' | 'maxHp'>
   statGains: Omit<Stats, 'hp'> // Stat increases per level (includes maxHp but not current hp)
+  primaryStats: [PrimaryStat, PrimaryStat] // Top 2 stats by per-level gain  -  used for ability scaling
   abilities: Ability[]
   icon: string // react-icons/gi name
 }
@@ -61,8 +141,10 @@ export interface Hero {
   slots: Record<string, Item | Consumable | null> // All equipment and consumable slots
   abilities: Ability[]
   isAlive: boolean
-  activeEffects: TimedEffect[] // Active timed effects on this hero
+  activeEffects: TimedEffect[] // Active timed effects on this hero (out of combat, depth-based)
+  combatEffects?: CombatEffect[] // Active combat effects (buffs/debuffs/status during combat only)
   pendingResurrection?: boolean // True if hero will be revived at start of next event (from Amulet of Resurrection)
+  position?: 'frontline' | 'backline' // Combat position (derived from party slot: 1-2 = frontline, 3-4 = backline)
   
   // Legacy fields for migration
   equipment?: Equipment
@@ -138,6 +220,7 @@ export interface Item {
   // Template-only fields for rarity constraints (not stored on actual items)
   minRarity?: ItemRarity  // Minimum rarity this item can roll at
   maxRarity?: ItemRarity  // Maximum rarity this item can roll at
+  dropChance?: number     // Per-unique override drop chance (0–1). Bypasses the rarity-wide base chance.
 }
 
 export interface Consumable extends Item {
@@ -166,7 +249,7 @@ export interface TimedEffect {
   id: string
   name: string
   description: string
-  icon: IconType
+  icon?: IconType
   type: 'buff' | 'debuff' | 'status' | 'regeneration'
   appliedAtDepth: number
   duration: number // Number of events (depths)
@@ -182,11 +265,110 @@ export type EventType =
   | 'choice' 
   | 'rest' 
   | 'merchant' 
-  | 'trap' 
+  | 'trap'
   | 'boss'
 
+// Combat system types
+
+export interface EffectBehavior {
+  type: 'skipTurn' | 'damagePerTurn' | 'healPerTurn' | 'custom'
+  onTurnStart?: (combatant: Combatant, state: BossCombatState) => void
+  onTurnEnd?: (combatant: Combatant, state: BossCombatState) => void
+  onRoundEnd?: (combatant: Combatant, state: BossCombatState) => void
+  damageAmount?: number // For damagePerTurn (true damage, ignores defense)
+  healAmount?: number // For healPerTurn
+  skipTurns?: boolean // For skipTurn (prevents action)
+}
+
+export interface CombatEffect {
+  id: string
+  type: 'buff' | 'debuff' | 'status'
+  name: string // Display name (e.g., "Poison", "Stunned", "Burning")
+  stat?: PrimaryStat | 'hp' // For buff/debuff only
+  value?: number // Modifier value (for buffs/debuffs)
+  duration: number // Rounds remaining (999 = permanent/until combat ends)
+  target: 'self' | 'all' | 'boss' | string // Target identifier
+  behavior?: EffectBehavior // For status effects (custom logic)
+}
+
+export interface Combatant {
+  id: string // Hero ID or 'boss'
+  type: 'hero' | 'boss'
+  speed: number // Current speed stat (for turn order)
+  isAlive: boolean // Dead combatants skip turns
+}
+
+export interface BossAbility {
+  id: string
+  name: string
+  description: string
+  cooldown: number // Turns between uses
+  lastUsed: number // Turn number when last used (-cooldown to allow first turn use)
+  trigger: 'onTurnStart' | 'onHpThreshold' | 'onPlayerAction' | 'always' | 'onPhaseChange'
+  hpThreshold?: number // For onHpThreshold triggers (e.g., 0.5 = 50% HP)
+  phase?: number // For onPhaseChange triggers (boss phase number)
+  effects: AbilityEffect[]
+}
+
+export interface BossPhase {
+  phase: number // Phase number (1, 2, 3, etc.)
+  hpThreshold: number // HP percentage to trigger phase (e.g., 0.75 = 75% HP)
+  name?: string // Optional phase name ("Enraged Form", "Final Form")
+  description?: string // Optional phase description
+  onEnter?: BossAbility[] // Abilities that trigger when entering this phase
+  replaceAbilities?: BossAbility[] // Replace boss ability set with these
+  replaceAttackPatterns?: BossAttackPattern[] // Replace attack patterns
+  addAbilities?: BossAbility[] // Add these abilities to existing set
+  addAttackPatterns?: BossAttackPattern[] // Add these patterns
+  statModifiers?: { // Phase-specific stat changes
+    attack?: number // Additive modifier
+    defense?: number
+    speed?: number
+    luck?: number
+  }
+  healPerTurn?: number // Change passive healing in this phase
+}
+
+export interface BossAttackPattern {
+  id: string
+  name: string
+  weight: number // Probability weight for random selection
+  attackType: 'single' | 'aoe' | 'multi' | 'cleave'
+  damageMultiplier: number // Multiplier of boss attack stat
+  critChance?: number // Override crit chance for this attack
+  targetCount?: number // For multi-hit attacks
+  aoeDamageReduction?: number // Damage multiplier for AOE (e.g., 0.6 = 60% damage to all)
+  description: string
+  condition?: (state: BossCombatState, party: Hero[]) => boolean // Optional condition check
+}
+
+export interface BossCombatState {
+  currentHp: number // Boss's current HP
+  maxHp: number // Boss's max HP (locked at combat start)
+  baseStats: { // Base stats for recalculation
+    attack: number
+    defense: number
+    speed: number
+    luck: number
+  }
+  abilities: BossAbility[] // Boss's available abilities
+  attackPatterns: BossAttackPattern[] // Boss's basic attack options
+  phases?: BossPhase[] // Optional phase transitions at HP thresholds
+  currentPhase: number // Current boss phase (starts at 1)
+  combatChoices?: EventChoice[] // Custom combat actions for this boss (optional)
+  healPerTurn?: number // Optional passive healing per turn (for regenerating bosses)
+  combatDepth: number // Rounds completed (increments after all combatants act)
+  floor: number // Floor when combat started (for danger calc)
+  depth: number // Total depth when combat started (for danger calc)
+  itemCooldowns: Map<string, number> // Track item cooldowns during combat
+  abilityCooldowns: Map<string, number> // Track ability cooldowns during combat
+  activeEffects: CombatEffect[] // Active buffs/debuffs with durations
+  turnOrder: Combatant[] // Current turn order sorted by speed
+  currentTurnIndex: number // Index of current actor in turn order
+}
+
 export interface EventChoice {
-  text: string
+  text: string | string[] // Single text or array for variance
   requirements?: {
     class?: string | string[] // Single class or multiple classes (any match)
     stat?: keyof Stats
@@ -205,15 +387,19 @@ export interface EventChoice {
   statModifier?: keyof Stats // Stat that affects success (adds bonus to chance)
   successOutcome?: EventOutcome // On success
   failureOutcome?: EventOutcome // On failure
+  // Boss event combat control
+  skipsCombat?: boolean // For boss events: if true, this choice skips the combat phase (e.g., negotiation, bribery). If false/undefined, combat occurs after choosing.
 }
 
 export interface EventOutcome {
-  text: string | Array<{ weight: number; text: string }> // Single text or weighted variations
+  text: string | string[] | Array<{ weight: number; text: string }> // Single text, array for variance, or weighted variations
   effects: {
-    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'consumable' | 'status' | 'revive' | 'upgradeItem' | 'killRandomParty'
-    target?: 'random' | 'all' | 'weakest' | 'strongest'
+    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'consumable' | 'status' | 'revive' | 'upgradeItem' | 'killRandomParty' | 'bossDamage' | 'buff' | 'debuff' | 'message' | 'flee' | 'abilityPrompt' | 'itemPrompt'
+    target?: 'random' | 'all' | 'weakest' | 'strongest' | 'self' | 'boss' | string
     consumableId?: string // ID of consumable to give (for type: 'consumable')
     value?: number
+    stat?: 'attack' | 'defense' | 'speed' | 'luck' | 'hp' // For buff/debuff effects
+    duration?: number // For buff/debuff effects (rounds in combat)
     fullHeal?: boolean // For heal effects: restore to full HP (ignores value)
     isTrueDamage?: boolean // For damage effects: ignore defense (true damage)
     upgradeType?: 'material' | 'rarity' | 'auto' | 'random' // For upgradeItem: specify material, rarity, auto (material first, then rarity), or random (picks material or rarity randomly)
@@ -248,14 +434,31 @@ export interface EventOutcome {
 export interface DungeonEvent {
   id: string
   type: EventType
-  title: string
-  description: string | Array<{ weight: number; text: string }> // Single text or weighted variations
+  title: string | string[] // Single text or array for variance
+  description: string | string[] | Array<{ weight: number; text: string }> // Single text, array for variance, or weighted variations
   choices: EventChoice[]
   depth: number
   icon?: IconType // react-icons icon component
   isFinalBoss?: boolean // True for the Floor 100 final boss only
   isZoneBoss?: boolean // True for major milestone bosses (floors 10, 20, 30, etc.)
   zoneBossFloor?: number // The specific floor this zone boss appears on
+  isIntroBoss?: boolean // True for floor 1 intro bosses designed to teach combat
+  
+  // Combat system fields
+  combatState?: BossCombatState // Multi-turn combat state (for bosses)
+  bossAbilities?: BossAbility[] // Boss abilities (for boss events)
+  attackPatterns?: BossAttackPattern[] // Boss attack patterns (for boss events)
+  combatChoices?: EventChoice[] // Custom combat actions for turn-based phase (optional)
+  healPerTurn?: number // Optional passive healing per turn (for regenerating bosses)
+  customBaseStats?: { // Override tier defaults with custom base stats
+    baseHp?: number
+    baseAttack?: number
+    baseDefense?: number
+    baseSpeed?: number
+    baseLuck?: number
+  }
+  phases?: BossPhase[] // Optional phase transitions at HP thresholds
+  selectedChoiceIndex?: number // Track which choice was selected for boss combat (used for victory rewards)
 }
 
 export interface EventLogEntry {
@@ -340,9 +543,11 @@ export interface GameState {
   bankInventory: Item[] // Items stored outside runs
   bankStorageSlots: number // Maximum bank storage capacity
   overflowInventory: Item[] // Items from last run that exceed bank capacity
+  lastRunItems: Item[] // Items from the most recent dungeon run (used for the Shifty Guy offer)
   corruptedItems: Item[] // Items that failed to load properly and need user resolution
   v2Items: Item[] // Items using old V2 format that can be migrated to V3
   metaXp: number // Account-wide XP for meta-progression unlocks
+  nexusUpgrades: Record<string, number> // Nexus building: upgradeId → tiers purchased
   isGameOver: boolean
   isPaused: boolean
   hasPendingPenalty: boolean
@@ -394,11 +599,31 @@ export interface Material {
 }
 
 export interface BaseTemplate {
-  icon: IconType
+  icon: IconType | string // react-icons icon component or local SVG path
   description: string
   type: ItemSlot
   stats: Partial<Omit<Stats, 'hp'>>
 }
 
-// Re-export V3 types
-export * from './items-v3'
+// Re-export V3 types (excluding Item to avoid conflict with Item interface above)
+export type {
+  ItemV3Base,
+  ProceduralItemV3,
+  UniqueItemV3,
+  SetItemV3,
+  ConsumableV3,
+  ItemV3,
+  ItemV2,
+  ItemStorage
+} from './items-v3'
+export {
+  isItemV3,
+  isItemV2,
+  isProceduralItemV3,
+  isUniqueItemV3,
+  isSetItemV3,
+  isConsumableV3
+} from './items-v3'
+
+// Re-export audio types
+export type { MusicTrack, MusicPlaylist, AudioState, LoopMode } from './audio'

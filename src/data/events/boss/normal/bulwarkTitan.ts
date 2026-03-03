@@ -12,7 +12,7 @@ export const BULWARK_TITAN: DungeonEvent = {
       outcome: {
         text: 'Your weapons bounce off harmlessly! It slowly grinds you down!',
         effects: [
-          { type: 'damage', target: 'all', value: 375 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1540 },
           { type: 'gold', value: 2310 },
           { type: 'item', itemType: 'random', minRarity: 'epic', rarityBoost: 30 },
@@ -27,7 +27,7 @@ export const BULWARK_TITAN: DungeonEvent = {
       outcome: {
         text: 'You spot the maintenance hatch! One precise strike brings it down!',
         effects: [
-          { type: 'damage', target: 'all', value: 298 },
+          { type: 'damage', target: 'all', value: 3 },
           { type: 'xp', value: 1650 },
           { type: 'gold', value: 2475 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 35 },
@@ -43,7 +43,7 @@ export const BULWARK_TITAN: DungeonEvent = {
       outcome: {
         text: 'Your power penetrates even perfect defense! The titan falls!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 312 },
+          { type: 'damage', target: 'strongest', value: 3 },
           { type: 'xp', value: 1675 },
           { type: 'gold', value: 2513 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 36 },

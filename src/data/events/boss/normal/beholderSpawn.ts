@@ -12,7 +12,7 @@ export const BEHOLDER_SPAWN: DungeonEvent = {
       outcome: {
         text: 'Multiple eye rays blast you from all angles! The magic is overwhelming!',
         effects: [
-          { type: 'damage', target: 'all', value: 73 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 325 },
           { type: 'gold', value: 430 },
           { type: 'item', itemType: 'random', minRarity: 'uncommon', rarityBoost: 14 },
@@ -27,7 +27,7 @@ export const BEHOLDER_SPAWN: DungeonEvent = {
       outcome: {
         text: 'You disrupt its magic! Without its eyes, the beholder is helpless!',
         effects: [
-          { type: 'damage', target: 'all', value: 52 },
+          { type: 'damage', target: 'all', value: 2 },
           { type: 'xp', value: 370 },
           { type: 'gold', value: 480 },
           { type: 'item', itemType: 'weapon', minRarity: 'rare', rarityBoost: 18 },
@@ -43,7 +43,7 @@ export const BEHOLDER_SPAWN: DungeonEvent = {
       outcome: {
         text: 'You destroy its main eye! The other eyes go dark and it falls!',
         effects: [
-          { type: 'damage', target: 'strongest', value: 58 },
+          { type: 'damage', target: 'strongest', value: 1 },
           { type: 'xp', value: 365 },
           { type: 'gold', value: 475 },
           { type: 'item', itemType: 'armor', minRarity: 'rare', rarityBoost: 17 },

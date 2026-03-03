@@ -12,7 +12,7 @@ export const WILDFIRE_ANCIENT: DungeonEvent = {
       outcome: {
         text: 'The inferno is all-consuming! You burn alongside the forest!',
         effects: [
-          { type: 'damage', target: 'all', value: 445 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1850 },
           { type: 'gold', value: 2775 },
           { type: 'item', itemType: 'random', minRarity: 'legendary', rarityBoost: 36 },
@@ -27,7 +27,7 @@ export const WILDFIRE_ANCIENT: DungeonEvent = {
       outcome: {
         text: 'You reach the ancient\'s core! It thanks you for ending its torment!',
         effects: [
-          { type: 'damage', target: 'all', value: 378 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 1980 },
           { type: 'gold', value: 2970 },
           { type: 'item', itemType: 'weapon', minRarity: 'legendary', rarityBoost: 46 },
@@ -42,7 +42,7 @@ export const WILDFIRE_ANCIENT: DungeonEvent = {
       outcome: {
         text: 'Torrential magic drowns the flames! The ancient finally rests!',
         effects: [
-          { type: 'damage', target: 'all', value: 392 },
+          { type: 'damage', target: 'all', value: 6 },
           { type: 'xp', value: 2005 },
           { type: 'gold', value: 3008 },
           { type: 'item', itemType: 'armor', minRarity: 'legendary', rarityBoost: 47 },

@@ -22,6 +22,7 @@ import {
 import { Gi3dStairs, GiPowder } from 'react-icons/gi'
 import { useState, useMemo, useEffect } from 'react'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { calculateFreeFloorThreshold, calculateFloorSkipCost, calculatePartyAverageLevel } from '@/utils/dungeonUtils'
 import type { Hero } from '@/types'
 
 interface FloorSelectionModalProps {
@@ -41,18 +42,11 @@ export default function FloorSelectionModal({
 }: FloorSelectionModalProps) {
   const [selectedFloor, setSelectedFloor] = useState(0)
 
-  // Calculate party average level
-  const partyAvgLevel = useMemo(() => {
-    const activeHeroes = party.filter((h): h is Hero => h !== null)
-    if (activeHeroes.length === 0) return 1
-    const totalLevel = activeHeroes.reduce((sum, h) => sum + h.level, 0)
-    return Math.floor(totalLevel / activeHeroes.length)
-  }, [party])
+  // Calculate party average level using shared utility
+  const partyAvgLevel = useMemo(() => calculatePartyAverageLevel(party), [party])
 
-  // Calculate free floor threshold
-  const freeFloorThreshold = Math.floor(
-    partyAvgLevel * GAME_CONFIG.dungeon.floorUnlockFraction
-  )
+  // Calculate free floor threshold using shared utility
+  const freeFloorThreshold = useMemo(() => calculateFreeFloorThreshold(party), [party])
 
   // Set selected floor to last free floor when modal opens
   useEffect(() => {
@@ -61,26 +55,17 @@ export default function FloorSelectionModal({
     }
   }, [isOpen, freeFloorThreshold])
 
-  // Calculate alkahest cost
-  const alkahestCost = useMemo(() => {
-    if (selectedFloor <= freeFloorThreshold) return 0
-    const floorsSkipped = selectedFloor - freeFloorThreshold
-    return Math.floor(
-      GAME_CONFIG.dungeon.floorSkipBaseCost *
-        Math.pow(GAME_CONFIG.dungeon.floorSkipCostMultiplier, floorsSkipped - 1)
-    )
-  }, [selectedFloor, freeFloorThreshold])
+  // Calculate alkahest cost using shared utility
+  const alkahestCost = useMemo(
+    () => calculateFloorSkipCost(selectedFloor, freeFloorThreshold),
+    [selectedFloor, freeFloorThreshold]
+  )
 
   const canAfford = alkahestCost === 0 || alkahestCost <= alkahest
   const maxAffordableFloor = useMemo(() => {
     let floor = freeFloorThreshold + 1
-    let cost = 0
     while (floor <= GAME_CONFIG.dungeon.maxFloors) {
-      const floorsSkipped = floor - freeFloorThreshold
-      cost = Math.floor(
-        GAME_CONFIG.dungeon.floorSkipBaseCost *
-          Math.pow(GAME_CONFIG.dungeon.floorSkipCostMultiplier, floorsSkipped - 1)
-      )
+      const cost = calculateFloorSkipCost(floor, freeFloorThreshold)
       if (cost > alkahest) break
       floor++
     }
@@ -151,7 +136,7 @@ export default function FloorSelectionModal({
                   }}
                   min={0}
                   max={GAME_CONFIG.dungeon.maxFloors}
-                  w="120px"
+                  w="clamp(100px, 12vw, 140px)"
                   onWheel={(e) => {
                     e.preventDefault()
                     const delta = e.deltaY > 0 ? -1 : 1
