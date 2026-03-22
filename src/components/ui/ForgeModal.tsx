@@ -32,13 +32,19 @@ import {
   Tooltip,
   Flex,
   Divider,
+  useDisclosure,
+  Select,
+  Switch,
+  FormControl,
+  FormLabel,
 } from '@chakra-ui/react'
 import { GiAnvil, GiHammerNails, GiCrossedSwords } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { RARITY_ORDER, getRarityColor, getRarityConfig } from '@/systems/rarity/raritySystem'
+import { RARITY_ORDER, getRarityColor, getRarityConfig, isRarityAtOrBelow, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 import { ALL_MATERIALS, getMaterialById } from '@/data/items/materials'
 import { getAlkahestCost, getForgeableRarities, getBreakdownCharge, getBreakdownThreshold } from '@/systems/forge/forgeSystem'
-import { getNexusBonus, getActiveNexusUpgrades } from '@/data/nexus'
+import { getNexusBonus } from '@/data/nexus'
+import { BankInventoryModal } from '@/components/party/BankInventoryModal'
 import type { Item, ItemRarity } from '@/types'
 
 // ─── Base item type options ───────────────────────────────────────────────────
@@ -298,11 +304,49 @@ interface BreakDownTabProps {
 }
 
 function BreakDownTab({ bankInventory, materialChargeProgress, nexusUpgrades, onBreakDown }: BreakDownTabProps) {
-  const [selectedItemId, setSelectedItemId] = React.useState<string | null>(null)
+  const { isOpen: isPickerOpen, onOpen: onPickerOpen, onClose: onPickerClose } = useDisclosure()
 
-  const breakableItems = bankInventory.filter(item => item.materialId)
+  const [rarityThreshold, setRarityThreshold] = React.useState<ItemRarity>('uncommon')
+  const [includeUnique, setIncludeUnique] = React.useState(false)
+  const [includeSet, setIncludeSet] = React.useState(false)
+  const [includeMods, setIncludeMods] = React.useState(true)
 
-  // Deduplicated material IDs from stash progress keys + items in bank
+  const nexusMultiplier = 1 + getNexusBonus(
+    GAME_CONFIG.forge.breakdown.nexusUpgradeId,
+    nexusUpgrades
+  ) / 100
+
+  const breakableItems = React.useMemo(
+    () => bankInventory.filter(item => item.materialId),
+    [bankInventory]
+  )
+
+  /** Items that pass current filter */
+  const selectedItems = React.useMemo(() => breakableItems.filter(item => {
+    if (!isRarityAtOrBelow(item.rarity, rarityThreshold)) return false
+    if (!includeUnique && item.isUnique) return false
+    if (!includeSet && item.setId) return false
+    if (!includeMods && item.modifiers && item.modifiers.length > 0) return false
+    return true
+  }), [breakableItems, rarityThreshold, includeUnique, includeSet, includeMods])
+
+  /** Total charge preview grouped by material */
+  const chargeByMaterial = React.useMemo(() => {
+    const map = new Map<string, number>()
+    for (const item of selectedItems) {
+      if (!item.materialId) continue
+      const charge = getBreakdownCharge(
+        item.rarity,
+        !!(item.isUnique && !item.setId),
+        !!item.setId,
+        nexusMultiplier,
+      )
+      map.set(item.materialId, (map.get(item.materialId) ?? 0) + charge)
+    }
+    return map
+  }, [selectedItems, nexusMultiplier])
+
+  // Deduplicated tracked materials
   const trackedMaterials = React.useMemo(() => {
     const ids = new Set<string>([
       ...Object.keys(materialChargeProgress),
@@ -313,36 +357,19 @@ function BreakDownTab({ bankInventory, materialChargeProgress, nexusUpgrades, on
       .filter((m): m is NonNullable<typeof m> => m !== undefined)
   }, [materialChargeProgress, breakableItems])
 
-  const selectedItem = selectedItemId ? bankInventory.find(i => i.id === selectedItemId) ?? null : null
+  const handleConfirm = () => {
+    for (const item of selectedItems) onBreakDown(item.id)
+  }
 
-  const nexusMultiplier = 1 + getNexusBonus(
-    GAME_CONFIG.forge.breakdown.nexusUpgradeId,
-    nexusUpgrades
-  ) / 100
-
-  const previewCharge = selectedItem
-    ? getBreakdownCharge(
-        selectedItem.rarity,
-        !!(selectedItem.isUnique && !selectedItem.setId),
-        !!selectedItem.setId,
-        nexusMultiplier,
-      )
-    : 0
-
-  if (breakableItems.length === 0) {
-    return (
-      <VStack py={8} spacing={3} color="gray.500">
-        <Icon as={GiCrossedSwords} boxSize={10} />
-        <Text>No breakable items in bank.</Text>
-        <Text fontSize="sm">Items with a known material can be broken down for charge progress.</Text>
-      </VStack>
-    )
+  const handleBreakDownItems = (itemIds: string[]) => {
+    for (const id of itemIds) onBreakDown(id)
   }
 
   return (
     <VStack spacing={4} align="stretch">
+
       {/* Charge meters */}
-      {trackedMaterials.length > 0 && (
+      {trackedMaterials.length > 0 ? (
         <Box>
           <Text fontSize="xs" color="gray.400" mb={2} textTransform="uppercase" letterSpacing="wider">
             Fragment Progress
@@ -350,119 +377,179 @@ function BreakDownTab({ bankInventory, materialChargeProgress, nexusUpgrades, on
           <VStack spacing={2} align="stretch">
             {trackedMaterials.map(mat => {
               const current = materialChargeProgress[mat.id] ?? 0
+              const pending = chargeByMaterial.get(mat.id) ?? 0
               const threshold = getBreakdownThreshold(mat.rarity)
               const pct = threshold === Infinity ? 0 : Math.min(100, (current / threshold) * 100)
+              const pendingPct = threshold === Infinity ? 0 : Math.min(100 - pct, (pending / threshold) * 100)
               const rarityColor = getRarityColor(mat.rarity)
               return (
                 <HStack key={mat.id} spacing={3}>
                   <Text fontSize="xs" color={rarityColor} minW="80px" fontWeight="semibold" noOfLines={1}>
                     {mat.name}
                   </Text>
-                  <Box flex={1}>
-                    <Progress
-                      value={pct}
-                      size="sm"
-                      borderRadius="full"
-                      bg="gray.700"
-                      sx={{ '> div': { background: rarityColor } }}
-                    />
+                  <Box flex={1} position="relative" h="8px">
+                    {/* current fill */}
+                    <Box
+                      position="absolute" inset={0}
+                      borderRadius="full" bg="gray.700" overflow="hidden"
+                    >
+                      <Box h="full" borderRadius="full" style={{ width: `${pct}%`, background: rarityColor }} />
+                    </Box>
+                    {/* pending overlay */}
+                    {pending > 0 && (
+                      <Box
+                        position="absolute" inset={0}
+                        borderRadius="full" overflow="hidden"
+                        pointerEvents="none"
+                      >
+                        <Box
+                          h="full" borderRadius="full" opacity={0.45}
+                          style={{
+                            marginLeft: `${pct}%`,
+                            width: `${pendingPct}%`,
+                            background: rarityColor,
+                          }}
+                        />
+                      </Box>
+                    )}
                   </Box>
-                  <Text fontSize="xs" color="gray.400" minW="70px" textAlign="right">
-                    {current.toLocaleString()} / {threshold === Infinity ? '∞' : threshold.toLocaleString()}
-                  </Text>
+                  <HStack spacing={1} minW="90px" justify="flex-end">
+                    <Text fontSize="xs" color="gray.400">
+                      {current.toLocaleString()}
+                    </Text>
+                    {pending > 0 && (
+                      <Text fontSize="xs" color="orange.300">+{pending.toLocaleString()}</Text>
+                    )}
+                    <Text fontSize="xs" color="gray.600">
+                      / {threshold === Infinity ? '∞' : threshold.toLocaleString()}
+                    </Text>
+                  </HStack>
                 </HStack>
               )
             })}
           </VStack>
         </Box>
+      ) : (
+        <Text fontSize="sm" color="gray.500" textAlign="center" py={2}>
+          Break down items to start filling fragment meters.
+        </Text>
       )}
 
       <Divider borderColor="gray.700" />
 
-      {/* Item list */}
+      {/* Rule panel — Shifty-Guy style */}
       <Box>
-        <Text fontSize="xs" color="gray.400" mb={2} textTransform="uppercase" letterSpacing="wider">
-          Select Item to Break Down
-        </Text>
-        <Box maxH="240px" overflowY="auto" pr={1}>
-          <VStack spacing={1} align="stretch">
-            {breakableItems.map(item => {
-              const mat = item.materialId ? getMaterialById(item.materialId) : null
-              const rarityColor = getRarityColor(item.rarity)
-              const isSelected = selectedItemId === item.id
-              const charge = getBreakdownCharge(
-                item.rarity,
-                !!(item.isUnique && !item.setId),
-                !!item.setId,
-                nexusMultiplier,
-              )
-              return (
-                <HStack
-                  key={item.id}
-                  className="forge-item-row"
-                  p={2}
-                  borderRadius="md"
-                  border="1px solid"
-                  borderColor={isSelected ? '#E07B1A' : 'gray.700'}
-                  bg={isSelected ? 'rgba(224, 123, 26, 0.10)' : 'blackAlpha.300'}
-                  onClick={() => setSelectedItemId(isSelected ? null : item.id)}
-                  spacing={3}
-                >
-                  {item.icon && <Icon as={item.icon as React.ElementType} boxSize={5} color={rarityColor} flexShrink={0} />}
-                  <VStack spacing={0} align="flex-start" flex={1} minW={0}>
-                    <Text fontSize="sm" color={rarityColor} fontWeight="semibold" noOfLines={1}>
-                      {item.name}
-                    </Text>
-                    {mat && (
-                      <Text fontSize="xs" color="gray.500">
-                        {mat.name} · <RarityLabel rarity={mat.rarity} />
-                      </Text>
-                    )}
-                  </VStack>
-                  <Tooltip label={`+${charge.toLocaleString()} charge`} hasArrow placement="left">
-                    <Badge colorScheme="orange" fontSize="10px" whiteSpace="nowrap">
-                      +{charge.toLocaleString()}
-                    </Badge>
-                  </Tooltip>
-                </HStack>
-              )
-            })}
-          </VStack>
-        </Box>
+        <FormLabel fontSize="xs" color="gray.400" textTransform="uppercase" letterSpacing="wider" mb={2}>
+          Break everything at or below:
+        </FormLabel>
+        <Select
+          size="sm"
+          value={rarityThreshold}
+          onChange={e => setRarityThreshold(e.target.value as ItemRarity)}
+          bg="gray.800"
+          borderColor="gray.600"
+          color="white"
+          _hover={{ borderColor: 'orange.600' }}
+          sx={{ option: { background: '#1a202c', color: 'white' } }}
+        >
+          {RARITY_ORDER.map(r => (
+            <option key={r} value={r}>{RARITY_CONFIGS[r].name}</option>
+          ))}
+        </Select>
       </Box>
 
-      {/* Preview + action */}
-      <Box bg="blackAlpha.400" p={3} borderRadius="md">
-        {selectedItem && (
-          <HStack justify="space-between" mb={3}>
-            <Text fontSize="sm" color="gray.300">
-              Breaking down: <Text as="span" color={getRarityColor(selectedItem.rarity)} fontWeight="bold">{selectedItem.name}</Text>
-            </Text>
-            <Badge colorScheme="orange">+{previewCharge.toLocaleString()} charge</Badge>
-          </HStack>
-        )}
-        {nexusMultiplier > 1 && (
-          <Text fontSize="xs" color="orange.300" mb={2}>
-            Smelter&apos;s Intuition: ×{nexusMultiplier.toFixed(2)} charge bonus applied
+      <SimpleGrid columns={3} spacing={2}>
+        <FormControl display="flex" alignItems="center" gap={2}>
+          <Switch size="sm" id="bd-unique" isChecked={includeUnique}
+            onChange={e => setIncludeUnique(e.target.checked)} colorScheme="orange" />
+          <FormLabel htmlFor="bd-unique" mb={0} fontSize="xs" color="gray.400" cursor="pointer">
+            Include unique
+          </FormLabel>
+        </FormControl>
+        <FormControl display="flex" alignItems="center" gap={2}>
+          <Switch size="sm" id="bd-set" isChecked={includeSet}
+            onChange={e => setIncludeSet(e.target.checked)} colorScheme="orange" />
+          <FormLabel htmlFor="bd-set" mb={0} fontSize="xs" color="gray.400" cursor="pointer">
+            Include set
+          </FormLabel>
+        </FormControl>
+        <FormControl display="flex" alignItems="center" gap={2}>
+          <Switch size="sm" id="bd-mods" isChecked={includeMods}
+            onChange={e => setIncludeMods(e.target.checked)} colorScheme="orange" />
+          <FormLabel htmlFor="bd-mods" mb={0} fontSize="xs" color="gray.400" cursor="pointer">
+            Include modded
+          </FormLabel>
+        </FormControl>
+      </SimpleGrid>
+
+      {/* Preview */}
+      {selectedItems.length > 0 ? (
+        <Box bg="gray.800" borderRadius="md" p={3}>
+          <Text fontSize="xs" color="gray.400" mb={2} fontWeight="semibold" textTransform="uppercase" letterSpacing="wide">
+            Will break down ({selectedItems.length} items)
           </Text>
-        )}
+          <Flex gap={2} flexWrap="wrap">
+            {(() => {
+              const counts = new Map<ItemRarity, number>()
+              for (const item of selectedItems) counts.set(item.rarity, (counts.get(item.rarity) ?? 0) + 1)
+              return Array.from(counts.entries()).map(([rarity, count]) => {
+                const cfg = RARITY_CONFIGS[rarity]
+                return (
+                  <Badge key={rarity} px={2} py={0.5} borderRadius="md" fontSize="xs"
+                    style={{ background: cfg.backgroundColor, color: cfg.color, border: `1px solid ${cfg.color}40` }}>
+                    {count}× {cfg.name}
+                  </Badge>
+                )
+              })
+            })()}
+          </Flex>
+        </Box>
+      ) : (
+        <Box bg="gray.800" borderRadius="md" p={3} textAlign="center">
+          <Text fontSize="sm" color="gray.500">No matching items for current filters.</Text>
+        </Box>
+      )}
+
+      {nexusMultiplier > 1 && (
+        <Text fontSize="xs" color="orange.300">
+          Smelter's Intuition: ×{nexusMultiplier.toFixed(2)} charge bonus active
+        </Text>
+      )}
+
+      {/* Actions */}
+      <VStack spacing={2}>
         <Button
           colorScheme="red"
-          variant="outline"
-          size="sm"
-          isDisabled={!selectedItem}
-          width="full"
-          onClick={() => {
-            if (selectedItem) {
-              onBreakDown(selectedItem.id)
-              setSelectedItemId(null)
-            }
-          }}
           leftIcon={<Icon as={GiCrossedSwords} />}
+          isDisabled={selectedItems.length === 0}
+          width="full"
+          onClick={handleConfirm}
         >
-          Break Down Selected Item
+          Break Down {selectedItems.length > 0 ? `${selectedItems.length} Items` : ''}
         </Button>
-      </Box>
+        <Button
+          size="sm"
+          variant="ghost"
+          colorScheme="gray"
+          width="full"
+          isDisabled={breakableItems.length === 0}
+          onClick={onPickerOpen}
+        >
+          Pick specific items manually…
+        </Button>
+      </VStack>
+
+      {/* Bank picker modal — manual fallback */}
+      <BankInventoryModal
+        isOpen={isPickerOpen}
+        onClose={onPickerClose}
+        bankInventory={breakableItems}
+        pendingSlot={null}
+        onEquipItem={() => {}}
+        selectedHeroIndex={null}
+        party={[]}
+        onBreakDownItems={handleBreakDownItems}
+      />
     </VStack>
   )
 }

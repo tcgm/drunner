@@ -25,8 +25,8 @@ import {
   Tooltip,
   useDisclosure,
 } from '@chakra-ui/react'
-import { useState, useCallback, useMemo } from 'react'
-import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion, GiUpgrade, GiStack, GiVisoredHelm, GiBoots, GiNecklace, GiPowder } from 'react-icons/gi'
+import { useState, useCallback, useMemo, useEffect } from 'react'
+import { GiTwoCoins, GiSwapBag, GiCrossedBones, GiCrossedSwords, GiCheckedShield, GiHealthPotion, GiUpgrade, GiStack, GiVisoredHelm, GiBoots, GiNecklace, GiPowder, GiAnvil } from 'react-icons/gi'
 import type { Item } from '../../types'
 // HMR Test - checking bank inventory item restoration
 import { useGameStore } from '@/core/gameStore'
@@ -48,9 +48,11 @@ interface BankInventoryModalProps {
   onEquipItem: (itemId: string) => void
   selectedHeroIndex: number | null
   party: any[]
+  /** When set, the modal opens in "Break Down" picker mode. Hides unrelated controls. */
+  onBreakDownItems?: (itemIds: string[]) => void
 }
 
-export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot, onEquipItem, selectedHeroIndex, party }: BankInventoryModalProps) {
+export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot, onEquipItem, selectedHeroIndex, party, onBreakDownItems }: BankInventoryModalProps) {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -60,6 +62,11 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   const toast = useToast()
   const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
   const { isOpen: isReviewV2Open, onOpen: onReviewV2Open, onClose: onReviewV2Close } = useDisclosure()
+
+  // Auto-enter selection mode when opened in breakdown picker mode
+  useEffect(() => {
+    if (isOpen && onBreakDownItems) setIsSelectionMode(true)
+  }, [isOpen, onBreakDownItems])  // eslint-disable-line react-hooks/exhaustive-deps
 
   // Use shared hooks
   const visibleCount = useLazyLoading({
@@ -142,6 +149,14 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
     })
   }
 
+  const handleBreakDownSelected = () => {
+    if (!onBreakDownItems) return
+    onBreakDownItems(Array.from(selectedItems))
+    setSelectedItems(new Set())
+    setIsSelectionMode(false)
+    onClose()
+  }
+
   const handleClose = () => {
     setSelectedItems(new Set())
     setIsSelectionMode(false)
@@ -183,7 +198,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
             <Icon as={GiSwapBag} boxSize={{ base: 6, md: 8 }} color="orange.400" flexShrink={0} />
             <VStack align="start" spacing={0} minW={0} flex={1} overflow="hidden">
               <Text color="orange.400" fontSize={{ base: 'sm', md: 'xl' }} noOfLines={1}>
-                {pendingSlot ? `Select ${pendingSlot}` : 'Bank Inventory'}
+                {onBreakDownItems ? 'Select Items to Break Down' : pendingSlot ? `Select ${pendingSlot}` : 'Bank Inventory'}
               </Text>
               <HStack spacing={{ base: 1, md: 4 }} fontSize="sm" flexWrap="wrap">
                 <Text color="gray.400" fontSize={{ base: 'xs', md: 'sm' }}>
@@ -209,7 +224,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               </HStack>
             </VStack>
             <HStack spacing={1} flexShrink={0} mr={8}>
-              {!pendingSlot && v2Items.length > 0 && (
+              {!pendingSlot && !onBreakDownItems && v2Items.length > 0 && (
                 <Button
                   size="sm"
                   colorScheme="cyan"
@@ -220,7 +235,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                   <span className="bank-header-btn-label">Review Old ({v2Items.length})</span>
                 </Button>
               )}
-              {!pendingSlot && (
+              {!pendingSlot && !onBreakDownItems && (
                 <Button
                   size="sm"
                   colorScheme="purple"
@@ -250,19 +265,21 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
               showFilter={!pendingSlot}
               rightContent={!pendingSlot && (
                 <HStack>
-                  <Button 
-                    size="sm"
-                    colorScheme={isSelectionMode ? "red" : "blue"}
-                    onClick={() => {
-                      setIsSelectionMode(!isSelectionMode)
-                      setSelectedItems(new Set())
-                    }}
-                  >
-                    {isSelectionMode ? "Cancel Selection" : "Select Items"}
-                  </Button>
+                  {!onBreakDownItems && (
+                    <Button 
+                      size="sm"
+                      colorScheme={isSelectionMode ? "red" : "blue"}
+                      onClick={() => {
+                        setIsSelectionMode(!isSelectionMode)
+                        setSelectedItems(new Set())
+                      }}
+                    >
+                      {isSelectionMode ? "Cancel Selection" : "Select Items"}
+                    </Button>
+                  )}
                   {isSelectionMode && (
                     <>
-                      {hasSelection && (
+                      {hasSelection && !onBreakDownItems && (
                         <Button 
                           size="sm" 
                           colorScheme="red"
@@ -272,10 +289,19 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
                           Discard ({selectedCount})
                         </Button>
                       )}
+                      {hasSelection && onBreakDownItems && (
+                        <Button
+                          size="sm"
+                          colorScheme="orange"
+                          leftIcon={<Icon as={GiAnvil} />}
+                          onClick={handleBreakDownSelected}
+                        >
+                          Break Down ({selectedCount})
+                        </Button>
+                      )}
                       <Button size="sm" variant="outline" onClick={handleSelectAll}>
                         {isAllSelected ? "Deselect All" : "Select All"}
                       </Button>
-
                     </>
                   )}
                 </HStack>
