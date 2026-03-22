@@ -52,6 +52,7 @@ export { DEFENSE_BONUS } from './defenseBonus'
 
 // Arcane
 export { MAGIC_BONUS } from './magicBonus'
+export { FORGE_BREAKDOWN_EFFICIENCY } from './forgeBreakdownEfficiency'
 
 import type { NexusUpgrade } from './types'
 import { GOLD_FIND } from './goldFind'
@@ -63,6 +64,7 @@ import { BOSS_HP_REDUCTION } from './bossHpReduction'
 import { MAX_HP_BOOST } from './maxHp'
 import { DEFENSE_BONUS } from './defenseBonus'
 import { MAGIC_BONUS } from './magicBonus'
+import { FORGE_BREAKDOWN_EFFICIENCY } from './forgeBreakdownEfficiency'
 
 /** All registered Nexus upgrades in display order */
 export const NEXUS_UPGRADES: NexusUpgrade[] = [
@@ -70,6 +72,7 @@ export const NEXUS_UPGRADES: NexusUpgrade[] = [
   GOLD_FIND,
   ALKAHEST_YIELD,
   LUCK_BOOST,
+  FORGE_BREAKDOWN_EFFICIENCY,
   // Combat
   XP_GAIN,
   ATTACK_BONUS,

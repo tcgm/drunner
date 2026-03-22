@@ -167,7 +167,7 @@ export interface Equipment {
 }
 
 // Only core equipment slots (excludes stretch goal slots)
-export type ItemSlot = 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2' | 'consumable'
+export type ItemSlot = 'weapon' | 'armor' | 'helmet' | 'boots' | 'accessory1' | 'accessory2' | 'consumable' | 'material'
 
 export type ItemRarity = 
   // Base rarities (0-10 floors)
@@ -542,6 +542,8 @@ export interface GameState {
   alkahest: number // Currency from discarded items
   bankInventory: Item[] // Items stored outside runs
   bankStorageSlots: number // Maximum bank storage capacity
+  materialStash: Record<string, number> // materialId → quantity (Forge crafting inputs)
+  materialChargeProgress: Record<string, number> // materialId → accumulated breakdown charge
   overflowInventory: Item[] // Items from last run that exceed bank capacity
   lastRunItems: Item[] // Items from the most recent dungeon run (used for the Shifty Guy offer)
   corruptedItems: Item[] // Items that failed to load properly and need user resolution
@@ -596,6 +598,8 @@ export interface Material {
   statMultiplier: number
   valueMultiplier: number
   description?: string
+  icon?: import('react-icons').IconType
+  blacklist?: ItemSlot[]
 }
 
 export interface BaseTemplate {
@@ -612,6 +616,7 @@ export type {
   UniqueItemV3,
   SetItemV3,
   ConsumableV3,
+  MaterialFragmentV3,
   ItemV3,
   ItemV2,
   ItemStorage
@@ -622,7 +627,8 @@ export {
   isProceduralItemV3,
   isUniqueItemV3,
   isSetItemV3,
-  isConsumableV3
+  isConsumableV3,
+  isMaterialFragmentV3
 } from './items-v3'
 
 // Re-export audio types

@@ -8,6 +8,5 @@ export const forge: Building = {
   sizeMultiplier: 2,
   label: 'Forge',
   color: '#DC2626',
-  description: 'Craft and upgrade',
-  disabled: true
+  description: 'Craft items and break down gear for material fragments',
 }

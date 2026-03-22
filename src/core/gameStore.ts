@@ -58,6 +58,8 @@ const initialState: GameState = {
   alkahest: 0,
   bankInventory: [],
   bankStorageSlots: GAME_CONFIG.bank.startingSlots,
+  materialStash: {},
+  materialChargeProgress: {},
   overflowInventory: [],
   lastRunItems: [],
   corruptedItems: [],

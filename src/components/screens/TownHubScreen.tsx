@@ -17,6 +17,7 @@ import { OverflowInventoryModal } from '../party/OverflowInventoryModal'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
 import { ShiftyGuyModal } from '../ui/ShiftyGuyModal'
 import { NexusModal } from '../ui/NexusModal'
+import { ForgeModal } from '../ui/ForgeModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
 import type { Consumable, Item, ItemRarity } from '@/types'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
@@ -54,6 +55,9 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
     finalizeRunItemTransfer,
     dismissShiftyGuy, acceptShiftyGuyDeal,
     nexusUpgrades, purchaseNexusUpgrade,
+    materialStash, materialChargeProgress,
+    forgeItem, breakDownItem,
+    runHistory,
   } = useGameStore()
 
   const toast = useToast()
@@ -124,6 +128,13 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
   // Nexus modal
   const { isOpen: isNexusOpen, onOpen: onNexusOpen, onClose: onNexusClose } = useDisclosure()
 
+  // Forge modal
+  const { isOpen: isForgeOpen, onOpen: onForgeOpen, onClose: onForgeClose } = useDisclosure()
+  const deepestFloor = React.useMemo(
+    () => Math.max(dungeon.floor, ...runHistory.map(r => r.finalFloor ?? 0)),
+    [dungeon.floor, runHistory]
+  )
+
   const handleBuildingClick = (buildingId: string) => {
     switch (buildingId) {
       case 'shop':
@@ -139,7 +150,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         onNexusOpen()
         break
       case 'forge':
-        // TODO: Open forge when implemented
+        onForgeOpen()
         break
       case 'tower':
         // TODO: Open arcane tower when implemented
@@ -404,6 +415,20 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         metaXp={metaXp}
         nexusUpgrades={nexusUpgrades ?? {}}
         onPurchase={purchaseNexusUpgrade}
+      />
+
+      {/* Forge Modal */}
+      <ForgeModal
+        isOpen={isForgeOpen}
+        onClose={onForgeClose}
+        alkahest={alkahest}
+        materialStash={materialStash ?? {}}
+        materialChargeProgress={materialChargeProgress ?? {}}
+        bankInventory={bankInventory}
+        deepestFloor={deepestFloor}
+        nexusUpgrades={nexusUpgrades ?? {}}
+        forgeItem={forgeItem}
+        breakDownItem={breakDownItem}
       />
 
       {/* Shifty Guy Modal - post-run bulk scrapper offer */}

@@ -1,0 +1,28 @@
+.forge-modal-tab-panel {
+  padding: 0;
+}
+
+.forge-stash-badge {
+  font-variant-numeric: tabular-nums;
+}
+
+.forge-material-btn {
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.forge-material-btn:hover {
+  box-shadow: 0 0 8px rgba(224, 123, 26, 0.4);
+}
+
+.forge-item-row {
+  transition: background 0.1s;
+  cursor: pointer;
+}
+
+.forge-item-row:hover {
+  background: rgba(224, 123, 26, 0.08);
+}
+
+.forge-progress-bar {
+  transition: width 0.3s ease;
+}

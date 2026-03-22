@@ -1,4 +1,5 @@
 import type { ItemRarity, ItemSlot } from '@/types'
+import type { IconType } from 'react-icons'
 
 /**
  * Material definition - modifies base item stats and determines rarity
@@ -12,6 +13,7 @@ export interface Material {
   valueMultiplier: number // Multiplies base item value
   description?: string
   blacklist?: ItemSlot[] // Item types this material can't be used with
+  icon?: IconType // Optional icon for material fragment display
 }
 
 // Import all materials

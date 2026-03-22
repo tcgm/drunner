@@ -8,12 +8,13 @@ import type { GameState, Hero, Item, Consumable, ItemRarity } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 import { generateItem } from '@/systems/loot/lootGenerator'
-import { isRarityAtOrBelow } from '@/systems/rarity/raritySystem'
+import { isRarityAtOrBelow, RARITY_ORDER, getRarityIndex } from '@/systems/rarity/raritySystem'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { deduplicateItems } from '@/utils/itemDeduplication'
 import { convertToV3 } from '@/utils/itemConverter'
 import { hydrateItem } from '@/utils/itemHydration'
 import { getActiveNexusUpgrades, getNexusBonus } from '@/data/nexus'
+import { getMaterialById } from '@/data/items/materials'
 
 export interface InventoryActionsSlice {
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
@@ -42,6 +43,9 @@ export interface InventoryActionsSlice {
   skipV2Item: (itemId: string) => void
   // Post-run cleanup
   finalizeRunItemTransfer: () => void
+  // Forge
+  breakDownItem: (itemId: string) => void
+  forgeItem: (materialId: string, baseType: string, variantName: string, targetRarity: ItemRarity, useStash: boolean) => Item | null
   // Shifty Guy post-run bulk scrapper
   dismissShiftyGuy: () => void
   acceptShiftyGuyDeal: (
@@ -460,8 +464,23 @@ export const createInventoryActions: StateCreator<
 
   finalizeRunItemTransfer: () =>
     set((state) => {
-      const pendingItems = state.dungeon.inventory
-      if (pendingItems.length === 0) return {}
+      const allPendingItems = state.dungeon.inventory
+      if (allPendingItems.length === 0) return {}
+
+      // Pre-pass: extract material fragments and merge into stash
+      const fragmentItems = allPendingItems.filter(item => item.type === 'material')
+      const pendingItems = GAME_CONFIG.forge.materialFragment.autoMergeOnReturn
+        ? allPendingItems.filter(item => item.type !== 'material')
+        : allPendingItems
+
+      const stashUpdate: Record<string, number> = { ...state.materialStash }
+      if (GAME_CONFIG.forge.materialFragment.autoMergeOnReturn && fragmentItems.length > 0) {
+        for (const frag of fragmentItems) {
+          if (frag.materialId) {
+            stashUpdate[frag.materialId] = (stashUpdate[frag.materialId] ?? 0) + 1
+          }
+        }
+      }
 
       console.log(`[FinalizeRunItemTransfer] Distributing ${pendingItems.length} items to bank/overflow`)
 
@@ -475,7 +494,8 @@ export const createInventoryActions: StateCreator<
           inventory: [],
         },
         bankInventory: [...state.bankInventory, ...itemsToBank],
-        lastRunItems: [], // clear now that items have been distributed
+        lastRunItems: [],
+        ...(Object.keys(stashUpdate).length > 0 ? { materialStash: stashUpdate } : {}),
       }
 
       if (itemsToOverflow.length > 0) {
@@ -639,5 +659,88 @@ export const createInventoryActions: StateCreator<
     })
 
     return result
+  },
+
+  breakDownItem: (itemId) =>
+    set((state) => {
+      if (!GAME_CONFIG.forge.breakdown.enabled) return {}
+
+      const item = state.bankInventory.find(i => i.id === itemId)
+      if (!item || !item.materialId) return {}
+
+      const material = getMaterialById(item.materialId)
+      if (!material) return {}
+
+      const baseCharge = GAME_CONFIG.forge.breakdown.chargePerRarity[item.rarity] ?? 0
+      if (baseCharge === 0) return {}
+
+      const isUnique = !!(item.isUnique && !item.setId)
+      const isSet = !!item.setId
+      const uniqueMult = isUnique ? GAME_CONFIG.forge.breakdown.uniqueBreakdownMultiplier : 1
+      const setMult = isSet ? GAME_CONFIG.forge.breakdown.setBreakdownMultiplier : 1
+      const nexusBonus = 1 + getNexusBonus(GAME_CONFIG.forge.breakdown.nexusUpgradeId, getActiveNexusUpgrades()) / 100
+
+      const charge = Math.floor(baseCharge * uniqueMult * setMult * nexusBonus)
+
+      const currentCharge = state.materialChargeProgress[material.id] ?? 0
+      const newCharge = currentCharge + charge
+      const threshold = GAME_CONFIG.forge.breakdown.thresholdByRarity[material.rarity] ?? null
+
+      const newStash = { ...state.materialStash }
+      let finalCharge = newCharge
+      if (threshold !== null && newCharge >= threshold) {
+        const fragmentsEarned = Math.floor(newCharge / threshold)
+        finalCharge = GAME_CONFIG.forge.breakdown.carryOverExcess ? newCharge % threshold : 0
+        newStash[material.id] = (newStash[material.id] ?? 0) + fragmentsEarned
+      }
+
+      return {
+        bankInventory: state.bankInventory.filter(i => i.id !== itemId),
+        materialChargeProgress: {
+          ...state.materialChargeProgress,
+          [material.id]: finalCharge,
+        },
+        materialStash: newStash,
+      }
+    }),
+
+  forgeItem: (materialId, baseType, variantName, targetRarity, useStash) => {
+    const state = get()
+    if (!materialId || !baseType || !targetRarity) return null
+
+    const material = getMaterialById(materialId)
+    if (!material) return null
+
+    // Inline alkahest cost calculation (mirrors forgeSystem.getAlkahestCost)
+    const { baseCost, stashCostMultiplier, elevation: { elevationBase } } = GAME_CONFIG.forge
+    const nativeIndex = getRarityIndex(material.rarity)
+    const targetIndex = getRarityIndex(targetRarity)
+    const steps = Math.max(0, targetIndex - nativeIndex)
+    const cost = Math.ceil(baseCost * Math.pow(elevationBase, steps) * (useStash ? stashCostMultiplier : 1))
+
+    if (state.alkahest < cost) return null
+    if (useStash && (state.materialStash[materialId] ?? 0) < 1) return null
+
+    // Generate item with forced type, rarity, and material
+    const newItem = generateItem(
+      state.dungeon.floor || 1,
+      baseType as import('@/types').ItemSlot,
+      targetRarity,
+      targetRarity,
+      0,
+      materialId
+    )
+
+    const newStash = useStash
+      ? { ...state.materialStash, [materialId]: Math.max(0, (state.materialStash[materialId] ?? 0) - 1) }
+      : state.materialStash
+
+    set({
+      alkahest: state.alkahest - cost,
+      bankInventory: [...state.bankInventory, newItem],
+      materialStash: newStash,
+    })
+
+    return newItem
   },
 })

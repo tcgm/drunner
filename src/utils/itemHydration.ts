@@ -6,9 +6,11 @@
 
 import type { IconType } from 'react-icons'
 import type { Item, ItemStorage, ItemV2, ItemV3, ProceduralItemV3, UniqueItemV3, SetItemV3, ConsumableV3, Consumable, ConsumableEffect, ItemSlot } from '@/types'
-import { isItemV2, isItemV3, isProceduralItemV3, isUniqueItemV3, isSetItemV3, isConsumableV3 } from '@/types/items-v3'
+import type { MaterialFragmentV3 } from '@/types/items-v3'
+import { isItemV2, isItemV3, isProceduralItemV3, isUniqueItemV3, isSetItemV3, isConsumableV3, isMaterialFragmentV3 } from '@/types/items-v3'
 import { restoreItemIcon } from './itemUtils'
 import { getMaterialById, ALL_MATERIALS } from '@/data/items/materials'
+import { GiCrystalWand } from 'react-icons/gi'
 import { allBases, type BaseItemTemplate, getBasesByType } from '@/data/items/bases'
 import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
@@ -25,6 +27,7 @@ import {
   calculateConsumableValue,
   calculateConsumableEffectValues
 } from './itemStatCalculation'
+import { GAME_CONFIG } from '@/config/gameConfig'
 
 /**
  * Runtime cache for hydrated items
@@ -80,6 +83,9 @@ export function hydrateItem(
   }
   
   if (isItemV3(stored)) {
+    if (isMaterialFragmentV3(stored)) {
+      return hydrateMaterialFragment(stored)
+    }
     // V3 items: derive all properties from IDs and restore icon
     const derived = deriveItemFromV3(stored)
     return restoreItemIcon({ ...derived, version: 3 } as Item)
@@ -581,6 +587,35 @@ function createFallbackItem(data: Partial<Item> & { id?: string }): Item {
     stats: {},
     value: 100,
     icon: undefined as unknown as IconType, // Will be restored by restoreItemIcon
+  }
+}
+
+/**
+ * Hydrate a material fragment to a runtime Item.
+ */
+function hydrateMaterialFragment(item: MaterialFragmentV3): Item {
+  const material = getMaterialById(item.materialId)
+  if (!material) {
+    console.warn(`[ItemHydration] Cannot find material for fragment: ${item.materialId}`)
+    return createFallbackItem({ id: item.id })
+  }
+
+  const rarityConfig = getRarityConfig(material.rarity)
+  const baseValue = GAME_CONFIG.forge.materialFragment.baseFragmentValue
+  const value = Math.floor(baseValue * rarityConfig.statMultiplierBase)
+
+  return {
+    id: item.id,
+    name: `${material.name} Fragment`,
+    description: `A fragment of ${material.name.toLowerCase()}. Can be used at the Forge for crafting.`,
+    type: 'material',
+    rarity: material.rarity,
+    stats: {},
+    value,
+    icon: material.icon,
+    materialId: item.materialId,
+    modifiers: item.modifiers,
+    version: 3,
   }
 }
 

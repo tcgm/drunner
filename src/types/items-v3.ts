@@ -44,7 +44,13 @@ export interface ConsumableV3 extends ItemV3Base {
   stackCount?: number     // For stackable consumables
 }
 
-export type ItemV3 = ProceduralItemV3 | UniqueItemV3 | SetItemV3 | ConsumableV3
+export interface MaterialFragmentV3 extends ItemV3Base {
+  itemType: 'material'
+  materialId: string  // Must match a Material.id in the registry
+  quantity: number    // Stack size (usually 1; chest/boss drops can be 2–3)
+}
+
+export type ItemV3 = ProceduralItemV3 | UniqueItemV3 | SetItemV3 | ConsumableV3 | MaterialFragmentV3
 
 /**
  * V2 Item Format - Legacy, still supported
@@ -109,4 +115,8 @@ export function isSetItemV3(item: ItemV3): item is SetItemV3 {
 
 export function isConsumableV3(item: ItemV3): item is ConsumableV3 {
   return item.itemType === 'consumable'
+}
+
+export function isMaterialFragmentV3(item: ItemV3): item is MaterialFragmentV3 {
+  return item.itemType === 'material'
 }

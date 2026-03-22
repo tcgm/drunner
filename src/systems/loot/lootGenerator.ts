@@ -1,5 +1,5 @@
 import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
-import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3 } from '@/types/items-v3'
+import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3, MaterialFragmentV3 } from '@/types/items-v3'
 import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
 import { getRandomBase, getCompatibleBase, allBases } from '@data/items/bases'
@@ -759,4 +759,69 @@ export function repairItemIcon(item: Item): Item {
 export function repairItemNames(items: Item[]): Item[] {
   // First repair names, then repair icons
   return items.map(repairItemName).map(repairItemIcon)
+}
+
+/**
+ * Generate a single material fragment for a given depth and source.
+ * Returns null if the RNG roll doesn't pass (boss drops always succeed).
+ */
+export function generateMaterialFragment(
+  depth: number,
+  sourceType: 'drop' | 'chest' | 'boss' = 'drop'
+): MaterialFragmentV3 | null {
+  const { materialFragment: cfg } = GAME_CONFIG.forge
+  const excluded = new Set<string>(cfg.excludedFromDrops)
+
+  // Chance gate (boss always drops)
+  if (sourceType !== 'boss') {
+    const chance = cfg.baseChance + (sourceType === 'chest' ? cfg.chestBonus : 0)
+    if (Math.random() > chance) return null
+  }
+
+  // Pick a rarity via normal depth-adjusted weights, skip excluded
+  const rarity = selectRarity(depth)
+  if (excluded.has(rarity)) return null
+
+  // Pick a random material of that rarity
+  const pool = getMaterialsByRarity(rarity as ItemRarity).filter(m => !excluded.has(m.rarity))
+  const resolvedPool =
+    pool.length > 0
+      ? pool
+      : allMaterials.filter(
+          m =>
+            !excluded.has(m.rarity) &&
+            (RARITY_CONFIGS[m.rarity]?.minFloor ?? 999) <= depth
+        )
+  if (resolvedPool.length === 0) return null
+
+  const material = resolvedPool[Math.floor(Math.random() * resolvedPool.length)]
+  return {
+    version: 3,
+    id: uuidv4(),
+    itemType: 'material',
+    materialId: material.id,
+    quantity: 1,
+  }
+}
+
+/**
+ * Full loot drop: regular items + optional material fragment.
+ * For boss sources, `bossDropQuantity` separate fragment rolls are made.
+ */
+export function generateLootDrop(
+  depth: number,
+  opts: { count?: number; sourceType?: 'drop' | 'chest' | 'boss' } = {}
+): Item[] {
+  const { count = 1, sourceType = 'drop' } = opts
+  const items: Item[] = generateItems(count, depth)
+
+  const rolls = sourceType === 'boss' ? GAME_CONFIG.forge.materialFragment.bossDropQuantity : 1
+  for (let i = 0; i < rolls; i++) {
+    const fragment = generateMaterialFragment(depth, sourceType)
+    if (fragment) {
+      items.push(hydrateItem(fragment))
+    }
+  }
+
+  return items
 }

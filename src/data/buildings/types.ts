@@ -10,7 +10,7 @@ export interface Building {
   label: string
   color: string
   description: string
-  disabled: boolean
+  disabled?: boolean
   /** Multiplier applied to the base 120px icon size. Defaults to 1. */
   sizeMultiplier?: number
   /** Font size for the label (Chakra size token). Defaults to 'sm'. */
