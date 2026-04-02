@@ -214,6 +214,7 @@ export interface Item {
   // Item generation metadata - for regenerating names if needed
   materialId?: string // Material used to craft this item
   baseTemplateId?: string // Base template used for this item
+  quantity?: number // Stack size for stackable items (material fragments)
   isUnique?: boolean // True if this is a unique/set item (not crafted)
   statVersion?: number // Version of stat calculation formula (for migrations)
   version?: number // Runtime version tracking (2 for V2, 3 for V3-derived, undefined for V1)

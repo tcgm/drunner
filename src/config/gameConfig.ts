@@ -481,7 +481,7 @@ export const GAME_CONFIG = {
       bossDropQuantity: 2,
       maxPerDrop: 1,
       maxPerChestDrop: 2,
-      autoMergeOnReturn: true,
+      autoMergeOnReturn: false,
       scrappedAlkahestRate: 1.0,  // multiplier vs normal item alkahest rate (1.0 = same)
       baseFragmentValue: 40,      // base gold value for alkahest conversion
       excludedFromDrops: [

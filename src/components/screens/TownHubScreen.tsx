@@ -55,7 +55,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
     finalizeRunItemTransfer,
     dismissShiftyGuy, acceptShiftyGuyDeal,
     nexusUpgrades, purchaseNexusUpgrade,
-    materialStash, materialChargeProgress,
+    materialChargeProgress,
     forgeItem, breakDownItem,
     runHistory,
   } = useGameStore()
@@ -422,7 +422,6 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         isOpen={isForgeOpen}
         onClose={onForgeClose}
         alkahest={alkahest}
-        materialStash={materialStash ?? {}}
         materialChargeProgress={materialChargeProgress ?? {}}
         bankInventory={bankInventory}
         deepestFloor={deepestFloor}

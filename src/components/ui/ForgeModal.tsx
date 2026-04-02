@@ -66,7 +66,6 @@ interface ForgeModalProps {
   isOpen: boolean
   onClose: () => void
   alkahest: number
-  materialStash: Record<string, number>
   materialChargeProgress: Record<string, number>
   bankInventory: Item[]
   deepestFloor: number
@@ -90,13 +89,26 @@ function RarityLabel({ rarity }: { rarity: ItemRarity }) {
 
 interface CraftTabProps {
   alkahest: number
-  materialStash: Record<string, number>
+  bankInventory: Item[]
   deepestFloor: number
   onForge: (materialId: string, baseType: string, targetRarity: ItemRarity) => void
 }
 
-function CraftTab({ alkahest, materialStash, deepestFloor, onForge }: CraftTabProps) {
-  const availableMaterials = ALL_MATERIALS.filter(m => (materialStash[m.id] ?? 0) > 0)
+function CraftTab({ alkahest, bankInventory, deepestFloor, onForge }: CraftTabProps) {
+  // Fragment items from bank, grouped by materialId
+  const fragmentItems = React.useMemo(
+    () => bankInventory.filter(i => i.type === 'material' && i.materialId),
+    [bankInventory]
+  )
+  const fragmentByMaterialId = React.useMemo(() => {
+    const map = new Map<string, number>()
+    for (const frag of fragmentItems) {
+      if (frag.materialId) map.set(frag.materialId, (frag.quantity ?? 1))
+    }
+    return map
+  }, [fragmentItems])
+
+  const availableMaterials = ALL_MATERIALS.filter(m => fragmentByMaterialId.has(m.id))
 
   const [selectedMaterialId, setSelectedMaterialId] = React.useState<string | null>(
     availableMaterials.length > 0 ? availableMaterials[0].id : null
@@ -121,13 +133,13 @@ function CraftTab({ alkahest, materialStash, deepestFloor, onForge }: CraftTabPr
   const canForge = material != null
     && selectedRarity !== null
     && alkahest >= alkahestCost
-    && (materialStash[material.id] ?? 0) > 0
+    && fragmentByMaterialId.has(material.id)
 
   if (availableMaterials.length === 0) {
     return (
       <VStack py={8} spacing={3} color="gray.500">
         <Icon as={GiAnvil} boxSize={10} />
-        <Text>No material fragments in stash.</Text>
+        <Text>No material fragments in your bank.</Text>
         <Text fontSize="sm">Break down items at the Forge or collect fragments from dungeon runs.</Text>
       </VStack>
     )
@@ -142,7 +154,7 @@ function CraftTab({ alkahest, materialStash, deepestFloor, onForge }: CraftTabPr
         </Text>
         <SimpleGrid columns={[3, 4, 5]} spacing={2}>
           {availableMaterials.map(mat => {
-            const qty = materialStash[mat.id] ?? 0
+            const qty = fragmentByMaterialId.get(mat.id) ?? 0
             const isSelected = selectedMaterialId === mat.id
             const rarityColor = getRarityColor(mat.rarity)
             return (
@@ -271,8 +283,10 @@ function CraftTab({ alkahest, materialStash, deepestFloor, onForge }: CraftTabPr
           </HStack>
         </VStack>
         <VStack spacing={0} align="flex-end">
-          <Text fontSize="xs" color="gray.400">Stash discount</Text>
-          <Text fontSize="sm" color="green.400">-{Math.round((1 - GAME_CONFIG.forge.stashCostMultiplier) * 100)}%</Text>
+          <Text fontSize="xs" color="gray.400">Uses 1 fragment</Text>
+          <Text fontSize="sm" color="orange.400">
+            {material ? `${fragmentByMaterialId.get(material.id) ?? 0} in bank` : '—'}
+          </Text>
         </VStack>
       </HStack>
 
@@ -560,7 +574,6 @@ export function ForgeModal({
   isOpen,
   onClose,
   alkahest,
-  materialStash,
   materialChargeProgress,
   bankInventory,
   deepestFloor,
@@ -625,7 +638,7 @@ export function ForgeModal({
               <TabPanel className="forge-modal-tab-panel">
                 <CraftTab
                   alkahest={alkahest}
-                  materialStash={materialStash}
+                  bankInventory={bankInventory}
                   deepestFloor={deepestFloor}
                   onForge={handleForge}
                 />

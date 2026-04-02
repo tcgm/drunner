@@ -8,13 +8,34 @@ import type { GameState, Hero, Item, Consumable, ItemRarity } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { equipItem, unequipItem, sellItem } from '@/systems/loot/inventoryManager'
 import { generateItem } from '@/systems/loot/lootGenerator'
-import { isRarityAtOrBelow, RARITY_ORDER, getRarityIndex } from '@/systems/rarity/raritySystem'
+import { isRarityAtOrBelow, RARITY_ORDER, getRarityIndex, getRarityConfig } from '@/systems/rarity/raritySystem'
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { deduplicateItems } from '@/utils/itemDeduplication'
 import { convertToV3 } from '@/utils/itemConverter'
 import { hydrateItem } from '@/utils/itemHydration'
 import { getActiveNexusUpgrades, getNexusBonus } from '@/data/nexus'
 import { getMaterialById } from '@/data/items/materials'
+import type { Material } from '@/data/items/materials'
+
+/** Create a stackable material fragment Item from a Material definition */
+function createFragmentItem(material: Material, quantity: number = 1): Item {
+  const rarityConfig = getRarityConfig(material.rarity)
+  const baseValue = GAME_CONFIG.forge.materialFragment.baseFragmentValue
+  const value = Math.floor(baseValue * rarityConfig.statMultiplierBase)
+  return {
+    id: `frag_${material.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    name: `${material.name} Fragment`,
+    description: `A fragment of ${material.name.toLowerCase()}. Can be used at the Forge for crafting.`,
+    type: 'material',
+    rarity: material.rarity,
+    stats: {},
+    value,
+    icon: material.icon ?? (() => null) as unknown as import('react-icons').IconType,
+    materialId: material.id,
+    quantity,
+    version: 3,
+  }
+}
 
 export interface InventoryActionsSlice {
   equipItemToHero: (heroId: string, item: Item, slotId: string) => void
@@ -467,35 +488,38 @@ export const createInventoryActions: StateCreator<
       const allPendingItems = state.dungeon.inventory
       if (allPendingItems.length === 0) return {}
 
-      // Pre-pass: extract material fragments and merge into stash
+      // Separate fragment items from equipment items
       const fragmentItems = allPendingItems.filter(item => item.type === 'material')
-      const pendingItems = GAME_CONFIG.forge.materialFragment.autoMergeOnReturn
-        ? allPendingItems.filter(item => item.type !== 'material')
-        : allPendingItems
+      const equipmentItems = allPendingItems.filter(item => item.type !== 'material')
 
-      const stashUpdate: Record<string, number> = { ...state.materialStash }
-      if (GAME_CONFIG.forge.materialFragment.autoMergeOnReturn && fragmentItems.length > 0) {
-        for (const frag of fragmentItems) {
-          if (frag.materialId) {
-            stashUpdate[frag.materialId] = (stashUpdate[frag.materialId] ?? 0) + 1
-          }
+      console.log(`[FinalizeRunItemTransfer] Distributing ${equipmentItems.length} equipment + ${fragmentItems.length} fragments`)
+
+      // Auto-stack fragment items with existing bank stacks (fragments always land in bank)
+      let newBankInventory = [...state.bankInventory]
+      for (const frag of fragmentItems) {
+        if (!frag.materialId) continue
+        const idx = newBankInventory.findIndex(b => b.type === 'material' && b.materialId === frag.materialId)
+        if (idx >= 0) {
+          newBankInventory = newBankInventory.map((b, i) =>
+            i === idx ? { ...b, quantity: (b.quantity ?? 1) + (frag.quantity ?? 1) } : b
+          )
+        } else {
+          newBankInventory = [...newBankInventory, frag]
         }
       }
 
-      console.log(`[FinalizeRunItemTransfer] Distributing ${pendingItems.length} items to bank/overflow`)
-
-      const availableSlots = state.bankStorageSlots - state.bankInventory.length
-      const itemsToBank = pendingItems.slice(0, availableSlots)
-      const itemsToOverflow = pendingItems.slice(availableSlots)
+      // Place equipment items into remaining bank slots or overflow
+      const availableSlots = state.bankStorageSlots - newBankInventory.length
+      const itemsToBank = equipmentItems.slice(0, Math.max(0, availableSlots))
+      const itemsToOverflow = equipmentItems.slice(Math.max(0, availableSlots))
 
       const result: Partial<GameState> = {
         dungeon: {
           ...state.dungeon,
           inventory: [],
         },
-        bankInventory: [...state.bankInventory, ...itemsToBank],
+        bankInventory: [...newBankInventory, ...itemsToBank],
         lastRunItems: [],
-        ...(Object.keys(stashUpdate).length > 0 ? { materialStash: stashUpdate } : {}),
       }
 
       if (itemsToOverflow.length > 0) {
@@ -686,40 +710,50 @@ export const createInventoryActions: StateCreator<
       const newCharge = currentCharge + charge
       const threshold = GAME_CONFIG.forge.breakdown.thresholdByRarity[material.rarity] ?? null
 
-      const newStash = { ...state.materialStash }
+      let newBankWithoutItem = state.bankInventory.filter(i => i.id !== itemId)
       let finalCharge = newCharge
       if (threshold !== null && newCharge >= threshold) {
         const fragmentsEarned = Math.floor(newCharge / threshold)
         finalCharge = GAME_CONFIG.forge.breakdown.carryOverExcess ? newCharge % threshold : 0
-        newStash[material.id] = (newStash[material.id] ?? 0) + fragmentsEarned
+        // Create or increment fragment item in bank
+        const existingIdx = newBankWithoutItem.findIndex(b => b.type === 'material' && b.materialId === material.id)
+        if (existingIdx >= 0) {
+          newBankWithoutItem = newBankWithoutItem.map((b, i) =>
+            i === existingIdx ? { ...b, quantity: (b.quantity ?? 1) + fragmentsEarned } : b
+          )
+        } else {
+          newBankWithoutItem = [...newBankWithoutItem, createFragmentItem(material, fragmentsEarned)]
+        }
       }
 
       return {
-        bankInventory: state.bankInventory.filter(i => i.id !== itemId),
+        bankInventory: newBankWithoutItem,
         materialChargeProgress: {
           ...state.materialChargeProgress,
           [material.id]: finalCharge,
         },
-        materialStash: newStash,
       }
     }),
 
-  forgeItem: (materialId, baseType, variantName, targetRarity, useStash) => {
+  forgeItem: (materialId, baseType, variantName, targetRarity, _useStash) => {
     const state = get()
     if (!materialId || !baseType || !targetRarity) return null
 
     const material = getMaterialById(materialId)
     if (!material) return null
 
-    // Inline alkahest cost calculation (mirrors forgeSystem.getAlkahestCost)
+    // Always uses fragment items from bank (stash discount always applies)
     const { baseCost, stashCostMultiplier, elevation: { elevationBase } } = GAME_CONFIG.forge
     const nativeIndex = getRarityIndex(material.rarity)
     const targetIndex = getRarityIndex(targetRarity)
     const steps = Math.max(0, targetIndex - nativeIndex)
-    const cost = Math.ceil(baseCost * Math.pow(elevationBase, steps) * (useStash ? stashCostMultiplier : 1))
+    const cost = Math.ceil(baseCost * Math.pow(elevationBase, steps) * stashCostMultiplier)
 
     if (state.alkahest < cost) return null
-    if (useStash && (state.materialStash[materialId] ?? 0) < 1) return null
+
+    // Find fragment item in bank
+    const fragItem = state.bankInventory.find(i => i.type === 'material' && i.materialId === materialId)
+    if (!fragItem || (fragItem.quantity ?? 1) < 1) return null
 
     // Generate item with forced type, rarity, and material
     const newItem = generateItem(
@@ -731,14 +765,16 @@ export const createInventoryActions: StateCreator<
       materialId
     )
 
-    const newStash = useStash
-      ? { ...state.materialStash, [materialId]: Math.max(0, (state.materialStash[materialId] ?? 0) - 1) }
-      : state.materialStash
+    // Consume 1 fragment from stack (remove item if quantity reaches 0)
+    const newBankInventory = state.bankInventory.flatMap(i => {
+      if (i.id !== fragItem.id) return [i]
+      const newQty = (i.quantity ?? 1) - 1
+      return newQty > 0 ? [{ ...i, quantity: newQty }] : []
+    })
 
     set({
       alkahest: state.alkahest - cost,
-      bankInventory: [...state.bankInventory, newItem],
-      materialStash: newStash,
+      bankInventory: [...newBankInventory, newItem],
     })
 
     return newItem

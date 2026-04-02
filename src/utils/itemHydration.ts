@@ -614,6 +614,7 @@ function hydrateMaterialFragment(item: MaterialFragmentV3): Item {
     value,
     icon: material.icon,
     materialId: item.materialId,
+    quantity: item.quantity,
     modifiers: item.modifiers,
     version: 3,
   }
@@ -647,6 +648,18 @@ export function dehydrateItem(item: Item): ItemV3 {
         modifiers: item.modifiers,
       }
     }
+  }
+
+  // Check if it's a material fragment
+  if (item.type === 'material' && item.materialId) {
+    return {
+      version: 3,
+      id: item.id,
+      itemType: 'material',
+      materialId: item.materialId,
+      quantity: item.quantity ?? 1,
+      modifiers: item.modifiers,
+    } as MaterialFragmentV3
   }
 
   // Check if it's a unique item
