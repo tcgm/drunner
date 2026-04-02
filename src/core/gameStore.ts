@@ -6,12 +6,14 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { needsMigration, CURRENT_SAVE_VERSION } from '@/utils/migration'
 import { dehydrateItem, dehydrateItems } from '@/utils/itemHydration'
 import LZString from 'lz-string'
+import { idbGetWithMigration, idbSet, idbRemove } from '@/utils/idbStorage'
 import {
   createBackup,
   sanitizeHeroStats,
   sanitizeMiddleware,
   loadRunHistory,
   saveRunHistory,
+  initRunHistoryCache,
   createHeroActions,
   createDungeonActions,
   createInventoryActions,
@@ -154,7 +156,7 @@ export const useGameStore = create<GameStore>()(
       storage: {
         getItem: async (name) => {
           console.log(`[GameStore] Loading from storage: ${name}`)
-          const compressed = localStorage.getItem(name)
+          const compressed = await idbGetWithMigration(name)
           if (!compressed) return null
 
           // Yield to the browser so React can render before heavy deserialization work
@@ -291,15 +293,15 @@ export const useGameStore = create<GameStore>()(
             return null
           }
         },
-        setItem: (name, value) => {
-          // Don't persist to localStorage if migration is pending - wait for user approval
+        setItem: async (name, value) => {
+          // Don't persist to IndexedDB if migration is pending - wait for user approval
           if (value?.state?.pendingMigration) {
             console.log('[Storage] Skipping save - migration pending user approval')
             return
           }
 
           // Create a backup before overwriting (throttled internally to 5-min intervals)
-          createBackup(name)
+          await createBackup(name)
 
           // Log critical values before dehydration
           console.log(`[Storage] Saving - alkahest: ${value?.state?.alkahest}, bankGold: ${value?.state?.bankGold}`)
@@ -329,9 +331,9 @@ export const useGameStore = create<GameStore>()(
           const compressedSize = new Blob([compressed]).size
           console.log(`[Storage] Compressed save: ${(originalSize / 1024).toFixed(2)} KB → ${(compressedSize / 1024).toFixed(2)} KB (${((1 - compressedSize / originalSize) * 100).toFixed(1)}% reduction)`)
 
-          localStorage.setItem(name, compressed)
+          await idbSet(name, compressed)
         },
-        removeItem: (name) => localStorage.removeItem(name),
+        removeItem: async (name) => idbRemove(name),
       },
       onRehydrateStorage: () => {
         // Called after the async getItem promise resolves and state is applied.
@@ -343,6 +345,9 @@ export const useGameStore = create<GameStore>()(
             return
           }
           if (state) {
+            // Initialise run history cache from IndexedDB so sync Zustand
+            // actions can call loadRunHistory() without awaiting.
+            void initRunHistoryCache()
             state.repairParty()
             state.migrateHeroStats()
             state.recalculateHeroStats()

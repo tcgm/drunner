@@ -11,7 +11,7 @@ import { calculateStatsWithEquipment } from '@/systems/loot/inventoryManager'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { getClassById } from '@/data/classes'
 import { sanitizeHeroStats } from './middleware'
-import { loadRunHistory } from './runHistory'
+import { loadRunHistory, clearRunHistory as clearRunHistoryFromIDB } from './runHistory'
 import { deduplicateGameState } from '@/utils/itemDeduplication'
 import { NEXUS_UPGRADES, getNextTierCost, setActiveNexusUpgrades } from '@/data/nexus'
 
@@ -159,8 +159,7 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
   },
 
   clearRunHistory: () => {
-    localStorage.removeItem('dungeon-runner-run-history')
-    console.log('[RunHistory] Cleared all run history')
+    void clearRunHistoryFromIDB()
   },
 
   deduplicateInventories: () =>

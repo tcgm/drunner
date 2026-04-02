@@ -9,12 +9,13 @@ import LZString from 'lz-string'
 import { loadSave, applyMigratedState } from '@/core/saveManager'
 import { createBackup, listBackups as listBackupsUtil, restoreBackup as restoreBackupUtil } from './backup'
 import { saveRunHistory, loadRunHistory } from './runHistory'
+import { idbGet } from '@/utils/idbStorage'
 
 export interface SaveActionsSlice {
-  listBackups: () => string[]
-  createManualBackup: () => boolean
-  restoreFromBackup: (backupKey: string) => boolean
-  downloadBackup: (backupKey: string) => boolean
+  listBackups: () => Promise<string[]>
+  createManualBackup: () => Promise<boolean>
+  restoreFromBackup: (backupKey: string) => Promise<boolean>
+  downloadBackup: (backupKey: string) => Promise<boolean>
   exportSave: () => void
   importSave: (jsonString: string) => boolean
   approveMigration: () => void
@@ -31,11 +32,11 @@ export const createSaveActions: StateCreator<
     return listBackupsUtil('dungeon-runner-storage')
   },
 
-  createManualBackup: () => {
+  createManualBackup: async () => {
     try {
-      const current = localStorage.getItem('dungeon-runner-storage')
+      const current = await idbGet('dungeon-runner-storage')
       if (current) {
-        createBackup('dungeon-runner-storage', true) // Force=true bypasses throttling
+        await createBackup('dungeon-runner-storage', true) // Force=true bypasses throttling
         return true
       }
       return false
@@ -45,8 +46,8 @@ export const createSaveActions: StateCreator<
     }
   },
 
-  restoreFromBackup: (backupKey: string) => {
-    const success = restoreBackupUtil('dungeon-runner-storage', backupKey)
+  restoreFromBackup: async (backupKey: string) => {
+    const success = await restoreBackupUtil('dungeon-runner-storage', backupKey)
     if (success) {
       // Reload the page to apply restored state
       window.location.reload()
@@ -54,9 +55,9 @@ export const createSaveActions: StateCreator<
     return success
   },
 
-  downloadBackup: (backupKey: string) => {
+  downloadBackup: async (backupKey: string) => {
     try {
-      const compressed = localStorage.getItem(backupKey)
+      const compressed = await idbGet(backupKey)
       if (!compressed) {
         console.error('[Backup] Backup not found:', backupKey)
         return false

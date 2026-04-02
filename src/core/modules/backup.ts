@@ -1,7 +1,10 @@
 /**
  * Backup management module
- * Handles creating, listing, and restoring game state backups
+ * Handles creating, listing, and restoring game state backups in IndexedDB.
+ * The last-backup timestamp is kept in localStorage (tiny value, not game data).
  */
+
+import { idbGet, idbSet, idbRemove, idbKeys } from '@/utils/idbStorage'
 
 // Backup configuration
 export const BACKUP_CONFIG = {
@@ -11,7 +14,7 @@ export const BACKUP_CONFIG = {
 }
 
 /**
- * Get the timestamp of the last backup
+ * Get the timestamp of the last backup (stored in localStorage – tiny value)
  */
 export function getLastBackupTime(): number {
   const lastBackup = localStorage.getItem(BACKUP_CONFIG.storageKey)
@@ -26,15 +29,15 @@ export function setLastBackupTime(timestamp: number): void {
 }
 
 /**
- * Create a backup of the current state
- * Throttled to prevent excessive backups
+ * Create a backup of the current state in IndexedDB.
+ * Throttled to prevent excessive backups.
  */
-export function createBackup(name: string, force = false): void {
+export async function createBackup(name: string, force = false): Promise<void> {
   try {
-    const current = localStorage.getItem(name)
+    const current = await idbGet(name)
     if (current) {
       const timestamp = Date.now()
-      
+
       // Check throttling (skip if recent backup exists)
       if (!force) {
         const lastBackup = getLastBackupTime()
@@ -45,46 +48,38 @@ export function createBackup(name: string, force = false): void {
         }
       }
 
-      // Check localStorage size before attempting backup
       const currentSize = new Blob([current]).size
       console.log(`[Backup] Current save size: ${(currentSize / 1024).toFixed(2)} KB`)
 
       // Keep only the configured number of backups
-      const backupKeys = Object.keys(localStorage)
+      const allKeys = await idbKeys()
+      const backupKeys = allKeys
         .filter(key => key.startsWith(`${name}-backup-`))
         .sort()
 
       while (backupKeys.length >= BACKUP_CONFIG.maxBackups) {
         const oldestKey = backupKeys.shift()
         if (oldestKey) {
-          localStorage.removeItem(oldestKey)
+          await idbRemove(oldestKey)
           console.log(`[Backup] Removed old backup: ${oldestKey}`)
         }
       }
 
-      // Try to create backup
-      localStorage.setItem(`${name}-backup-${timestamp}`, current)
+      await idbSet(`${name}-backup-${timestamp}`, current)
       setLastBackupTime(timestamp)
       console.log(`[Backup] Created backup: ${name}-backup-${timestamp}`)
     }
   } catch (error) {
     console.error('[Backup] Failed to create backup:', error)
-    // If quota exceeded, delete all backups and try again
-    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-      console.log('[Backup] Quota exceeded, clearing all backups...')
-      const backupKeys = Object.keys(localStorage)
-        .filter(key => key.startsWith(`${name}-backup-`))
-      backupKeys.forEach(key => localStorage.removeItem(key))
-      console.log(`[Backup] Cleared ${backupKeys.length} old backups`)
-    }
   }
 }
 
 /**
- * List available backups
+ * List available backups (newest first)
  */
-export function listBackups(name: string): string[] {
-  return Object.keys(localStorage)
+export async function listBackups(name: string): Promise<string[]> {
+  const allKeys = await idbKeys()
+  return allKeys
     .filter(key => key.startsWith(`${name}-backup-`))
     .sort()
     .reverse()
@@ -93,11 +88,11 @@ export function listBackups(name: string): string[] {
 /**
  * Restore from a backup
  */
-export function restoreBackup(name: string, backupKey: string): boolean {
+export async function restoreBackup(name: string, backupKey: string): Promise<boolean> {
   try {
-    const backup = localStorage.getItem(backupKey)
+    const backup = await idbGet(backupKey)
     if (backup) {
-      localStorage.setItem(name, backup)
+      await idbSet(name, backup)
       console.log(`[Backup] Restored from: ${backupKey}`)
       return true
     }

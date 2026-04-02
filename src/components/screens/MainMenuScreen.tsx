@@ -4,6 +4,7 @@ import { useGameStore } from '@/core/gameStore'
 import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import LZString from 'lz-string'
+import { idbGet } from '@/utils/idbStorage'
 
 interface MainMenuScreenProps {
   onNewRun: () => void
@@ -15,6 +16,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
   const { activeRun, listBackups, createManualBackup, restoreFromBackup, downloadBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [backups, setBackups] = useState<string[]>([])
+  const [backupStats, setBackupStats] = useState<Record<string, { itemCount: number; heroCount: number }>>({})
   const [expandedBackups, setExpandedBackups] = useState<Set<string>>(new Set())
   const toast = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -22,9 +24,26 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
   // Check if there's an active dungeon run in progress
   const hasActiveRun = activeRun !== null && activeRun.result === 'active'
   
-  const handleOpenSaveManager = () => {
-    const availableBackups = listBackups()
+  const handleOpenSaveManager = async () => {
+    const availableBackups = await listBackups()
     setBackups(availableBackups)
+    // Load stats for each backup concurrently
+    const statsEntries = await Promise.all(
+      availableBackups.map(async (key) => {
+        try {
+          const compressed = await idbGet(key)
+          if (!compressed) return [key, { itemCount: 0, heroCount: 0 }] as const
+          let str: string
+          try { str = LZString.decompressFromUTF16(compressed) || compressed } catch { str = compressed }
+          const state = JSON.parse(str)
+          const gs = state.state || state
+          return [key, { itemCount: gs.bankInventory?.length || 0, heroCount: gs.heroRoster?.length || 0 }] as const
+        } catch {
+          return [key, { itemCount: 0, heroCount: 0 }] as const
+        }
+      })
+    )
+    setBackupStats(Object.fromEntries(statsEntries))
     onOpen()
   }
 
@@ -40,35 +59,8 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     })
   }
 
-  const getBackupStats = (backupKey: string) => {
-    try {
-      const compressed = localStorage.getItem(backupKey)
-      if (!compressed) return { itemCount: 0, heroCount: 0 }
-
-      // Decompress the backup data
-      let str: string
-      try {
-        str = LZString.decompressFromUTF16(compressed) || compressed
-      } catch {
-        str = compressed
-      }
-
-      // Parse the state
-      const state = JSON.parse(str)
-      const gameState = state.state || state
-
-      return {
-        itemCount: gameState.bankInventory?.length || 0,
-        heroCount: gameState.heroRoster?.length || 0,
-      }
-    } catch (error) {
-      console.error('[Backup] Failed to load backup stats:', error)
-      return { itemCount: 0, heroCount: 0 }
-    }
-  }
-
-  const handleCreateBackup = () => {
-    const success = createManualBackup()
+  const handleCreateBackup = async () => {
+    const success = await createManualBackup()
     if (success) {
       toast({
         title: 'Backup Created',
@@ -78,7 +70,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
         isClosable: true,
       })
       // Refresh backup list
-      const availableBackups = listBackups()
+      const availableBackups = await listBackups()
       setBackups(availableBackups)
     } else {
       toast({
@@ -91,16 +83,16 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     }
   }
 
-  const handleRestoreBackup = (backupKey: string) => {
+  const handleRestoreBackup = async (backupKey: string) => {
     const timestamp = parseInt(backupKey.split('-').pop() || '0')
     const date = new Date(timestamp).toLocaleString()
     if (confirm(`Restore save from ${date}?\n\nThis will reload the page and restore your game state. Current unsaved progress will be lost.`)) {
-      restoreFromBackup(backupKey)
+      await restoreFromBackup(backupKey)
     }
   }
 
-  const handleDownloadBackup = (backupKey: string) => {
-    const success = downloadBackup(backupKey)
+  const handleDownloadBackup = async (backupKey: string) => {
+    const success = await downloadBackup(backupKey)
     if (success) {
       toast({
         title: 'Backup Downloaded',
@@ -595,7 +587,7 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
                   <VStack className="backups-list" spacing={2} align="stretch" maxH="450px" overflowY="auto" pr={2}>
                     {backups.map((backup, index) => {
                       const { date, time, relative } = formatBackupDate(backup)
-                      const { itemCount, heroCount } = getBackupStats(backup)
+                      const { itemCount = 0, heroCount = 0 } = backupStats[backup] ?? {}
                       const isExpanded = expandedBackups.has(backup)
 
                       return (
