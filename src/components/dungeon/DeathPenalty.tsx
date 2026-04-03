@@ -2,6 +2,7 @@ import { VStack, Text, Box, Heading, SimpleGrid, Badge, Flex } from '@chakra-ui/
 import { motion } from 'framer-motion'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { Hero, Run } from '@/types'
+import { HeroName } from '@/components/ui/HeroName'
 
 const MotionBox = motion.create(Box)
 
@@ -93,7 +94,7 @@ export default function DeathPenalty({ party, run }: DeathPenaltyProps) {
                     >
                       <Flex justify="space-between" align="center">
                         <Text fontSize="md" color="orange.200" fontWeight="bold">
-                          {hero.name}
+                          <HeroName hero={hero} />
                         </Text>
                         <Badge colorScheme="red" fontSize="sm" px={2}>
                           {calculatePenalty(hero, originalLevel)}

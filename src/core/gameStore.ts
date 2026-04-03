@@ -21,6 +21,7 @@ import {
   createMusicActions,
   createSaveActions,
   createUtilityActions,
+  createQuestActions,
   type HeroActionsSlice,
   type DungeonActionsSlice,
   type InventoryActionsSlice,
@@ -28,6 +29,7 @@ import {
   type MusicActionsSlice,
   type SaveActionsSlice,
   type UtilityActionsSlice,
+  type QuestActionsSlice,
 } from './modules'
 
 interface GameStore extends GameState, 
@@ -37,7 +39,8 @@ interface GameStore extends GameState,
   AbilityActionsSlice,
   MusicActionsSlice,
   SaveActionsSlice,
-  UtilityActionsSlice {}
+  UtilityActionsSlice,
+  QuestActionsSlice {}
 
 const initialState: GameState = {
   saveVersion: CURRENT_SAVE_VERSION,
@@ -79,6 +82,9 @@ const initialState: GameState = {
   currentMusicContext: null,
   pendingMigration: false,
   pendingMigrationData: null,
+  quests: [],
+  questsLastRefreshed: 0,
+  questRunsProcessed: [],
 }
 
 /**
@@ -149,6 +155,7 @@ export const useGameStore = create<GameStore>()(
         ...createMusicActions(set, get, api),
         ...createSaveActions(set, get, api),
         ...createUtilityActions(initialState)(set, get, api),
+        ...createQuestActions(set, get, api),
       })
     ),
     {

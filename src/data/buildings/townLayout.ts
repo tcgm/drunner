@@ -8,6 +8,8 @@ import { nexus } from './nexus'
 import { temple } from './temple'
 import { castle } from './castle'
 import { dungeonEntrance } from './dungeonEntrance'
+import { guildHall } from './guildHall'
+import { heroShrine } from './heroShrine'
 
 /** Number of columns in the town grid */
 export const townGridCols = 9
@@ -81,4 +83,10 @@ export const townLayout: BuildingPlacement[] = [
     mobile: { col: 1, row: 3 } },
   { building: dungeonEntrance, col: 5, row: 3, side: 'left', action: 'enter-dungeon',
     mobile: { col: 2, row: 3 } },
+
+  // ── Guild buildings ───────────────────────────────────────────────
+  { building: guildHall,       col: 6, row: 2, side: 'right',
+    mobile: { col: 3, row: 3 } },
+  { building: heroShrine,      col: 2, row: 1, side: 'left',
+    mobile: { col: 1, row: 1, hidden: false } },
 ]

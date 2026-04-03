@@ -18,6 +18,7 @@ import type { Item, Consumable } from '@/types'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { HeroName } from '@/components/ui/HeroName'
 
 const MotionBox = motion.create(Box)
 
@@ -117,7 +118,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     {/* Name & Level */}
                     <HStack spacing={2}>
                         <Text fontWeight="bold" fontSize="xs" noOfLines={1} flex={1} color="white">
-                            {hero.name}
+                            <HeroName hero={hero} />
                         </Text>
                         <Text fontSize="xs" color="orange.300" flexShrink={0}>
                             Lv{hero.level}

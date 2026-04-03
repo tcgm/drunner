@@ -1,4 +1,4 @@
-import { Box, Flex, VStack, Text, Badge, Button, HStack, SimpleGrid, Icon } from '@chakra-ui/react'
+import { Box, Flex, VStack, Text, Badge, Button, HStack, SimpleGrid, Icon, Image } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
@@ -7,6 +7,7 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { EquipmentPips } from './EquipmentPips'
+import { HeroName } from '@/components/ui/HeroName'
 
 interface PartySlotProps {
   hero: Hero | null
@@ -111,7 +112,9 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
                 alignItems="center"
                 justifyContent="center"
               >
-                {IconComponent && <Icon as={IconComponent} boxSize={8} color="orange.300" />}
+                {hero.customPortrait
+                  ? <Image src={hero.customPortrait} boxSize={8} objectFit="cover" borderRadius="md" />
+                  : IconComponent && <Icon as={IconComponent} boxSize={8} color="orange.300" />}
                 {/* Glow effect */}
                 <Box
                   position="absolute"
@@ -134,7 +137,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             <VStack className="party-slot-portrait-info" spacing={0.5} flex={1} align="start" justify="center" minW={0}>
               <HStack className="party-slot-portrait-header" spacing={1.5} w="full">
                 <Text className="party-slot-portrait-name" fontWeight="bold" fontSize="xs" color="orange.200" isTruncated flex={1}>
-                  {hero.name}
+                  <HeroName hero={hero} />
                 </Text>
                 <Badge className="party-slot-portrait-level" colorScheme="orange" fontSize="2xs" px={1}>
                   Lv{hero.level}
@@ -219,7 +222,9 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
               boxShadow="0 0 20px rgba(234, 88, 12, 0.2)"
               position="relative"
             >
-              {IconComponent && <Icon as={IconComponent} boxSize={12} color="orange.300" />}
+              {hero.customPortrait
+                ? <Image src={hero.customPortrait} boxSize={12} objectFit="cover" borderRadius="lg" />
+                : IconComponent && <Icon as={IconComponent} boxSize={12} color="orange.300" />}
               {/* Glow effect */}
               <Box
                 position="absolute"
@@ -240,7 +245,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
             {/* Hero Info */}
             <VStack className="party-slot-desktop-info" spacing={0.5} w="full" flex={1}>
               <Text className="party-slot-desktop-name" fontWeight="bold" fontSize="sm" color="orange.200" w="full" textAlign="center" isTruncated>
-                {hero.name}
+                <HeroName hero={hero} />
               </Text>
               <Badge className="party-slot-desktop-level" colorScheme="orange" fontSize="xs">
                 Lv{hero.level}

@@ -16,6 +16,7 @@ import type { Hero, BossCombatState } from '@/types'
 import { GiSwordman, GiShield, GiSparkles, GiRunningNinja, GiMightySpanner } from 'react-icons/gi'
 import { useMemo } from 'react'
 import { ItemSlot } from '@/components/ui/ItemSlot'
+import { HeroName } from '@/components/ui/HeroName'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { getAbilityScalingFormulaWithResult } from '@/utils/abilityDisplay'
 import { useOrientation } from '@/contexts/OrientationContext'
@@ -230,7 +231,7 @@ export default function CombatActionsPanel({
                     {/* Hero Name Badge */}
                     <HStack w="full" justify="space-between" bg="orange.900" borderRadius="md" px={2} py={1}>
                         <Text fontSize="xs" fontWeight="bold" color="white" isTruncated>
-                            {activeHero.name}
+                            <HeroName hero={activeHero} />
                         </Text>
                         <Badge colorScheme="orange" fontSize="2xs">
                             {actionCost.toFixed(1)} / 2.0
@@ -321,7 +322,7 @@ export default function CombatActionsPanel({
                                         <PopoverArrow bg="gray.900" />
                                         <PopoverCloseButton />
                                         <PopoverHeader color="purple.400" fontWeight="bold">
-                                            {activeHero.name}'s Abilities & Items
+                                            <HeroName hero={activeHero} />'s Abilities & Items
                                         </PopoverHeader>
                                         <PopoverBody pb={4} px={2} overflowY="auto" maxH="60vh">
                                             <VStack align="stretch" spacing={4}>
@@ -600,7 +601,7 @@ export default function CombatActionsPanel({
                     <VStack align="start" spacing={0}>
                         <Text fontSize="xs" color="gray.400">Active Hero</Text>
                         <Text fontSize="md" fontWeight="bold" color="white">
-                            {activeHero.name}
+                            <HeroName hero={activeHero} />
                         </Text>
                     </VStack>
                     <VStack align="end" spacing={0}>

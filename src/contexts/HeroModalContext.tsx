@@ -23,10 +23,13 @@ export function HeroModalProvider({ children }: HeroModalProviderProps) {
   const [selectedHeroId, setSelectedHeroId] = useState<string | null>(null)
   const [isDungeon, setIsDungeon] = useState(false)
 
-  // Derive the live hero from the store so equipment updates are reflected immediately
+  // Derive the live hero from the store so equipment updates are reflected immediately.
+  // Searches party first (party heroes have live HP/effects), then heroRoster as fallback.
   const liveHero = useGameStore(useCallback(
     (state) => selectedHeroId
-      ? (state.party.find(h => h?.id === selectedHeroId) ?? null)
+      ? (state.party.find(h => h?.id === selectedHeroId)
+          ?? state.heroRoster.find(h => h.id === selectedHeroId)
+          ?? null)
       : null,
     [selectedHeroId]
   ))

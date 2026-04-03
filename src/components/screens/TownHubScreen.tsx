@@ -18,6 +18,8 @@ import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
 import { ShiftyGuyModal } from '../ui/ShiftyGuyModal'
 import { NexusModal } from '../ui/NexusModal'
 import { ForgeModal } from '../ui/ForgeModal'
+import { GuildHallModal } from '../ui/GuildHallModal'
+import { HeroShrineModal } from '../ui/HeroShrineModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
 import type { Consumable, Item, ItemRarity } from '@/types'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
@@ -58,9 +60,20 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
     materialChargeProgress,
     forgeItem, breakDownItem,
     runHistory,
+    processRunForQuests,
+    questRunsProcessed,
   } = useGameStore()
 
   const toast = useToast()
+
+  // On mount: process any completed runs against active quests
+  React.useEffect(() => {
+    const processed = questRunsProcessed ?? []
+    runHistory
+      .filter(r => r.endDate && r.result !== 'active' && !processed.includes(r.id))
+      .forEach(r => processRunForQuests(r))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // On mount: finalize any stranded dungeon item transfer, then surface overflow modal
   const { isOpen: isOverflowOpen, onOpen: onOverflowOpen, onClose: onOverflowClose } = useDisclosure()
@@ -130,6 +143,12 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
 
   // Forge modal
   const { isOpen: isForgeOpen, onOpen: onForgeOpen, onClose: onForgeClose } = useDisclosure()
+
+  // Guild Hall modal
+  const { isOpen: isGuildHallOpen, onOpen: onGuildHallOpen, onClose: onGuildHallClose } = useDisclosure()
+
+  // Hero Shrine modal
+  const { isOpen: isHeroShrineOpen, onOpen: onHeroShrineOpen, onClose: onHeroShrineClose } = useDisclosure()
   const deepestFloor = React.useMemo(
     () => Math.max(dungeon.floor, ...runHistory.map(r => r.finalFloor ?? 0)),
     [dungeon.floor, runHistory]
@@ -151,6 +170,12 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         break
       case 'forge':
         onForgeOpen()
+        break
+      case 'guildHall':
+        onGuildHallOpen()
+        break
+      case 'heroShrine':
+        onHeroShrineOpen()
         break
       case 'tower':
         // TODO: Open arcane tower when implemented
@@ -428,6 +453,18 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
         nexusUpgrades={nexusUpgrades ?? {}}
         forgeItem={forgeItem}
         breakDownItem={breakDownItem}
+      />
+
+      {/* Guild Hall Modal */}
+      <GuildHallModal
+        isOpen={isGuildHallOpen}
+        onClose={onGuildHallClose}
+      />
+
+      {/* Hero Shrine Modal */}
+      <HeroShrineModal
+        isOpen={isHeroShrineOpen}
+        onClose={onHeroShrineClose}
       />
 
       {/* Shifty Guy Modal - post-run bulk scrapper offer */}

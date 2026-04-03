@@ -1,5 +1,5 @@
 import './PartyMemberCard.css'
-import { Box, HStack, VStack, Text, Icon, Tooltip } from '@chakra-ui/react'
+import { Box, HStack, VStack, Text, Icon, Tooltip, Image } from '@chakra-ui/react'
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hero, Item, Consumable } from '@/types'
@@ -19,6 +19,7 @@ import { getAbilityDescription } from '@/utils/abilityDisplay'
 import { ItemSlot } from '@components/ui/ItemSlot'
 import { EquipmentPips } from './EquipmentPips'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { HeroName } from '@/components/ui/HeroName'
 
 const MotionBox = motion.create(Box)
 
@@ -125,13 +126,15 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
                   ease: "easeInOut"
                 }}
               >
-                <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />
+                {hero.customPortrait
+                  ? <Image src={hero.customPortrait} boxSize={8} objectFit="cover" borderRadius="md" flexShrink={0} />
+                  : <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />}
               </motion.div>
               
               <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0}>
               <HStack className="party-member-card-header" spacing={2}>
                 <Text className="party-member-card-name" fontWeight="bold" fontSize="xs" noOfLines={1} flex={1}>
-                  {hero.name}
+                  <HeroName hero={hero} />
                 </Text>
                 <Text className="party-member-card-level" fontSize="xs" color="orange.300" flexShrink={0}>
                   Lv{hero.level}

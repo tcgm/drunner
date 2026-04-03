@@ -15,18 +15,22 @@ import {
   Badge,
   useDisclosure,
   Button,
+  Input,
+  IconButton,
 } from '@chakra-ui/react'
 import type { Hero, Item } from '@/types'
 import * as GameIcons from 'react-icons/gi'
+import { HeroPortrait } from '@/components/party/HeroPortrait'
 import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
+import { HeroName } from '@/components/ui/HeroName'
 import { isItemCompatibleWithSlot } from '@/utils/equipmentUtils'
 import { getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'
@@ -43,7 +47,28 @@ interface HeroModalProps {
 export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: HeroModalProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables, addItemToDungeonInventory, moveItemToBank } = useGameStore()
+  const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables, addItemToDungeonInventory, moveItemToBank, updateHero } = useGameStore()
+
+  // Rename state
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editedName, setEditedName] = useState(hero.name)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setEditedName(hero.name)
+    setIsEditingName(false)
+  }, [hero.id, hero.name])
+
+  useEffect(() => {
+    if (isEditingName) nameInputRef.current?.select()
+  }, [isEditingName])
+
+  const handleNameSave = () => {
+    const trimmed = editedName.trim()
+    if (trimmed && trimmed !== hero.name) updateHero(hero.id, { name: trimmed })
+    else setEditedName(hero.name)
+    setIsEditingName(false)
+  }
   const [swapMode, setSwapMode] = useState<string | null>(null)
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
 
@@ -212,9 +237,40 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                 <VStack spacing="3%" flex="1 1 0" justify="center" align="center">
                   {/* Character Name & Level */}
                   <VStack spacing={0} flex="0 0 auto">
-                    <Text fontSize="lg" fontWeight="bold" color="orange.400" textAlign="center" noOfLines={1}>
-                      {hero.name}
-                    </Text>
+                    {isEditingName ? (
+                      <Input
+                        ref={nameInputRef}
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        onBlur={handleNameSave}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleNameSave(); if (e.key === 'Escape') { setEditedName(hero.name); setIsEditingName(false) } }}
+                        size="sm"
+                        textAlign="center"
+                        fontWeight="bold"
+                        color="orange.400"
+                        bg="gray.800"
+                        borderColor="orange.500"
+                        _focus={{ borderColor: 'orange.300', boxShadow: '0 0 0 1px var(--chakra-colors-orange-300)' }}
+                        maxLength={30}
+                        autoFocus
+                      />
+                    ) : (
+                      <HStack spacing={1}>
+                        <Text fontSize="lg" fontWeight="bold" color="orange.400" textAlign="center" noOfLines={1}>
+                          <HeroName hero={hero} />
+                        </Text>
+                        <IconButton
+                          aria-label="Rename hero"
+                          icon={<Icon as={GameIcons.GiPencil} />}
+                          size="xs"
+                          variant="ghost"
+                          colorScheme="orange"
+                          opacity={0.5}
+                          _hover={{ opacity: 1 }}
+                          onClick={() => setIsEditingName(true)}
+                        />
+                      </HStack>
+                    )}
                     <HStack spacing={2}>
                       <Badge colorScheme="orange" fontSize="xs" px={2} py={0.5}>
                         Lv {hero.level}
@@ -227,11 +283,12 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
                   {/* Character Icon */}
                   <Box position="relative" flex="0 0 auto">
-                    <Icon 
-                      as={IconComponent} 
-                      boxSize="min(30vh, 200px)" 
+                    <HeroPortrait
+                      hero={hero}
+                      boxSize="min(30vh, 200px)"
                       color="orange.400"
                       filter="drop-shadow(0 0 12px rgba(251, 146, 60, 0.6))"
+                      isEditable={true}
                     />
                     <Box 
                       position="absolute" 

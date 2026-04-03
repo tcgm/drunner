@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - main
+      - test
       - combat
   workflow_dispatch:
 
@@ -54,6 +55,15 @@ jobs:
           BASE_URL=/${{ github.event.repository.name }}/combat/ npx vite build
           mkdir -p ../deploy/combat
           cp -r dist/* ../deploy/combat/
+      
+      - name: Build test branch
+        run: |
+          echo "Building test branch..."
+          git checkout test
+          npm ci
+          BASE_URL=/${{ github.event.repository.name }}/test/ npx vite build
+          mkdir -p ../deploy/test
+          cp -r dist/* ../deploy/test/
       
       - name: Move deploy folder
         run: |

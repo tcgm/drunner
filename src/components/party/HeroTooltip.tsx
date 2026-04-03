@@ -5,6 +5,7 @@ import {
   Text,
   Icon,
   Badge,
+  Image,
 } from '@chakra-ui/react'
 import type { Hero } from '@/types'
 import * as GameIcons from 'react-icons/gi'
@@ -13,6 +14,7 @@ import StatBar from '@components/ui/StatBar'
 import { calculateXpForLevel } from '@utils/heroUtils'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { HeroName } from '@/components/ui/HeroName'
 
 interface HeroTooltipProps {
   hero: Hero
@@ -29,10 +31,12 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
         <VStack className="hero-tooltip" spacing={2} align="stretch" p={2} minW="clamp(200px, 25vw, 280px)">
           {/* Header */}
           <HStack className="hero-tooltip-header" spacing={3}>
-            <Icon className="hero-tooltip-icon" as={IconComponent} boxSize={10} color="orange.400" />
+            {hero.customPortrait
+              ? <Image className="hero-tooltip-icon" src={hero.customPortrait} boxSize={10} objectFit="cover" borderRadius="md" />
+              : <Icon className="hero-tooltip-icon" as={IconComponent} boxSize={10} color="orange.400" />}
             <VStack className="hero-tooltip-info" align="start" spacing={0} flex={1}>
               <Text className="hero-tooltip-name" fontSize="md" fontWeight="bold" color="orange.400">
-                {hero.name}
+                <HeroName hero={hero} />
               </Text>
               <HStack className="hero-tooltip-badges" spacing={2}>
                 <Badge colorScheme="orange" fontSize="xs">

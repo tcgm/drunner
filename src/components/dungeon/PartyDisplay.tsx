@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import type { Hero, Run } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { GAME_CONFIG } from '@/config/gameConfig'
+import { HeroName } from '@/components/ui/HeroName'
 
 const MotionBox = motion.create(Box)
 
@@ -44,7 +45,7 @@ export default function PartyDisplay({ party, run }: PartyDisplayProps) {
               >
                 <VStack align="start" spacing={2}>
                   <Text color="gray.200" fontSize="lg" fontWeight="bold">
-                    {hero.name}
+                    <HeroName hero={hero} />
                   </Text>
                   <Text color="gray.400" fontSize="md">
                     {hero.class.name}

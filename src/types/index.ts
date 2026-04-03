@@ -1,5 +1,6 @@
 import type { IconType } from 'react-icons'
 import { MusicContext } from './audio'
+import type { Quest } from './quests'
 
 // Core game types
 
@@ -145,6 +146,7 @@ export interface Hero {
   combatEffects?: CombatEffect[] // Active combat effects (buffs/debuffs/status during combat only)
   pendingResurrection?: boolean // True if hero will be revived at start of next event (from Amulet of Resurrection)
   position?: 'frontline' | 'backline' // Combat position (derived from party slot: 1-2 = frontline, 3-4 = backline)
+  customPortrait?: string // Base64 data URL of a user-uploaded portrait image
   
   // Legacy fields for migration
   equipment?: Equipment
@@ -574,6 +576,10 @@ export interface GameState {
   // Migration state
   pendingMigration: boolean // True if save data needs migration
   pendingMigrationData: string | null // Compressed save data awaiting migration
+  // Quest system
+  quests: Quest[]
+  questsLastRefreshed: number
+  questRunsProcessed: string[] // run IDs already applied to quest progress
 }
 
 export interface ShopItem {

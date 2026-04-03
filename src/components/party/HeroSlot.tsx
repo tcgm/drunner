@@ -1,10 +1,11 @@
-import { VStack, SimpleGrid, Box, Text, Badge, Flex, Icon as ChakraIcon, Button } from '@chakra-ui/react'
+import { VStack, SimpleGrid, Box, Text, Badge, Flex, Icon as ChakraIcon, Button, Image } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { HeroClass, Hero } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { HeroName } from '@/components/ui/HeroName'
 
 interface HeroSlotProps {
   hero: Hero | null
@@ -84,11 +85,13 @@ export default function HeroSlot({
               boxShadow="0 0 20px rgba(234, 88, 12, 0.2)"
               position="relative"
             >
-              <ChakraIcon 
-                as={(GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman} 
-                boxSize={12} 
-                color="orange.300"
-              />
+              {hero.customPortrait
+                ? <Image src={hero.customPortrait} boxSize={12} objectFit="cover" borderRadius="md" />
+                : <ChakraIcon 
+                    as={(GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman} 
+                    boxSize={12} 
+                    color="orange.300"
+                  />}
               {/* Glow effect */}
               <Box
                 position="absolute"
@@ -103,7 +106,7 @@ export default function HeroSlot({
             {/* Hero Info */}
             <VStack className="hero-slot-info" spacing={0.5} w="full">
               <Text className="hero-slot-name" fontWeight="bold" fontSize="sm" color="orange.200" w="full" textAlign="center">
-                {hero.name}
+                <HeroName hero={hero} />
               </Text>
               <Badge className="hero-slot-level" colorScheme="orange" fontSize="xs">
                 Lv{hero.level}

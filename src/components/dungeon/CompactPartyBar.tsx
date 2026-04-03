@@ -12,6 +12,7 @@ import { useConsumable as applyConsumable } from '@/systems/consumables/consumab
 import { getAbilityStatus } from '@/systems/abilities/abilityManager'
 import { refreshHeroAbilities } from '@/utils/abilityUtils'
 import { getAbilityDescription } from '@/utils/abilityDisplay'
+import { HeroName } from '@/components/ui/HeroName'
 
 interface CompactPartyBarProps {
   party: Hero[]
@@ -112,7 +113,7 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
                   flex={1}
                   textAlign="center"
                 >
-                  {hero.name}
+                  <HeroName hero={hero} />
                 </Text>
                 <Spacer/>
                 <Text fontSize="2xs" color="gray.400">
@@ -258,7 +259,7 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
                   <PopoverArrow bg="gray.900" />
                   <PopoverCloseButton />
                   <PopoverHeader color="purple.400" fontWeight="bold" fontSize="sm">
-                    {hero.name}'s Abilities
+                    <HeroName hero={hero} />'s Abilities
                   </PopoverHeader>
                   <PopoverBody pb={3} px={2} maxH="50vh" overflowY="auto">
                     <VStack align="stretch" spacing={2}>

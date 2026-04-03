@@ -1,4 +1,4 @@
-import { Box, VStack, HStack, Text, Badge, Icon, Tooltip, SimpleGrid, Flex } from '@chakra-ui/react'
+import { Box, VStack, HStack, Text, Badge, Icon, Tooltip, SimpleGrid, Flex, Image } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
@@ -7,6 +7,7 @@ import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { EquipmentPips } from './EquipmentPips'
 import { getRarityColors } from '@/systems/rarity/rarities'
+import { HeroName } from '@/components/ui/HeroName'
 
 interface RosterHeroCardProps {
   hero: Hero
@@ -20,7 +21,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
   
   const tooltipLabel = (
     <VStack align="start" spacing={1} p={1}>
-      <Text fontWeight="bold" fontSize="sm">{hero.name}</Text>
+      <Text fontWeight="bold" fontSize="sm"><HeroName hero={hero} /></Text>
       <Text fontSize="xs" color="gray.300">{hero.class.name}</Text>
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
         <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{calculateTotalStats(hero).maxHp}</Text></Text>
@@ -83,7 +84,9 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
             flexShrink={0}
             position="relative"
           >
-            <Icon as={IconComponent} boxSize={10} color="blue.300" />
+            {hero.customPortrait
+              ? <Image src={hero.customPortrait} boxSize={10} objectFit="cover" borderRadius="md" />
+              : <Icon as={IconComponent} boxSize={10} color="blue.300" />}
             
             {/* Equipment pips around icon */}
             <EquipmentPips 
@@ -97,7 +100,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
           <VStack className="roster-hero-card-info" align="start" spacing={1} flex={1} minW={0}>
             <HStack justify="space-between" w="full" spacing={2}>
               <Text className="roster-hero-card-name" fontWeight="bold" fontSize="md" color="orange.200" isTruncated flex={1}>
-                {hero.name}
+                <HeroName hero={hero} />
               </Text>
               <Badge className="roster-hero-card-level" fontSize="xs" colorScheme="blue" flexShrink={0}>
                 Lv {hero.level}

@@ -10,6 +10,8 @@ export { nexus } from './nexus'
 export { temple } from './temple'
 export { castle } from './castle'
 export { dungeonEntrance } from './dungeonEntrance'
+export { guildHall } from './guildHall'
+export { heroShrine } from './heroShrine'
 
 import { shop } from './shop'
 import { market } from './market'
@@ -18,6 +20,8 @@ import { forge } from './forge'
 import { tower } from './tower'
 import { nexus } from './nexus'
 import { temple } from './temple'
+import { guildHall } from './guildHall'
+import { heroShrine } from './heroShrine'
 
 /**
  * Left-side buildings in the town hub
@@ -35,6 +39,11 @@ export const rightBuildings = [forge, tower]
 export const backRowBuildings = [nexus, temple]
 
 /**
+ * Guild buildings
+ */
+export const guildBuildings = [guildHall, heroShrine]
+
+/**
  * All buildings combined
  */
-export const allBuildings = [...leftBuildings, ...rightBuildings, ...backRowBuildings]
+export const allBuildings = [...leftBuildings, ...rightBuildings, ...backRowBuildings, ...guildBuildings]
