@@ -24,6 +24,7 @@ export interface Quest {
   description: string
   type: QuestType
   rarity: ItemRarity
+  minFloor: number      // minimum floor the player must have reached (derived from rarity)
   requirement: number
   progress: number
   reward: QuestReward

@@ -1,15 +1,8 @@
 import type { Quest, QuestType, QuestDifficulty, ItemRarity } from '@/types/quests'
 import type { Hero } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
-
-/** How often the quest board refreshes expired/available quests (2 hours real-time) */
-export const QUEST_REFRESH_INTERVAL_MS = 2 * 60 * 60 * 1000
-
-/** How long an available quest stays on the board before expiring (6 hours) */
-const QUEST_EXPIRY_MS = 6 * 60 * 60 * 1000
-
-/** Number of available quest slots on the board */
-const AVAILABLE_SLOTS = 3
+import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
+import { QUEST_CONFIG } from '@/config/questConfig'
 
 // ── Party power score ─────────────────────────────────────────────────────
 //
@@ -40,7 +33,7 @@ export function calcPartyPower(party: (Hero | null)[]): number {
   const avgLevel = totalLevel / members.length
   const avgStat  = totalStat  / members.length
 
-  return Math.max(1, avgLevel + avgStat / 15)
+  return Math.max(1, avgLevel + avgStat / QUEST_CONFIG.partyPowerStatDivisor)
 }
 
 // ── Quest templates ───────────────────────────────────────────────────────
@@ -84,7 +77,7 @@ interface QuestTemplate {
  * where t = clamp((power-1)/30, 0, 1)
  */
 function rollRarity(pool: ItemRarity[], power: number): ItemRarity {
-  const t    = Math.min(1, (power - 1) / 30)
+  const t    = Math.min(1, (power - 1) / QUEST_CONFIG.rarityRollPowerScale)
   const rand = Math.random()
   // t=0 → rand² (mean ≈0.33, favours index 0)
   // t=1 → rand^0.4 (mean ≈0.71, favours top)
@@ -93,18 +86,6 @@ function rollRarity(pool: ItemRarity[], power: number): ItemRarity {
   return pool[idx]
 }
 
-const DIFF_MULT: Record<QuestDifficulty, number> = {
-  easy:   1.0,
-  medium: 2.0,
-  hard:   4.0,
-}
-
-// Reward multipliers per difficulty – harder quests pay out proportionally more
-const DIFF_REWARD: Record<QuestDifficulty, number> = {
-  easy:   1.0,
-  medium: 1.3,
-  hard:   1.7,
-}
 
 const QUEST_TEMPLATES: QuestTemplate[] = [
   // Rarity pools: ordered lowest → highest for rollRarity().
@@ -146,32 +127,30 @@ function niceRound(n: number, snap = 5): number {
 }
 
 function calcRequirement(template: QuestTemplate, power: number): number {
-  const raw = template.base * Math.pow(power, template.exp) * DIFF_MULT[template.difficulty]
-  const snapped = niceRound(raw, template.type === 'earn_gold' ? 50 : template.type === 'reach_floor' ? 1 : 5)
-
-  // Hard caps to stay sensible
-  if (template.type === 'reach_floor')   return Math.min(95, Math.max(1, snapped))
-  if (template.type === 'complete_runs') return Math.min(15, Math.max(1, snapped))
-  if (template.type === 'defeat_bosses') return Math.min(20, Math.max(1, snapped))
-  return Math.max(1, snapped)
+  const { max, snap } = QUEST_CONFIG.typeSettings[template.type]
+  const raw = template.base * Math.pow(power, template.exp) * QUEST_CONFIG.difficultyReqMult[template.difficulty]
+  const snapped = niceRound(raw, snap)
+  return Math.min(max, Math.max(1, snapped))
 }
 
 function calcRewards(template: QuestTemplate, requirement: number): { gold: number; metaXp: number } {
-  const rewardMult = DIFF_REWARD[template.difficulty]
+  const rewardMult = QUEST_CONFIG.difficultyRewardMult[template.difficulty]
   return {
-    gold:   Math.max(50,  niceRound(template.goldPerReq * requirement * rewardMult, 25)),
-    metaXp: Math.max(10,  niceRound(template.xpPerReq   * requirement * rewardMult, 5)),
+    gold:   Math.max(QUEST_CONFIG.minRewardGold,   niceRound(template.goldPerReq * requirement * rewardMult, QUEST_CONFIG.rewardGoldSnap)),
+    metaXp: Math.max(QUEST_CONFIG.minRewardMetaXp, niceRound(template.xpPerReq   * requirement * rewardMult, QUEST_CONFIG.rewardXpSnap)),
   }
 }
 
 /**
  * Generate `count` fresh available quests scaled to the current party's power.
  * Types already held by `existingQuests` are excluded so the board stays varied.
+ * Only rarities whose `minFloor` is ≤ `deepestFloor` are eligible for the roll.
  */
 export function generateQuests(
   existingQuests: Quest[],
   party: (Hero | null)[],
-  count: number = AVAILABLE_SLOTS,
+  count: number = QUEST_CONFIG.boardSlots,
+  deepestFloor: number = 0,
 ): Quest[] {
   const power = calcPartyPower(party)
 
@@ -189,7 +168,11 @@ export function generateQuests(
   return picked.map(template => {
     const requirement = calcRequirement(template, power)
     const reward      = calcRewards(template, requirement)
-    const rarity = rollRarity(template.rarityPool, power)
+    // Only roll from rarities the player has unlocked via deepestFloor
+    const unlockedPool = template.rarityPool.filter(r => (RARITY_CONFIGS[r]?.minFloor ?? 0) <= deepestFloor)
+    const pool = unlockedPool.length > 0 ? unlockedPool : [template.rarityPool[0]]
+    const rarity = rollRarity(pool, power)
+    const minFloor = RARITY_CONFIGS[rarity]?.minFloor ?? 0
     return {
       id:          `quest-${now}-${Math.random().toString(36).slice(2, 8)}`,
       title:       template.title,
@@ -197,12 +180,13 @@ export function generateQuests(
       type:        template.type,
       difficulty:  template.difficulty,
       rarity,
+      minFloor,
       requirement,
       progress:    0,
       reward,
       status:      'available' as const,
       generatedAt: now,
-      expiresAt:   now + QUEST_EXPIRY_MS,
+      expiresAt:   now + QUEST_CONFIG.expiryHours * QUEST_CONFIG.msPerHour,
     }
   })
 }

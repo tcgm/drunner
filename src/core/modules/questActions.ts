@@ -6,7 +6,9 @@
 import type { StateCreator } from 'zustand'
 import type { GameState, Run } from '@/types'
 import type { Quest } from '@/types/quests'
-import { generateQuests, QUEST_REFRESH_INTERVAL_MS } from '@/data/quests'
+import { generateQuests } from '@/data/quests'
+import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
+import { QUEST_CONFIG } from '@/config/questConfig'
 
 export interface QuestActionsSlice {
   /** Accept an available quest, moving it to active status. */
@@ -60,14 +62,23 @@ export const createQuestActions: StateCreator<
   refreshQuestBoard: () =>
     set((state) => {
       const now = Date.now()
+      const deepestFloor = Math.max(
+        state.dungeon.floor,
+        ...state.runHistory.map(r => r.finalFloor ?? 0),
+      )
 
       // Prune claimed quests older than 24 hours to keep the list clean
       const pruned = state.quests
-        // Backfill rarity for quests persisted before the rarity field was introduced
-        .map((q): Quest => q.rarity ? q : { ...q, rarity: 'common' })
+        // Backfill rarity/minFloor for quests persisted before these fields were introduced
+        .map((q): Quest => {
+          const withRarity: Quest = q.rarity ? q : { ...q, rarity: 'common' }
+          return withRarity.minFloor != null
+            ? withRarity
+            : { ...withRarity, minFloor: RARITY_CONFIGS[withRarity.rarity]?.minFloor ?? 0 }
+        })
         .filter(q => {
         if (q.status === 'claimed') {
-          return now - (q.completedAt ?? q.generatedAt) < 24 * 60 * 60 * 1000
+          return now - (q.completedAt ?? q.generatedAt) < QUEST_CONFIG.claimedRetentionHours * QUEST_CONFIG.msPerHour
         }
         return true
       })
@@ -78,12 +89,12 @@ export const createQuestActions: StateCreator<
       )
 
       const timeSinceRefresh = now - (state.questsLastRefreshed ?? 0)
-      const needsTimeRefresh = timeSinceRefresh >= QUEST_REFRESH_INTERVAL_MS
+      const needsTimeRefresh = timeSinceRefresh >= QUEST_CONFIG.refreshIntervalHours * QUEST_CONFIG.msPerHour
 
       // If timed refresh is due, replace all available quests entirely
       if (needsTimeRefresh) {
         const withoutAvailable = nonExpired.filter(q => q.status !== 'available')
-        const fresh = generateQuests(withoutAvailable, state.party, 3)
+        const fresh = generateQuests(withoutAvailable, state.party, QUEST_CONFIG.boardSlots, deepestFloor)
         return {
           quests: [...withoutAvailable, ...fresh],
           questsLastRefreshed: now,
@@ -92,12 +103,12 @@ export const createQuestActions: StateCreator<
 
       // Otherwise just fill empty slots
       const availableCount = nonExpired.filter(q => q.status === 'available').length
-      const slotsToFill = 3 - availableCount
+      const slotsToFill = QUEST_CONFIG.boardSlots - availableCount
       if (slotsToFill <= 0) {
         return nonExpired.length !== state.quests.length ? { quests: nonExpired } : {}
       }
 
-      const fresh = generateQuests(nonExpired, state.party, slotsToFill)
+      const fresh = generateQuests(nonExpired, state.party, slotsToFill, deepestFloor)
       return {
         quests: [...nonExpired, ...fresh],
         questsLastRefreshed: state.questsLastRefreshed ?? now,
