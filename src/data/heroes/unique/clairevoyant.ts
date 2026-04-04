@@ -13,5 +13,5 @@ export const clairevoyant: UniqueHeroDefinition = {
     { stat: 'speed', value: 6 },
   ],
   hireCostOverride: 900,
-  lore: '"I knew you\'d hire me," she says, every time, to everyone. Statistically she is incorrect more often than she should be by sheer random chance.',
+  lore: '"I knew you\'d hire me," she says, every time, to everyone. Statistically she is incorrect more often than she should be by sheer random chance, but somehow succeeds anyways.',
 }
