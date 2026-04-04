@@ -11,6 +11,8 @@ import {
 import {
   GiFireplace,
   GiBeerStein,
+  GiScrollQuill,
+  GiStarFormation,
 } from 'react-icons/gi'
 import { FaTimes } from 'react-icons/fa'
 import { HeroPortrait } from '@/components/party/HeroPortrait'
@@ -121,9 +123,11 @@ export interface RoomSceneProps {
   heroRoster: Hero[]
   party: (Hero | null)[]
   isOpen: boolean
+  onBoardSelect?: (board: 'quests' | 'heroes') => void
+  activeBoard?: 'quests' | 'heroes'
 }
 
-export function RoomScene({ heroRoster, party, isOpen }: RoomSceneProps) {
+export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoard }: RoomSceneProps) {
   const partyIds = useMemo(
     () => new Set(party.filter(Boolean).map(h => h!.id)),
     [party],
@@ -315,22 +319,65 @@ export function RoomScene({ heroRoster, party, isOpen }: RoomSceneProps) {
         </Box>
       </Tooltip>
 
-      {/* ── GUILD NOTICE BOARD (decorative) ── */}
-      <Tooltip label="Guild Notice Board — posted quests" hasArrow placement="bottom">
+      {/* ── GUILD NOTICE BOARD (Quest Board) ── */}
+      <Tooltip label="Quest Board — click to view active quests" hasArrow placement="bottom">
         <Box
           position="absolute" left="52%" top="4%" w="20%" h="24%"
-          bg="#1c1206" border="2px solid #7a6010" borderRadius="sm"
-          p={1.5} zIndex={2} cursor="default"
+          bg={activeBoard === 'quests' ? '#261a04' : '#1c1206'}
+          border="2px solid"
+          borderColor={activeBoard === 'quests' ? '#f97316' : '#7a6010'}
+          borderRadius="sm"
+          p={1.5} zIndex={2} cursor="pointer"
+          onClick={() => onBoardSelect?.('quests')}
+          boxShadow={activeBoard === 'quests' ? '0 0 14px rgba(249,115,22,0.4)' : 'none'}
+          _hover={{ borderColor: '#f97316', boxShadow: '0 0 12px rgba(249,115,22,0.3)' }}
+          transition="all 0.15s"
         >
-          <Text fontSize="3xs" color="yellow.700" textAlign="center" fontWeight="bold" letterSpacing="widest" mb={1.5}>
-            GUILD BOARD
-          </Text>
+          <HStack spacing={1} justify="center" mb={1}>
+            <Icon as={GiScrollQuill} boxSize={2.5} color={activeBoard === 'quests' ? 'orange.400' : 'yellow.700'} />
+            <Text fontSize="3xs" color={activeBoard === 'quests' ? 'orange.400' : 'yellow.700'} textAlign="center" fontWeight="bold" letterSpacing="widest">
+              QUESTS
+            </Text>
+          </HStack>
           {[
             { w: '88%', col: '#166534' },
             { w: '72%', col: '#9a3412' },
             { w: '94%', col: '#92400e' },
             { w: '78%', col: '#374151' },
             { w: '60%', col: '#1e3a5f' },
+          ].map((b, i) => (
+            <Box key={i} h="5px" bg={b.col} borderRadius="sm" mb="3px" w={b.w}
+              border="1px solid rgba(255,255,255,0.06)" />
+          ))}
+        </Box>
+      </Tooltip>
+
+      {/* ── ADVENTURERS' HIRE BOARD ── */}
+      <Tooltip label="Adventurers' Board — click to hire new heroes" hasArrow placement="bottom">
+        <Box
+          position="absolute" left="75%" top="4%" w="20%" h="24%"
+          bg={activeBoard === 'heroes' ? '#1a0e2e' : '#130a20'}
+          border="2px solid"
+          borderColor={activeBoard === 'heroes' ? '#a855f7' : '#4a2880'}
+          borderRadius="sm"
+          p={1.5} zIndex={2} cursor="pointer"
+          onClick={() => onBoardSelect?.('heroes')}
+          boxShadow={activeBoard === 'heroes' ? '0 0 14px rgba(168,85,247,0.4)' : 'none'}
+          _hover={{ borderColor: '#a855f7', boxShadow: '0 0 12px rgba(168,85,247,0.3)' }}
+          transition="all 0.15s"
+        >
+          <HStack spacing={1} justify="center" mb={1}>
+            <Icon as={GiStarFormation} boxSize={2.5} color={activeBoard === 'heroes' ? 'purple.400' : 'purple.800'} />
+            <Text fontSize="3xs" color={activeBoard === 'heroes' ? 'purple.400' : 'purple.800'} textAlign="center" fontWeight="bold" letterSpacing="widest">
+              HIRE
+            </Text>
+          </HStack>
+          {[
+            { w: '82%', col: '#4c1d95' },
+            { w: '65%', col: '#6b21a8' },
+            { w: '90%', col: '#581c87' },
+            { w: '70%', col: '#3b0764' },
+            { w: '55%', col: '#2e1065' },
           ].map((b, i) => (
             <Box key={i} h="5px" bg={b.col} borderRadius="sm" mb="3px" w={b.w}
               border="1px solid rgba(255,255,255,0.06)" />

@@ -22,6 +22,7 @@ import {
   createSaveActions,
   createUtilityActions,
   createQuestActions,
+  createHeroBoardActions,
   type HeroActionsSlice,
   type DungeonActionsSlice,
   type InventoryActionsSlice,
@@ -30,6 +31,7 @@ import {
   type SaveActionsSlice,
   type UtilityActionsSlice,
   type QuestActionsSlice,
+  type HeroBoardActionsSlice,
 } from './modules'
 
 interface GameStore extends GameState, 
@@ -40,7 +42,8 @@ interface GameStore extends GameState,
   MusicActionsSlice,
   SaveActionsSlice,
   UtilityActionsSlice,
-  QuestActionsSlice {}
+  QuestActionsSlice,
+  HeroBoardActionsSlice {}
 
 const initialState: GameState = {
   saveVersion: CURRENT_SAVE_VERSION,
@@ -85,6 +88,8 @@ const initialState: GameState = {
   quests: [],
   questsLastRefreshed: 0,
   questRunsProcessed: [],
+  availableHeroesForHire: [],
+  heroBoardLastRefreshed: 0,
 }
 
 /**
@@ -156,6 +161,7 @@ export const useGameStore = create<GameStore>()(
         ...createSaveActions(set, get, api),
         ...createUtilityActions(initialState)(set, get, api),
         ...createQuestActions(set, get, api),
+        ...createHeroBoardActions(set, get, api),
       })
     ),
     {

@@ -147,10 +147,46 @@ export interface Hero {
   pendingResurrection?: boolean // True if hero will be revived at start of next event (from Amulet of Resurrection)
   position?: 'frontline' | 'backline' // Combat position (derived from party slot: 1-2 = frontline, 3-4 = backline)
   customPortrait?: string // Base64 data URL of a user-uploaded portrait image
+  // Hero identity (set via Hero Board hire)
+  species?: HeroSpecies
+  heroRarity?: HeroRarity
+  statBonuses?: HeroStatBonus[]
   
   // Legacy fields for migration
   equipment?: Equipment
   consumableSlots?: (Consumable | null)[]
+}
+
+// Hero-specific rarity (simpler than item rarity)
+export type HeroRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
+
+// Hero species
+export type HeroSpecies =
+  | 'human'
+  | 'elf'
+  | 'dwarf'
+  | 'orc'
+  | 'halfling'
+  | 'gnome'
+  | 'tiefling'
+  | 'aasimar'
+
+export interface HeroStatBonus {
+  stat: PrimaryStat | 'maxHp'
+  value: number
+  source: 'species' | 'rarity'
+}
+
+// A hero available for hire on the Hero Board (before being added to roster)
+export interface HireableHero {
+  id: string
+  name: string
+  heroClass: HeroClass
+  species: HeroSpecies
+  heroRarity: HeroRarity
+  level: number
+  statBonuses: HeroStatBonus[]
+  hireCost: number
 }
 
 // Legacy equipment interface - kept for migration
@@ -580,6 +616,9 @@ export interface GameState {
   quests: Quest[]
   questsLastRefreshed: number
   questRunsProcessed: string[] // run IDs already applied to quest progress
+  // Hero Board
+  availableHeroesForHire: HireableHero[]
+  heroBoardLastRefreshed: number
 }
 
 export interface ShopItem {
