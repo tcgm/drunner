@@ -160,7 +160,8 @@ export interface Hero {
 }
 
 // Hero-specific rarity (simpler than item rarity)
-export type HeroRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
+export type { HeroRarity } from '@/config/guildHeroConfig'
+import type { HeroRarity } from '@/config/guildHeroConfig'
 
 // Hero species
 export type HeroSpecies =

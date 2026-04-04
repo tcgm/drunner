@@ -11,22 +11,11 @@ import {
 import { GiStarFormation, GiCoins, GiSwordman, GiShield } from 'react-icons/gi'
 import { FaHourglass } from 'react-icons/fa'
 import type { HireableHero } from '@/types'
-import type { HeroRarity } from '@/types'
 import { HERO_RARITY_CONFIG } from '@/systems/heroGeneration'
 import { SPECIES_DEFINITIONS } from '@/data/heroes/species'
 import { CORE_CLASSES } from '@/data/classes'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
-
-// ── Rarity colour helper ─────────────────────────────────────────────────
-
-const RARITY_HEX: Record<HeroRarity, string> = {
-  common:    '#9CA3AF',
-  uncommon:  '#4ADE80',
-  rare:      '#60A5FA',
-  epic:      '#A855F7',
-  legendary: '#F97316',
-}
 
 // ── Individual hero card ──────────────────────────────────────────────────
 
@@ -38,7 +27,7 @@ interface HeroCardProps {
 
 function HeroCard({ hero, bankGold, onHire }: HeroCardProps) {
   const rCfg = HERO_RARITY_CONFIG[hero.heroRarity]
-  const color = RARITY_HEX[hero.heroRarity]
+  const color = rCfg.color
   const speciesDef = SPECIES_DEFINITIONS[hero.species]
   const canAfford = bankGold >= hero.hireCost
 

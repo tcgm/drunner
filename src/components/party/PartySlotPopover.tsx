@@ -22,7 +22,7 @@ import {
   SimpleGrid,
   useDisclosure,
 } from '@chakra-ui/react'
-import { GiStarFormation } from 'react-icons/gi'
+import { GiStarFormation, GiCancel } from 'react-icons/gi'
 import type { Hero, Item } from '../../types'
 import { PartySlot } from './PartySlot'
 import { RosterTab } from './RosterTab'
@@ -33,7 +33,6 @@ import { restoreItemIcon } from '@/utils/itemUtils'
 interface PartySlotPopoverProps {
   hero: Hero | null
   slotIndex: number
-  party: (Hero | null)[]
   selectedHeroFromRoster: number | null
   storedHeroes: Hero[]
   bankInventory: Item[]
@@ -61,9 +60,6 @@ export function PartySlotPopover({
   onSelect,
   onSlotClick,
   onUnequipItem,
-  onEquipItem,
-  isBankModalOpen,
-}: PartySlotPopoverProps) {
   onEquipItem,
   isBankModalOpen,
 }: PartySlotPopoverProps) {

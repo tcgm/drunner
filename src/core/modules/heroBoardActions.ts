@@ -8,12 +8,7 @@ import type { GameState, Item, Consumable } from '@/types'
 import type { HireableHero } from '@/types'
 import { generateHeroBoard, hireableHeroToHero } from '@/systems/heroGeneration'
 import { calculateTotalStats } from '@/utils/statCalculator'
-
-/** How often the Hero Board refreshes (ms). Default: 4 hours */
-const HERO_BOARD_REFRESH_MS = 4 * 60 * 60 * 1000
-
-/** Number of heroes shown on the board at once */
-const HERO_BOARD_SIZE = 6
+import { GUILD_HERO_CONFIG } from '@/config/guildHeroConfig'
 
 export interface HeroBoardActionsSlice {
   /** Refresh/generate available heroes, respecting the cooldown unless forced */
@@ -36,11 +31,11 @@ export const createHeroBoardActions: StateCreator<
     set((state) => {
       const now = Date.now()
       const elapsed = now - (state.heroBoardLastRefreshed ?? 0)
-      if (!force && elapsed < HERO_BOARD_REFRESH_MS && state.availableHeroesForHire.length > 0) {
+      if (!force && elapsed < GUILD_HERO_CONFIG.boardRefreshHours * GUILD_HERO_CONFIG.msPerHour && state.availableHeroesForHire.length > 0) {
         return state
       }
       return {
-        availableHeroesForHire: generateHeroBoard(HERO_BOARD_SIZE, now, {
+        availableHeroesForHire: generateHeroBoard(GUILD_HERO_CONFIG.boardSize, now, {
           hiredUniqueIds: state.hiredUniqueHeroIds ?? [],
           dismissedUniqueIds: state.dismissedUniqueHeroIds ?? [],
         }),

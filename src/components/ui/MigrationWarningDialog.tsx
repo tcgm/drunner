@@ -108,6 +108,7 @@ export function MigrationWarningDialog({ isOpen }: MigrationWarningDialogProps) 
                   <Text>• Equipment slot structure</Text>
                   <Text>• Item stats and calculations</Text>
                   <Text>• Set item configurations</Text>
+                  <Text>• Hero species assignments</Text>
                 </VStack>
               </Box>
 

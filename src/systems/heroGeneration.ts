@@ -16,66 +16,18 @@ import { ALL_SPECIES } from '@/data/heroes/species'
 import { generateHeroName } from '@/data/heroes/names'
 import type { UniqueHeroDefinition } from '@/data/heroes/unique'
 import { ALL_UNIQUE_HEROES } from '@/data/heroes/unique'
+import { GUILD_HERO_CONFIG, HERO_RARITY_CONFIG } from '@/config/guildHeroConfig'
+export type { HeroRarityConfig } from '@/config/guildHeroConfig'
+export { HERO_RARITY_CONFIG } from '@/config/guildHeroConfig'
 
-// ── Rarity config ──────────────────────────────────────────────────────────
-
-export interface HeroRarityConfig {
-  id: HeroRarity
-  label: string
-  color: string       // Chakra color token or hex
-  weight: number      // Relative spawn weight (higher = more common)
-  bonusStatPoints: number  // Extra flat points distributed across 1-2 stats
-  hireCostMultiplier: number
-}
-
-export const HERO_RARITY_CONFIG: Record<HeroRarity, HeroRarityConfig> = {
-  common: {
-    id: 'common',
-    label: 'Common',
-    color: 'gray.400',
-    weight: 50,
-    bonusStatPoints: 0,
-    hireCostMultiplier: 1,
-  },
-  uncommon: {
-    id: 'uncommon',
-    label: 'Uncommon',
-    color: 'green.400',
-    weight: 28,
-    bonusStatPoints: 3,
-    hireCostMultiplier: 1.5,
-  },
-  rare: {
-    id: 'rare',
-    label: 'Rare',
-    color: 'blue.400',
-    weight: 14,
-    bonusStatPoints: 6,
-    hireCostMultiplier: 2.5,
-  },
-  epic: {
-    id: 'epic',
-    label: 'Epic',
-    color: 'purple.400',
-    weight: 6,
-    bonusStatPoints: 12,
-    hireCostMultiplier: 5,
-  },
-  legendary: {
-    id: 'legendary',
-    label: 'Legendary',
-    color: 'orange.400',
-    weight: 2,
-    bonusStatPoints: 20,
-    hireCostMultiplier: 10,
-  },
-}
-
-export const HERO_RARITY_ORDER: HeroRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary']
-
-// ── Base hire costs ────────────────────────────────────────────────────────
-
-const BASE_HIRE_COST = 200
+export const HERO_RARITY_ORDER: HeroRarity[] = [
+  'junk', 'abundant', 'common', 'uncommon',
+  'rare', 'veryRare', 'magical', 'elite',
+  'epic', 'legendary', 'mythic', 'mythicc',
+  'artifact', 'divine', 'celestial',
+  'realityAnchor', 'structural', 'singularity', 'void', 'elder',
+  'layer', 'plane', 'author',
+]
 
 // ── Seeded RNG ────────────────────────────────────────────────────────────
 
@@ -135,7 +87,7 @@ function generateRarityBonuses(
 
 function generateHireCost(rarity: HeroRarity, level: number): number {
   const cfg = HERO_RARITY_CONFIG[rarity]
-  return Math.round(BASE_HIRE_COST * cfg.hireCostMultiplier * (1 + (level - 1) * 0.2))
+  return Math.round(GUILD_HERO_CONFIG.baseHireCost * cfg.hireCostMultiplier * (1 + (level - 1) * GUILD_HERO_CONFIG.hireCostLevelScale))
 }
 
 /**
