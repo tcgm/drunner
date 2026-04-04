@@ -9,9 +9,11 @@ import {
   Progress,
   Tooltip,
 } from '@chakra-ui/react'
-import { GiCoins, GiStarsStack, GiScrollQuill, GiStairs } from 'react-icons/gi'
+import { useState } from 'react'
+import { GiCoins, GiStarsStack, GiScrollQuill, GiStairs, GiCrystalShine } from 'react-icons/gi'
 import { FaHourglass, FaCheck } from 'react-icons/fa'
 import { getRarityColor, getRarityConfig } from '@/systems/rarity/raritySystem'
+import { getMaterialById } from '@data/items/materials'
 import {
   DIFFICULTY_COLOR,
   DIFFICULTY_LABEL,
@@ -23,10 +25,12 @@ import type { Quest } from '@/types/quests'
 export interface QuestCardProps {
   quest: Quest
   onAccept?: () => void
+  onCancel?: () => void
   onClaim?: () => void
 }
 
-export function QuestCard({ quest, onAccept, onClaim }: QuestCardProps) {
+export function QuestCard({ quest, onAccept, onCancel, onClaim }: QuestCardProps) {
+  const [pendingCancel, setPendingCancel] = useState(false)
   const pct = quest.requirement > 0
     ? Math.min(100, Math.round((quest.progress / quest.requirement) * 100))
     : 0
@@ -117,11 +121,45 @@ export function QuestCard({ quest, onAccept, onClaim }: QuestCardProps) {
         </VStack>
       </HStack>
 
+    {quest.status === 'active' && onCancel && (
+      <Box position="absolute" top={2} right={2}>
+        {pendingCancel ? (
+          <HStack spacing={1}>
+            <Button
+              size="xs" variant="ghost" colorScheme="gray" fontSize="2xs"
+              onClick={() => setPendingCancel(false)}
+            >
+              Keep
+            </Button>
+            <Button
+              size="xs" colorScheme="red" fontSize="2xs"
+              onClick={() => { setPendingCancel(false); onCancel() }}
+            >
+              Abandon
+            </Button>
+          </HStack>
+        ) : (
+          <Tooltip label="Abandon quest" placement="top">
+            <Button
+              size="xs" variant="ghost" color="gray.600" fontSize="xs"
+              _hover={{ color: 'red.400' }}
+              onClick={() => setPendingCancel(true)}
+              aria-label="Abandon quest"
+            >
+              ✕
+            </Button>
+          </Tooltip>
+        )}
+      </Box>
+    )}
+
       {(quest.status === 'active' || quest.status === 'completed') && (
-        <Box mb={3}>
+        <Box mb={2}>
           <HStack justify="space-between" mb={1}>
-            <Text fontSize="2xs" color="gray.500">Progress</Text>
-            <Text fontSize="2xs" fontWeight="bold" style={{ color: quest.status === 'completed' ? '#48BB78' : rarityColor }}>
+            <Text fontSize="xs" color="gray.400">
+              Progress
+            </Text>
+            <Text fontSize="xs" color="gray.300" fontWeight="medium">
               {quest.progress.toLocaleString()} / {quest.requirement.toLocaleString()}
             </Text>
           </HStack>
@@ -136,7 +174,7 @@ export function QuestCard({ quest, onAccept, onClaim }: QuestCardProps) {
       )}
 
       <HStack justify="space-between" align="center">
-        <HStack spacing={3} fontSize="xs">
+        <HStack spacing={3} fontSize="xs" flexWrap="wrap">
           <HStack spacing={1} color="yellow.400">
             <Icon as={GiCoins} boxSize={3.5} />
             <Text fontWeight="bold">{quest.reward.gold.toLocaleString()}g</Text>
@@ -145,6 +183,21 @@ export function QuestCard({ quest, onAccept, onClaim }: QuestCardProps) {
             <Icon as={GiStarsStack} boxSize={3.5} />
             <Text fontWeight="bold">{quest.reward.metaXp.toLocaleString()} XP</Text>
           </HStack>
+          {(quest.reward.items ?? []).map((reward, i) => {
+            if (reward.type !== 'material_fragment') return null
+            const mat = getMaterialById(reward.materialId)
+            const matColor = getRarityColor(mat?.rarity ?? 'common')
+            return (
+              <Tooltip key={i} label={`${mat?.name ?? reward.materialId} Fragment ×${reward.quantity}`} placement="top">
+                <HStack spacing={1} style={{ color: matColor }}>
+                  <Icon as={mat?.icon ?? GiCrystalShine} boxSize={3.5} />
+                  <Text fontWeight="bold" fontSize="2xs">
+                    {mat?.name ?? reward.materialId} ×{reward.quantity}
+                  </Text>
+                </HStack>
+              </Tooltip>
+            )
+          })}
         </HStack>
         <HStack spacing={2}>
           {quest.status === 'available' && (

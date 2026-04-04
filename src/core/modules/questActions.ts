@@ -4,8 +4,11 @@
  */
 
 import type { StateCreator } from 'zustand'
-import type { GameState, Run } from '@/types'
+import type { GameState, Run, Item } from '@/types'
 import type { Quest } from '@/types/quests'
+import type { MaterialFragmentV3 } from '@/types/items-v3'
+import { v4 as uuidv4 } from 'uuid'
+import { hydrateItem } from '@/utils/itemHydration'
 import { generateQuests } from '@/data/quests'
 import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 import { QUEST_CONFIG } from '@/config/questConfig'
@@ -13,6 +16,8 @@ import { QUEST_CONFIG } from '@/config/questConfig'
 export interface QuestActionsSlice {
   /** Accept an available quest, moving it to active status. */
   acceptQuest: (questId: string) => void
+  /** Cancel an active quest, removing it from the list entirely. Progress is lost. */
+  cancelQuest: (questId: string) => void
   /** Claim the reward for a completed quest. */
   claimQuestReward: (questId: string) => void
   /**
@@ -44,10 +49,35 @@ export const createQuestActions: StateCreator<
       return { quests }
     }),
 
+  cancelQuest: (questId) =>
+    set((state) => ({
+      quests: state.quests.filter(q => !(q.id === questId && q.status === 'active')),
+    })),
+
   claimQuestReward: (questId) =>
     set((state) => {
       const quest = state.quests.find(q => q.id === questId)
       if (!quest || quest.status !== 'completed') return {}
+
+      // Hydrate any item rewards (e.g. material fragments) into full Item objects
+      const newItems: Item[] = (quest.reward.items ?? []).flatMap(reward => {
+        if (reward.type === 'material_fragment') {
+          const v3: MaterialFragmentV3 = {
+            version: 3,
+            id: uuidv4(),
+            itemType: 'material',
+            materialId: reward.materialId,
+            quantity: reward.quantity,
+          }
+          return [hydrateItem(v3)]
+        }
+        return []
+      })
+
+      // Fill bank up to its slot limit, remainder goes to overflow
+      const bankSpace = state.bankStorageSlots - state.bankInventory.length
+      const forBank     = newItems.slice(0, Math.max(0, bankSpace))
+      const forOverflow = newItems.slice(Math.max(0, bankSpace))
 
       const quests = state.quests.map((q): Quest =>
         q.id === questId ? { ...q, status: 'claimed' } : q
@@ -56,6 +86,8 @@ export const createQuestActions: StateCreator<
         quests,
         bankGold: state.bankGold + quest.reward.gold,
         metaXp: state.metaXp + quest.reward.metaXp,
+        bankInventory: [...state.bankInventory, ...forBank],
+        overflowInventory: [...(state.overflowInventory ?? []), ...forOverflow],
       }
     }),
 
@@ -72,9 +104,12 @@ export const createQuestActions: StateCreator<
         // Backfill rarity/minFloor for quests persisted before these fields were introduced
         .map((q): Quest => {
           const withRarity: Quest = q.rarity ? q : { ...q, rarity: 'common' }
-          return withRarity.minFloor != null
+          const withMinFloor = withRarity.minFloor != null
             ? withRarity
             : { ...withRarity, minFloor: RARITY_CONFIGS[withRarity.rarity]?.minFloor ?? 0 }
+          return withMinFloor.reward?.items != null
+            ? withMinFloor
+            : { ...withMinFloor, reward: { ...withMinFloor.reward, items: [] } }
         })
         .filter(q => {
         if (q.status === 'claimed') {

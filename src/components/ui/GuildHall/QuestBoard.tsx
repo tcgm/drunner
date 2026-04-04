@@ -14,11 +14,12 @@ import type { Quest } from '@/types/quests'
 interface QuestBoardProps {
   quests: Quest[]
   onAccept: (questId: string) => void
+  onCancel: (questId: string) => void
   onClaim: (quest: Quest) => void
   refreshLabel: string
 }
 
-export function QuestBoard({ quests, onAccept, onClaim, refreshLabel }: QuestBoardProps) {
+export function QuestBoard({ quests, onAccept, onCancel, onClaim, refreshLabel }: QuestBoardProps) {
   const completedQuests = quests.filter(q => q.status === 'completed')
   const activeQuests    = quests.filter(q => q.status === 'active')
   const availableQuests = quests.filter(q => q.status === 'available')
@@ -67,7 +68,7 @@ export function QuestBoard({ quests, onAccept, onClaim, refreshLabel }: QuestBoa
             <QuestCard key={q.id} quest={q} onClaim={() => onClaim(q)} />
           ))}
           {activeQuests.map(q => (
-            <QuestCard key={q.id} quest={q} />
+            <QuestCard key={q.id} quest={q} onCancel={() => onCancel(q.id)} />
           ))}
 
           {availableQuests.length > 0 && (activeQuests.length > 0 || completedQuests.length > 0) && (

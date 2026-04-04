@@ -31,6 +31,7 @@ export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
   const questsLastRefreshed = useGameStore(state => state.questsLastRefreshed)
 
   const acceptQuest       = useGameStore(state => state.acceptQuest)
+  const cancelQuest       = useGameStore(state => state.cancelQuest)
   const claimQuestReward  = useGameStore(state => state.claimQuestReward)
   const refreshQuestBoard = useGameStore(state => state.refreshQuestBoard)
 
@@ -63,6 +64,11 @@ export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
     }
     acceptQuest(questId)
     toast({ title: 'Quest accepted!', status: 'success', duration: 2000, isClosable: true, position: 'bottom-right' })
+  }
+
+  const handleCancel = (questId: string) => {
+    cancelQuest(questId)
+    toast({ title: 'Quest abandoned.', status: 'info', duration: 2000, isClosable: true, position: 'bottom-right' })
   }
 
   const handleClaim = (quest: Quest) => {
@@ -107,7 +113,7 @@ export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
             >
               <RoomScene key={isOpen ? 1 : 0} heroRoster={heroRoster} party={party} isOpen={isOpen} />
             </Box>
-            <QuestBoard quests={quests} onAccept={handleAccept} onClaim={handleClaim} refreshLabel={refreshLabel} />
+            <QuestBoard quests={quests} onAccept={handleAccept} onCancel={handleCancel} onClaim={handleClaim} refreshLabel={refreshLabel} />
           </Flex>
         </ModalBody>
         <Box h="2px" bgGradient="linear(to-r,transparent,orange.900,orange.700,orange.900,transparent)" flexShrink={0} />

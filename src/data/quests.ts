@@ -3,6 +3,7 @@ import type { Hero } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 import { QUEST_CONFIG } from '@/config/questConfig'
+import { calcGoldXpReward, rollFragmentRewards } from '@/data/questRewards'
 
 // ── Party power score ─────────────────────────────────────────────────────
 //
@@ -127,18 +128,11 @@ function niceRound(n: number, snap = 5): number {
 }
 
 function calcRequirement(template: QuestTemplate, power: number): number {
-  const { max, snap } = QUEST_CONFIG.typeSettings[template.type]
+  const settings = QUEST_CONFIG.typeSettings[template.type]
+  const max = settings.maxPerDifficulty?.[template.difficulty] ?? settings.max
   const raw = template.base * Math.pow(power, template.exp) * QUEST_CONFIG.difficultyReqMult[template.difficulty]
-  const snapped = niceRound(raw, snap)
+  const snapped = niceRound(raw, settings.snap)
   return Math.min(max, Math.max(1, snapped))
-}
-
-function calcRewards(template: QuestTemplate, requirement: number): { gold: number; metaXp: number } {
-  const rewardMult = QUEST_CONFIG.difficultyRewardMult[template.difficulty]
-  return {
-    gold:   Math.max(QUEST_CONFIG.minRewardGold,   niceRound(template.goldPerReq * requirement * rewardMult, QUEST_CONFIG.rewardGoldSnap)),
-    metaXp: Math.max(QUEST_CONFIG.minRewardMetaXp, niceRound(template.xpPerReq   * requirement * rewardMult, QUEST_CONFIG.rewardXpSnap)),
-  }
 }
 
 /**
@@ -167,12 +161,13 @@ export function generateQuests(
   const now = Date.now()
   return picked.map(template => {
     const requirement = calcRequirement(template, power)
-    const reward      = calcRewards(template, requirement)
+    const { gold, metaXp } = calcGoldXpReward(template.goldPerReq, template.xpPerReq, requirement, template.difficulty)
     // Only roll from rarities the player has unlocked via deepestFloor
     const unlockedPool = template.rarityPool.filter(r => (RARITY_CONFIGS[r]?.minFloor ?? 0) <= deepestFloor)
     const pool = unlockedPool.length > 0 ? unlockedPool : [template.rarityPool[0]]
     const rarity = rollRarity(pool, power)
     const minFloor = RARITY_CONFIGS[rarity]?.minFloor ?? 0
+    const items = rollFragmentRewards(rarity, template.difficulty, deepestFloor)
     return {
       id:          `quest-${now}-${Math.random().toString(36).slice(2, 8)}`,
       title:       template.title,
@@ -183,7 +178,7 @@ export function generateQuests(
       minFloor,
       requirement,
       progress:    0,
-      reward,
+      reward:      { gold, metaXp, items },
       status:      'available' as const,
       generatedAt: now,
       expiresAt:   now + QUEST_CONFIG.expiryHours * QUEST_CONFIG.msPerHour,

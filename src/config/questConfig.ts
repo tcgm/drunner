@@ -5,6 +5,10 @@
 
 import type { QuestDifficulty, QuestType } from '@/types/quests'
 
+// ── Fragment reward config ────────────────────────────────────────────────────
+// The actual material → rarity pool mapping lives in src/data/questRewards/fragmentTable.ts.
+// These numbers control probability and quantity only.
+
 export const QUEST_CONFIG = {
 
   // ── Board / timing ────────────────────────────────────────────────────────
@@ -62,16 +66,17 @@ export const QUEST_CONFIG = {
 
   /**
    * Per quest-type tuning:
-   *   max  – hard cap on the requirement value (use Infinity for no cap)
-   *   snap – niceRound interval (requirements round to the nearest multiple of this)
+   *   max            – hard cap on the requirement value (use Infinity for no cap)
+   *   snap           – niceRound interval (requirements round to the nearest multiple of this)
+   *   maxPerDifficulty – optional per-difficulty override for max (takes precedence over max)
    */
   typeSettings: {
     kill_enemies:  { max: Infinity, snap: 5  },
     complete_runs: { max: 15,       snap: 5  },
-    reach_floor:   { max: 95,       snap: 1  },
+    reach_floor:   { max: 95,       snap: 1,  maxPerDifficulty: { easy: 30, medium: 60, hard: 95 } },
     defeat_bosses: { max: 20,       snap: 5  },
     earn_gold:     { max: Infinity, snap: 50 },
-  } as Record<QuestType, { max: number; snap: number }>,
+  } as Record<QuestType, { max: number; snap: number; maxPerDifficulty?: Record<QuestDifficulty, number> }>,
 
   // ── Reward floor & rounding ───────────────────────────────────────────────
 
@@ -86,5 +91,26 @@ export const QUEST_CONFIG = {
 
   /** niceRound snap interval for meta-XP reward values */
   rewardXpSnap: 5,
+
+  // ── Fragment item rewards ─────────────────────────────────────────────────
+
+  fragmentRewards: {
+    /**
+     * Probability (0–1) that a quest of this difficulty includes a fragment reward.
+     * The quest rarity also gates eligibility — see fragmentTable.ts.
+     */
+    chanceByDifficulty: {
+      easy:   0.5,
+      medium: 0.75,
+      hard:   1.0,
+    } as Record<QuestDifficulty, number>,
+
+    /** Number of fragments awarded per difficulty when the chance roll succeeds. */
+    quantityByDifficulty: {
+      easy:   1,
+      medium: 1,
+      hard:   2,
+    } as Record<QuestDifficulty, number>,
+  },
 
 }

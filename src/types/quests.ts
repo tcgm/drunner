@@ -13,9 +13,17 @@ export type QuestDifficulty = 'easy' | 'medium' | 'hard'
 
 export type QuestStatus = 'available' | 'active' | 'completed' | 'claimed'
 
+/**
+ * A single non-currency item that can be part of a quest reward.
+ * Stored on the quest at generation time so the player can preview it before accepting.
+ */
+export type QuestItemReward =
+  | { type: 'material_fragment'; materialId: string; quantity: number }
+
 export interface QuestReward {
   gold: number
   metaXp: number
+  items: QuestItemReward[]
 }
 
 export interface Quest {
