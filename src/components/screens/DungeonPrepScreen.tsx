@@ -1,7 +1,6 @@
 import './DungeonPrepScreen.css'
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../core/gameStore'
-import { CORE_CLASSES } from '../../data/classes'
 import { GAME_CONFIG } from '../../config/gameConfig'
 import { useState, useEffect, useCallback } from 'react'
 import type { Hero, Consumable, Item } from '../../types'
@@ -36,7 +35,6 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
     addHero,
     removeHero,
     heroRoster,
-    addHeroByClass,
     bankInventory,
     bankGold,
     alkahest,
@@ -63,14 +61,12 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
     healParty()
   }, [healParty])
 
-  const [selectedClass, setSelectedClass] = useState(CORE_CLASSES[0])
   const [selectedHeroFromRoster, setSelectedHeroFromRoster] = useState<number | null>(null)
   const [selectedHeroIndex, setSelectedHeroIndex] = useState<number | null>(() => {
     // Auto-select first hero in party if available
     const firstHeroIndex = party.findIndex(h => h !== null)
     return firstHeroIndex >= 0 ? firstHeroIndex : null
   })
-  const [tabIndex, setTabIndex] = useState(0)
   const [pendingSlotIndex, setPendingSlotIndex] = useState<number | null>(null)
   const [pendingSlot, setPendingSlot] = useState<string | null>(null)
   const [isPortrait, setIsPortrait] = useState(false)
@@ -122,14 +118,6 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
 
   const canStart = party.filter(h => h !== null).length > 0
 
-  const handleClassSelect = (classId: string) => {
-    const cls = CORE_CLASSES.find(c => c.id === classId)
-    if (cls) {
-      setSelectedClass(cls)
-      setSelectedHeroFromRoster(null)
-    }
-  }
-
   const handleRosterHeroClick = (index: number) => {
     setSelectedHeroFromRoster(index)
   }
@@ -140,16 +128,6 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
       const hero = heroRoster[selectedHeroFromRoster]
       addHero(hero, index)
       setSelectedHeroFromRoster(null)
-    } else if (selectedClass) {
-      // Create new hero from class in the clicked slot
-      addHeroByClass(selectedClass, index)
-    }
-  }
-
-  const handleAddHeroByClassDirect = (classId: string, index: number) => {
-    const cls = CORE_CLASSES.find(c => c.id === classId)
-    if (cls) {
-      addHeroByClass(cls, index)
     }
   }
 
@@ -262,12 +240,8 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
       <Flex className="dungeon-prep-screen-content" flex={1} minH={0} overflow="hidden">
         {/* Left Sidebar */}
         <HeroSelectionSidebar
-          tabIndex={tabIndex}
-          onTabChange={setTabIndex}
-          selectedClass={selectedClass}
           selectedHeroFromRoster={selectedHeroFromRoster}
           storedHeroes={heroRoster}
-          onClassSelect={handleClassSelect}
           onRosterHeroClick={handleRosterHeroClick}
         />
 
@@ -278,16 +252,11 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
             <>
               <PartySetupSlots
                 party={party}
-                selectedClass={selectedClass}
                 selectedHeroFromRoster={selectedHeroFromRoster}
                 storedHeroes={heroRoster}
                 bankInventory={bankInventory}
-                tabIndex={tabIndex}
-                onTabChange={setTabIndex}
-                onClassSelect={handleClassSelect}
                 onRosterHeroClick={handleRosterHeroClick}
                 onAddHero={handleAddHeroClick}
-                onAddHeroByClass={handleAddHeroByClassDirect}
                 onAddHeroFromRoster={handleAddHeroFromRosterDirect}
                 onRemoveHero={handleRemoveHero}
                 onSelectHero={setSelectedHeroIndex}
@@ -303,16 +272,11 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
             <>
               <PartySetupSlots
                 party={party}
-                selectedClass={selectedClass}
                 selectedHeroFromRoster={selectedHeroFromRoster}
                 storedHeroes={heroRoster}
                 bankInventory={bankInventory}
-                tabIndex={tabIndex}
-                onTabChange={setTabIndex}
-                onClassSelect={handleClassSelect}
                 onRosterHeroClick={handleRosterHeroClick}
                 onAddHero={handleAddHeroClick}
-                onAddHeroByClass={handleAddHeroByClassDirect}
                 onAddHeroFromRoster={handleAddHeroFromRosterDirect}
                 onRemoveHero={handleRemoveHero}
                 onSelectHero={setSelectedHeroIndex}

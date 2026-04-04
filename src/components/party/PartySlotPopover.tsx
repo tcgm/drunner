@@ -14,11 +14,6 @@ import {
   ModalBody,
   ModalCloseButton,
   Box,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
   VStack,
   Button,
   Icon,
@@ -27,10 +22,9 @@ import {
   SimpleGrid,
   useDisclosure,
 } from '@chakra-ui/react'
-import { GiCancel } from 'react-icons/gi'
-import type { Hero, HeroClass, Item } from '../../types'
+import { GiStarFormation } from 'react-icons/gi'
+import type { Hero, Item } from '../../types'
 import { PartySlot } from './PartySlot'
-import { ClassSelectionTab } from './ClassSelectionTab'
 import { RosterTab } from './RosterTab'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { getEquipmentSlotIds } from '@/config/slotConfig'
@@ -40,16 +34,11 @@ interface PartySlotPopoverProps {
   hero: Hero | null
   slotIndex: number
   party: (Hero | null)[]
-  selectedClass: HeroClass | null
   selectedHeroFromRoster: number | null
   storedHeroes: Hero[]
   bankInventory: Item[]
-  tabIndex: number
-  onTabChange: (index: number) => void
-  onClassSelect: (classId: string) => void
   onRosterHeroClick: (index: number) => void
   onAdd: () => void
-  onAddByClass?: (classId: string) => void
   onAddFromRoster?: (rosterIndex: number) => void
   onRemove: () => void
   onSelect: () => void
@@ -62,22 +51,19 @@ interface PartySlotPopoverProps {
 export function PartySlotPopover({
   hero,
   slotIndex,
-  party,
-  selectedClass,
   selectedHeroFromRoster,
   storedHeroes,
   bankInventory,
-  tabIndex,
-  onTabChange,
-  onClassSelect,
   onRosterHeroClick,
   onAdd,
-  onAddByClass,
   onAddFromRoster,
   onRemove,
   onSelect,
   onSlotClick,
   onUnequipItem,
+  onEquipItem,
+  isBankModalOpen,
+}: PartySlotPopoverProps) {
   onEquipItem,
   isBankModalOpen,
 }: PartySlotPopoverProps) {
@@ -135,57 +121,44 @@ export function PartySlotPopover({
           </ModalHeader>
           <ModalBody className="party-slot-popover-body" pb={4} px={3}>
           {isEmpty ? (
-            // Empty Slot - Show Class Selection and Roster
-            <VStack className="party-slot-popover-empty" align="stretch" spacing={2}>
+            // Empty Slot - Show Roster only; new heroes are hired at the Guild Hall
+            <VStack className="party-slot-popover-empty" align="stretch" spacing={3}>
               <Text fontSize="sm" color="gray.400" textAlign="center">
                 Add a hero to this slot
               </Text>
-              <Tabs
-                className="party-slot-popover-tabs"
-                size="sm"
-                colorScheme="orange"
-                isLazy
-                index={tabIndex}
-                onChange={onTabChange}
-              >
-                <TabList mb={3}>
-                  <Tab>Classes</Tab>
-                  <Tab>Roster</Tab>
-                </TabList>
 
-                <TabPanels>
-                  <TabPanel p={0}>
-                    <ClassSelectionTab
-                      selectedClass={selectedClass}
-                      onClassSelect={(classId) => {
-                        if (onAddByClass) {
-                          onAddByClass(classId)
-                        } else {
-                          onClassSelect(classId)
-                          onAdd()
-                        }
-                        onClose()
-                      }}
-                    />
-                  </TabPanel>
-
-                  <TabPanel p={0}>
-                    <RosterTab
-                      storedHeroes={storedHeroes}
-                      selectedHeroFromRoster={selectedHeroFromRoster}
-                      onRosterHeroClick={(index) => {
-                        if (onAddFromRoster) {
-                          onAddFromRoster(index)
-                        } else {
-                          onRosterHeroClick(index)
-                          onAdd()
-                        }
-                        onClose()
-                      }}
-                    />
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
+              {storedHeroes.length === 0 ? (
+                <Box
+                  p={4}
+                  bg="purple.900"
+                  border="1px solid"
+                  borderColor="purple.700"
+                  borderRadius="lg"
+                  textAlign="center"
+                >
+                  <HStack spacing={2} justify="center" mb={2}>
+                    <Icon as={GiStarFormation} color="purple.300" boxSize={5} />
+                    <Text color="purple.300" fontWeight="bold" fontSize="sm">No heroes in roster</Text>
+                  </HStack>
+                  <Text color="gray.400" fontSize="xs">
+                    Visit the Guild Hall and click the Adventurers' Board to hire heroes first.
+                  </Text>
+                </Box>
+              ) : (
+                <RosterTab
+                  storedHeroes={storedHeroes}
+                  selectedHeroFromRoster={selectedHeroFromRoster}
+                  onRosterHeroClick={(index) => {
+                    if (onAddFromRoster) {
+                      onAddFromRoster(index)
+                    } else {
+                      onRosterHeroClick(index)
+                      onAdd()
+                    }
+                    onClose()
+                  }}
+                />
+              )}
             </VStack>
           ) : (
             // Filled Slot - Show Equipment and Actions
