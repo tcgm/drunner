@@ -1,4 +1,4 @@
-import { Consumable } from '../../types'
+import type { Consumable } from '../../types'
 
 // Export new procedural system (PRIMARY)
 export * from './bases'

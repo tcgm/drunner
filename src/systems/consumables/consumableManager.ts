@@ -32,7 +32,7 @@ export function useConsumable(
     return { hero, party, message: 'Consumable has no effects.' }
   }
 
-  const updatedHero = { ...hero }
+  let updatedHero = { ...hero }
   let updatedParty = [...party]
   const messages: string[] = []
 
