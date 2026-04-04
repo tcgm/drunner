@@ -67,8 +67,9 @@ function generateRarityBonuses(
   const cfg = HERO_RARITY_CONFIG[rarity]
   if (cfg.bonusStatPoints === 0) return []
 
-  // Distribute points across 1-2 stats, weighted toward primary rarity flavour
-  const statCount = rarity === 'legendary' || rarity === 'epic' ? 2 : 1
+  // Distribute points across 1-2 stats; higher rarity tiers get 2 stats
+  const rarityIdx = HERO_RARITY_ORDER.indexOf(rarity)
+  const statCount = rarityIdx >= HERO_RARITY_ORDER.indexOf('epic') ? 2 : 1
   const bonuses: HeroStatBonus[] = []
   const pointsPerStat = Math.ceil(cfg.bonusStatPoints / statCount)
   const usedStats = new Set<BonusStat>()
@@ -132,15 +133,11 @@ export function generateHireableHero(seed?: number): HireableHero {
   // Roll class
   const heroClass = pick(CORE_CLASSES, rng)
 
-  // Level: common=1, uncommon=1-2, rare=1-3, epic=2-4, legendary=3-5
-  const levelRanges: Record<HeroRarity, [number, number]> = {
-    common:    [1, 1],
-    uncommon:  [1, 2],
-    rare:      [1, 3],
-    epic:      [2, 4],
-    legendary: [3, 5],
-  }
-  const [minLv, maxLv] = levelRanges[heroRarity]
+  // Level: scales with rarity tier — higher tiers start at higher levels
+  const rarityIdx = HERO_RARITY_ORDER.indexOf(heroRarity)
+  const maxTier = HERO_RARITY_ORDER.length - 1
+  const minLv = 1 + Math.floor((rarityIdx / maxTier) * 9)   // 1 → 10 across tiers
+  const maxLv = minLv + Math.min(4, Math.floor(rarityIdx / 4)) // window widens at higher tiers
   const level = minLv + Math.floor(rng() * (maxLv - minLv + 1))
 
   // Name

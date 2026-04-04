@@ -130,7 +130,7 @@ export function MigrationWarningDialog({ isOpen }: MigrationWarningDialogProps) 
               variant="ghost"
               colorScheme="gray"
             >
-              Cancel
+              Skip Backup &amp; Continue
             </Button>
             <Button 
               leftIcon={<Icon as={FiDownload} />}

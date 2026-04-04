@@ -236,10 +236,26 @@ export const createSaveActions: StateCreator<
   },
 
   cancelMigration: () => {
-    console.log('[Migration] User cancelled migration')
-    set({
-      pendingMigration: false,
-      pendingMigrationData: null
-    })
+    console.log('[Migration] User skipped backup, applying migration without download')
+    const { pendingMigrationData } = get()
+    if (!pendingMigrationData) {
+      console.error('[Migration] No pending migration data on cancel')
+      set({ pendingMigration: false, pendingMigrationData: null })
+      return
+    }
+    try {
+      const result = loadSave(pendingMigrationData, 'import')
+      if (!result.success || !result.state) {
+        console.error('[Migration] Failed to load data on cancel, clearing flags')
+        set({ pendingMigration: false, pendingMigrationData: null })
+        return
+      }
+      const migratedState = applyMigratedState(result.state)
+      set({ ...migratedState, pendingMigration: false, pendingMigrationData: null })
+      console.log('[Migration] Migration applied (no backup downloaded)')
+    } catch (error) {
+      console.error('[Migration] Failed to apply migration on cancel:', error)
+      set({ pendingMigration: false, pendingMigrationData: null })
+    }
   },
 })

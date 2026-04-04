@@ -4,7 +4,7 @@ import { useGameStore } from '@/core/gameStore'
 import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
 import LZString from 'lz-string'
-import { idbGet } from '@/utils/idbStorage'
+import { idbGet, idbSet } from '@/utils/idbStorage'
 
 interface MainMenuScreenProps {
   onNewRun: () => void
@@ -18,6 +18,15 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
   const [backups, setBackups] = useState<string[]>([])
   const [backupStats, setBackupStats] = useState<Record<string, { itemCount: number; heroCount: number }>>({})
   const [expandedBackups, setExpandedBackups] = useState<Set<string>>(new Set())
+  const [showDangerSection, setShowDangerSection] = useState(false)
+  const [lsRecoveryData, setLsRecoveryData] = useState<Array<{
+    key: string
+    raw: string
+    gold: number
+    heroCount: number
+    itemCount: number
+    version: number
+  }>>([])
   const toast = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -201,6 +210,41 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     if (event.target) {
       event.target.value = ''
     }
+  }
+
+  const LS_SAVE_PREFIX = 'dungeon-runner-'
+
+  const handleScanLocalStorage = () => {
+    const found: typeof lsRecoveryData = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key?.startsWith(LS_SAVE_PREFIX)) continue
+      const raw = localStorage.getItem(key)
+      if (!raw) continue
+      try {
+        let str: string
+        try { str = LZString.decompressFromUTF16(raw) || raw } catch { str = raw }
+        const parsed = JSON.parse(str)
+        const gs = parsed.state || parsed
+        found.push({
+          key,
+          raw,
+          gold: gs.bankGold || 0,
+          heroCount: gs.heroRoster?.length || 0,
+          itemCount: gs.bankInventory?.length || 0,
+          version: gs.saveVersion || 0,
+        })
+      } catch {
+        // skip unparseable keys
+      }
+    }
+    setLsRecoveryData(found)
+  }
+
+  const handleRecoverFromLS = async (raw: string, key: string) => {
+    if (!confirm(`⚠️ DANGER: Overwrite current save with localStorage data from "${key}" and reload?\n\nThis cannot be undone.`)) return
+    await idbSet('dungeon-runner-storage', raw)
+    window.location.reload()
   }
   
   return (
@@ -686,6 +730,79 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
                     })}
                   </VStack>
                 )}
+              </Box>
+
+              {/* Danger Recovery Section */}
+              <Divider borderColor="red.900" />
+              <Box>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  colorScheme="red"
+                  opacity={0.6}
+                  _hover={{ opacity: 1 }}
+                  leftIcon={showDangerSection ? <FaChevronUp /> : <FaChevronDown />}
+                  onClick={() => {
+                    if (!showDangerSection) handleScanLocalStorage()
+                    setShowDangerSection(v => !v)
+                  }}
+                >
+                  ⚠️ Danger Recovery (localStorage)
+                </Button>
+                <Collapse in={showDangerSection} animateOpacity>
+                  <Box
+                    mt={2}
+                    bg="gray.900"
+                    borderWidth="1px"
+                    borderColor="red.800"
+                    borderRadius="md"
+                    p={4}
+                  >
+                    <Text fontSize="sm" color="red.300" fontWeight="semibold" mb={1}>
+                      Emergency save recovery
+                    </Text>
+                    <Text fontSize="xs" color="gray.400" mb={3}>
+                      Reads raw save data still present in localStorage (preserved as a read-only fallback).
+                      Use this only if all backups above show 0 heroes / 0 items. Restoring will overwrite IDB and reload the page.
+                    </Text>
+                    {lsRecoveryData.length === 0 ? (
+                      <Text color="gray.500" fontSize="sm">No dungeon-runner-* keys found in localStorage.</Text>
+                    ) : (
+                      <VStack spacing={2} align="stretch">
+                        {lsRecoveryData.map(entry => (
+                          <Box
+                            key={entry.key}
+                            bg="gray.800"
+                            p={3}
+                            borderRadius="md"
+                            borderWidth="1px"
+                            borderColor="red.900"
+                          >
+                            <HStack justify="space-between" align="start">
+                              <VStack align="start" spacing={1}>
+                                <Text fontSize="xs" color="gray.500" fontFamily="mono">{entry.key}</Text>
+                                <HStack spacing={2} flexWrap="wrap">
+                                  <Badge colorScheme="yellow" fontSize="xs">💰 {entry.gold.toLocaleString()} g</Badge>
+                                  <Badge colorScheme="purple" fontSize="xs">👥 {entry.heroCount} heroes</Badge>
+                                  <Badge colorScheme="cyan" fontSize="xs">🎒 {entry.itemCount} items</Badge>
+                                  <Badge colorScheme="gray" fontSize="xs">v{entry.version}</Badge>
+                                </HStack>
+                              </VStack>
+                              <Button
+                                size="sm"
+                                colorScheme="red"
+                                flexShrink={0}
+                                onClick={() => handleRecoverFromLS(entry.raw, entry.key)}
+                              >
+                                Recover
+                              </Button>
+                            </HStack>
+                          </Box>
+                        ))}
+                      </VStack>
+                    )}
+                  </Box>
+                </Collapse>
               </Box>
             </VStack>
           </ModalBody>
