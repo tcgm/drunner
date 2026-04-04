@@ -8,9 +8,10 @@ import { migrateHeroArray } from './heroMigration'
 import { migrateItemArray, migrateHeroArrayItems } from './itemMigration'
 import { refreshHeroAbilities } from './abilityUtils'
 import { ALL_SET_ITEMS } from '@/data/items/sets'
+import { rollSpeciesForHero } from '@/systems/heroGeneration'
 
 // Current save version - increment when breaking changes require migration
-export const CURRENT_SAVE_VERSION = 1
+export const CURRENT_SAVE_VERSION = 2
 
 /**
  * Converts depth-based dungeon to floor-based system
@@ -123,6 +124,12 @@ export function migrateGameState(state: GameState): GameState {
     }
   })
 
+  // Assign species to heroes that don't have one yet
+  const assignSpecies = (h: Hero | null): Hero | null => {
+    if (!h || h.species) return h
+    return { ...h, species: rollSpeciesForHero(h.id, h.heroRarity) }
+  }
+
   // First migrate hero structure (old equipment/consumableSlots to new slots)
   let migratedParty = migrateHeroArray(state.party)
   let migratedRoster = migrateHeroArray(state.heroRoster)
@@ -136,6 +143,10 @@ export function migrateGameState(state: GameState): GameState {
   // This fixes issues where old saved abilities have outdated effects/scaling
   migratedParty = migratedParty.map(h => h ? refreshHeroAbilities(h) : null)
   const migratedRosterWithAbilities = migratedRosterFiltered.map(refreshHeroAbilities)
+
+  // Assign species to heroes that don't have one yet
+  const migratedPartyWithSpecies = migratedParty.map(assignSpecies)
+  const migratedRosterWithSpecies = migratedRosterWithAbilities.map(h => assignSpecies(h) as Hero)
   
   // Migrate items in inventories
   const migratedBankInventory = migrateItemArray(state.bankInventory)
@@ -155,8 +166,8 @@ export function migrateGameState(state: GameState): GameState {
   const result = {
     ...state,
     saveVersion: CURRENT_SAVE_VERSION, // Mark this save as current version
-    party: migratedParty,
-    heroRoster: migratedRosterWithAbilities,
+    party: migratedPartyWithSpecies,
+    heroRoster: migratedRosterWithSpecies,
     bankInventory: finalBankInventory,
     overflowInventory: migratedOverflowInventory,
     // Ensure critical fields are preserved with defaults if missing

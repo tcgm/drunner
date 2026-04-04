@@ -13,7 +13,7 @@ import type {
 } from '@/types'
 import { CORE_CLASSES } from '@/data/classes'
 import { ALL_SPECIES } from '@/data/heroes/species'
-import { generateHeroName } from '@/data/heroes/heroNames'
+import { generateHeroName } from '@/data/heroes/names'
 
 // ── Rarity config ──────────────────────────────────────────────────────────
 
@@ -136,6 +136,32 @@ function generateHireCost(rarity: HeroRarity, level: number): number {
   return Math.round(BASE_HIRE_COST * cfg.hireCostMultiplier * (1 + (level - 1) * 0.2))
 }
 
+/**
+ * Roll a species appropriate for the given rarity tier.
+ * Species with spawnRarity > heroRarity are excluded.
+ */
+export function rollSpeciesForRarity(heroRarity: HeroRarity, rng: () => number): HeroSpecies {
+  const rarityIndex = HERO_RARITY_ORDER.indexOf(heroRarity)
+  const eligible = ALL_SPECIES.filter(
+    s => HERO_RARITY_ORDER.indexOf(s.spawnRarity) <= rarityIndex
+  )
+  return pick(eligible.length > 0 ? eligible : ALL_SPECIES, rng).id as HeroSpecies
+}
+
+/**
+ * Deterministically assign a species to an existing hero using their ID as seed.
+ * Used during migration for heroes created before the species system existed.
+ */
+export function rollSpeciesForHero(heroId: string, heroRarity?: HeroRarity): HeroSpecies {
+  // Hash the UUID into a 32-bit seed
+  let seed = 0
+  for (let i = 0; i < heroId.length; i++) {
+    seed = (Math.imul(31, seed) + heroId.charCodeAt(i)) | 0
+  }
+  const rng = mulberry32(seed >>> 0)
+  return rollSpeciesForRarity(heroRarity ?? 'common', rng)
+}
+
 export function generateHireableHero(seed?: number): HireableHero {
   const rng = mulberry32(seed ?? Math.floor(Math.random() * 0x7fffffff))
 
@@ -146,8 +172,8 @@ export function generateHireableHero(seed?: number): HireableHero {
   }))
   const heroRarity = weightedRandom(rarityItems, rng)
 
-  // Roll species
-  const species = pick(ALL_SPECIES, rng).id as HeroSpecies
+  // Roll species — only species whose spawnRarity <= heroRarity are eligible
+  const species = rollSpeciesForRarity(heroRarity, rng)
 
   // Roll class
   const heroClass = pick(CORE_CLASSES, rng)
