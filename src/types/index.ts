@@ -151,6 +151,8 @@ export interface Hero {
   species?: HeroSpecies
   heroRarity?: HeroRarity
   statBonuses?: HeroStatBonus[]
+  /** Set if this hero was generated from a UniqueHeroDefinition */
+  uniqueHeroId?: string
   
   // Legacy fields for migration
   equipment?: Equipment
@@ -196,6 +198,10 @@ export interface HireableHero {
   level: number
   statBonuses: HeroStatBonus[]
   hireCost: number
+  /** Set when this card was generated from a UniqueHeroDefinition */
+  uniqueHeroId?: string
+  /** Lore text displayed on unique hero cards */
+  lore?: string
 }
 
 // Legacy equipment interface - kept for migration
@@ -628,6 +634,10 @@ export interface GameState {
   // Hero Board
   availableHeroesForHire: HireableHero[]
   heroBoardLastRefreshed: number
+  /** Unique hero IDs that have been hired and are in the roster (or were in it) */
+  hiredUniqueHeroIds: string[]
+  /** Unique hero IDs that were dismissed/passed on the board (they can reappear) */
+  dismissedUniqueHeroIds: string[]
 }
 
 export interface ShopItem {

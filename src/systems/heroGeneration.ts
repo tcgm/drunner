@@ -14,6 +14,8 @@ import type {
 import { CORE_CLASSES } from '@/data/classes'
 import { ALL_SPECIES } from '@/data/heroes/species'
 import { generateHeroName } from '@/data/heroes/names'
+import type { UniqueHeroDefinition } from '@/data/heroes/unique'
+import { ALL_UNIQUE_HEROES } from '@/data/heroes/unique'
 
 // ── Rarity config ──────────────────────────────────────────────────────────
 
@@ -217,9 +219,68 @@ export function generateHireableHero(seed?: number): HireableHero {
 }
 
 /** Generate a full board of hireable heroes (default 6 slots) */
-export function generateHeroBoard(count = 6, baseSeed?: number): HireableHero[] {
+export function generateHeroBoard(
+  count = 6,
+  baseSeed?: number,
+  opts: { hiredUniqueIds?: string[]; dismissedUniqueIds?: string[] } = {},
+): HireableHero[] {
   const seed = baseSeed ?? Date.now()
-  return Array.from({ length: count }, (_, i) => generateHireableHero(seed + i * 0x9e3779b9))
+  const { hiredUniqueIds = [], dismissedUniqueIds = [] } = opts
+
+  // Eligible uniques: not currently hired (can reappear after dismissal)
+  const eligibleUniques = ALL_UNIQUE_HEROES.filter(
+    u => !hiredUniqueIds.includes(u.id)
+  )
+
+  const board: HireableHero[] = []
+  let uniqueInserted = false
+
+  // Shuffle uniques with seeded RNG so order varies per board
+  const uniqueRng = mulberry32(seed ^ 0xdeadbeef)
+  const shuffledUniques = [...eligibleUniques].sort(() => uniqueRng() - 0.5)
+
+  for (let i = 0; i < count; i++) {
+    // Try to slot one unique hero per board (first eligible, not already on this board)
+    if (!uniqueInserted && shuffledUniques.length > 0) {
+      const unique = shuffledUniques[0]
+      board.push(uniqueHeroToHireable(unique))
+      uniqueInserted = true
+      continue
+    }
+    board.push(generateHireableHero(seed + i * 0x9e3779b9))
+  }
+
+  return board
+}
+
+/** Convert a UniqueHeroDefinition to a HireableHero board card */
+export function uniqueHeroToHireable(def: UniqueHeroDefinition): HireableHero {
+  const heroClass = CORE_CLASSES.find(c => c.id === def.classId) ?? CORE_CLASSES[0]
+  const speciesDef = ALL_SPECIES.find(s => s.id === def.species)!
+
+  const speciesBonuses: HeroStatBonus[] = speciesDef.statBonuses.map(b => ({
+    ...b,
+    source: 'species' as const,
+  }))
+  const uniqueBonuses: HeroStatBonus[] = def.statBonuses.map(b => ({
+    ...b,
+    source: 'rarity' as const,
+  }))
+
+  const hireCost = def.hireCostOverride ?? generateHireCost(def.heroRarity, def.level)
+
+  return {
+    id: `unique_${def.id}`,
+    name: def.name,
+    heroClass,
+    species: def.species,
+    heroRarity: def.heroRarity,
+    level: def.level,
+    statBonuses: [...speciesBonuses, ...uniqueBonuses],
+    hireCost,
+    uniqueHeroId: def.id,
+    lore: def.lore,
+  }
 }
 
 /** Convert a HireableHero into a full Hero (for adding to roster after hire) */
@@ -244,5 +305,6 @@ export function hireableHeroToHero(h: HireableHero) {
     species: h.species,
     heroRarity: h.heroRarity,
     statBonuses: h.statBonuses,
+    ...(h.uniqueHeroId ? { uniqueHeroId: h.uniqueHeroId } : {}),
   }
 }

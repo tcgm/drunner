@@ -17,8 +17,11 @@ import {
   Badge,
   Icon,
   Tooltip,
+  Button,
+  useToast,
 } from '@chakra-ui/react'
-import { GiFireShrine } from 'react-icons/gi'
+import { GiFireShrine, GiBootKick } from 'react-icons/gi'
+import { useState } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { useHeroModal } from '@/contexts/HeroModalContext'
 import { HeroPortrait } from '@/components/party/HeroPortrait'
@@ -34,9 +37,25 @@ interface HeroShrineModalProps {
 export function HeroShrineModal({ isOpen, onClose }: HeroShrineModalProps) {
   const heroRoster = useGameStore(state => state.heroRoster)
   const party = useGameStore(state => state.party)
+  const dismissHero = useGameStore(state => state.dismissHero)
   const { openHeroModal } = useHeroModal()
+  const toast = useToast()
+
+  const [confirmDismissId, setConfirmDismissId] = useState<string | null>(null)
 
   const partyIds = new Set(party.filter(Boolean).map(h => h!.id))
+
+  function handleDismiss(heroId: string, heroName: string, gearCount: number) {
+    dismissHero(heroId)
+    setConfirmDismissId(null)
+    toast({
+      title: `${heroName} dismissed`,
+      description: gearCount > 0 ? `${gearCount} item${gearCount > 1 ? 's' : ''} moved to the bank.` : 'No gear to recover.',
+      status: 'info',
+      duration: 3000,
+      isClosable: true,
+    })
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" scrollBehavior="inside" isCentered>
@@ -80,10 +99,14 @@ export function HeroShrineModal({ isOpen, onClose }: HeroShrineModalProps) {
               {heroRoster.map(hero => {
                 const stats = calculateTotalStats(hero)
                 const inParty = partyIds.has(hero.id)
+                const gearCount = hero.slots
+                  ? Object.values(hero.slots).filter(s => s && !('uses' in s)).length
+                  : 0
+                const isConfirming = confirmDismissId === hero.id
                 return (
                   <Tooltip
                     key={hero.id}
-                    label="Click to open hero details, rename, or change portrait"
+                    label={isConfirming ? undefined : 'Click to open hero details, rename, or change portrait'}
                     placement="top"
                     hasArrow
                     openDelay={500}
@@ -92,16 +115,17 @@ export function HeroShrineModal({ isOpen, onClose }: HeroShrineModalProps) {
                       bg="gray.800"
                       borderRadius="xl"
                       borderWidth="2px"
-                      borderColor={inParty ? 'orange.600' : 'gray.700'}
+                      borderColor={isConfirming ? 'red.600' : inParty ? 'orange.600' : 'gray.700'}
                       p={3}
-                      cursor="pointer"
+                      cursor={isConfirming ? 'default' : 'pointer'}
                       transition="all 0.2s"
-                      _hover={{
+                      _hover={isConfirming ? {} : {
                         borderColor: 'purple.400',
                         transform: 'translateY(-2px)',
                         boxShadow: '0 4px 16px rgba(168, 85, 247, 0.3)',
                       }}
-                      onClick={() => openHeroModal(hero)}
+                      onClick={isConfirming ? undefined : () => openHeroModal(hero)}
+                      position="relative"
                     >
                       <VStack spacing={2} align="center">
                         {/* Portrait */}
@@ -148,6 +172,50 @@ export function HeroShrineModal({ isOpen, onClose }: HeroShrineModalProps) {
                             </Text>
                           </HStack>
                         </VStack>
+
+                        {/* Dismiss controls */}
+                        {isConfirming ? (
+                          <VStack spacing={1.5} w="full" mt={1}>
+                            <Text fontSize="2xs" color="red.300" textAlign="center" fontWeight="bold">
+                              Dismiss {gearCount > 0 ? `& recover ${gearCount} item${gearCount > 1 ? 's' : ''}` : 'hero'}?
+                            </Text>
+                            <HStack spacing={1} w="full">
+                              <Button
+                                size="xs"
+                                colorScheme="red"
+                                flex={1}
+                                onClick={e => { e.stopPropagation(); handleDismiss(hero.id, hero.name, gearCount) }}
+                              >
+                                Confirm
+                              </Button>
+                              <Button
+                                size="xs"
+                                variant="ghost"
+                                colorScheme="gray"
+                                flex={1}
+                                onClick={e => { e.stopPropagation(); setConfirmDismissId(null) }}
+                              >
+                                Cancel
+                              </Button>
+                            </HStack>
+                          </VStack>
+                        ) : (
+                          <Tooltip label={inParty ? 'Remove from party first' : `Dismiss hero — recover ${gearCount} item${gearCount !== 1 ? 's' : ''}`} placement="bottom" hasArrow openDelay={300}>
+                            <Button
+                              size="xs"
+                              variant="ghost"
+                              colorScheme="red"
+                              w="full"
+                              leftIcon={<Icon as={GiBootKick} />}
+                              isDisabled={inParty}
+                              onClick={e => { e.stopPropagation(); setConfirmDismissId(hero.id) }}
+                              opacity={0.5}
+                              _hover={{ opacity: 1 }}
+                            >
+                              Dismiss
+                            </Button>
+                          </Tooltip>
+                        )}
 
                         {/* Mini stats */}
                         <SimpleGrid columns={2} spacing={1} w="full" fontSize="2xs">

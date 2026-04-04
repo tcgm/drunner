@@ -90,6 +90,8 @@ const initialState: GameState = {
   questRunsProcessed: [],
   availableHeroesForHire: [],
   heroBoardLastRefreshed: 0,
+  hiredUniqueHeroIds: [],
+  dismissedUniqueHeroIds: [],
 }
 
 /**
