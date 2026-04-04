@@ -324,6 +324,7 @@ export type EventType =
   | 'merchant' 
   | 'trap'
   | 'boss'
+  | 'mining'
 
 // Combat system types
 
@@ -451,7 +452,9 @@ export interface EventChoice {
 export interface EventOutcome {
   text: string | string[] | Array<{ weight: number; text: string }> // Single text, array for variance, or weighted variations
   effects: {
-    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'consumable' | 'status' | 'revive' | 'upgradeItem' | 'killRandomParty' | 'bossDamage' | 'buff' | 'debuff' | 'message' | 'flee' | 'abilityPrompt' | 'itemPrompt'
+    type: 'damage' | 'heal' | 'xp' | 'gold' | 'item' | 'consumable' | 'status' | 'revive' | 'upgradeItem' | 'killRandomParty' | 'bossDamage' | 'buff' | 'debuff' | 'message' | 'flee' | 'abilityPrompt' | 'itemPrompt' | 'material_fragment'
+    fragmentSourceType?: 'drop' | 'chest' | 'boss' // For material_fragment effects: override the drop source used for RNG
+    fragmentQuantity?: number // For material_fragment effects: number of rolls (default 1)
     target?: 'random' | 'all' | 'weakest' | 'strongest' | 'self' | 'boss' | string
     consumableId?: string // ID of consumable to give (for type: 'consumable')
     value?: number

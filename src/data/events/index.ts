@@ -8,6 +8,7 @@ import { REST_EVENTS } from './rest'
 import { MERCHANT_EVENTS } from './merchant'
 import { TRAP_EVENTS } from './trap'
 import { BOSS_EVENTS } from './boss/normal'
+import { MINING_EVENTS } from './mining'
 
 // Export all event arrays
 export {
@@ -18,6 +19,7 @@ export {
   MERCHANT_EVENTS,
   TRAP_EVENTS,
   BOSS_EVENTS,
+  MINING_EVENTS,
 }
 
 // Combined array of all events
@@ -29,16 +31,18 @@ export const ALL_EVENTS: DungeonEvent[] = [
   ...MERCHANT_EVENTS,
   ...TRAP_EVENTS,
   ...BOSS_EVENTS,
+  ...MINING_EVENTS,
 ]
 
 // Event type distribution percentages (from GAME_DESIGN.md)
 export const EVENT_TYPE_WEIGHTS = {
   combat: 40,
-  treasure: 20,
+  treasure: 15,
   choice: 20,
   rest: 10,
   merchant: 5,
   trap: 5,
+  mining: 5,
   boss: 0, // Special - only at specific depths
 }
 
@@ -59,6 +63,8 @@ export function getEventsByType(type: DungeonEvent['type']): DungeonEvent[] {
       return TRAP_EVENTS
     case 'boss':
       return BOSS_EVENTS
+    case 'mining':
+      return MINING_EVENTS
     default:
       return []
   }

@@ -1,7 +1,8 @@
 import type { Hero, EventOutcome, Item, Material, BaseTemplate, EventChoice, ItemRarity, ItemSlot, Consumable } from '@/types'
 import { healHero } from '@/utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { generateItem, generateSetItemFromTemplate, generateUniqueItemFromTemplate } from '@/systems/loot/lootGenerator'
+import { generateItem, generateSetItemFromTemplate, generateUniqueItemFromTemplate, generateMaterialFragment } from '@/systems/loot/lootGenerator'
+import { hydrateItem } from '@/utils/itemHydration'
 import { upgradeItemRarity, upgradeItemRarityOnly, upgradeItemMaterial, findLowestRarityItem, canUpgradeItem, canUpgradeMaterial, canUpgradeRarity } from '@/systems/loot/itemUpgrader'
 import { ALL_SET_ITEMS, getRandomSetItemBySetId } from '@/data/items/sets'
 import { ALL_UNIQUE_ITEMS } from '@/data/items/uniques'
@@ -940,6 +941,44 @@ export function resolveEventOutcome(
         }
         break
       }
+
+      case 'material_fragment': {
+        const sourceType = effect.fragmentSourceType || 'drop'
+        const rolls = effect.fragmentQuantity ?? 1
+        const fragNames: string[] = []
+        for (let i = 0; i < rolls; i++) {
+          const fragment = generateMaterialFragment(floor, sourceType)
+          if (fragment) {
+            const hydratedFragment = hydrateItem(fragment)
+            foundItems.push(hydratedFragment)
+            fragNames.push(hydratedFragment.name)
+          }
+        }
+        if (fragNames.length > 0) {
+          resolvedEffects.push({
+            type: 'item',
+            target: [],
+            description: `Found material fragment${fragNames.length > 1 ? 's' : ''}: ${fragNames.join(', ')}`
+          })
+        }
+        break
+      }
+    }
+  }
+
+  // Passive material fragment roll for combat and treasure events
+  const eventType = currentEvent?.type
+  if (eventType === 'combat' || eventType === 'treasure') {
+    const passiveSource = eventType === 'treasure' ? 'chest' : 'drop'
+    const passiveFragment = generateMaterialFragment(floor, passiveSource)
+    if (passiveFragment) {
+      const hydratedPassive = hydrateItem(passiveFragment)
+      foundItems.push(hydratedPassive)
+      resolvedEffects.push({
+        type: 'item',
+        target: [],
+        description: `Also found: ${hydratedPassive.name}`
+      })
     }
   }
 
