@@ -1,8 +1,9 @@
 import './DungeonActionBar.css'
-import { Button, Box, HStack, Spacer, VStack, SimpleGrid, Tooltip } from '@chakra-ui/react'
+import { Button, Box, HStack, Spacer, VStack, SimpleGrid, Tooltip, Badge } from '@chakra-ui/react'
 import { Icon } from '@chakra-ui/react'
-import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor, GiReturnArrow } from 'react-icons/gi'
+import { GiFootprint, GiBackpack, GiBookCover, GiExitDoor, GiReturnArrow, GiScrollQuill } from 'react-icons/gi'
 import { useOrientation } from '@/contexts/OrientationContext'
+import { useGameStore } from '@/core/gameStore'
 // import { GiSwordClash } from 'react-icons/gi' // Disabled - Combat Log merged into Journal
 
 interface DungeonActionBarProps {
@@ -13,10 +14,14 @@ interface DungeonActionBarProps {
   // onCombatLog: () => void // Disabled
   onRetreat: () => void
   onExit: () => void
+  onQuests: () => void
 }
 
-export default function DungeonActionBar({ showContinue, onContinue, onInventory, onJournal, onRetreat, onExit }: DungeonActionBarProps) {
+export default function DungeonActionBar({ showContinue, onContinue, onInventory, onJournal, onRetreat, onExit, onQuests }: DungeonActionBarProps) {
   const { isPortrait } = useOrientation()
+  const quests = useGameStore(s => s.quests)
+  const activeCount = quests.filter(q => q.status === 'active').length
+  const completedCount = quests.filter(q => q.status === 'completed').length
 
   if (isPortrait) {
     // Portrait Mode - Compact grid layout
@@ -55,6 +60,34 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
                 size="md"
               >
                 <Icon as={GiBookCover} boxSize={5} />
+              </Button>
+            </Tooltip>
+            <Tooltip label="Quests" placement="top">
+              <Button
+                colorScheme={completedCount > 0 ? 'green' : activeCount > 0 ? 'orange' : 'gray'}
+                variant="outline"
+                onClick={onQuests}
+                size="md"
+                position="relative"
+              >
+                <Icon as={GiScrollQuill} boxSize={5} />
+                {(completedCount > 0 || activeCount > 0) && (
+                  <Badge
+                    position="absolute"
+                    top="-1"
+                    right="-1"
+                    colorScheme={completedCount > 0 ? 'green' : 'orange'}
+                    borderRadius="full"
+                    fontSize="2xs"
+                    minW={4}
+                    h={4}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    {completedCount > 0 ? completedCount : activeCount}
+                  </Badge>
+                )}
               </Button>
             </Tooltip>
             <Tooltip label="Retreat" placement="top">
@@ -115,6 +148,26 @@ export default function DungeonActionBar({ showContinue, onContinue, onInventory
           onClick={onJournal}
         >
           Journal
+        </Button>
+        <Button
+          className="dungeon-action-bar-quests"
+          colorScheme={completedCount > 0 ? 'green' : activeCount > 0 ? 'orange' : 'gray'}
+          variant="outline"
+          leftIcon={<Icon as={GiScrollQuill} />}
+          onClick={onQuests}
+          position="relative"
+        >
+          Quests
+          {completedCount > 0 && (
+            <Badge colorScheme="green" borderRadius="full" fontSize="2xs" ml={1}>
+              {completedCount}
+            </Badge>
+          )}
+          {completedCount === 0 && activeCount > 0 && (
+            <Badge colorScheme="orange" borderRadius="full" fontSize="2xs" ml={1}>
+              {activeCount}
+            </Badge>
+          )}
         </Button>
         {/* Combat Log button disabled - functionality merged into Journal */}
         {/* <Button className="dungeon-action-bar-combat-log" colorScheme="red" variant="outline" leftIcon={<Icon as={GiSwordClash} />} onClick={onCombatLog}>Combat Log</Button> */}

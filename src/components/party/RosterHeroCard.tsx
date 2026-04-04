@@ -1,5 +1,6 @@
 import { Box, VStack, HStack, Text, Badge, Icon, Tooltip, SimpleGrid, Flex, Image } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
+import { GiDiamondHard } from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -21,7 +22,15 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
   
   const tooltipLabel = (
     <VStack align="start" spacing={1} p={1}>
-      <Text fontWeight="bold" fontSize="sm"><HeroName hero={hero} /></Text>
+      <HStack spacing={1.5}>
+        <Text fontWeight="bold" fontSize="sm"><HeroName hero={hero} /></Text>
+        {hero.uniqueHeroId && (
+          <Badge colorScheme="yellow" fontSize="2xs" variant="solid" display="inline-flex" alignItems="center">
+            <Icon as={GiDiamondHard} boxSize={2.5} mr={0.5} />
+            Unique
+          </Badge>
+        )}
+      </HStack>
       <Text fontSize="xs" color="gray.300">{hero.class.name}</Text>
       <SimpleGrid columns={2} spacing={2} pt={1} fontSize="xs">
         <Text>HP: <Text as="span" fontWeight="bold" color={GAME_CONFIG.colors.hp.light}>{hero.stats.hp}/{calculateTotalStats(hero).maxHp}</Text></Text>
@@ -102,9 +111,17 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
               <Text className="roster-hero-card-name" fontWeight="bold" fontSize="md" color="orange.200" isTruncated flex={1}>
                 <HeroName hero={hero} />
               </Text>
-              <Badge className="roster-hero-card-level" fontSize="xs" colorScheme="blue" flexShrink={0}>
-                Lv {hero.level}
-              </Badge>
+              <HStack spacing={1} flexShrink={0}>
+                {hero.uniqueHeroId && (
+                  <Badge colorScheme="yellow" fontSize="2xs" variant="solid" display="inline-flex" alignItems="center">
+                    <Icon as={GiDiamondHard} boxSize={2.5} mr={0.5} />
+                    Unique
+                  </Badge>
+                )}
+                <Badge className="roster-hero-card-level" fontSize="xs" colorScheme="blue">
+                  Lv {hero.level}
+                </Badge>
+              </HStack>
             </HStack>
             
             <Text className="roster-hero-card-class" fontSize="xs" color="gray.400">

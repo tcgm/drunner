@@ -10,12 +10,12 @@ import {
 } from '@chakra-ui/react'
 import { useGameStore } from '@/core/gameStore'
 import { QUEST_CONFIG } from '@/config/questConfig'
+import { GUILD_HERO_CONFIG } from '@/config/guildHeroConfig'
 import { GuildHallHeader } from './GuildHallHeader'
 import { QuestBoard } from './QuestBoard'
 import { HeroBoard } from './HeroBoard'
 import { RoomScene } from './RoomScene'
 import type { Quest } from '@/types/quests'
-
 type GuildPanel = 'quests' | 'heroes'
 
 interface GuildHallModalProps {
@@ -26,20 +26,23 @@ interface GuildHallModalProps {
 export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
   const toast = useToast()
 
-  const heroRoster              = useGameStore(state => state.heroRoster)
-  const party                   = useGameStore(state => state.party)
-  const bankGold                = useGameStore(state => state.bankGold)
-  const metaXp                  = useGameStore(state => state.metaXp)
-  const quests                  = useGameStore(state => state.quests)
-  const questsLastRefreshed     = useGameStore(state => state.questsLastRefreshed)
-  const availableHeroesForHire  = useGameStore(state => state.availableHeroesForHire)
-  const heroBoardLastRefreshed  = useGameStore(state => state.heroBoardLastRefreshed)
+  const heroRoster = useGameStore(state => state.heroRoster)
+  const party = useGameStore(state => state.party)
+  const bankGold = useGameStore(state => state.bankGold)
+  const metaXp = useGameStore(state => state.metaXp)
+  const quests = useGameStore(state => state.quests)
+  const questsLastRefreshed = useGameStore(state => state.questsLastRefreshed)
+  const availableHeroesForHire = useGameStore(state => state.availableHeroesForHire)
+  const heroBoardLastRefreshed = useGameStore(state => state.heroBoardLastRefreshed)
+  const heroBoardCallCooldownUntil = useGameStore(state => state.heroBoardCallCooldownUntil)
 
   const acceptQuest       = useGameStore(state => state.acceptQuest)
   const cancelQuest       = useGameStore(state => state.cancelQuest)
   const claimQuestReward  = useGameStore(state => state.claimQuestReward)
   const refreshQuestBoard = useGameStore(state => state.refreshQuestBoard)
   const refreshHeroBoard  = useGameStore(state => state.refreshHeroBoard)
+  const callForHeroes = useGameStore(state => state.callForHeroes)
+  const clearHeroBoard = useGameStore(state => state.clearHeroBoard)
   const hireHero          = useGameStore(state => state.hireHero)
 
   const [activePanel, setActivePanel] = useState<GuildPanel>('quests')
@@ -63,14 +66,11 @@ export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
     return `${h}h ${m}m`
   }, [questsLastRefreshed, openedAt])
 
-  const heroRefreshLabel = useMemo(() => {
-    const FOUR_HOURS = 4 * 60 * 60 * 1000
-    const ms = Math.max(0, (heroBoardLastRefreshed ?? 0) + FOUR_HOURS - openedAt)
-    if (ms <= 0) return 'Ready'
-    const h = Math.floor(ms / 3600000)
-    const m = Math.floor((ms % 3600000) / 60000)
-    return `${h}h ${m}m`
-  }, [heroBoardLastRefreshed, openedAt])
+  // Next trickle arrival timestamp
+  const nextArrivalAt = useMemo(() => {
+    const arrivalMs = GUILD_HERO_CONFIG.heroArrivalIntervalHours * GUILD_HERO_CONFIG.msPerHour
+    return (heroBoardLastRefreshed ?? 0) + arrivalMs
+  }, [heroBoardLastRefreshed])
 
   const handleAccept = (questId: string) => {
     if (activeQuests.length >= QUEST_CONFIG.maxActiveQuests) {
@@ -119,6 +119,31 @@ export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
     })
   }
 
+  const handleCall = () => {
+    const ok = callForHeroes()
+    if (!ok) return
+    toast({
+      title: 'Call sent out!',
+      description: 'Adventurers are making their way to the board.',
+      status: 'info',
+      duration: 2500,
+      isClosable: true,
+      position: 'bottom-right',
+    })
+  }
+
+  const handleClearBoard = () => {
+    clearHeroBoard()
+    toast({
+      title: 'Board cleared.',
+      description: 'Adventurers have moved on. New arrivals coming soon.',
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+      position: 'bottom-right',
+    })
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full" scrollBehavior="inside" isCentered>
       <ModalOverlay bg="blackAlpha.900" backdropFilter="blur(8px)" />
@@ -150,6 +175,7 @@ export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
               <RoomScene
                 key={isOpen ? 1 : 0}
                 heroRoster={heroRoster}
+                availableHeroesForHire={availableHeroesForHire}
                 party={party}
                 isOpen={isOpen}
                 activeBoard={activePanel}
@@ -169,8 +195,10 @@ export function GuildHallModal({ isOpen, onClose }: GuildHallModalProps) {
                 availableHeroes={availableHeroesForHire}
                 bankGold={bankGold}
                 onHire={handleHire}
-                refreshLabel={heroRefreshLabel}
-                onForceRefresh={() => refreshHeroBoard(true)}
+                  callCooldownUntil={heroBoardCallCooldownUntil ?? 0}
+                  nextArrivalAt={nextArrivalAt}
+                  onCall={handleCall}
+                  onClearBoard={handleClearBoard}
               />
             )}
           </Flex>

@@ -1,18 +1,32 @@
 /**
  * Hero Board actions module
  * Manages the pool of hireable heroes shown in the Guild Hall.
+ *
+ * Heroes trickle in one at a time (heroArrivalIntervalHours) up to boardSize.
+ * Each hero card expires after heroExpiryHours.
+ * Players can "Call for Adventurers" to immediately add heroes, subject to a cooldown.
  */
 
 import type { StateCreator } from 'zustand'
-import type { GameState, Item, Consumable } from '@/types'
+import type { GameState, Item } from '@/types'
 import type { HireableHero } from '@/types'
-import { generateHeroBoard, hireableHeroToHero } from '@/systems/heroGeneration'
+import { generateHireableHero, generateHeroBoard, hireableHeroToHero } from '@/systems/heroGeneration'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { GUILD_HERO_CONFIG } from '@/config/guildHeroConfig'
 
 export interface HeroBoardActionsSlice {
-  /** Refresh/generate available heroes, respecting the cooldown unless forced */
+  /**
+   * Trickle tick — prune expired heroes, add any that are due based on the
+   * arrival interval. Pass `force = true` to immediately fill the board.
+   */
   refreshHeroBoard: (force?: boolean) => void
+  /**
+   * "Call for Adventurers" — instantly recruits up to callHeroCount heroes.
+   * Returns false if the action is still on cooldown.
+   */
+  callForHeroes: () => boolean
+  /** Clear all current heroes off the board (they can reappear later) */
+  clearHeroBoard: () => void
   /** Hire a hero from the board, spending gold and adding them to the roster */
   hireHero: (heroId: string) => void
   /** Pass on a board hero (removes from board; unique heroes can reappear later) */
@@ -26,21 +40,87 @@ export const createHeroBoardActions: StateCreator<
   [],
   [],
   HeroBoardActionsSlice
-> = (set) => ({
+  > = (set, get) => ({
   refreshHeroBoard: (force = false) =>
     set((state) => {
       const now = Date.now()
-      const elapsed = now - (state.heroBoardLastRefreshed ?? 0)
-      if (!force && elapsed < GUILD_HERO_CONFIG.boardRefreshHours * GUILD_HERO_CONFIG.msPerHour && state.availableHeroesForHire.length > 0) {
-        return state
-      }
-      return {
-        availableHeroesForHire: generateHeroBoard(GUILD_HERO_CONFIG.boardSize, now, {
+      const arrivalMs = GUILD_HERO_CONFIG.heroArrivalIntervalHours * GUILD_HERO_CONFIG.msPerHour
+      const expiryMs = GUILD_HERO_CONFIG.heroExpiryHours * GUILD_HERO_CONFIG.msPerHour
+
+      // Prune heroes that have overstayed their welcome
+      const fresh = state.availableHeroesForHire.filter(
+        h => (h.arrivedAt ?? 0) + expiryMs > now
+      )
+
+      if (force) {
+        // Fill the board immediately regardless of timing
+        const board = generateHeroBoard(GUILD_HERO_CONFIG.boardSize, now, {
           hiredUniqueIds: state.hiredUniqueHeroIds ?? [],
           dismissedUniqueIds: state.dismissedUniqueHeroIds ?? [],
-        }),
-        heroBoardLastRefreshed: now,
+        })
+        return { availableHeroesForHire: board, heroBoardLastRefreshed: now }
       }
+
+      // How many arrival intervals have elapsed since the last hero arrived?
+      const lastArrival = state.heroBoardLastRefreshed ?? 0
+      const slotsElapsed = lastArrival === 0
+        ? GUILD_HERO_CONFIG.boardSize  // first ever open → fill the board
+        : Math.floor((now - lastArrival) / arrivalMs)
+
+      if (slotsElapsed <= 0 && fresh.length === state.availableHeroesForHire.length) {
+      // Nothing expired and no new slots — nothing to do
+        return state
+      }
+
+      const openSlots = GUILD_HERO_CONFIG.boardSize - fresh.length
+      const toAdd = Math.min(slotsElapsed, openSlots)
+      const newHeroes: HireableHero[] = []
+      for (let i = 0; i < toAdd; i++) {
+        newHeroes.push(generateHireableHero(now + i * 0x9e3779b9, now))
+      }
+
+      const newLastArrival = toAdd > 0
+        ? (lastArrival === 0 ? now : lastArrival + toAdd * arrivalMs)
+        : state.heroBoardLastRefreshed
+
+      return {
+        availableHeroesForHire: [...fresh, ...newHeroes],
+        heroBoardLastRefreshed: newLastArrival,
+      }
+    }),
+
+    callForHeroes: () => {
+      const state = get()
+      const now = Date.now()
+      if (now < (state.heroBoardCallCooldownUntil ?? 0)) return false
+
+      set((s) => {
+        const expiryMs = GUILD_HERO_CONFIG.heroExpiryHours * GUILD_HERO_CONFIG.msPerHour
+        const fresh = s.availableHeroesForHire.filter(h => (h.arrivedAt ?? 0) + expiryMs > now)
+        const openSlots = GUILD_HERO_CONFIG.boardSize - fresh.length
+        const toAdd = Math.min(GUILD_HERO_CONFIG.callHeroCount, openSlots)
+        const newHeroes: HireableHero[] = []
+        for (let i = 0; i < toAdd; i++) {
+          newHeroes.push(generateHireableHero(now + i * 0x1337cafe, now))
+        }
+        const cooldownUntil = now + GUILD_HERO_CONFIG.callCooldownHours * GUILD_HERO_CONFIG.msPerHour
+        return {
+          availableHeroesForHire: [...fresh, ...newHeroes],
+          heroBoardCallCooldownUntil: cooldownUntil,
+      }
+    })
+      return true
+    },
+
+    clearHeroBoard: () =>
+      set((state) => {
+        const dismissedUniqueHeroIds = [
+          ...(state.dismissedUniqueHeroIds ?? []),
+          ...state.availableHeroesForHire
+            .filter(h => h.uniqueHeroId)
+            .map(h => h.uniqueHeroId as string),
+        ]
+        return { availableHeroesForHire: [], dismissedUniqueHeroIds, heroBoardLastRefreshed: Date.now() }
     }),
 
   hireHero: (heroId) =>

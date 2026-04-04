@@ -203,6 +203,8 @@ export interface HireableHero {
   uniqueHeroId?: string
   /** Lore text displayed on unique hero cards */
   lore?: string
+  /** Timestamp (ms) when this hero arrived on the board — used for expiry */
+  arrivedAt: number
 }
 
 // Legacy equipment interface - kept for migration
@@ -635,6 +637,8 @@ export interface GameState {
   // Hero Board
   availableHeroesForHire: HireableHero[]
   heroBoardLastRefreshed: number
+  /** Timestamp (ms) until the "Call for Adventurers" action is on cooldown */
+  heroBoardCallCooldownUntil: number
   /** Unique hero IDs that have been hired and are in the roster (or were in it) */
   hiredUniqueHeroIds: string[]
   /** Unique hero IDs that were dismissed/passed on the board (they can reappear) */

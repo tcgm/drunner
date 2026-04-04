@@ -26,6 +26,7 @@ import { calculateXpForLevel } from '@utils/heroUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
+import { GiDiamondHard } from 'react-icons/gi'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
@@ -278,6 +279,12 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                       <Text fontSize="xs" color="gray.400">
                         {hero.class.name}
                       </Text>
+                      {hero.uniqueHeroId && (
+                        <Badge colorScheme="yellow" fontSize="xs" variant="solid" display="inline-flex" alignItems="center" px={1.5} py={0.5}>
+                          <Icon as={GiDiamondHard} boxSize={3} mr={1} />
+                          Unique
+                        </Badge>
+                      )}
                     </HStack>
                   </VStack>
 

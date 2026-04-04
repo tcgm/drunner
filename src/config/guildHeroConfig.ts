@@ -77,11 +77,20 @@ export const GUILD_HERO_CONFIG = {
   /** Conversion formula: multiply any hour value by this to get milliseconds */
   msPerHour: 60 * 60 * 1000,
 
-  /** How often the Hero Board auto-refreshes (hours). Default: 4 */
-  boardRefreshHours: 0.25,
+  /** How often a single new hero trickles onto the board (hours). Default: 0.1 (6 min) */
+  heroArrivalIntervalHours: 0.1,
 
-  /** Number of hero cards shown on the board at once */
+  /** How long a hero card stays on the board before leaving (hours). Default: 2 */
+  heroExpiryHours: 2,
+
+  /** Maximum heroes on the board at once */
   boardSize: 6,
+
+  /** Number of heroes added by "Call for Adventurers" */
+  callHeroCount: 2,
+
+  /** Cooldown for "Call for Adventurers" (hours). Default: 0.5 */
+  callCooldownHours: 0.5,
 
   /** Base gold cost to hire a common level-1 hero */
   baseHireCost: 200,

@@ -1,6 +1,5 @@
 import type { Quest, QuestType, QuestDifficulty, ItemRarity } from '@/types/quests'
 import type { Hero } from '@/types'
-import { calculateTotalStats } from '@/utils/statCalculator'
 import { RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 import { QUEST_CONFIG } from '@/config/questConfig'
 import { calcGoldXpReward, rollFragmentRewards } from '@/data/questRewards'
@@ -24,17 +23,8 @@ export function calcPartyPower(party: (Hero | null)[]): number {
   const members = party.filter((h): h is Hero => h !== null && h.isAlive)
   if (members.length === 0) return 1
 
-  let totalLevel = 0
-  let totalStat  = 0
-  for (const hero of members) {
-    const s = calculateTotalStats(hero)
-    totalLevel += hero.level
-    totalStat  += s.attack + s.defense + s.speed
-  }
-  const avgLevel = totalLevel / members.length
-  const avgStat  = totalStat  / members.length
-
-  return Math.max(1, avgLevel + avgStat / QUEST_CONFIG.partyPowerStatDivisor)
+  const avgLevel = members.reduce((sum, h) => sum + h.level, 0) / members.length
+  return Math.max(1, avgLevel)
 }
 
 // ── Quest templates ───────────────────────────────────────────────────────

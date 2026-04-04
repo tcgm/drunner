@@ -1001,7 +1001,10 @@ export const createDungeonActions: StateCreator<
         ...state.activeRun,
         finalDepth: state.dungeon.depth,
         finalFloor: state.dungeon.floor,
-        eventsCompleted: state.activeRun.eventsCompleted + 1
+        eventsCompleted: state.activeRun.eventsCompleted + 1,
+        bossesDefeated: (state.activeRun.bossesDefeated ?? 0) + 1,
+        enemiesDefeated: (state.activeRun.enemiesDefeated ?? 0) + 1,
+        combatEvents: (state.activeRun.combatEvents ?? 0) + 1,
       } : null
 
       return {

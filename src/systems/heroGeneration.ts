@@ -117,7 +117,7 @@ export function rollSpeciesForHero(heroId: string, heroRarity?: HeroRarity): Her
   return rollSpeciesForRarity(heroRarity ?? 'common', rng)
 }
 
-export function generateHireableHero(seed?: number): HireableHero {
+export function generateHireableHero(seed?: number, arrivedAt?: number): HireableHero {
   const rng = mulberry32(seed ?? Math.floor(Math.random() * 0x7fffffff))
 
   // Roll rarity
@@ -164,6 +164,7 @@ export function generateHireableHero(seed?: number): HireableHero {
     level,
     statBonuses,
     hireCost: generateHireCost(heroRarity, level),
+    arrivedAt: arrivedAt ?? Date.now(),
   }
 }
 
@@ -173,7 +174,8 @@ export function generateHeroBoard(
   baseSeed?: number,
   opts: { hiredUniqueIds?: string[]; dismissedUniqueIds?: string[] } = {},
 ): HireableHero[] {
-  const seed = baseSeed ?? Date.now()
+  const arrivedAt = baseSeed ?? Date.now()
+  const seed = arrivedAt
   const { hiredUniqueIds = [], dismissedUniqueIds = [] } = opts
 
   // Eligible uniques: not currently hired (can reappear after dismissal)
@@ -188,22 +190,29 @@ export function generateHeroBoard(
   const uniqueRng = mulberry32(seed ^ 0xdeadbeef)
   const shuffledUniques = [...eligibleUniques].sort(() => uniqueRng() - 0.5)
 
+  // Total weight pool — used to match the normal weighted rarity roll
+  const totalWeight = HERO_RARITY_ORDER.reduce((s, r) => s + HERO_RARITY_CONFIG[r].weight, 0)
+
   for (let i = 0; i < count; i++) {
-    // Try to slot one unique hero per board (first eligible, not already on this board)
+    // Try to slot one unique hero per board, but only if the weighted roll
+    // lands within their rarity's chance (same probability as rolling that rarity normally)
     if (!uniqueInserted && shuffledUniques.length > 0) {
       const unique = shuffledUniques[0]
-      board.push(uniqueHeroToHireable(unique))
-      uniqueInserted = true
-      continue
+      const uniqueChance = HERO_RARITY_CONFIG[unique.heroRarity].weight / totalWeight
+      if (uniqueRng() < uniqueChance) {
+        board.push(uniqueHeroToHireable(unique, arrivedAt))
+        uniqueInserted = true
+        continue
+      }
     }
-    board.push(generateHireableHero(seed + i * 0x9e3779b9))
+    board.push(generateHireableHero(seed + i * 0x9e3779b9, arrivedAt))
   }
 
   return board
 }
 
 /** Convert a UniqueHeroDefinition to a HireableHero board card */
-export function uniqueHeroToHireable(def: UniqueHeroDefinition): HireableHero {
+export function uniqueHeroToHireable(def: UniqueHeroDefinition, arrivedAt?: number): HireableHero {
   const heroClass = CORE_CLASSES.find(c => c.id === def.classId) ?? CORE_CLASSES[0]
   const speciesDef = ALL_SPECIES.find(s => s.id === def.species)!
 
@@ -229,6 +238,7 @@ export function uniqueHeroToHireable(def: UniqueHeroDefinition): HireableHero {
     hireCost,
     uniqueHeroId: def.id,
     lore: def.lore,
+    arrivedAt: arrivedAt ?? Date.now(),
   }
 }
 

@@ -1,7 +1,7 @@
 import './PartySetupHeader.css'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { Box, HStack, Heading, Text, Button, Icon, Tooltip } from '@chakra-ui/react'
-import { GiShop, GiShoppingCart, GiChest, GiVikingLonghouse, GiTwoCoins, GiStarsStack, GiPowder } from 'react-icons/gi'
+import { Box, HStack, Heading, Text, Button, Icon, Tooltip, Badge } from '@chakra-ui/react'
+import { GiShop, GiShoppingCart, GiChest, GiVikingLonghouse, GiTwoCoins, GiStarsStack, GiPowder, GiScrollQuill } from 'react-icons/gi'
 
 interface PartySetupHeaderProps {
   bankGold: number
@@ -9,15 +9,18 @@ interface PartySetupHeaderProps {
   alkahest: number
   bankInventory: number
   bankStorageSlots: number
+  activeQuestCount: number
+  completedQuestCount: number
   onBack: () => void
   onStart: () => void
   onOpenShop: () => void
   onOpenMarket: () => void
   onOpenBank: () => void
+  onOpenQuests: () => void
   canStart: boolean
 }
 
-export function PartySetupHeader({ bankGold, metaXp, alkahest, bankInventory, bankStorageSlots, onBack, onStart, onOpenShop, onOpenMarket, onOpenBank, canStart }: PartySetupHeaderProps) {
+export function PartySetupHeader({ bankGold, metaXp, alkahest, bankInventory, bankStorageSlots, activeQuestCount, completedQuestCount, onBack, onStart, onOpenShop, onOpenMarket, onOpenBank, onOpenQuests, canStart }: PartySetupHeaderProps) {
   return (
     <Box className="party-setup-header" bg="gray.950" borderBottom="2px solid" borderColor="orange.800" px={4} py={2} flexShrink={0}>
       <HStack className="party-setup-header-content" justify="space-between">
@@ -51,6 +54,36 @@ export function PartySetupHeader({ bankGold, metaXp, alkahest, bankInventory, ba
             leftIcon={<Icon as={GiChest} />}
           >
             Bank ({bankInventory}/{bankStorageSlots})
+          </Button>
+          <Button
+            variant="outline"
+            colorScheme={completedQuestCount > 0 ? 'green' : activeQuestCount > 0 ? 'orange' : 'gray'}
+            onClick={onOpenQuests}
+            size="sm"
+            leftIcon={<Icon as={GiScrollQuill} />}
+            position="relative"
+          >
+            Quests
+            {completedQuestCount > 0 && (
+              <Badge
+                colorScheme="green"
+                borderRadius="full"
+                fontSize="2xs"
+                ml={1}
+              >
+                {completedQuestCount}
+              </Badge>
+            )}
+            {completedQuestCount === 0 && activeQuestCount > 0 && (
+              <Badge
+                colorScheme="orange"
+                borderRadius="full"
+                fontSize="2xs"
+                ml={1}
+              >
+                {activeQuestCount}
+              </Badge>
+            )}
           </Button>
           {/* <Button 
             variant="outline" 

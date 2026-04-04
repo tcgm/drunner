@@ -17,6 +17,7 @@ import { MarketHallModal } from '../party/MarketHallModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
+import { CurrentQuestsModal } from '../party/CurrentQuestsModal'
 import { useMusicContext } from '@/utils/useMusicContext'
 import { MusicContext } from '@/types/audio'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
@@ -24,9 +25,10 @@ import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 interface DungeonPrepScreenProps {
   onBack: () => void
   onStart: (startingFloor?: number) => void
+  onGoToTown?: () => void
 }
 
-export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
+export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepScreenProps) {
   // Set party screen music
   useMusicContext(MusicContext.PARTY_SCREEN)
 
@@ -54,6 +56,7 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
     metaXp,
     healParty,
     spendBankGold,
+    quests,
   } = useGameStore()
 
   // Heal all heroes when the dungeon prep screen is mounted
@@ -101,6 +104,9 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
 
   // Corrupted items modal
   const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
+
+  // Current quests modal
+  const { isOpen: isQuestsOpen, onOpen: onQuestsOpen, onClose: onQuestsClose } = useDisclosure()
 
   // Auto-open corrupted items modal if there are corrupted items (highest priority)
   useEffect(() => {
@@ -229,12 +235,15 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
         alkahest={alkahest}
         bankInventory={bankInventory.length}
         bankStorageSlots={bankStorageSlots}
+        activeQuestCount={quests.filter(q => q.status === 'active').length}
+        completedQuestCount={quests.filter(q => q.status === 'completed').length}
         canStart={canStart}
         onBack={onBack}
         onStart={handleStart}
         onOpenShop={onShopOpen}
         onOpenMarket={onMarketOpen}
         onOpenBank={handleOpenBank}
+        onOpenQuests={onQuestsOpen}
       />
 
       <Flex className="dungeon-prep-screen-content" flex={1} minH={0} overflow="hidden">
@@ -387,6 +396,14 @@ export function DungeonPrepScreen({ onBack, onStart }: DungeonPrepScreenProps) {
         onConfirm={handleExpandBank}
         bankGold={bankGold}
         currentSlots={bankStorageSlots}
+      />
+
+      {/* Current Quests Modal */}
+      <CurrentQuestsModal
+        isOpen={isQuestsOpen}
+        onClose={onQuestsClose}
+        quests={quests}
+        onGoToTown={onGoToTown ?? onBack}
       />
     </Box>
   )

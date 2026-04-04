@@ -69,6 +69,7 @@ const zoomVariants = {
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
   const [hmrCounter, setHmrCounter] = useState(0)
+  const [openGuildHallOnTown, setOpenGuildHallOnTown] = useState(false)
   const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration, nexusUpgrades } = useGameStore()
 
   // Sync nexus upgrades into the module-level context used by game systems
@@ -142,6 +143,7 @@ function App() {
   }
 
   const handleEnterDungeonPrep = () => {
+    setOpenGuildHallOnTown(false)
     // If there's an active run in progress, resume it via the same path as main menu "Continue"
     if (activeRun && activeRun.result === 'active') {
       handleContinue()
@@ -157,6 +159,7 @@ function App() {
   }
 
   const handleBackToMenu = () => {
+    setOpenGuildHallOnTown(false)
     // Navigate back to main menu from town hub
     setCurrentScreen('menu')
   }
@@ -200,6 +203,7 @@ function App() {
               <TownHubScreen
                 onEnterDungeon={handleEnterDungeonPrep}
                 onBack={handleBackToMenu}
+                    openGuildHallOnMount={openGuildHallOnTown}
               />
             </MotionBox>
           )}
@@ -216,6 +220,7 @@ function App() {
               <DungeonPrepScreen
                 onStart={handleStartDungeon}
                 onBack={handleBackToTown}
+                    onGoToTown={() => { setOpenGuildHallOnTown(true); setCurrentScreen('town-hub') }}
               />
             </MotionBox>
           )}
@@ -232,6 +237,7 @@ function App() {
               <PartySetupScreen
                 onStart={handleStartDungeon}
                 onBack={() => setCurrentScreen('menu')}
+                    onGoToTown={() => { setOpenGuildHallOnTown(true); setCurrentScreen('town-hub') }}
               />
             </MotionBox>
           )}

@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import { GiCoins, GiStarsStack, GiScrollQuill, GiStairs, GiCrystalShine } from 'react-icons/gi'
+import { GiCoins, GiStarsStack, GiScrollQuill, GiStairs, GiCrystalShine, GiSwordman } from 'react-icons/gi'
 import { FaHourglass, FaCheck } from 'react-icons/fa'
 import { getRarityColor, getRarityConfig } from '@/systems/rarity/raritySystem'
 import { getMaterialById } from '@data/items/materials'
@@ -27,12 +27,17 @@ export interface QuestCardProps {
   onAccept?: () => void
   onCancel?: () => void
   onClaim?: () => void
+  /** Pending progress from the current in-progress run (shown as a lighter bar overlay) */
+  pendingProgress?: number
 }
 
-export function QuestCard({ quest, onAccept, onCancel, onClaim }: QuestCardProps) {
+export function QuestCard({ quest, onAccept, onCancel, onClaim, pendingProgress }: QuestCardProps) {
   const [pendingCancel, setPendingCancel] = useState(false)
   const pct = quest.requirement > 0
     ? Math.min(100, Math.round((quest.progress / quest.requirement) * 100))
+    : 0
+  const pendingPct = (pendingProgress && quest.requirement > 0)
+    ? Math.min(100 - pct, Math.round((pendingProgress / quest.requirement) * 100))
     : 0
 
   const safeRarity   = quest.rarity ?? 'common'
@@ -159,17 +164,41 @@ export function QuestCard({ quest, onAccept, onCancel, onClaim }: QuestCardProps
             <Text fontSize="xs" color="gray.400">
               Progress
             </Text>
-            <Text fontSize="xs" color="gray.300" fontWeight="medium">
-              {quest.progress.toLocaleString()} / {quest.requirement.toLocaleString()}
-            </Text>
+            <HStack spacing={2}>
+              {pendingProgress != null && pendingProgress > 0 && quest.status === 'active' && (
+                <Tooltip label="Progress from this run (applied when you return to town)" placement="top">
+                  <HStack spacing={1}>
+                    <Icon as={GiSwordman} boxSize={2.5} color="yellow.500" />
+                    <Text fontSize="2xs" color="yellow.500" fontWeight="bold">+{pendingProgress.toLocaleString()} this run</Text>
+                  </HStack>
+                </Tooltip>
+              )}
+              <Text fontSize="xs" color="gray.300" fontWeight="medium">
+                {quest.progress.toLocaleString()} / {quest.requirement.toLocaleString()}
+              </Text>
+            </HStack>
           </HStack>
-          <Progress
-            value={pct}
-            size="xs"
-            colorScheme={quest.status === 'completed' ? 'green' : 'orange'}
-            bg="gray.700"
-            borderRadius="full"
-          />
+          <Box position="relative">
+            <Progress
+              value={pct}
+              size="xs"
+              colorScheme={quest.status === 'completed' ? 'green' : 'orange'}
+              bg="gray.700"
+              borderRadius="full"
+            />
+            {pendingPct > 0 && (
+              <Box
+                position="absolute"
+                top={0}
+                left={`${pct}%`}
+                width={`${pendingPct}%`}
+                height="100%"
+                bg="yellow.500"
+                opacity={0.6}
+                borderRadius="full"
+              />
+            )}
+          </Box>
         </Box>
       )}
 

@@ -13,6 +13,7 @@ import GameOverScreen from '@components/dungeon/GameOverScreen'
 import VictoryScreen from '@components/dungeon/VictoryScreen'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
+import { CurrentQuestsModal } from '@/components/party/CurrentQuestsModal'
 import { BossCombatScreen } from '@/components/combat'
 import { refreshPartyAbilities } from '@/utils/abilityUtils'
 import { initializeBossCombatState } from '@/systems/combat'
@@ -37,13 +38,15 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     activeRun,
     applyBossVictoryRewards,
     endGame,
-    changeMusicContext
+    changeMusicContext,
+    quests,
   } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
   const { isOpen: isPartyOpen, onOpen: onPartyOpen, onClose: onPartyClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
+  const { isOpen: isQuestsOpen, onOpen: onQuestsOpen, onClose: onQuestsClose } = useDisclosure()
   // const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure() // Disabled
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
@@ -250,6 +253,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           onJournal={onJournalOpen}
           onRetreat={onOpen}
           onExit={onExit}
+          onQuests={onQuestsOpen}
         />
       </Flex>
       
@@ -296,6 +300,14 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
       <JournalModal
         isOpen={isJournalOpen}
         onClose={onJournalClose}
+      />
+
+      {/* Quest Tracker Modal */}
+      <CurrentQuestsModal
+        isOpen={isQuestsOpen}
+        onClose={onQuestsClose}
+        quests={quests}
+        activeRun={activeRun}
       />
 
       {/* Combat Log Modal - Disabled (functionality merged into Journal, but component preserved for future use) */}

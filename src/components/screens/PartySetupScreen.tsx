@@ -17,14 +17,16 @@ import { MarketHallModal } from '../party/MarketHallModal'
 import FloorSelectionModal from '../party/FloorSelectionModal'
 import PartySummary from '../party/PartySummary'
 import BuyBankSlotsModal from '../party/BuyBankSlotsModal'
+import { CurrentQuestsModal } from '../party/CurrentQuestsModal'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 
 interface PartySetupScreenProps {
   onBack: () => void
   onStart: (startingFloor?: number) => void
+  onGoToTown?: () => void
 }
 
-export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
+export function PartySetupScreen({ onBack, onStart, onGoToTown }: PartySetupScreenProps) {
   const {
     party,
     addHero,
@@ -49,6 +51,7 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
     metaXp,
     healParty,
     spendBankGold,
+    quests,
   } = useGameStore()
 
   // Heal all heroes when the party setup screen is mounted
@@ -96,6 +99,9 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
 
   // Corrupted items modal
   const { isOpen: isCorruptedOpen, onOpen: onCorruptedOpen, onClose: onCorruptedClose } = useDisclosure()
+
+  // Current quests modal
+  const { isOpen: isQuestsOpen, onOpen: onQuestsOpen, onClose: onQuestsClose } = useDisclosure()
 
   // Auto-open corrupted items modal if there are corrupted items (highest priority)
   useEffect(() => {
@@ -224,12 +230,15 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         alkahest={alkahest}
         bankInventory={bankInventory.length}
         bankStorageSlots={bankStorageSlots}
+        activeQuestCount={quests.filter(q => q.status === 'active').length}
+        completedQuestCount={quests.filter(q => q.status === 'completed').length}
         canStart={canStart}
         onBack={onBack}
         onStart={handleStart}
         onOpenShop={onShopOpen}
         onOpenMarket={onMarketOpen}
         onOpenBank={handleOpenBank}
+        onOpenQuests={onQuestsOpen}
       />
 
       <Flex className="party-setup-screen-content" flex={1} minH={0} overflow="hidden">
@@ -382,6 +391,14 @@ export function PartySetupScreen({ onBack, onStart }: PartySetupScreenProps) {
         onConfirm={handleExpandBank}
         bankGold={bankGold}
         currentSlots={bankStorageSlots}
+      />
+
+      {/* Current Quests Modal */}
+      <CurrentQuestsModal
+        isOpen={isQuestsOpen}
+        onClose={onQuestsClose}
+        quests={quests}
+        onGoToTown={onGoToTown ?? onBack}
       />
     </Box>
   )

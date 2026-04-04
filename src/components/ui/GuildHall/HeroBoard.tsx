@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {
   VStack,
   HStack,
@@ -8,14 +9,34 @@ import {
   Button,
   Tooltip,
 } from '@chakra-ui/react'
-import { GiStarFormation, GiCoins, GiSwordman, GiShield } from 'react-icons/gi'
-import { FaHourglass } from 'react-icons/fa'
+import { GiStarFormation, GiCoins, GiSwordman, GiShield, GiDiamondHard, GiFrenchHorn, GiTrashCan } from 'react-icons/gi'
+import { FaClock } from 'react-icons/fa'
 import type { HireableHero } from '@/types'
 import { HERO_RARITY_CONFIG } from '@/systems/heroGeneration'
 import { SPECIES_DEFINITIONS } from '@/data/heroes/species'
 import { CORE_CLASSES } from '@/data/classes'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
+
+// ── Countdown helper ──────────────────────────────────────────────────────
+
+function useCountdown(targetMs: number): string {
+  const [label, setLabel] = useState('')
+  useEffect(() => {
+    function calc() {
+      const remaining = targetMs - Date.now()
+      if (remaining <= 0) { setLabel(''); return }
+      const h = Math.floor(remaining / 3600000)
+      const m = Math.floor((remaining % 3600000) / 60000)
+      const s = Math.floor((remaining % 60000) / 1000)
+      setLabel(h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`)
+    }
+    calc()
+    const id = setInterval(calc, 1000)
+    return () => clearInterval(id)
+  }, [targetMs])
+  return label
+}
 
 // ── Individual hero card ──────────────────────────────────────────────────
 
@@ -96,6 +117,19 @@ function HeroCard({ hero, bankGold, onHire }: HeroCardProps) {
             <Badge colorScheme="blue" fontSize="2xs" variant="subtle">
               Lv {hero.level}
             </Badge>
+            {hero.uniqueHeroId && (
+              <Badge
+                colorScheme="yellow"
+                fontSize="2xs"
+                variant="solid"
+                display="flex"
+                alignItems="center"
+                gap={0.5}
+              >
+                <Icon as={GiDiamondHard} boxSize={2.5} mr={0.5} />
+                Unique
+              </Badge>
+            )}
           </HStack>
         </VStack>
       </HStack>
@@ -129,6 +163,23 @@ function HeroCard({ hero, bankGold, onHire }: HeroCardProps) {
               </HStack>
             ))}
           </HStack>
+        </Box>
+      )}
+
+      {/* Lore text for unique heroes */}
+      {hero.lore && (
+        <Box
+          bg="blackAlpha.500"
+          borderRadius="md"
+          px={2.5}
+          py={1.5}
+          mb={2}
+          border="1px solid"
+          borderColor="yellow.700"
+        >
+          <Text fontSize="2xs" color="yellow.200" fontStyle="italic" opacity={0.85}>
+            "{hero.lore}"
+          </Text>
         </Box>
       )}
 
@@ -172,17 +223,27 @@ interface HeroBoardProps {
   availableHeroes: HireableHero[]
   bankGold: number
   onHire: (heroId: string) => void
-  refreshLabel: string
-  onForceRefresh?: () => void
+  /** Timestamp (ms) when the "Call" cooldown expires — 0 if ready */
+  callCooldownUntil: number
+  /** Timestamp (ms) when the next trickle hero is due */
+  nextArrivalAt: number
+  onCall: () => void
+  onClearBoard: () => void
 }
 
 export function HeroBoard({
   availableHeroes,
   bankGold,
   onHire,
-  refreshLabel,
-  onForceRefresh,
+  callCooldownUntil,
+  nextArrivalAt,
+  onCall,
+  onClearBoard,
 }: HeroBoardProps) {
+  const callCooldownLabel = useCountdown(callCooldownUntil)
+  const nextArrivalLabel = useCountdown(nextArrivalAt)
+  const callOnCooldown = callCooldownUntil > Date.now()
+
   return (
     <Box flex={{ base: 'none', md: '0 0 40%' }} display="flex" flexDirection="column" overflow="hidden" minH={0}>
       {/* Board header */}
@@ -204,23 +265,13 @@ export function HeroBoard({
               </Badge>
             )}
           </HStack>
-          <HStack spacing={2}>
-            {onForceRefresh && (
-              <Button
-                size="xs"
-                variant="ghost"
-                colorScheme="purple"
-                onClick={onForceRefresh}
-                fontSize="2xs"
-              >
-                Refresh
-              </Button>
-            )}
+          {/* Next natural arrival */}
+          {nextArrivalLabel && (
             <HStack spacing={1} fontSize="2xs" color="gray.600">
-              <Icon as={FaHourglass} boxSize={2.5} />
-              <Text>Refreshes {refreshLabel}</Text>
+              <Icon as={FaClock} boxSize={2.5} />
+              <Text>Next in {nextArrivalLabel}</Text>
             </HStack>
-          </HStack>
+          )}
         </HStack>
       </Box>
 
@@ -240,7 +291,7 @@ export function HeroBoard({
               No adventurers available.
             </Text>
             <Text color="gray.700" fontSize="xs" mt={1}>
-              Visit again later or refresh the board.
+              Call for adventurers or check back soon.
             </Text>
           </Box>
         ) : (
@@ -255,6 +306,54 @@ export function HeroBoard({
             ))}
           </VStack>
         )}
+      </Box>
+
+      {/* Action bar */}
+      <Box
+        px={5} py={3}
+        borderTop="1px solid" borderColor="gray.800"
+        bgGradient="linear(to-r,rgba(49,30,120,0.12),transparent)"
+        flexShrink={0}
+      >
+        <HStack spacing={3} justify="space-between">
+          {/* Call for Adventurers */}
+          <Tooltip
+            label={callOnCooldown ? `Available in ${callCooldownLabel}` : 'Summon additional adventurers to the board'}
+            placement="top"
+            hasArrow
+          >
+            <Button
+              size="sm"
+              variant="outline"
+              colorScheme={callOnCooldown ? 'gray' : 'purple'}
+              isDisabled={callOnCooldown}
+              onClick={onCall}
+              leftIcon={<Icon as={GiFrenchHorn} boxSize={4} />}
+              fontSize="xs"
+              fontWeight="bold"
+              letterSpacing="wide"
+            >
+              {callOnCooldown ? `Call (${callCooldownLabel})` : 'Call for Adventurers'}
+            </Button>
+          </Tooltip>
+
+          {/* Clear Board */}
+          <Tooltip label="Dismiss all current adventurers from the board" placement="top" hasArrow>
+            <Button
+              size="sm"
+              variant="ghost"
+              colorScheme="red"
+              isDisabled={availableHeroes.length === 0}
+              onClick={onClearBoard}
+              leftIcon={<Icon as={GiTrashCan} boxSize={3.5} />}
+              fontSize="xs"
+              opacity={0.7}
+              _hover={{ opacity: 1 }}
+            >
+              Clear Board
+            </Button>
+          </Tooltip>
+        </HStack>
       </Box>
     </Box>
   )

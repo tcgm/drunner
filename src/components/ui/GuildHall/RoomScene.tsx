@@ -19,7 +19,10 @@ import { HeroPortrait } from '@/components/party/HeroPortrait'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { HeroName } from '@/components/ui/HeroName'
-import type { Hero } from '@/types'
+import type { Hero, HireableHero } from '@/types'
+import * as GameIcons from 'react-icons/gi'
+import type { IconType } from 'react-icons'
+import { HERO_RARITY_CONFIG } from '@/systems/heroGeneration'
 import { ROOM_SPOTS, heroLevelColor } from './roomSceneData'
 import type { RoomSpot } from './roomSceneData'
 
@@ -119,15 +122,114 @@ function HeroToken({ hero, pos, isSelected, inParty, floatDelay, onClick }: {
   )
 }
 
+function HireableHeroToken({ hero, pos, floatDelay, onClick }: {
+  hero: HireableHero
+  pos: HeroPos
+  floatDelay: number
+  onClick: () => void
+}) {
+  const rCfg = HERO_RARITY_CONFIG[hero.heroRarity]
+  const color = rCfg.color
+  const iconName = hero.heroClass.icon as keyof typeof GameIcons
+  const ClassIcon: IconType = (GameIcons[iconName] ?? GameIcons.GiSwordman) as IconType
+  return (
+    <Tooltip
+      label={`${hero.name} · ${hero.heroClass.name} · ${rCfg.label} · Lv ${hero.level} - click to hire`}
+      hasArrow
+      placement="top"
+    >
+      <Box
+        position="absolute"
+        zIndex={3}
+        cursor="pointer"
+        role="button"
+        aria-label={hero.name}
+        onClick={onClick}
+        style={{
+          left: `${pos.x}%`,
+          top: `${pos.y}%`,
+          transform: 'translate(-50%, -50%)',
+          transition: 'left 2.5s cubic-bezier(0.4,0,0.2,1), top 2.5s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      >
+        <Box
+          sx={{
+            '@keyframes hireHeroFloat': {
+              '0%,100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-5px)' },
+            },
+            animation: 'hireHeroFloat 3.5s ease-in-out infinite',
+            animationDelay: `${floatDelay}s`,
+          }}
+        >
+          <Box
+            border="2px dashed"
+            borderColor={`${color}88`}
+            borderRadius="full"
+            overflow="hidden"
+            w="40px"
+            h="40px"
+            bg="gray.900"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            boxShadow={`0 0 8px ${color}44`}
+            _hover={{ borderColor: color, boxShadow: `0 0 16px ${color}88` }}
+            transition="box-shadow 0.2s, border-color 0.2s"
+            opacity={0.85}
+          >
+            <Icon as={ClassIcon} color={color} boxSize={5} />
+          </Box>
+
+          {/* "?" hire badge */}
+          <Box
+            position="absolute"
+            top="-3px"
+            right="-3px"
+            w="14px"
+            h="14px"
+            borderRadius="full"
+            bg="purple.600"
+            border="1px solid"
+            borderColor="purple.300"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            boxShadow="0 0 6px rgba(168,85,247,0.7)"
+          >
+            <Text fontSize="2xs" color="white" fontWeight="black" lineHeight={1}>?</Text>
+          </Box>
+
+          <Text
+            fontSize="2xs"
+            color="gray.500"
+            textAlign="center"
+            mt={1}
+            textShadow="0 1px 6px rgba(0,0,0,1)"
+            noOfLines={1}
+            maxW="60px"
+            mx="auto"
+            pointerEvents="none"
+            sx={{ display: 'block' }}
+          >
+            {hero.name}
+          </Text>
+        </Box>
+      </Box>
+    </Tooltip>
+  )
+}
+
 export interface RoomSceneProps {
   heroRoster: Hero[]
+  availableHeroesForHire: HireableHero[]
   party: (Hero | null)[]
   isOpen: boolean
   onBoardSelect?: (board: 'quests' | 'heroes') => void
   activeBoard?: 'quests' | 'heroes'
 }
 
-export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoard }: RoomSceneProps) {
+export function RoomScene({ heroRoster, availableHeroesForHire, party, isOpen, onBoardSelect, activeBoard }: RoomSceneProps) {
   const partyIds = useMemo(
     () => new Set(party.filter(Boolean).map(h => h!.id)),
     [party],
@@ -150,6 +252,62 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
     })
     return positions
   })
+  // ── Hireable hero positions (wander independently) ──────────────────
+  const [hirePositions, setHirePositions] = useState<Record<string, HeroPos>>(() => {
+    if (!isOpen) return {}
+    const positions: Record<string, HeroPos> = {}
+    const occ: Record<string, number> = {}
+    availableHeroesForHire.forEach((hero, i) => {
+      const spot = ROOM_SPOTS[(i + 3) % ROOM_SPOTS.length]
+      const slotIdx = occ[spot.id] ?? 0
+      occ[spot.id] = slotIdx + 1
+      positions[hero.id] = {
+        x: spot.x + (Math.random() - 0.5) * 4 + (slotIdx > 0 ? 5 : 0),
+        y: spot.y + (Math.random() - 0.5) * 3 + (slotIdx > 0 ? 3 : 0),
+        spotId: spot.id,
+      }
+    })
+    return positions
+  })
+
+  const hireFloatDelays = useMemo(() => {
+    const m: Record<string, number> = {}
+    availableHeroesForHire.forEach(h => {
+      const code = h.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+      m[h.id] = (code % 37) / 10
+    })
+    return m
+  }, [availableHeroesForHire])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const interval = setInterval(() => {
+      setHirePositions(prev => {
+        const ids = Object.keys(prev)
+        if (ids.length < 1) return prev
+        const movingId = ids[Math.floor(Math.random() * ids.length)]
+        const moving = prev[movingId]
+        const occ: Record<string, number> = {}
+        Object.values(prev).forEach(p => { occ[p.spotId] = (occ[p.spotId] ?? 0) + 1 })
+        const available = ROOM_SPOTS.filter(
+          s => s.id !== moving.spotId && (occ[s.id] ?? 0) < 2,
+        )
+        if (!available.length) return prev
+        const newSpot = available[Math.floor(Math.random() * available.length)]
+        const newOcc = occ[newSpot.id] ?? 0
+        return {
+          ...prev,
+          [movingId]: {
+            x: newSpot.x + (Math.random() - 0.5) * 4 + (newOcc > 0 ? 5 : 0),
+            y: newSpot.y + (Math.random() - 0.5) * 3 + (newOcc > 0 ? 3 : 0),
+            spotId: newSpot.id,
+          },
+        }
+      })
+    }, 4200)
+    return () => clearInterval(interval)
+  }, [isOpen])
+
   const [selectedHeroId, setSelectedHeroId] = useState<string | null>(null)
 
   const selectedHero  = selectedHeroId ? (heroRoster.find(h => h.id === selectedHeroId) ?? null) : null
@@ -238,7 +396,7 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
         style={{ background: 'radial-gradient(ellipse, rgba(170,80,15,0.09) 0%, transparent 70%)', transform: 'translate(-50%, -50%)' }}
       />
 
-      {/* Sconce – left */}
+      {/* Sconce - left */}
       <Box
         position="absolute" left="28%" top="22%" w="8px" h="8px"
         borderRadius="full" bg="orange.400" zIndex={1} pointerEvents="none"
@@ -248,7 +406,7 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
           animation: 'sconceL 2.1s ease-in-out infinite',
         }}
       />
-      {/* Sconce – right */}
+      {/* Sconce - right */}
       <Box
         position="absolute" right="26%" top="22%" w="8px" h="8px"
         borderRadius="full" bg="orange.400" zIndex={1} pointerEvents="none"
@@ -261,7 +419,7 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
       />
 
       {/* ── FIREPLACE ── */}
-      <Tooltip label="Fireplace — heroes gather for warmth" hasArrow placement="right">
+      <Tooltip label="Fireplace - heroes gather for warmth" hasArrow placement="right">
         <Box
           position="absolute" left="2%" top="22%" w="14%" h="17%"
           border="2px solid #5c3218" borderRadius="md"
@@ -293,7 +451,7 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
       />
 
       {/* ── LONG TABLE ── */}
-      <Tooltip label="Tavern Table — adventurers share stories here" hasArrow placement="top">
+      <Tooltip label="Tavern Table - adventurers share stories here" hasArrow placement="top">
         <Box
           position="absolute" left="28%" top="44%" w="26%" h="9%"
           bg="linear-gradient(to-b, #6b3f1e, #4a2a0f)"
@@ -306,7 +464,7 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
       </Tooltip>
 
       {/* ── BAR COUNTER ── */}
-      <Tooltip label="Tavern Bar — a well-earned drink" hasArrow placement="left">
+      <Tooltip label="Tavern Bar - a well-earned drink" hasArrow placement="left">
         <Box
           position="absolute" right="2%" top="28%" w="15%" h="23%"
           bg="linear-gradient(to-br, #4a2a0f, #2a1608)"
@@ -320,7 +478,7 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
       </Tooltip>
 
       {/* ── GUILD NOTICE BOARD (Quest Board) ── */}
-      <Tooltip label="Quest Board — click to view active quests" hasArrow placement="bottom">
+      <Tooltip label="Quest Board - click to view active quests" hasArrow placement="bottom">
         <Box
           position="absolute" left="52%" top="4%" w="20%" h="24%"
           bg={activeBoard === 'quests' ? '#261a04' : '#1c1206'}
@@ -353,7 +511,7 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
       </Tooltip>
 
       {/* ── ADVENTURERS' HIRE BOARD ── */}
-      <Tooltip label="Adventurers' Board — click to hire new heroes" hasArrow placement="bottom">
+      <Tooltip label="Adventurers' Board - click to hire new heroes" hasArrow placement="bottom">
         <Box
           position="absolute" left="75%" top="4%" w="20%" h="24%"
           bg={activeBoard === 'heroes' ? '#1a0e2e' : '#130a20'}
@@ -392,6 +550,21 @@ export function RoomScene({ heroRoster, party, isOpen, onBoardSelect, activeBoar
         border="2px solid #4a3518" borderBottom="none" borderTopRadius="full"
         zIndex={2} pointerEvents="none"
       />
+
+      {/* ── HIREABLE HERO TOKENS ── */}
+      {Object.entries(hirePositions).map(([heroId, pos]) => {
+        const hero = availableHeroesForHire.find(h => h.id === heroId)
+        if (!hero) return null
+        return (
+          <HireableHeroToken
+            key={`hire-${heroId}`}
+            hero={hero}
+            pos={pos}
+            floatDelay={hireFloatDelays[heroId] ?? 0}
+            onClick={() => onBoardSelect?.('heroes')}
+          />
+        )
+      })}
 
       {/* ── HERO TOKENS ── */}
       {Object.entries(heroPositions).map(([heroId, pos]) => {

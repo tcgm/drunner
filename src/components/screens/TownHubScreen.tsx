@@ -27,12 +27,13 @@ import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 interface TownHubScreenProps {
   onEnterDungeon: () => void
   onBack: () => void
+  openGuildHallOnMount?: boolean
 }
 
 const MotionBox = motion.create(Box)
 const MotionFlex = motion.create(Flex)
 
-export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenProps) {
+export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnMount }: TownHubScreenProps) {
   // Set town music
   useMusicContext(MusicContext.MAIN_MENU)
 
@@ -146,6 +147,9 @@ export default function TownHubScreen({ onEnterDungeon, onBack }: TownHubScreenP
 
   // Guild Hall modal
   const { isOpen: isGuildHallOpen, onOpen: onGuildHallOpen, onClose: onGuildHallClose } = useDisclosure()
+  React.useEffect(() => {
+    if (openGuildHallOnMount) onGuildHallOpen()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Hero Shrine modal
   const { isOpen: isHeroShrineOpen, onOpen: onHeroShrineOpen, onClose: onHeroShrineClose } = useDisclosure()
