@@ -60,7 +60,7 @@ export default function OutcomeDisplay({ outcome, onContinue }: OutcomeDisplayPr
   }, [outcome.effects])
 
   return (
-    <VStack className="outcome-display" spacing={4} align="stretch" h="full">
+    <VStack className="outcome-display" spacing={4} align="stretch" flex={1} minH={0} w="full">
       {/* Outcome Text */}
       <MotionBox
         className="outcome-display-text"

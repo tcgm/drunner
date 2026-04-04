@@ -67,7 +67,7 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
   const isDangerous = isFloorBoss || isZoneBoss
 
   return (
-    <VStack className="event-display" spacing={3} align="stretch" h="full" overflow="hidden">
+    <VStack className="event-display" spacing={3} align="stretch" flex={1} minH={0} w="full" overflow="hidden">
       {/* Event Header */}
       <MotionBox
         className="event-display-header"
