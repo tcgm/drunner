@@ -7,7 +7,7 @@ export const abby: UniqueHeroDefinition = {
   species: 'devil',
   heroRarity: 'mythic',
   level: 6,
-  classId: 'warrior',
+    classId: 'archdevil',
   statBonuses: [
     { stat: 'attack', value: 16 },
     { stat: 'maxHp', value: 40 },

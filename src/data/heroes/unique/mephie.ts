@@ -7,7 +7,7 @@ export const mephie: UniqueHeroDefinition = {
   species: 'devil',
   heroRarity: 'legendary',
   level: 5,
-  classId: 'necromancer',
+    classId: 'archdevil',
   statBonuses: [
     { stat: 'wisdom', value: 12 },
     { stat: 'magicPower', value: 10 },

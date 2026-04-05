@@ -7,7 +7,7 @@ export const tsuran: UniqueHeroDefinition = {
     species: 'kitsune',
     heroRarity: 'uncommon',
     level: 2,
-    classId: 'rogue',
+    classId: 'trickster',
     statBonuses: [
         { stat: 'speed', value: 4 },
         { stat: 'luck', value: 5 },

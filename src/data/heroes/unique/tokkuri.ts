@@ -7,7 +7,7 @@ export const tokkuri: UniqueHeroDefinition = {
     species: 'tanuki',
     heroRarity: 'rare',
     level: 3,
-    classId: 'rogue',
+    classId: 'trickster',
     statBonuses: [
         { stat: 'luck', value: 8 },
         { stat: 'speed', value: 5 },

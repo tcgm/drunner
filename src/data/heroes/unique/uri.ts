@@ -7,7 +7,7 @@ export const uri: UniqueHeroDefinition = {
     species: 'angel',
     heroRarity: 'epic',
     level: 4,
-    classId: 'mage',
+    classId: 'archangel',
     statBonuses: [
         { stat: 'magicPower', value: 10 },
         { stat: 'wisdom', value: 7 },

@@ -7,7 +7,7 @@ export const kuzunoha: UniqueHeroDefinition = {
     species: 'kitsune',
     heroRarity: 'veryRare',
     level: 3,
-    classId: 'warrior',
+    classId: 'trickster',
     statBonuses: [
         { stat: 'attack', value: 7 },
         { stat: 'defense', value: 5 },

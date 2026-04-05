@@ -7,7 +7,7 @@ export const gabby: UniqueHeroDefinition = {
     species: 'angel',
     heroRarity: 'epic',
     level: 4,
-    classId: 'bard',
+    classId: 'archangel',
     statBonuses: [
         { stat: 'charisma', value: 10 },
         { stat: 'wisdom', value: 7 },

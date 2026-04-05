@@ -7,7 +7,7 @@ export const asmo: UniqueHeroDefinition = {
   species: 'devil',
   heroRarity: 'legendary',
   level: 5,
-  classId: 'bard',
+    classId: 'archdevil',
   statBonuses: [
     { stat: 'charisma', value: 14 },
     { stat: 'luck', value: 10 },

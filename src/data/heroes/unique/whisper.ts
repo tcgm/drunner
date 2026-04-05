@@ -7,7 +7,7 @@ export const whisper: UniqueHeroDefinition = {
     species: 'fae',
     heroRarity: 'veryRare',
     level: 3,
-    classId: 'rogue',
+    classId: 'trickster',
     statBonuses: [
         { stat: 'luck', value: 9 },
         { stat: 'speed', value: 7 },

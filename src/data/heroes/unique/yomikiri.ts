@@ -7,7 +7,7 @@ export const yomikiri: UniqueHeroDefinition = {
   species: 'kitsune',
   heroRarity: 'legendary',
   level: 5,
-  classId: 'mage',
+  classId: 'trickster',
   statBonuses: [
     { stat: 'luck', value: 10 },
     { stat: 'wisdom', value: 8 },

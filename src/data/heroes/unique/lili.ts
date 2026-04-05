@@ -7,7 +7,7 @@ export const lili: UniqueHeroDefinition = {
   species: 'devil',
   heroRarity: 'legendary',
   level: 5,
-  classId: 'mage',
+    classId: 'archdevil',
   statBonuses: [
     { stat: 'magicPower', value: 14 },
     { stat: 'wisdom', value: 12 },

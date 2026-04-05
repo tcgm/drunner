@@ -7,7 +7,7 @@ export const raffi: UniqueHeroDefinition = {
     species: 'angel',
     heroRarity: 'legendary',
     level: 5,
-    classId: 'cleric',
+    classId: 'archangel',
     statBonuses: [
         { stat: 'wisdom', value: 12 },
         { stat: 'maxHp', value: 25 },

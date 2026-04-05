@@ -7,7 +7,7 @@ export const beel: UniqueHeroDefinition = {
   species: 'devil',
   heroRarity: 'legendary',
   level: 5,
-  classId: 'warrior',
+    classId: 'archdevil',
   statBonuses: [
     { stat: 'attack', value: 13 },
     { stat: 'maxHp', value: 30 },
