@@ -104,6 +104,30 @@ import { vexis } from './vexis'
 import { limn } from './limn'
 import { ashcroft } from './ashcroft'
 import { sprig } from './sprig'
+// biblical angels
+import { mika } from './mika'
+import { gabby } from './gabby'
+import { raffi } from './raffi'
+import { uri } from './uri'
+import { remi } from './remi'
+import { sari } from './sari'
+import { sandy } from './sandy'
+import { meta } from './meta'
+import { azza } from './azza'
+import { razi } from './razi'
+// biblical devils
+import { luci } from './luci'
+import { beel } from './beel'
+import { asmo } from './asmo'
+import { levi } from './levi'
+import { mami } from './mami'
+import { belphy } from './belphy'
+import { mephie } from './mephie'
+import { lili } from './lili'
+import { beli } from './beli'
+import { asta } from './asta'
+import { abby } from './abby'
+import { val } from './val'
 
 export const ALL_UNIQUE_HEROES = [
     // original 6
@@ -144,4 +168,8 @@ export const ALL_UNIQUE_HEROES = [
     borga, thurak, grawl, korvash,
     // hellborn
     scorcha, vexis, limn, ashcroft, sprig,
+    // biblical angels
+    mika, gabby, raffi, uri, remi, sari, sandy, meta, azza, razi,
+    // biblical devils
+    luci, beel, asmo, levi, mami, belphy, mephie, lili, beli, asta, abby, val,
 ]
