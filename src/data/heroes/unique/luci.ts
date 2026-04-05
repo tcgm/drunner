@@ -7,7 +7,7 @@ export const luci: UniqueHeroDefinition = {
   species: 'devil',
   heroRarity: 'mythic',
   level: 6,
-  classId: 'paladin',
+    classId: 'archdevil',
   statBonuses: [
     { stat: 'charisma', value: 16 },
     { stat: 'magicPower', value: 12 },

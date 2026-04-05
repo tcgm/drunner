@@ -11,7 +11,7 @@ import type {
   HeroSpecies,
   HeroStatBonus,
 } from '@/types'
-import { CORE_CLASSES } from '@/data/classes'
+import { CORE_CLASSES, UNIQUE_CLASSES } from '@/data/classes'
 import { ALL_SPECIES } from '@/data/heroes/species'
 import { generateHeroName } from '@/data/heroes/names'
 import type { UniqueHeroDefinition } from '@/data/heroes/unique'
@@ -213,7 +213,7 @@ export function generateHeroBoard(
 
 /** Convert a UniqueHeroDefinition to a HireableHero board card */
 export function uniqueHeroToHireable(def: UniqueHeroDefinition, arrivedAt?: number): HireableHero {
-  const heroClass = CORE_CLASSES.find(c => c.id === def.classId) ?? CORE_CLASSES[0]
+  const heroClass = [...CORE_CLASSES, ...UNIQUE_CLASSES].find(c => c.id === def.classId) ?? CORE_CLASSES[0]
   const speciesDef = ALL_SPECIES.find(s => s.id === def.species)!
 
   const speciesBonuses: HeroStatBonus[] = speciesDef.statBonuses.map(b => ({

@@ -7,7 +7,7 @@ export const mika: UniqueHeroDefinition = {
     species: 'angel',
     heroRarity: 'legendary',
     level: 5,
-    classId: 'paladin',
+    classId: 'archangel',
     statBonuses: [
         { stat: 'attack', value: 10 },
         { stat: 'defense', value: 10 },

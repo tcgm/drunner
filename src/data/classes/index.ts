@@ -1,4 +1,6 @@
 import type { HeroClass } from '@/types'
+import { UNIQUE_CLASSES } from './unique'
+export { UNIQUE_CLASSES } from './unique'
 
 // Auto-discover all hero class modules
 const classModules = import.meta.glob<{ default?: HeroClass; [key: string]: unknown }>('./*.ts', { eager: true })
@@ -24,9 +26,9 @@ export const STRETCH_CLASSES: HeroClass[] = []
 // All classes
 export const ALL_CLASSES: HeroClass[] = [...CORE_CLASSES, ...STRETCH_CLASSES]
 
-// Helper function to get a class by ID
+// Helper function to get a class by ID (searches core and unique classes)
 export function getClassById(id: string): HeroClass | undefined {
-  return ALL_CLASSES.find(c => c.id === id)
+  return ALL_CLASSES.find(c => c.id === id) ?? UNIQUE_CLASSES.find(c => c.id === id)
 }
 
 // Helper function to get a random class

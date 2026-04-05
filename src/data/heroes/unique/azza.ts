@@ -7,7 +7,7 @@ export const azza: UniqueHeroDefinition = {
     species: 'angel',
     heroRarity: 'legendary',
     level: 5,
-    classId: 'necromancer',
+    classId: 'reaper',
     statBonuses: [
         { stat: 'wisdom', value: 10 },
         { stat: 'maxHp', value: 20 },
