@@ -182,6 +182,7 @@ export type HeroSpecies =
   | 'nekomata'
   | 'oni'
   | 'tengu'
+  | 'dryad'
 
 export interface HeroStatBonus {
   stat: PrimaryStat | 'maxHp'
