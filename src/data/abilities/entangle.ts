@@ -1,5 +1,5 @@
 import type { Ability } from '@/types'
-import { GiSpikyTentacle } from 'react-icons/gi'
+import { GiSpikedTentacle as GiSpikyTentacle } from 'react-icons/gi'
 
 /**
  * Druid: Entangle

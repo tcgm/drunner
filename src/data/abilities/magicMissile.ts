@@ -13,11 +13,11 @@ export const MAGIC_MISSILE: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 15,
+        value: 30,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
-            ratio: 1.75
+            ratio: 1.3
         }
     },
     icon: GiMagicSwirl,

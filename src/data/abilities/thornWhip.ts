@@ -13,20 +13,20 @@ export const THORN_WHIP: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 18,
+        value: 35,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
-            ratio: 1.3,
+            ratio: 1.0,
         },
         dot: {
             name: 'Poisoned',
-            damage: 15,
+            damage: 20,
             duration: 3,
             stacking: 'additive',
             scaling: {
                 stat: 'magicPower',
-                ratio: 0.3,
+                ratio: 0.25,
             },
         },
     },

@@ -13,11 +13,11 @@ export const EARTH_SHATTER: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 14,
+        value: 30,
         targeting: { side: 'enemy', breadth: 'all' },
         scaling: {
             stat: 'magicPower',
-            ratio: 0.9,
+            ratio: 0.7,
         },
     },
     icon: GiEarthSpit,

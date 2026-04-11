@@ -9,15 +9,15 @@ export const SPIRIT_STRIKE: Ability = {
     id: 'spirit-strike',
     name: 'Spirit Strike',
     description: 'Channel ancestral power into a spirit-infused elemental strike (scales with magic power).',
-    cooldown: 2,
+    cooldown: 1,
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 22,
+        value: 40,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
-            ratio: 1.5,
+            ratio: 1.2,
         },
     },
     icon: GiLightningStorm,

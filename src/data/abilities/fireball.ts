@@ -8,25 +8,25 @@ import { GiFireball } from 'react-icons/gi'
 export const FIREBALL: Ability = {
     id: 'fireball',
     name: 'Fireball',
-    description: 'Magic damage to enemy (scales with magic power). Applies Burning (30+40% magic dmg/turn, 3 rounds, additive stacking).',
+    description: 'Magic damage to enemy (scales with magic power). Applies Burning (40+35% magic dmg/turn, 3 rounds, additive stacking).',
     cooldown: 2,
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 25,
+        value: 50,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
-            ratio: 1.7
+            ratio: 1.2
         },
         dot: {
             name: 'Burning',
-            damage: 30,
+            damage: 40,
             duration: 3,
             stacking: 'additive',
             scaling: {
                 stat: 'magicPower',
-                ratio: 0.4,
+                ratio: 0.35,
             },
         },
     },

@@ -13,11 +13,11 @@ export const HOLY_LIGHT: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 20,
+        value: 25,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
-            ratio: 3
+            ratio: 1.8
         }
     },
     icon: GiSunbeams,

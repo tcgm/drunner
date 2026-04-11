@@ -13,11 +13,11 @@ export const POWER_STRIKE: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 20,
+        value: 40,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'attack',
-            ratio: 2
+            ratio: 1.6
         }
     },
     icon: GiPunch,

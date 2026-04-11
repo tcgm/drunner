@@ -9,15 +9,15 @@ export const DRAIN_LIFE: Ability = {
     id: 'drain-life',
     name: 'Drain Life',
     description: 'Damage enemy and heal self (scales with magic power)',
-    cooldown: 2,
+    cooldown: 1,
     currentCooldown: 0,
     effect: {
         type: 'special',
-        value: 15,
+        value: 35,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'magicPower',
-            ratio: 1.5
+            ratio: 1.3
         }
     },
     icon: GiVampireDracula,

@@ -8,16 +8,16 @@ import { GiBullseye } from 'react-icons/gi'
 export const AIMED_SHOT: Ability = {
     id: 'aimed-shot',
     name: 'Aimed Shot',
-    description: 'High accuracy attack (scales with attack)',
+    description: 'Slow, heavy-hitting attack (scales with attack)',
     cooldown: 2,
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 20,
+        value: 30,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'attack',
-            ratio: 0.6
+            ratio: 4.0
         }
     },
     icon: GiBullseye,
