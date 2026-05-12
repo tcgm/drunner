@@ -100,9 +100,9 @@ const QUEST_TEMPLATES: QuestTemplate[] = [
   { type: 'complete_runs_floor', difficulty: 'medium', title: 'Relentless Delver', descriptionFn: (req, floor) => `Complete ${req} dungeon runs, each reaching at least floor ${floor}.`, base: 0.15, exp: 0.6, goldPerReq: 200, xpPerReq: 45, rarityPool: ['uncommon', 'rare', 'veryRare', 'magical'], templateMinFloor: 15, floorThresholdPct: 0.7 },
 
   // ── Reach floor ───────────────────────────────────────────────────────────
-  { type: 'reach_floor', difficulty: 'easy',   title: 'Into the Dark',          descriptionFn: req => `Reach Floor ${req} in a single run.`,                                base: 1.2, exp: 0.7, goldPerReq: 120, xpPerReq: 25,   rarityPool: ['common', 'uncommon', 'rare'] },
-  { type: 'reach_floor', difficulty: 'medium',  title: 'Depth Diver',            descriptionFn: req => `Descend to Floor ${req} or deeper in a single run.`,                 base: 1.2, exp: 0.7, goldPerReq: 150, xpPerReq: 30,   rarityPool: ['uncommon', 'rare', 'veryRare', 'magical'] },
-  { type: 'reach_floor', difficulty: 'hard',   title: 'Legend of the Deep',      descriptionFn: req => `Reach the treacherous Floor ${req} in a single run.`,                base: 1.2, exp: 0.7, goldPerReq: 200, xpPerReq: 40,   rarityPool: ['rare', 'veryRare', 'magical', 'elite', 'epic', 'legendary'] },
+  { type: 'reach_floor', difficulty: 'easy', title: 'Into the Dark', descriptionFn: req => `Reach Floor ${req} in a single run.`, base: 1.2, exp: 0.7, goldPerReq: 65, xpPerReq: 12, rarityPool: ['common', 'uncommon', 'rare'] },
+  { type: 'reach_floor', difficulty: 'medium', title: 'Depth Diver', descriptionFn: req => `Descend to Floor ${req} or deeper in a single run.`, base: 1.2, exp: 0.7, goldPerReq: 75, xpPerReq: 15, rarityPool: ['uncommon', 'rare', 'veryRare', 'magical'] },
+  { type: 'reach_floor', difficulty: 'hard', title: 'Legend of the Deep', descriptionFn: req => `Reach the treacherous Floor ${req} in a single run.`, base: 1.2, exp: 0.7, goldPerReq: 50, xpPerReq: 10, rarityPool: ['rare', 'veryRare', 'magical', 'elite', 'epic', 'legendary'] },
 
   // ── Defeat bosses ─────────────────────────────────────────────────────────
   { type: 'defeat_bosses', difficulty: 'easy',   title: 'Monster Hunter',        descriptionFn: req => `Defeat ${req} dungeon boss${req > 1 ? 'es' : ''}.`,                  base: 0.4, exp: 0.8, goldPerReq: 200, xpPerReq: 40,   rarityPool: ['common', 'uncommon', 'rare'] },
