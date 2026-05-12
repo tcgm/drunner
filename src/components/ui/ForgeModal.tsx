@@ -237,10 +237,11 @@ function CraftTab({ alkahest, bankInventory, deepestFloor, onForge }: CraftTabPr
               const isLocked = !forgeableRarities.includes(rarity)
               const color = getRarityColor(rarity)
               const isSelected = selectedRarity === rarity
+              const lockedFloor = isLocked ? (RARITY_CONFIGS[rarity]?.minFloor ?? null) : null
               return (
                 <Tooltip
                   key={rarity}
-                  label={isLocked ? 'Reach a deeper floor to unlock' : undefined}
+                  label={isLocked ? `Reach floor ${lockedFloor} to unlock` : undefined}
                   isDisabled={!isLocked}
                   hasArrow
                 >

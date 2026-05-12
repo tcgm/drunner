@@ -90,7 +90,8 @@ export function validateForgeRecipe(
   // Check target rarity is in forgeable list
   const forgeable = getForgeableRarities(material, deepestFloor)
   if (!forgeable.includes(recipe.targetRarity)) {
-    return `Cannot forge at ${recipe.targetRarity} rarity — reach a deeper floor first.`
+    const minFloor = (RARITY_CONFIGS as Partial<Record<ItemRarity, { minFloor: number }>>)[recipe.targetRarity]?.minFloor
+    return `Cannot forge at ${recipe.targetRarity} rarity — reach floor ${minFloor ?? '?'} first.`
   }
 
   // Stash check
