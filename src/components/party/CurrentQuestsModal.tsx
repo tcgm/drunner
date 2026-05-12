@@ -41,6 +41,7 @@ function getPendingDelta(quest: Quest, run: Run): number {
             return 0
         }
         case 'complete_runs': return 0 // can't count mid-run
+        case 'complete_runs_floor': return 0 // can't count mid-run
         default: return 0
     }
 }

@@ -45,7 +45,7 @@ interface QuestTemplate {
   type: QuestType
   difficulty: QuestDifficulty
   title: string
-  descriptionFn: (req: number) => string
+  descriptionFn: (req: number, extra?: number) => string
   /** Base multiplier before difficulty/power scaling */
   base: number
   /** Exponent applied to partyPower */
@@ -56,6 +56,10 @@ interface QuestTemplate {
   xpPerReq: number
   /** Rarity tiers available for this quest, ordered low → high */
   rarityPool: ItemRarity[]
+  /** Minimum deepestFloor the player must have reached for this template to be offered */
+  templateMinFloor?: number
+  /** For complete_runs_floor: floorThreshold = deepestFloor * pct (min 10) */
+  floorThresholdPct?: number
 }
 
 /**
@@ -92,7 +96,8 @@ const QUEST_TEMPLATES: QuestTemplate[] = [
   // ── Complete runs ─────────────────────────────────────────────────────────
   { type: 'complete_runs', difficulty: 'easy',   title: 'First Expedition',      descriptionFn: req => `Complete ${req} dungeon run${req > 1 ? 's' : ''} (victory or retreat).`, base: 0.15, exp: 0.6, goldPerReq: 150, xpPerReq: 30,   rarityPool: ['common', 'uncommon', 'rare'] },
   { type: 'complete_runs', difficulty: 'medium',  title: 'Seasoned Delver',       descriptionFn: req => `Complete ${req} dungeon runs.`,                                       base: 0.15, exp: 0.6, goldPerReq: 180, xpPerReq: 40,   rarityPool: ['uncommon', 'rare', 'veryRare', 'magical'] },
-  { type: 'complete_runs', difficulty: 'hard',   title: 'Veteran Adventurer',    descriptionFn: req => `Complete ${req} dungeon runs without retreating.`,                    base: 0.15, exp: 0.6, goldPerReq: 230, xpPerReq: 55,   rarityPool: ['rare', 'veryRare', 'magical', 'elite', 'epic', 'legendary'] },
+  { type: 'complete_runs', difficulty: 'hard', title: 'Veteran Adventurer', descriptionFn: req => `Complete ${req} dungeon runs without retreating.`, base: 0.15, exp: 0.6, goldPerReq: 230, xpPerReq: 55, rarityPool: ['rare', 'veryRare', 'magical', 'elite', 'epic', 'legendary'], templateMinFloor: 90 },
+  { type: 'complete_runs_floor', difficulty: 'medium', title: 'Relentless Delver', descriptionFn: (req, floor) => `Complete ${req} dungeon runs, each reaching at least floor ${floor}.`, base: 0.15, exp: 0.6, goldPerReq: 200, xpPerReq: 45, rarityPool: ['uncommon', 'rare', 'veryRare', 'magical'], templateMinFloor: 15, floorThresholdPct: 0.7 },
 
   // ── Reach floor ───────────────────────────────────────────────────────────
   { type: 'reach_floor', difficulty: 'easy',   title: 'Into the Dark',          descriptionFn: req => `Reach Floor ${req} in a single run.`,                                base: 1.2, exp: 0.7, goldPerReq: 120, xpPerReq: 25,   rarityPool: ['common', 'uncommon', 'rare'] },
@@ -144,7 +149,9 @@ export function generateQuests(
       .map(q => q.type)
   )
 
-  const eligible = QUEST_TEMPLATES.filter(t => !activeTypes.has(t.type))
+  const eligible = QUEST_TEMPLATES.filter(t =>
+    !activeTypes.has(t.type) && deepestFloor >= (t.templateMinFloor ?? 0)
+  )
   const shuffled  = [...eligible].sort(() => Math.random() - 0.5)
   const picked    = shuffled.slice(0, count)
 
@@ -158,14 +165,18 @@ export function generateQuests(
     const rarity = rollRarity(pool, power)
     const minFloor = RARITY_CONFIGS[rarity]?.minFloor ?? 0
     const items = rollFragmentRewards(rarity, template.difficulty, deepestFloor)
+    const floorThreshold = template.floorThresholdPct != null
+      ? Math.max(10, Math.floor(deepestFloor * template.floorThresholdPct))
+      : undefined
     return {
       id:          `quest-${now}-${Math.random().toString(36).slice(2, 8)}`,
       title:       template.title,
-      description: template.descriptionFn(requirement),
+      description: template.descriptionFn(requirement, floorThreshold),
       type:        template.type,
       difficulty:  template.difficulty,
       rarity,
       minFloor,
+      ...(floorThreshold != null && { floorThreshold }),
       requirement,
       progress:    0,
       reward:      { gold, metaXp, items },

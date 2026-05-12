@@ -165,8 +165,17 @@ export const createQuestActions: StateCreator<
             progressDelta = run.enemiesDefeated ?? 0
             break
           case 'complete_runs':
-            progressDelta = (run.result === 'victory' || run.result === 'retreat') ? 1 : 0
+            if (quest.difficulty === 'hard') {
+              progressDelta = (run.result === 'victory' || run.result === 'defeat') ? 1 : 0
+            } else {
+              progressDelta = (run.result === 'victory' || run.result === 'retreat') ? 1 : 0
+            }
             break
+          case 'complete_runs_floor': {
+            const floorReached = run.finalFloor ?? 0
+            progressDelta = floorReached >= (quest.floorThreshold ?? 0) ? 1 : 0
+            break
+          }
           case 'reach_floor': {
             const floorReached = run.finalFloor ?? 0
             if (floorReached >= quest.requirement && quest.progress < quest.requirement) {

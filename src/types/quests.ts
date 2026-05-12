@@ -6,6 +6,7 @@ export type QuestType =
   | 'kill_enemies'
   | 'reach_floor'
   | 'complete_runs'
+  | 'complete_runs_floor'
   | 'defeat_bosses'
   | 'earn_gold'
 
@@ -33,6 +34,7 @@ export interface Quest {
   type: QuestType
   rarity: ItemRarity
   minFloor: number      // minimum floor the player must have reached (derived from rarity)
+  floorThreshold?: number // for complete_runs_floor: each run must reach this floor
   requirement: number
   progress: number
   reward: QuestReward

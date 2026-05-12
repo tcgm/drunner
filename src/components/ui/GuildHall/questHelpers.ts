@@ -21,11 +21,12 @@ export const DIFFICULTY_LABEL: Record<QuestDifficulty, string> = {
 }
 
 export const QUEST_TYPE_ICON: Record<QuestType, React.ElementType> = {
-  kill_enemies:  GiSwordsPower,
+  kill_enemies: GiSwordsPower,
   complete_runs: GiWalkingBoot,
-  reach_floor:   GiLevelThreeAdvanced,
+  complete_runs_floor: GiWalkingBoot,
+  reach_floor: GiLevelThreeAdvanced,
   defeat_bosses: GiDragonHead,
-  earn_gold:     GiCoins,
+  earn_gold: GiCoins,
 }
 
 export function formatTimeLeft(expiresAt: number): string {

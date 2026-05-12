@@ -71,11 +71,12 @@ export const QUEST_CONFIG = {
    *   maxPerDifficulty – optional per-difficulty override for max (takes precedence over max)
    */
   typeSettings: {
-    kill_enemies:  { max: Infinity, snap: 5  },
-    complete_runs: { max: 15,       snap: 5  },
-    reach_floor:   { max: 95,       snap: 1,  maxPerDifficulty: { easy: 30, medium: 60, hard: 95 } },
-    defeat_bosses: { max: 20,       snap: 5  },
-    earn_gold:     { max: Infinity, snap: 50 },
+    kill_enemies: { max: Infinity, snap: 5 },
+    complete_runs: { max: 15, snap: 5 },
+    complete_runs_floor: { max: 15, snap: 5 },
+    reach_floor: { max: 95, snap: 1, maxPerDifficulty: { easy: 30, medium: 60, hard: 95 } },
+    defeat_bosses: { max: 20, snap: 5 },
+    earn_gold: { max: Infinity, snap: 50 },
   } as Record<QuestType, { max: number; snap: number; maxPerDifficulty?: Record<QuestDifficulty, number> }>,
 
   // ── Reward floor & rounding ───────────────────────────────────────────────
