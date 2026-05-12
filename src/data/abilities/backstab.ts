@@ -9,15 +9,15 @@ export const BACKSTAB: Ability = {
     id: 'backstab',
     name: 'Backstab',
     description: 'High single-target damage (scales with attack)',
-    cooldown: 2,
+    cooldown: 1,
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 30,
+        value: 35,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'attack',
-            ratio: 0.8
+            ratio: 2.0
         }
     },
     icon: GiSwordSmithing,

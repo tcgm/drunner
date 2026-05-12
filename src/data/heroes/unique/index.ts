@@ -128,6 +128,11 @@ import { beli } from './beli'
 import { asta } from './asta'
 import { abby } from './abby'
 import { val } from './val'
+// dryad
+import { sylvara } from './sylvara'
+import { briarzen } from './briarzen'
+import { thornveil } from './thornveil'
+import { mosshallow } from './mosshallow'
 
 export const ALL_UNIQUE_HEROES = [
     // original 6
@@ -172,4 +177,6 @@ export const ALL_UNIQUE_HEROES = [
     mika, gabby, raffi, uri, remi, sari, sandy, meta, azza, razi,
     // biblical devils
     luci, beel, asmo, levi, mami, belphy, mephie, lili, beli, asta, abby, val,
+    // dryad
+    sylvara, briarzen, thornveil, mosshallow,
 ]

@@ -13,9 +13,9 @@ export const SMITE_PALADIN: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 20,
+        value: 25,
         targeting: { side: 'enemy', breadth: 'single' },
-        scaling: { stat: 'wisdom', ratio: 1.0 },
+        scaling: { stat: 'wisdom', ratio: 1.5 },
     },
     icon: GiHolySymbol,
 }

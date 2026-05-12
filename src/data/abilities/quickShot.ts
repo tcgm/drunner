@@ -13,11 +13,11 @@ export const QUICK_SHOT: Ability = {
     currentCooldown: 0,
     effect: {
         type: 'damage',
-        value: 12,
+        value: 15,
         targeting: { side: 'enemy', breadth: 'single' },
         scaling: {
             stat: 'attack',
-            ratio: 0.5
+            ratio: 2.0
         }
     },
     icon: GiBowArrow,
