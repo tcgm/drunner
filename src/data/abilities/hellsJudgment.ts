@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiDevilMask } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiDevilMask } from 'react-icons/gi'
 export const HELLS_JUDGMENT: Ability = {
     id: 'hells-judgment',
     name: "Hell's Judgment",
-    description: 'Pass infernal sentence on all enemies — strips their defense for 3 turns (scales with magic power)',
+    description: 'Pass infernal sentence on all enemies - strips their defense for 3 turns (scales with magic power)',
     cooldown: 5,
     currentCooldown: 0,
     effect: {

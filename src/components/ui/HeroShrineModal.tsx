@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HeroShrineModal – view and customize all heroes in the roster.
  * Each hero card opens the full HeroModal (rename, portrait upload, equipment).
  */
@@ -76,7 +76,7 @@ export function HeroShrineModal({ isOpen, onClose }: HeroShrineModalProps) {
                 Hero Shrine
               </Text>
               <Text color="gray.400" fontSize="xs" fontWeight="normal">
-                Honor your heroes — rename them, change their portrait, inspect their gear
+                Honor your heroes - rename them, change their portrait, inspect their gear
               </Text>
             </VStack>
             <Box flex={1} />
@@ -92,7 +92,7 @@ export function HeroShrineModal({ isOpen, onClose }: HeroShrineModalProps) {
           {heroRoster.length === 0 ? (
             <VStack py={12} spacing={3} color="gray.500">
               <Icon as={GiFireShrine} boxSize={12} opacity={0.3} />
-              <Text fontSize="sm">No heroes yet — recruit some from the party screen.</Text>
+              <Text fontSize="sm">No heroes yet - recruit some from the party screen.</Text>
             </VStack>
           ) : (
             <SimpleGrid columns={{ base: 2, sm: 3, md: 4 }} spacing={3}>
@@ -200,7 +200,7 @@ export function HeroShrineModal({ isOpen, onClose }: HeroShrineModalProps) {
                             </HStack>
                           </VStack>
                         ) : (
-                          <Tooltip label={inParty ? 'Remove from party first' : `Dismiss hero — recover ${gearCount} item${gearCount !== 1 ? 's' : ''}`} placement="bottom" hasArrow openDelay={300}>
+                          <Tooltip label={inParty ? 'Remove from party first' : `Dismiss hero - recover ${gearCount} item${gearCount !== 1 ? 's' : ''}`} placement="bottom" hasArrow openDelay={300}>
                             <Button
                               size="xs"
                               variant="ghost"

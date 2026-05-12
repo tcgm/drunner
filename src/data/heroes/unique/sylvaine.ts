@@ -1,6 +1,6 @@
-import type { UniqueHeroDefinition } from './_types'
+﻿import type { UniqueHeroDefinition } from './_types'
 
-/** An elf who cannot sit still — she has been asked to leave two temples and one very nice forest for fidgeting. */
+/** An elf who cannot sit still - she has been asked to leave two temples and one very nice forest for fidgeting. */
 export const sylvaine: UniqueHeroDefinition = {
     id: 'sylvaine',
     name: 'Sylvaine the Unquiet',

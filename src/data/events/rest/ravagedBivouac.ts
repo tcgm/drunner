@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiFire } from 'react-icons/gi'
 
 export const RAVAGED_BIVOUAC: DungeonEvent = {
     id: 'ravaged-bivouac',
     type: 'rest',
     title: 'Ravaged Bivouac',
-    description: "Someone camped here recently — and didn't leave voluntarily. Scattered gear and an extinguished fire ring remain.",
+    description: "Someone camped here recently - and didn't leave voluntarily. Scattered gear and an extinguished fire ring remain.",
     choices: [
         {
             text: 'Rest at the campsite and relight the fire',
@@ -20,7 +20,7 @@ export const RAVAGED_BIVOUAC: DungeonEvent = {
         {
             text: 'Search through the abandoned belongings',
             outcome: {
-                text: 'The previous occupant left in a hurry — and left behind useful gear.',
+                text: 'The previous occupant left in a hurry - and left behind useful gear.',
                 effects: [
                     { type: 'gold', value: 45 },
                     { type: 'consumable', consumableId: 'rations' },
@@ -31,7 +31,7 @@ export const RAVAGED_BIVOUAC: DungeonEvent = {
         {
             text: 'Set a watch and rest in shifts',
             outcome: {
-                text: 'The careful rest leaves everyone better prepared — if a little tired.',
+                text: 'The careful rest leaves everyone better prepared - if a little tired.',
                 effects: [
                     { type: 'heal', target: 'all', value: 35 },
                     { type: 'gold', value: 25 },

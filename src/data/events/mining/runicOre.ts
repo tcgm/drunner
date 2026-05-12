@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiMagicSwirl } from 'react-icons/gi'
 
 export const RUNIC_ORE: DungeonEvent = {
     id: 'runic-ore',
     type: 'mining',
     title: 'Runic Ore Vein',
-    description: 'Strange runes are naturally formed in the mineral pattern of this ore vein — not carved, but grown. The ore hums faintly when touched.',
+    description: 'Strange runes are naturally formed in the mineral pattern of this ore vein - not carved, but grown. The ore hums faintly when touched.',
     choices: [
         {
             text: 'Mine it carefully, preserving the runes',
@@ -22,7 +22,7 @@ export const RUNIC_ORE: DungeonEvent = {
             successChance: 0.5,
             statModifier: 'luck',
             successOutcome: {
-                text: 'The rune pattern reveals something useful — ancient knowledge encoded in stone.',
+                text: 'The rune pattern reveals something useful - ancient knowledge encoded in stone.',
                 effects: [
                     { type: 'material_fragment', fragmentSourceType: 'chest', fragmentQuantity: 2 },
                     { type: 'xp', value: 80 },

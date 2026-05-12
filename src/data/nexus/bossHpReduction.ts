@@ -1,8 +1,8 @@
-import { GiReaperScythe } from 'react-icons/gi'
+﻿import { GiReaperScythe } from 'react-icons/gi'
 import type { NexusUpgrade } from './types'
 
 /**
- * Boss HP Reduction — most expensive Nexus upgrade.
+ * Boss HP Reduction - most expensive Nexus upgrade.
  * 40 tiers × 1.875 bonusPerTier = 75% max boss HP reduction.
  */
 export const BOSS_HP_REDUCTION: NexusUpgrade = {

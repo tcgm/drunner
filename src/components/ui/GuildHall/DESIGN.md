@@ -1,4 +1,4 @@
-# GuildHall Component Split Design
+﻿# GuildHall Component Split Design
 
 ## Goal
 
@@ -24,7 +24,7 @@ src/components/ui/
 ## File Responsibilities
 
 ### `questHelpers.ts`
-Pure data and utility functions — no React, no hooks.
+Pure data and utility functions - no React, no hooks.
 
 Exports:
 - `DIFFICULTY_COLOR: Record<QuestDifficulty, string>`
@@ -51,7 +51,7 @@ Immersive room view with wandering heroes.
 Exports:
 - `ROOM_SPOTS: RoomSpot[]`
 - `heroLevelColor(level: number): string`
-- `HeroToken` component (internal use only — not exported)
+- `HeroToken` component (internal use only - not exported)
 - `RoomScene` component (named export)
 
 Props:
@@ -84,7 +84,7 @@ export { GuildHallModal } from './GuildHall/GuildHallModal'
 
 | File | Change |
 |------|--------|
-| Any file importing `GuildHallModal` | **No change needed** — re-export preserves the path |
+| Any file importing `GuildHallModal` | **No change needed** - re-export preserves the path |
 
 ---
 

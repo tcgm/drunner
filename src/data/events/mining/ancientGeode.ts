@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiEarthCrack } from 'react-icons/gi'
 
 export const ANCIENT_GEODE: DungeonEvent = {
     id: 'ancient-geode',
     type: 'mining',
     title: 'Ancient Geode',
-    description: 'A massive geode — half the size of a room — juts from the floor. Its outer shell is dull grey stone, but you can hear resonance when you knock on it. Something remarkable is inside.',
+    description: 'A massive geode - half the size of a room - juts from the floor. Its outer shell is dull grey stone, but you can hear resonance when you knock on it. Something remarkable is inside.',
     choices: [
         {
             text: 'Crack it open at the stress point',

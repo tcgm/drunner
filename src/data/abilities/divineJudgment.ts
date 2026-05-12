@@ -1,9 +1,9 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiLightningStorm } from 'react-icons/gi'
 
 /**
  * Archangel: Divine Judgment
- * Call down heaven's verdict — overwhelming damage to one target
+ * Call down heaven's verdict - overwhelming damage to one target
  */
 export const DIVINE_JUDGMENT: Ability = {
     id: 'divine-judgment',

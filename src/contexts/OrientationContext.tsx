@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+﻿import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 
-// HMR: context identity must be stable — force full page reload when this module changes
+// HMR: context identity must be stable - force full page reload when this module changes
 if (import.meta.hot) {
   import.meta.hot.decline()
 }

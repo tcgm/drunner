@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiStarKey } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiStarKey } from 'react-icons/gi'
 export const WILD_LUCK: Ability = {
     id: 'wild-luck',
     name: 'Wild Luck',
-    description: 'Stack the deck — greatly boosts own luck for 3 turns (scales with charisma)',
+    description: 'Stack the deck - greatly boosts own luck for 3 turns (scales with charisma)',
     cooldown: 4,
     currentCooldown: 0,
     effect: {

@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiOpenChest } from 'react-icons/gi'
 
 export const SMUGGLERS_STASH: DungeonEvent = {
     id: 'smugglers-stash',
     type: 'treasure',
     title: "Smuggler's Stash",
-    description: 'A loose stone in the wall conceals a cache — the mark of a dungeon smuggling operation. The goods are still fresh.',
+    description: 'A loose stone in the wall conceals a cache - the mark of a dungeon smuggling operation. The goods are still fresh.',
     choices: [
         {
             text: 'Take everything',
@@ -24,7 +24,7 @@ export const SMUGGLERS_STASH: DungeonEvent = {
             successChance: 0.4,
             statModifier: 'luck',
             successOutcome: {
-                text: 'You wait in the shadows. The smuggler arrives — laden with goods. You relieve them of both.',
+                text: 'You wait in the shadows. The smuggler arrives - laden with goods. You relieve them of both.',
                 effects: [
                     { type: 'gold', value: 210 },
                     { type: 'item', itemType: 'random', minRarity: 'uncommon' },

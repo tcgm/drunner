@@ -1,4 +1,4 @@
-import { GiPresent } from 'react-icons/gi'
+﻿import { GiPresent } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -7,7 +7,7 @@ import type { Item } from '@/types'
  */
 export const SANTAS_SACK: Omit<Item, 'id'> = {
   name: "Santa's Sack",
-  description: "A bottomless bag stuffed with presents. Swung like a flail, it hits with the weight of every gift inside — which is to say, all of them.",
+  description: "A bottomless bag stuffed with presents. Swung like a flail, it hits with the weight of every gift inside - which is to say, all of them.",
   type: 'weapon',
   rarity: 'rare',
   minRarity: 'uncommon',

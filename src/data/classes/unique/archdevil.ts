@@ -1,11 +1,11 @@
-import type { HeroClass } from '@/types'
+﻿import type { HeroClass } from '@/types'
 import { ARCHDEVIL_ABILITIES } from '@/data/abilities/archdevilAbilities'
 
 /** Unique-only class. Not available in random hero generation. */
 export const ARCHDEVIL: HeroClass = {
     id: 'archdevil',
     name: 'Archdevil',
-    description: 'Infernal Sovereign — overwhelming offense, party attack aura, and crushing judgment',
+    description: 'Infernal Sovereign - overwhelming offense, party attack aura, and crushing judgment',
     baseStats: {
         attack: 13,
         defense: 4,

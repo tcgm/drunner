@@ -1,11 +1,11 @@
-import type { HeroClass } from '@/types'
+﻿import type { HeroClass } from '@/types'
 import { ARCHANGEL_ABILITIES } from '@/data/abilities/archangelAbilities'
 
 /** Unique-only class. Not available in random hero generation. */
 export const ARCHANGEL: HeroClass = {
     id: 'archangel',
     name: 'Archangel',
-    description: 'Holy Warrior-Mage — devastating divine strikes and powerful party-wide support',
+    description: 'Holy Warrior-Mage - devastating divine strikes and powerful party-wide support',
     baseStats: {
         attack: 7,
         defense: 8,

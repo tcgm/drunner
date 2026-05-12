@@ -1,6 +1,6 @@
-import type { UniqueHeroDefinition } from './_types'
+﻿import type { UniqueHeroDefinition } from './_types'
 
-/** A hellborn warrior who ran away from Hell — literally just left. Nobody has come to collect her. She's not sure if she won. */
+/** A hellborn warrior who ran away from Hell - literally just left. Nobody has come to collect her. She's not sure if she won. */
 export const scorcha: UniqueHeroDefinition = {
     id: 'scorcha',
     name: 'Scorcha',

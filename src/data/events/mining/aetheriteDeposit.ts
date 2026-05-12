@@ -1,14 +1,14 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiStarSattelites } from 'react-icons/gi'
 
 export const AETHERITE_DEPOSIT: DungeonEvent = {
     id: 'aetherite-deposit',
     type: 'mining',
     title: 'Aetherite Deposit',
-    description: 'Patches of iridescent ore glimmer with an inner light that shifts between colours. Aetherite — formed where raw magical energy was absorbed into rock over ages. Even a fragment is worth a fortune to the right buyer.',
+    description: 'Patches of iridescent ore glimmer with an inner light that shifts between colours. Aetherite - formed where raw magical energy was absorbed into rock over ages. Even a fragment is worth a fortune to the right buyer.',
     choices: [
         {
-            text: 'Mine cautiously — this material is volatile',
+            text: 'Mine cautiously - this material is volatile',
             outcome: {
                 text: 'Slow, careful work yields modest but genuine aetherite.',
                 effects: [
@@ -55,7 +55,7 @@ export const AETHERITE_DEPOSIT: DungeonEvent = {
             },
         },
         {
-            text: 'Leave it — too dangerous',
+            text: 'Leave it - too dangerous',
             outcome: {
                 text: 'Aetherite finds its way to collectors eventually. You\'ll let someone else deal with it.',
                 effects: [],

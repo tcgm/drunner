@@ -1,9 +1,9 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiSpellBook } from 'react-icons/gi'
 
 /**
  * Oracle: Revelation
- * A moment of divine clarity — surges the party's wisdom
+ * A moment of divine clarity - surges the party's wisdom
  */
 export const REVELATION: Ability = {
     id: 'revelation',

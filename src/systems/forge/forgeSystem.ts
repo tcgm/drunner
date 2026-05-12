@@ -1,4 +1,4 @@
-/**
+﻿/**
  * forgeSystem.ts
  *
  * Pure calculation helpers for the Forge. No Zustand state is read or written here.
@@ -91,7 +91,7 @@ export function validateForgeRecipe(
   const forgeable = getForgeableRarities(material, deepestFloor)
   if (!forgeable.includes(recipe.targetRarity)) {
     const minFloor = (RARITY_CONFIGS as Partial<Record<ItemRarity, { minFloor: number }>>)[recipe.targetRarity]?.minFloor
-    return `Cannot forge at ${recipe.targetRarity} rarity — reach floor ${minFloor ?? '?'} first.`
+    return `Cannot forge at ${recipe.targetRarity} rarity - reach floor ${minFloor ?? '?'} first.`
   }
 
   // Stash check

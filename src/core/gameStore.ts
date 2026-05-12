@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { GameState, Hero, Item, Equipment } from '@/types'
 import type { ItemV3 } from '@/types/items-v3'
@@ -368,7 +368,7 @@ export const useGameStore = create<GameStore>()(
             state.migrateHeroStats()
             state.recalculateHeroStats()
             state.deduplicateInventories()
-            // Hydrate items lazily after render — the heavy per-item work
+            // Hydrate items lazily after render - the heavy per-item work
             // (stat calculation, icon restoration) now runs off the critical path.
             state.hydrateLoadedItems()
           }

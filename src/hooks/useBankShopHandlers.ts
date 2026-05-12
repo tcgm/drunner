@@ -1,4 +1,4 @@
-import { useDisclosure } from '@chakra-ui/react'
+﻿import { useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { Consumable, Item } from '@/types'
@@ -22,7 +22,7 @@ export function useBankShopHandlers(onBankFull?: () => void) {
     expandBankStorage,
   } = useGameStore()
 
-  // BuyBankSlotsModal disclosure — used by DungeonPrepScreen and PartySetupScreen.
+  // BuyBankSlotsModal disclosure - used by DungeonPrepScreen and PartySetupScreen.
   // TownHubScreen passes its own onBankFull so this never opens there.
   const { isOpen: isBuySlotsOpen, onOpen: onBuySlotsOpen, onClose: onBuySlotsClose } = useDisclosure()
 
@@ -34,14 +34,14 @@ export function useBankShopHandlers(onBankFull?: () => void) {
     }
   }
 
-  /** Potion shop purchase — spends gold at shop price and places item in bank. */
+  /** Potion shop purchase - spends gold at shop price and places item in bank. */
   const handlePurchasePotion = (potion: Consumable, price: number) => {
     if (spendBankGold(price)) {
       moveItemToBank(potion)
     }
   }
 
-  /** Market consumable — same as above but guards against a full bank first. */
+  /** Market consumable - same as above but guards against a full bank first. */
   const handlePurchaseConsumable = (consumable: Consumable, price: number) => {
     if (bankInventory.length >= bankStorageSlots) {
       handleBankFull()
@@ -52,7 +52,7 @@ export function useBankShopHandlers(onBankFull?: () => void) {
     }
   }
 
-  /** Featured / equipment item purchase — guards against a full bank first. */
+  /** Featured / equipment item purchase - guards against a full bank first. */
   const handlePurchaseItem = (item: Item, price: number) => {
     if (bankInventory.length >= bankStorageSlots) {
       handleBankFull()

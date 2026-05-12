@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiIceberg } from 'react-icons/gi'
 
 export const FROST_VEIN: DungeonEvent = {
     id: 'frost-vein',
     type: 'mining',
     title: 'Frost Crystal Vein',
-    description: 'Ice-blue crystals have grown through the rock — not natural ice, but permafrost minerals that have taken crystalline form over millennia. The cold here is biting.',
+    description: 'Ice-blue crystals have grown through the rock - not natural ice, but permafrost minerals that have taken crystalline form over millennia. The cold here is biting.',
     choices: [
         {
             text: 'Mine quickly before the cold gets to you',
@@ -28,7 +28,7 @@ export const FROST_VEIN: DungeonEvent = {
             },
         },
         {
-            text: 'Search for the frost node — the source crystal (Luck check)',
+            text: 'Search for the frost node - the source crystal (Luck check)',
             successChance: 0.4,
             statModifier: 'luck',
             successOutcome: {
@@ -46,7 +46,7 @@ export const FROST_VEIN: DungeonEvent = {
             },
         },
         {
-            text: 'Too cold — keep moving',
+            text: 'Too cold - keep moving',
             outcome: {
                 text: 'Your breath mists and you pick up the pace.',
                 effects: [],

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Hero Board actions module
  * Manages the pool of hireable heroes shown in the Guild Hall.
  *
@@ -16,12 +16,12 @@ import { GUILD_HERO_CONFIG } from '@/config/guildHeroConfig'
 
 export interface HeroBoardActionsSlice {
   /**
-   * Trickle tick — prune expired heroes, add any that are due based on the
+   * Trickle tick - prune expired heroes, add any that are due based on the
    * arrival interval. Pass `force = true` to immediately fill the board.
    */
   refreshHeroBoard: (force?: boolean) => void
   /**
-   * "Call for Adventurers" — instantly recruits up to callHeroCount heroes.
+   * "Call for Adventurers" - instantly recruits up to callHeroCount heroes.
    * Returns false if the action is still on cooldown.
    */
   callForHeroes: () => boolean
@@ -68,7 +68,7 @@ export const createHeroBoardActions: StateCreator<
         : Math.floor((now - lastArrival) / arrivalMs)
 
       if (slotsElapsed <= 0 && fresh.length === state.availableHeroesForHire.length) {
-      // Nothing expired and no new slots — nothing to do
+      // Nothing expired and no new slots - nothing to do
         return state
       }
 

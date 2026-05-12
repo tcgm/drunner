@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiPoisonBottle } from 'react-icons/gi'
 
 export const TOXIC_SPORE_VEIN: DungeonEvent = {
     id: 'toxic-spore-vein',
     type: 'mining',
     title: 'Toxic Spore Vein',
-    description: 'A vein of bioluminescent green ore pulses softly in the wall. Spores drift from cracks in the surrounding rock — the ore is infested with a parasitic fungus.',
+    description: 'A vein of bioluminescent green ore pulses softly in the wall. Spores drift from cracks in the surrounding rock - the ore is infested with a parasitic fungus.',
     choices: [
         {
             text: 'Mine through bandage-masks (some exposure)',
@@ -37,7 +37,7 @@ export const TOXIC_SPORE_VEIN: DungeonEvent = {
             },
         },
         {
-            text: 'Harvest the fungus too — might be useful',
+            text: 'Harvest the fungus too - might be useful',
             outcome: {
                 text: 'Peculiar stuff. You pack both ore and fungal matter. An alchemist could do something with this.',
                 effects: [

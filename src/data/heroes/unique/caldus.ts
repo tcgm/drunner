@@ -1,6 +1,6 @@
-import type { UniqueHeroDefinition } from './_types'
+﻿import type { UniqueHeroDefinition } from './_types'
 
-/** A celestine warrior assigned to guard a doorway eleven years ago. He is still, technically, guarding it — from inside the dungeon. */
+/** A celestine warrior assigned to guard a doorway eleven years ago. He is still, technically, guarding it - from inside the dungeon. */
 export const caldus: UniqueHeroDefinition = {
     id: 'caldus',
     name: 'Caldus the Stubborn',
@@ -14,5 +14,5 @@ export const caldus: UniqueHeroDefinition = {
         { stat: 'attack', value: 5 },
     ],
     hireCostOverride: 1200,
-    lore: 'He was assigned to guard a doorway eleven years ago. He\'s still technically guarding it — but he\'s doing it from inside the dungeon now. The details are unclear.',
+    lore: 'He was assigned to guard a doorway eleven years ago. He\'s still technically guarding it - but he\'s doing it from inside the dungeon now. The details are unclear.',
 }

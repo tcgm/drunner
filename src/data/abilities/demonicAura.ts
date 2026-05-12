@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiCrownedSkull } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiCrownedSkull } from 'react-icons/gi'
 export const DEMONIC_AURA: Ability = {
     id: 'demonic-aura',
     name: 'Demonic Aura',
-    description: 'Radiate overwhelming infernal power — boosts attack for the entire party (scales with charisma)',
+    description: 'Radiate overwhelming infernal power - boosts attack for the entire party (scales with charisma)',
     cooldown: 4,
     currentCooldown: 0,
     effect: {

@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiGemPendant } from 'react-icons/gi'
 
 export const RELIQUARY_DEALER: DungeonEvent = {
@@ -46,7 +46,7 @@ export const RELIQUARY_DEALER: DungeonEvent = {
       },
     },
     {
-      text: 'Just look — nothing on offer',
+      text: 'Just look - nothing on offer',
       outcome: {
         text: '"Come back when your purse is heavier," he says pleasantly.',
         effects: [],

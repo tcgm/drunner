@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ShiftyGuyModal – post-dungeon-run bulk item scrapper
  * A shady merchant approaches after every run and offers to take low-rarity
  * items off the player's hands in exchange for alkahest (at a slight discount)
@@ -286,7 +286,7 @@ export function ShiftyGuyModal({ isOpen, lastRunItems: items, bankGold, onAccept
                     fontWeight="bold"
                     color={goldFee > 0 ? (canAfford ? 'yellow.300' : 'red.400') : 'gray.500'}
                   >
-                    {goldFee > 0 ? `−${goldFee.toLocaleString()}` : '—'}
+                    {goldFee > 0 ? `−${goldFee.toLocaleString()}` : '-'}
                     {goldFee > 0 && !canAfford && (
                       <Text as="span" fontSize="xs" color="red.400" ml={1}>(not enough gold)</Text>
                     )}
@@ -308,7 +308,7 @@ export function ShiftyGuyModal({ isOpen, lastRunItems: items, bankGold, onAccept
                     </Tooltip>
                   </HStack>
                   <Text fontSize="sm" fontWeight="bold" color={alkahestGained > 0 ? 'purple.300' : 'gray.500'}>
-                    {alkahestGained > 0 ? `+${alkahestGained.toLocaleString()}` : '—'}
+                    {alkahestGained > 0 ? `+${alkahestGained.toLocaleString()}` : '-'}
                   </Text>
                 </HStack>
 

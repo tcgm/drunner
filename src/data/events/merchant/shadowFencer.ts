@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiHood } from 'react-icons/gi'
 
 export const SHADOW_FENCER: DungeonEvent = {
@@ -8,12 +8,12 @@ export const SHADOW_FENCER: DungeonEvent = {
     description: 'A cloaked figure steps from the shadows holding a sack of "liberated" merchandise. Everything is clearly stolen, but the prices reflect that.',
     choices: [
         {
-            text: 'Buy the discounted item (Luck check — it might be cursed)',
+            text: 'Buy the discounted item (Luck check - it might be cursed)',
             requirements: { gold: 50 },
             successChance: 0.6,
             statModifier: 'luck',
             successOutcome: {
-                text: 'Clean goods — or at least, not cursed. A genuine bargain.',
+                text: 'Clean goods - or at least, not cursed. A genuine bargain.',
                 effects: [
                     { type: 'gold', value: -50 },
                     { type: 'item', itemType: 'random', minRarity: 'rare', rarityBoost: 15 },

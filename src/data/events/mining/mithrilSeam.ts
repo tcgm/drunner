@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiSilverBullet } from 'react-icons/gi'
 
 export const MITHRIL_SEAM: DungeonEvent = {
     id: 'mithril-seam',
     type: 'mining',
     title: 'Mithril Seam',
-    description: 'A thread of pale silver metal runs through the rock — unmistakably mithril. Rare even in the deep places. The seam is thin but pure.',
+    description: 'A thread of pale silver metal runs through the rock - unmistakably mithril. Rare even in the deep places. The seam is thin but pure.',
     choices: [
         {
             text: 'Mine the entire seam methodically',
@@ -28,7 +28,7 @@ export const MITHRIL_SEAM: DungeonEvent = {
             },
         },
         {
-            text: 'Follow the seam deeper (Luck check — may widen)',
+            text: 'Follow the seam deeper (Luck check - may widen)',
             successChance: 0.5,
             statModifier: 'luck',
             successOutcome: {

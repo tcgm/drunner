@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiBackpack } from 'react-icons/gi'
 
 export const ADVENTURERS_SUPPLY: DungeonEvent = {
     id: 'adventurers-supply',
     type: 'merchant',
     title: 'Adventurer\'s Supply Depot',
-    description: 'A no-nonsense supply sergeant has stocked a small depot in a side alcove. Torches, rations, oil — everything a sensible delver could want.',
+    description: 'A no-nonsense supply sergeant has stocked a small depot in a side alcove. Torches, rations, oil - everything a sensible delver could want.',
     choices: [
         {
             text: 'Buy basic supplies',

@@ -1,4 +1,4 @@
-import type { Hero, Stats, Item } from '@/types'
+﻿import type { Hero, Stats, Item } from '@/types'
 import { calculateEffectModifiers } from '@/systems/effects'
 import { getActiveNexusUpgrades, getNexusStatModifiers } from '@/data/nexus'
 import { getItemSetName, getSetBonuses } from '@data/items/sets'
@@ -80,7 +80,7 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
   }
   
   // Calculate set bonuses
-  // 1. Named set bonuses — each equipped piece contributes the current tier's bonus
+  // 1. Named set bonuses - each equipped piece contributes the current tier's bonus
   //    scaled by that piece's own rarity multiplier (stacks across all pieces).
   const setCounts: Record<string, number> = {}
   equippedItems.forEach(item => {

@@ -1,4 +1,4 @@
-import type { IconType } from 'react-icons'
+﻿import type { IconType } from 'react-icons'
 import { MusicContext } from './audio'
 import type { Quest } from './quests'
 
@@ -203,7 +203,7 @@ export interface HireableHero {
   uniqueHeroId?: string
   /** Lore text displayed on unique hero cards */
   lore?: string
-  /** Timestamp (ms) when this hero arrived on the board — used for expiry */
+  /** Timestamp (ms) when this hero arrived on the board - used for expiry */
   arrivedAt: number
 }
 

@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiChemicalDrop } from 'react-icons/gi'
 
 export const ALCHEMISTS_LABORATORY: DungeonEvent = {
     id: 'alchemists-laboratory',
     type: 'treasure',
     title: "Alchemist's Laboratory",
-    description: "Bubbling flasks and scattered notes fill an abandoned laboratory. The alchemist left in quite a hurry — several experiments are still running.",
+    description: "Bubbling flasks and scattered notes fill an abandoned laboratory. The alchemist left in quite a hurry - several experiments are still running.",
     choices: [
         {
             text: 'Gather the best formulas and supplies',

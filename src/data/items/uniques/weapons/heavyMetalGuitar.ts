@@ -1,4 +1,4 @@
-import { GiGuitar } from 'react-icons/gi'
+﻿import { GiGuitar } from 'react-icons/gi'
 import type { Item } from '@/types'
 
 /**
@@ -8,7 +8,7 @@ import type { Item } from '@/types'
  */
 export const HEAVY_METAL_GUITAR: Omit<Item, 'id'> = {
   name: 'Heavy, Metal Guitar',
-  description: "Forged from pure battlesteel, this guitar weighs as much as a small horse. Swinging it in combat is devastatingly effective. Playing it is equally devastating — to everyone's emotions.",
+  description: "Forged from pure battlesteel, this guitar weighs as much as a small horse. Swinging it in combat is devastatingly effective. Playing it is equally devastating - to everyone's emotions.",
   type: 'weapon',
   rarity: 'legendary',
   minRarity: 'epic',

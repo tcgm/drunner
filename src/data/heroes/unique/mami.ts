@@ -1,4 +1,4 @@
-import type { UniqueHeroDefinition } from './_types'
+﻿import type { UniqueHeroDefinition } from './_types'
 
 /** Demon of greed. She had your wallet before you walked in the door. She prefers it this way. */
 export const mami: UniqueHeroDefinition = {
@@ -14,5 +14,5 @@ export const mami: UniqueHeroDefinition = {
     { stat: 'charisma', value: 5 },
   ],
   hireCostOverride: 1400,
-  lore: '"I want your money," she says. "All of it. Over time. Through legitimate channels — I prefer earned wealth, the texture is better." The disclaimer makes it somehow worse.',
+  lore: '"I want your money," she says. "All of it. Over time. Through legitimate channels - I prefer earned wealth, the texture is better." The disclaimer makes it somehow worse.',
 }

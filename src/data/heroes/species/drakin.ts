@@ -1,9 +1,9 @@
-import type { SpeciesDefinition } from './_types'
+﻿import type { SpeciesDefinition } from './_types'
 
 export const drakin: SpeciesDefinition = {
   id: 'drakin',
   name: 'Drakin',
-  description: 'Descendants of ancient dragons, drakin carry draconic blood in their veins — along with its fury.',
+  description: 'Descendants of ancient dragons, drakin carry draconic blood in their veins - along with its fury.',
   statBonuses: [
     { stat: 'attack', value: 5 },
     { stat: 'defense', value: 3 },

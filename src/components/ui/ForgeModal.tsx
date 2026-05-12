@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ForgeModal – Forge building UI
  *
  * Two tabs:
@@ -158,7 +158,7 @@ function CraftTab({ alkahest, bankInventory, deepestFloor, onForge }: CraftTabPr
             const isSelected = selectedMaterialId === mat.id
             const rarityColor = getRarityColor(mat.rarity)
             return (
-              <Tooltip key={mat.id} label={`${mat.name} — ${qty} fragment${qty !== 1 ? 's' : ''}`} hasArrow placement="top">
+              <Tooltip key={mat.id} label={`${mat.name} - ${qty} fragment${qty !== 1 ? 's' : ''}`} hasArrow placement="top">
                 <Box
                   as="button"
                   className="forge-material-btn"
@@ -286,7 +286,7 @@ function CraftTab({ alkahest, bankInventory, deepestFloor, onForge }: CraftTabPr
         <VStack spacing={0} align="flex-end">
           <Text fontSize="xs" color="gray.400">Uses 1 fragment</Text>
           <Text fontSize="sm" color="orange.400">
-            {material ? `${fragmentByMaterialId.get(material.id) ?? 0} in bank` : '—'}
+            {material ? `${fragmentByMaterialId.get(material.id) ?? 0} in bank` : '-'}
           </Text>
         </VStack>
       </HStack>
@@ -452,7 +452,7 @@ function BreakDownTab({ bankInventory, materialChargeProgress, nexusUpgrades, on
 
       <Divider borderColor="gray.700" />
 
-      {/* Rule panel — Shifty-Guy style */}
+      {/* Rule panel - Shifty-Guy style */}
       <Box>
         <FormLabel fontSize="xs" color="gray.400" textTransform="uppercase" letterSpacing="wider" mb={2}>
           Break everything at or below:
@@ -554,7 +554,7 @@ function BreakDownTab({ bankInventory, materialChargeProgress, nexusUpgrades, on
         </Button>
       </VStack>
 
-      {/* Bank picker modal — manual fallback */}
+      {/* Bank picker modal - manual fallback */}
       <BankInventoryModal
         isOpen={isPickerOpen}
         onClose={onPickerClose}
@@ -585,7 +585,7 @@ export function ForgeModal({
   const handleForge = (materialId: string, baseType: string, targetRarity: ItemRarity) => {
     const result = forgeItem(materialId, baseType, '', targetRarity, true)
     if (!result) {
-      console.warn('[ForgeModal] forgeItem returned null — likely insufficient resources')
+      console.warn('[ForgeModal] forgeItem returned null - likely insufficient resources')
     }
   }
 

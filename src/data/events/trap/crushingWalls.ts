@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiBrickWall } from 'react-icons/gi'
 
 export const CRUSHING_WALLS: DungeonEvent = {
@@ -8,7 +8,7 @@ export const CRUSHING_WALLS: DungeonEvent = {
     description: 'You step past the threshold and hear a heavy click. Stone walls on both sides begin grinding inward. The gap is already narrowing.',
     choices: [
         {
-            text: 'Find the stop mechanism (Luck check — time critical)',
+            text: 'Find the stop mechanism (Luck check - time critical)',
             successChance: 0.45,
             statModifier: 'luck',
             successOutcome: {

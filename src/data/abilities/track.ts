@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiFootprint } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiFootprint } from 'react-icons/gi'
 export const TRACK: Ability = {
     id: 'track',
     name: 'Track',
-    description: "Expose the boss's weakness, reducing their defense — scales with Luck",
+    description: "Expose the boss's weakness, reducing their defense - scales with Luck",
     cooldown: 5,
     currentCooldown: 0,
     effect: {

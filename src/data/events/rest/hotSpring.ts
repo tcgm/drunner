@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiHotSurface } from 'react-icons/gi'
 
 export const HOT_SPRING: DungeonEvent = {
@@ -29,7 +29,7 @@ export const HOT_SPRING: DungeonEvent = {
             },
         },
         {
-            text: 'Keep moving — no time to rest',
+            text: 'Keep moving - no time to rest',
             outcome: {
                 text: 'You press on.',
                 effects: [],

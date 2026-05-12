@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiEvilEyes } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiEvilEyes } from 'react-icons/gi'
 export const JINX: Ability = {
     id: 'jinx',
     name: 'Jinx',
-    description: 'Sour an enemy\'s luck — reduces their luck stat for 3 turns (scales with luck)',
+    description: 'Sour an enemy\'s luck - reduces their luck stat for 3 turns (scales with luck)',
     cooldown: 3,
     currentCooldown: 0,
     effect: {

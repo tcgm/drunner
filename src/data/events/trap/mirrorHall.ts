@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiMirrorMirror } from 'react-icons/gi'
 
 export const MIRROR_HALL: DungeonEvent = {
@@ -8,7 +8,7 @@ export const MIRROR_HALL: DungeonEvent = {
     description: 'A corridor lined with mirrors stretching to the ceiling. Your reflections move slightly off, and the path ahead seems to fork and loop. The disorientation is clearly intentional.',
     choices: [
         {
-            text: 'Navigate by logic — ignore the mirrors (Luck check)',
+            text: 'Navigate by logic - ignore the mirrors (Luck check)',
             successChance: 0.55,
             statModifier: 'luck',
             successOutcome: {
@@ -41,7 +41,7 @@ export const MIRROR_HALL: DungeonEvent = {
             successChance: 0.45,
             statModifier: 'luck',
             successOutcome: {
-                text: 'An old trick — the imperfect reflection is the real one. It leads you out.',
+                text: 'An old trick - the imperfect reflection is the real one. It leads you out.',
                 effects: [
                     { type: 'xp', value: 70 },
                     { type: 'item', itemType: 'random', minRarity: 'uncommon' },

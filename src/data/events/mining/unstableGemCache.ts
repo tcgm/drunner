@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiGems } from 'react-icons/gi'
 
 export const UNSTABLE_GEM_CACHE: DungeonEvent = {
     id: 'unstable-gem-cache',
     type: 'mining',
     title: 'Unstable Gem Cache',
-    description: 'A cluster of volatile magical gems protrudes from the floor, radiating heat. They\'re worth a fortune — if you can extract them without triggering a rupture.',
+    description: 'A cluster of volatile magical gems protrudes from the floor, radiating heat. They\'re worth a fortune - if you can extract them without triggering a rupture.',
     choices: [
         {
             text: 'Extract with care (slow but safe)',
@@ -46,7 +46,7 @@ export const UNSTABLE_GEM_CACHE: DungeonEvent = {
             },
         },
         {
-            text: 'Too dangerous — walk away',
+            text: 'Too dangerous - walk away',
             outcome: {
                 text: 'Some treasures aren\'t worth it.',
                 effects: [],

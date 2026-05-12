@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiFireGem } from 'react-icons/gi'
 
 export const BLAZE_ORE: DungeonEvent = {
     id: 'blaze-ore',
     type: 'mining',
     title: 'Blaze Ore Seam',
-    description: 'The rock wall glows with internal heat. Veins of deep orange ore pulse thickly — blaze ore, formed where magma cooled over centuries. You can feel the heat through your gloves.',
+    description: 'The rock wall glows with internal heat. Veins of deep orange ore pulse thickly - blaze ore, formed where magma cooled over centuries. You can feel the heat through your gloves.',
     choices: [
         {
             text: 'Mine with thick gloves and patience',
@@ -28,7 +28,7 @@ export const BLAZE_ORE: DungeonEvent = {
             },
         },
         {
-            text: 'Mine aggressively while it\'s hot — more yield (Luck check)',
+            text: 'Mine aggressively while it\'s hot - more yield (Luck check)',
             successChance: 0.4,
             statModifier: 'luck',
             successOutcome: {
@@ -47,7 +47,7 @@ export const BLAZE_ORE: DungeonEvent = {
             },
         },
         {
-            text: 'Too hot — not worth the burns',
+            text: 'Too hot - not worth the burns',
             outcome: {
                 text: 'You save your skin, literally, and press on.',
                 effects: [],

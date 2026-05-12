@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiSkeletonKey } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiSkeletonKey } from 'react-icons/gi'
 export const SUMMON_SKELETON: Ability = {
     id: 'summon-skeleton',
     name: 'Summon Skeleton',
-    description: 'Create undead minion that boosts your attack — scales with Magic Power',
+    description: 'Create undead minion that boosts your attack - scales with Magic Power',
     cooldown: 5,
     currentCooldown: 0,
     effect: {

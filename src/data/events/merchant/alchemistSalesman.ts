@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiChemicalDrop } from 'react-icons/gi'
 
 export const ALCHEMIST_SALESMAN: DungeonEvent = {
@@ -60,7 +60,7 @@ export const ALCHEMIST_SALESMAN: DungeonEvent = {
             },
         },
         {
-            text: 'Leave — too expensive',
+            text: 'Leave - too expensive',
             outcome: {
                 text: 'You move on with your gold intact.',
                 effects: [],

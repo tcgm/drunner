@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiWaterfall } from 'react-icons/gi'
 
 export const ANCIENT_CISTERN: DungeonEvent = {
@@ -20,7 +20,7 @@ export const ANCIENT_CISTERN: DungeonEvent = {
         {
             text: 'Fill all available flasks',
             outcome: {
-                text: 'You load up with clean water — priceless in the dungeon depths.',
+                text: 'You load up with clean water - priceless in the dungeon depths.',
                 effects: [
                     { type: 'consumable', consumableId: 'health-potion-small' },
                     { type: 'consumable', consumableId: 'health-potion-small' },

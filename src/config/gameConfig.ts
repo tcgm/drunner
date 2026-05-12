@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Game configuration and balance settings
  * HMR Test - checking item restoration
  */
@@ -314,7 +314,7 @@ export const GAME_CONFIG = {
     // Floor bands: each band is active from minFloor until the next band's minFloor.
     // bucketWeights[0] = bottom segment of available rarities (lowest tiers),
     // bucketWeights[N-1] = top segment (highest tiers unlocked at this floor).
-    // Values are relative weights — normalised automatically at runtime.
+    // Values are relative weights - normalised automatically at runtime.
     // No rarity names needed: the bucket boundaries shift as new rarities unlock.
     floorBands: [
       { minFloor: 1,  bucketWeights: [70, 30,  0,  0] },
@@ -457,7 +457,7 @@ export const GAME_CONFIG = {
     rarityMagnitudeMultiplier: 10,
   },
 
-  // Forge building — deterministic crafting + item breakdown
+  // Forge building - deterministic crafting + item breakdown
   forge: {
     // MVP flags
     goldBuyEnabled: false,        // gold-buy tab hidden until Temple system ships
@@ -490,7 +490,7 @@ export const GAME_CONFIG = {
       ] as const,
     },
 
-    // Item breakdown — feeds items into per-material charge meters
+    // Item breakdown - feeds items into per-material charge meters
     breakdown: {
       enabled: true,
       carryOverExcess: true,              // leftover charge rolls into next cycle

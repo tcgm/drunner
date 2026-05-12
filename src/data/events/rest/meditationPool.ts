@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiLotus } from 'react-icons/gi'
 
 export const MEDITATION_POOL: DungeonEvent = {
@@ -33,7 +33,7 @@ export const MEDITATION_POOL: DungeonEvent = {
                 {
                     weight: 35,
                     outcome: {
-                        text: 'A vision overwhelms you — powerful but disorienting.',
+                        text: 'A vision overwhelms you - powerful but disorienting.',
                         effects: [
                             { type: 'damage', target: 'random', value: 20, isTrueDamage: true },
                             { type: 'xp', value: 120 },

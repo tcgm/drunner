@@ -1,4 +1,4 @@
-import santaMittensIcon from '@/assets/icons/items/santaMittens.svg'
+﻿import santaMittensIcon from '@/assets/icons/items/santaMittens.svg'
 import type { Item } from '@/types'
 
 /**
@@ -6,7 +6,7 @@ import type { Item } from '@/types'
  */
 export const SANTAS_MITTENS: Omit<Item, 'id'> = {
   name: "Santa's Mittens",
-  description: 'Thick velvet mittens enchanted to deliver presents — and punches — with festive force.',
+  description: 'Thick velvet mittens enchanted to deliver presents - and punches - with festive force.',
   type: 'accessory1',
   rarity: 'rare',
   minRarity: 'uncommon',

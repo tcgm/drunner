@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiFire } from 'react-icons/gi'
 
 export const FIRE_TRAP: DungeonEvent = {
@@ -43,7 +43,7 @@ export const FIRE_TRAP: DungeonEvent = {
             },
         },
         {
-            text: 'Shield formation — absorb and push through',
+            text: 'Shield formation - absorb and push through',
             outcome: {
                 text: 'You brace shields together and wade through the scorching corridor.',
                 effects: [

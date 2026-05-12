@@ -1,6 +1,6 @@
-import type { UniqueHeroDefinition } from './_types'
+﻿import type { UniqueHeroDefinition } from './_types'
 
-/** A celestine paladin who has never second-guessed a decision — whether this is sublime certainty or profound obliviousness remains unclear. */
+/** A celestine paladin who has never second-guessed a decision - whether this is sublime certainty or profound obliviousness remains unclear. */
 export const solenne: UniqueHeroDefinition = {
     id: 'solenne',
     name: 'Solenne the Unerring',

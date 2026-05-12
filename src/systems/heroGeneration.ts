@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Hero generation system
  * Generates discrete heroes for the Guild Hall Hero Board.
  * Each hero has a name, species, rarity, and stat bonuses that compose on top of class base stats.
@@ -127,13 +127,13 @@ export function generateHireableHero(seed?: number, arrivedAt?: number): Hireabl
   }))
   const heroRarity = weightedRandom(rarityItems, rng)
 
-  // Roll species — only species whose spawnRarity <= heroRarity are eligible
+  // Roll species - only species whose spawnRarity <= heroRarity are eligible
   const species = rollSpeciesForRarity(heroRarity, rng)
 
   // Roll class
   const heroClass = pick(CORE_CLASSES, rng)
 
-  // Level: scales with rarity tier — higher tiers start at higher levels
+  // Level: scales with rarity tier - higher tiers start at higher levels
   const rarityIdx = HERO_RARITY_ORDER.indexOf(heroRarity)
   const maxTier = HERO_RARITY_ORDER.length - 1
   const minLv = 1 + Math.floor((rarityIdx / maxTier) * 9)   // 1 → 10 across tiers
@@ -190,7 +190,7 @@ export function generateHeroBoard(
   const uniqueRng = mulberry32(seed ^ 0xdeadbeef)
   const shuffledUniques = [...eligibleUniques].sort(() => uniqueRng() - 0.5)
 
-  // Total weight pool — used to match the normal weighted rarity roll
+  // Total weight pool - used to match the normal weighted rarity roll
   const totalWeight = HERO_RARITY_ORDER.reduce((s, r) => s + HERO_RARITY_CONFIG[r].weight, 0)
 
   for (let i = 0; i < count; i++) {

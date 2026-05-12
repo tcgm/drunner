@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiGhost } from 'react-icons/gi'
 
 export const GHOSTLY_CAMPFIRE: DungeonEvent = {
@@ -20,7 +20,7 @@ export const GHOSTLY_CAMPFIRE: DungeonEvent = {
         {
             text: "Ask the ghost about the dungeon's secrets",
             outcome: {
-                text: "The spirit reveals what it remembers — hidden passages, dangers ahead, and where it buried its gold.",
+                text: "The spirit reveals what it remembers - hidden passages, dangers ahead, and where it buried its gold.",
                 effects: [
                     { type: 'gold', value: 120 },
                     { type: 'xp', value: 60 },

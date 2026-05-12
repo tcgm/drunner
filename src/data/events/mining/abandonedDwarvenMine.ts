@@ -1,11 +1,11 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiDwarfFace } from 'react-icons/gi'
 
 export const ABANDONED_DWARVEN_MINE: DungeonEvent = {
     id: 'abandoned-dwarven-mine',
     type: 'mining',
     title: 'Abandoned Dwarven Mine',
-    description: 'A proper dwarven mine cut through the dungeon rock — arched ceilings, carved supports, tool racks still bolted to the walls. Abandoned centuries ago, but the veins were never fully exhausted.',
+    description: 'A proper dwarven mine cut through the dungeon rock - arched ceilings, carved supports, tool racks still bolted to the walls. Abandoned centuries ago, but the veins were never fully exhausted.',
     choices: [
         {
             text: 'Work the leftover veins',
@@ -49,7 +49,7 @@ export const ABANDONED_DWARVEN_MINE: DungeonEvent = {
         {
             text: 'Take the records left behind (knowledge over ore)',
             outcome: {
-                text: 'Dwarven mining records — priceless information about this dungeon\'s geology.',
+                text: 'Dwarven mining records - priceless information about this dungeon\'s geology.',
                 effects: [
                     { type: 'xp', value: 100 },
                     { type: 'gold', value: 40 },

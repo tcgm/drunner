@@ -1,14 +1,14 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiSleepingBag } from 'react-icons/gi'
 
 export const RECOVERY_ALCOVE: DungeonEvent = {
     id: 'recovery-alcove',
     type: 'rest',
     title: 'Recovery Alcove',
-    description: 'A narrow, defensible alcove with a magically reinforced threshold. The air inside feels faintly warm and protected — a rare safe haven in the deep dungeon.',
+    description: 'A narrow, defensible alcove with a magically reinforced threshold. The air inside feels faintly warm and protected - a rare safe haven in the deep dungeon.',
     choices: [
         {
-            text: 'Rest fully — everyone recovers to full health',
+            text: 'Rest fully - everyone recovers to full health',
             outcome: {
                 text: 'The magical shelter does its work. Every wound closes, every ache fades.',
                 effects: [

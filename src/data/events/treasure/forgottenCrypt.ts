@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiCryptEntrance } from 'react-icons/gi'
 
 export const FORGOTTEN_CRYPT: DungeonEvent = {
@@ -34,7 +34,7 @@ export const FORGOTTEN_CRYPT: DungeonEvent = {
                 {
                     weight: 20,
                     outcome: {
-                        text: 'Nothing but dust — but ceremonial gold offerings line the walls.',
+                        text: 'Nothing but dust - but ceremonial gold offerings line the walls.',
                         effects: [
                             { type: 'gold', value: 150 },
                         ],

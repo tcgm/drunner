@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiNightVision } from 'react-icons/gi'
 
 export const SHADOW_CRYSTAL: DungeonEvent = {
@@ -17,7 +17,7 @@ export const SHADOW_CRYSTAL: DungeonEvent = {
             },
         },
         {
-            text: 'Bring more light — torches and power orbs',
+            text: 'Bring more light - torches and power orbs',
             outcome: {
                 text: 'With enough light sources, the crystals\' dampening effect is overcome. Excellent yield.',
                 effects: [

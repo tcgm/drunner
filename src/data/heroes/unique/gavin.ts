@@ -1,4 +1,4 @@
-import type { UniqueHeroDefinition } from './_types'
+﻿import type { UniqueHeroDefinition } from './_types'
 
 /** An angel mage who specializes in stopping things before they cause harm. He has strong opinions about preemptive solutions. */
 export const gavin: UniqueHeroDefinition = {
@@ -14,5 +14,5 @@ export const gavin: UniqueHeroDefinition = {
         { stat: 'charisma', value: 4 },
     ],
     hireCostOverride: 1300,
-    lore: 'He specializes in barriers and redirections — magic that stops things before they harm. He has strong opinions about preemptive solutions. He is difficult to argue with.',
+    lore: 'He specializes in barriers and redirections - magic that stops things before they harm. He has strong opinions about preemptive solutions. He is difficult to argue with.',
 }

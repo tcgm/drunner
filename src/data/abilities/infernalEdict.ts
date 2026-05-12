@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiFlame } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiFlame } from 'react-icons/gi'
 export const INFERNAL_EDICT: Ability = {
     id: 'infernal-edict',
     name: 'Infernal Edict',
-    description: 'Decree a target\'s burning end — heavy damage plus Hellfire DoT (scales with attack)',
+    description: 'Decree a target\'s burning end - heavy damage plus Hellfire DoT (scales with attack)',
     cooldown: 3,
     currentCooldown: 0,
     effect: {

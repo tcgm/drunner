@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiReaperScythe } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiReaperScythe } from 'react-icons/gi'
 export const SOUL_REAP: Ability = {
     id: 'soul-reap',
     name: 'Soul Reap',
-    description: 'Strike with a spectral scythe — lethal single-target damage (scales with attack)',
+    description: 'Strike with a spectral scythe - lethal single-target damage (scales with attack)',
     cooldown: 1,
     currentCooldown: 0,
     effect: {

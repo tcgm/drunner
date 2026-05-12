@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Guild Hall & Quest system configuration
  * All tunable numbers live here so balance tweaks don't require hunting through logic files.
  */
@@ -97,7 +97,7 @@ export const QUEST_CONFIG = {
   fragmentRewards: {
     /**
      * Probability (0–1) that a quest of this difficulty includes a fragment reward.
-     * The quest rarity also gates eligibility — see fragmentTable.ts.
+     * The quest rarity also gates eligibility - see fragmentTable.ts.
      */
     chanceByDifficulty: {
       easy:   0.5,

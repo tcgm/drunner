@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Utility actions module
  * Handles utility functions like party repair, stat migration, healing, and game reset
  */
@@ -280,7 +280,7 @@ export const createUtilityActions = (initialState: GameState): StateCreator<
           }
         }
       } else {
-        // Hero in party but missing from roster — add them
+        // Hero in party but missing from roster - add them
         heroRoster = [...heroRoster, { ...partyHero }]
         console.log(`[HydrateItems] Added missing hero ${partyHero.name} to roster`)
       }

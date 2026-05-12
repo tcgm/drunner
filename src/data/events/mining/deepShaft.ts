@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiMineWagon } from 'react-icons/gi'
 
 export const DEEP_SHAFT: DungeonEvent = {
@@ -47,7 +47,7 @@ export const DEEP_SHAFT: DungeonEvent = {
             },
         },
         {
-            text: 'Too unstable — walk away',
+            text: 'Too unstable - walk away',
             outcome: {
                 text: 'The groaning timbers agree with your caution.',
                 effects: [],

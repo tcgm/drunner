@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Unique Item Effects System
  * 
  * This system handles special effects that trigger from unique items and set pieces.
@@ -451,7 +451,7 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
       return {
         party,
-        message: `${sourceHero.name}'s Mage Hat, The Grey blazes with ancient authority — YOU SHALL NOT PASS! (+${wisdomBoost} WIS, first enemy strike negated)`,
+        message: `${sourceHero.name}'s Mage Hat, The Grey blazes with ancient authority - YOU SHALL NOT PASS! (+${wisdomBoost} WIS, first enemy strike negated)`,
         additionalEffects: [{
           type: 'status',
           target: [sourceHero.id],

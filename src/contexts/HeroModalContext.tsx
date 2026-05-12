@@ -1,19 +1,24 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+﻿import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import type { Hero } from '@/types'
 import HeroModal from '@/components/party/HeroModal'
 import { useGameStore } from '@/core/gameStore'
-
-// HMR: context identity must be stable — force full page reload when this module changes
-if (import.meta.hot) {
-  import.meta.hot.decline()
-}
 
 interface HeroModalContextType {
   openHeroModal: (hero: Hero, isDungeon?: boolean) => void
   closeHeroModal: () => void
 }
 
-const HeroModalContext = createContext<HeroModalContextType | undefined>(undefined)
+// HMR: preserve context identity across hot updates so consumers don't lose the reference
+// when this module and its dependents are replaced in the same HMR batch.
+type HeroModalContextInstance = ReturnType<typeof createContext<HeroModalContextType | undefined>>
+const HeroModalContext: HeroModalContextInstance =
+  (import.meta.hot?.data?.heroModalContext as HeroModalContextInstance | undefined)
+  ?? createContext<HeroModalContextType | undefined>(undefined)
+
+if (import.meta.hot) {
+  import.meta.hot.data.heroModalContext = HeroModalContext
+  import.meta.hot.accept()
+}
 
 interface HeroModalProviderProps {
   children: ReactNode

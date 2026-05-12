@@ -1,4 +1,4 @@
-import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
+﻿import type { Item, ItemSlot, ItemRarity, Material, BaseTemplate } from '@/types'
 import type { ItemStorage, UniqueItemV3, SetItemV3, ProceduralItemV3, MaterialFragmentV3 } from '@/types/items-v3'
 import type { IconType } from 'react-icons'
 import { v4 as uuidv4 } from 'uuid'
@@ -52,7 +52,7 @@ const LOOT_CONFIG = {
  * excludedFromLoot, sorted by minFloor (ascending).
  * That list is divided into `lootRarityBuckets` equal-size segments.
  * The active floor band's bucketWeights[i] is distributed evenly across all
- * rarities inside segment i — no rarity names appear in the config.
+ * rarities inside segment i - no rarity names appear in the config.
  */
 function getDepthAdjustedWeights(depth: number): Partial<Record<ItemRarity, number>> {
   const { floorBands, lootRarityBuckets, excludedFromLoot } = GAME_CONFIG.loot

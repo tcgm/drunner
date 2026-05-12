@@ -1,11 +1,11 @@
-import type { HeroClass } from '@/types'
+﻿import type { HeroClass } from '@/types'
 import { REAPER_ABILITIES } from '@/data/abilities/reaperAbilities'
 
 /** Unique-only class. Not available in random hero generation. */
 export const REAPER: HeroClass = {
     id: 'reaper',
     name: 'Reaper',
-    description: 'Death Bringer — precise lethal striker who marks targets and harvests souls',
+    description: 'Death Bringer - precise lethal striker who marks targets and harvests souls',
     baseStats: {
         attack: 11,
         defense: 3,

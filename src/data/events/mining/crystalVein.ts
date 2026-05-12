@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiCrystalShine } from 'react-icons/gi'
 
 export const CRYSTAL_VEIN: DungeonEvent = {
@@ -21,7 +21,7 @@ export const CRYSTAL_VEIN: DungeonEvent = {
             successChance: 0.5,
             statModifier: 'luck',
             successOutcome: {
-                text: 'A lucky strike fractures a huge chunk free — a windfall of raw crystals!',
+                text: 'A lucky strike fractures a huge chunk free - a windfall of raw crystals!',
                 effects: [
                     { type: 'material_fragment', fragmentSourceType: 'chest', fragmentQuantity: 3 },
                 ],
@@ -35,7 +35,7 @@ export const CRYSTAL_VEIN: DungeonEvent = {
             },
         },
         {
-            text: 'Leave it — not worth slowing down',
+            text: 'Leave it - not worth slowing down',
             outcome: {
                 text: 'You press on.',
                 effects: [],

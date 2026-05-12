@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Guild Hall configuration
  * All tunable values for the Hero Board and hiring system.
  */
@@ -70,7 +70,7 @@ export const HERO_RARITY_CONFIG = {
   author:        { id: 'author',        label: AUTHOR.name,         color: AUTHOR.gem        ?? AUTHOR.color,         weight: AUTHOR.percentage,        bonusStatPoints: 550, hireCostMultiplier: 15000 },
 } satisfies Record<string, HeroRarityConfig>
 
-/** Derived from config keys — add or remove entries above to change which rarities heroes can have */
+/** Derived from config keys - add or remove entries above to change which rarities heroes can have */
 export type HeroRarity = keyof typeof HERO_RARITY_CONFIG
 
 export const GUILD_HERO_CONFIG = {

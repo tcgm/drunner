@@ -1,11 +1,11 @@
-import type { HeroClass } from '@/types'
+﻿import type { HeroClass } from '@/types'
 import { TRICKSTER_ABILITIES } from '@/data/abilities/tricksterAbilities'
 
 /** Unique-only class. Not available in random hero generation. */
 export const TRICKSTER: HeroClass = {
     id: 'trickster',
     name: 'Trickster',
-    description: 'Luck Manipulator — slippery self-buffer who curses enemy fortune and bends probability',
+    description: 'Luck Manipulator - slippery self-buffer who curses enemy fortune and bends probability',
     baseStats: {
         attack: 5,
         defense: 4,

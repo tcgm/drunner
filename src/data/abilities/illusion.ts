@@ -1,4 +1,4 @@
-import type { Ability } from '@/types'
+﻿import type { Ability } from '@/types'
 import { GiTripleYin } from 'react-icons/gi'
 
 /**
@@ -8,7 +8,7 @@ import { GiTripleYin } from 'react-icons/gi'
 export const ILLUSION: Ability = {
     id: 'illusion',
     name: 'Illusion',
-    description: 'Step sideways into unreality — massively boosts own defense for 2 turns (scales with luck)',
+    description: 'Step sideways into unreality - massively boosts own defense for 2 turns (scales with luck)',
     cooldown: 2,
     currentCooldown: 0,
     effect: {

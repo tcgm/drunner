@@ -1,6 +1,6 @@
-import type { UniqueHeroDefinition } from './_types'
+﻿import type { UniqueHeroDefinition } from './_types'
 
-/** A nekomata ranger whose second tail arrived at age forty — very young for her kind. Nobody knows what it means. She isn't concerned. */
+/** A nekomata ranger whose second tail arrived at age forty - very young for her kind. Nobody knows what it means. She isn't concerned. */
 export const tamamo: UniqueHeroDefinition = {
     id: 'tamamo',
     name: 'Tamamo the Two-Tailed',

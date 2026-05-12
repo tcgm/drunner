@@ -1,4 +1,4 @@
-/**
+﻿/**
  * NexusModal – Nexus building UI
  * Displays permanent meta-progression upgrades purchasable with Meta XP.
  * Each upgrade has rarity-phased tiers; costs ramp exponentially both within
@@ -298,7 +298,7 @@ function UpgradeCard({ upgrade, nexusUpgrades, metaXp, onPurchase }: UpgradeCard
         {/* Phase-advance hint */}
         {isPhaseAdvance && (
           <Text fontSize="2xs" color={phaseColor} mt={1} opacity={0.8}>
-            ✦ Entering {breakdown.rarityName} phase — costs {GAME_CONFIG.nexus.rarityMagnitudeMultiplier}× higher
+            ✦ Entering {breakdown.rarityName} phase - costs {GAME_CONFIG.nexus.rarityMagnitudeMultiplier}× higher
           </Text>
         )}
       </Box>
@@ -349,7 +349,7 @@ function UpgradeCard({ upgrade, nexusUpgrades, metaXp, onPurchase }: UpgradeCard
 
       {breakdown.isMaxed && (
         <Text fontSize="xs" color={phaseColor} textAlign="center" fontStyle="italic" opacity={0.9}>
-          +{currentBonus}{upgrade.unit} — Eternally Enhanced
+          +{currentBonus}{upgrade.unit} - Eternally Enhanced
         </Text>
       )}
     </Box>

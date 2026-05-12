@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import {
   VStack,
   HStack,
@@ -223,7 +223,7 @@ interface HeroBoardProps {
   availableHeroes: HireableHero[]
   bankGold: number
   onHire: (heroId: string) => void
-  /** Timestamp (ms) when the "Call" cooldown expires — 0 if ready */
+  /** Timestamp (ms) when the "Call" cooldown expires - 0 if ready */
   callCooldownUntil: number
   /** Timestamp (ms) when the next trickle hero is due */
   nextArrivalAt: number

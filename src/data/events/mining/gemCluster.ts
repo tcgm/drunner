@@ -1,4 +1,4 @@
-import type { DungeonEvent } from '@/types'
+﻿import type { DungeonEvent } from '@/types'
 import { GiDiamondHard } from 'react-icons/gi'
 
 export const GEM_CLUSTER: DungeonEvent = {
@@ -37,7 +37,7 @@ export const GEM_CLUSTER: DungeonEvent = {
             },
         },
         {
-            text: 'Leave them — not worth stopping for',
+            text: 'Leave them - not worth stopping for',
             outcome: {
                 text: 'They catch the light behind you as you walk on.',
                 effects: [],
