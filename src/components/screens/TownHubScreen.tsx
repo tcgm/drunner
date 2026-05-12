@@ -60,7 +60,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
     nexusUpgrades, purchaseNexusUpgrade,
     materialChargeProgress,
     forgeItem, breakDownItem,
-    runHistory,
+    getRunHistory,
     processRunForQuests,
     questRunsProcessed,
   } = useGameStore()
@@ -70,7 +70,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
   // On mount: process any completed runs against active quests
   React.useEffect(() => {
     const processed = questRunsProcessed ?? []
-    runHistory
+    getRunHistory()
       .filter(r => r.endDate && r.result !== 'active' && !processed.includes(r.id))
       .forEach(r => processRunForQuests(r))
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -154,8 +154,9 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
   // Hero Shrine modal
   const { isOpen: isHeroShrineOpen, onOpen: onHeroShrineOpen, onClose: onHeroShrineClose } = useDisclosure()
   const deepestFloor = React.useMemo(
-    () => Math.max(dungeon.floor, ...runHistory.map(r => r.finalFloor ?? 0)),
-    [dungeon.floor, runHistory]
+    () => Math.max(dungeon.floor, ...getRunHistory().map(r => r.finalFloor ?? 0)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dungeon.floor]
   )
 
   const handleBuildingClick = (buildingId: string) => {
