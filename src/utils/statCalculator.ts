@@ -84,7 +84,8 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
   //    scaled by that piece's own rarity multiplier (stacks across all pieces).
   const setCounts: Record<string, number> = {}
   equippedItems.forEach(item => {
-    const setName = getItemSetName(item.name)
+    const itemName = typeof item.name === 'string' ? item.name : ''
+    const setName = itemName ? getItemSetName(itemName) : null
     if (setName) {
       setCounts[setName] = (setCounts[setName] || 0) + 1
     }
@@ -92,7 +93,8 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
 
   // Apply per-item set bonuses: each piece contributes bonus × its rarity multiplier
   equippedItems.forEach(item => {
-    const setName = getItemSetName(item.name)
+    const itemName = typeof item.name === 'string' ? item.name : ''
+    const setName = itemName ? getItemSetName(itemName) : null
     if (!setName) return
     const count = setCounts[setName]
     const setBonus = getSetBonuses(setName, count)
@@ -114,6 +116,7 @@ export function calculateEquipmentStats(hero: Hero): Partial<Stats> {
   // 2. Material set bonus - check if 4+ items are the same material
   const materialCounts: Record<string, number> = {}
   equippedItems.forEach(item => {
+    if (typeof item.name !== 'string' || !item.name.trim()) return
     // Extract material from item name (e.g., "Iron Sword" -> "Iron")
     const words = item.name.split(' ')
     if (words.length > 1) {
