@@ -38,7 +38,7 @@ import {
   FormControl,
   FormLabel,
 } from '@chakra-ui/react'
-import { GiAnvil, GiHammerNails, GiCrossedSwords } from 'react-icons/gi'
+import { GiAnvil, GiHammerNails, GiCrossedSwords, GiAnvilImpact, GiEmptyMetalBucket } from 'react-icons/gi'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { RARITY_ORDER, getRarityColor, getRarityConfig, isRarityAtOrBelow, RARITY_CONFIGS } from '@/systems/rarity/raritySystem'
 import { ALL_MATERIALS, getMaterialById } from '@/data/items/materials'
@@ -138,7 +138,7 @@ function CraftTab({ alkahest, bankInventory, deepestFloor, onForge }: CraftTabPr
   if (availableMaterials.length === 0) {
     return (
       <VStack py={8} spacing={3} color="gray.500">
-        <Icon as={GiAnvil} boxSize={10} />
+        <Icon as={GiEmptyMetalBucket} boxSize={10} />
         <Text>No material fragments in your bank.</Text>
         <Text fontSize="sm">Break down items at the Forge or collect fragments from dungeon runs.</Text>
       </VStack>
@@ -602,7 +602,7 @@ export function ForgeModal({
       >
         <ModalHeader borderBottom="1px solid" borderColor="gray.700" pb={3}>
           <HStack spacing={3}>
-            <Icon as={GiAnvil} color="orange.300" boxSize={7} />
+            <Icon as={GiAnvilImpact} color="orange.300" boxSize={7} />
             <VStack spacing={0} align="flex-start">
               <Text color="orange.200" fontWeight="bold" fontSize="lg" lineHeight={1.2}>
                 Forge
