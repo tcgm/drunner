@@ -56,6 +56,7 @@ export function ShiftyGuyModal({ isOpen, lastRunItems: items, bankGold, onAccept
   /** Items from the run that pass the current filter settings */
   const selectedItems = useMemo(() => {
     return lastRunItems.filter(item => {
+      if (item.type === 'material') return false
       if (!isRarityAtOrBelow(item.rarity, rarityThreshold)) return false
       if (!includeUnique && item.isUnique) return false
       if (!includeSet && item.setId) return false

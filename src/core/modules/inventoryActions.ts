@@ -648,6 +648,7 @@ export const createInventoryActions: StateCreator<
     set((state) => {
       // All items are still in dungeon.inventory at this point (Shifty Guy fires before distribution)
       const qualifies = (item: Item): boolean => {
+        if (item.type === 'material') return false
         if (!isRarityAtOrBelow(item.rarity, rarityThreshold)) return false
         if (!includeUnique && item.isUnique) return false
         if (!includeSet && item.setId) return false
