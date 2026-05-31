@@ -268,9 +268,9 @@ export default function DevTools() {
 
   const handleGoToFloor = (floor: number) => {
     // Reset floor state completely to avoid inconsistencies
-    const newEventsRequired = Math.floor(
-      Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
-    ) + GAME_CONFIG.dungeon.minEventsPerFloor
+    const scaledMin = Math.floor(GAME_CONFIG.dungeon.minEventsPerFloor + floor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+    const scaledMax = Math.floor(GAME_CONFIG.dungeon.maxEventsPerFloor + floor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+    const newEventsRequired = Math.floor(Math.random() * (scaledMax - scaledMin + 1)) + scaledMin
 
     useGameStore.setState({
       dungeon: {

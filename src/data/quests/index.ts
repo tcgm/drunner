@@ -9,6 +9,7 @@ import { COMPLETE_RUNS_TEMPLATES } from './completeRuns'
 import { REACH_FLOOR_TEMPLATES } from './reachFloor'
 import { DEFEAT_BOSSES_TEMPLATES } from './defeatBosses'
 import { EARN_GOLD_TEMPLATES } from './earnGold'
+import { COMPLETE_ENCOUNTERS_TEMPLATES } from './encounters'
 
 // ── Party power score ─────────────────────────────────────────────────────
 //
@@ -41,6 +42,7 @@ const QUEST_TEMPLATES: QuestTemplate[] = [
     ...REACH_FLOOR_TEMPLATES,
     ...DEFEAT_BOSSES_TEMPLATES,
     ...EARN_GOLD_TEMPLATES,
+    ...COMPLETE_ENCOUNTERS_TEMPLATES,
 ]
 
 // ── Helpers ────────────────────────────────────────────────────────────────

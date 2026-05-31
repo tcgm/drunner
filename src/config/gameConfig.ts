@@ -149,8 +149,9 @@ export const GAME_CONFIG = {
   dungeon: {
     maxFloors: 100, // Maximum number of floors before victory
     majorBossInterval: 10, // Major boss every N floors (zone completion)
-    minEventsPerFloor: 3, // Minimum number of normal events before floor boss
-    maxEventsPerFloor: 7, // Maximum number of normal events before floor boss
+    minEventsPerFloor: 5,  // Minimum map rows (height) per floor
+    maxEventsPerFloor: 12, // Maximum map rows (height) per floor
+    eventsPerFloorScaling: 0.2, // Additional rows added per floor number (scales with depth)
     allowMerchantBeforeBoss: true, // Can merchant appear as last event before boss
     allowRestBeforeBoss: true, // Can rest appear before boss
     floorUnlockFraction: 2, // Floors at or below (party avg level * this) are free to enter

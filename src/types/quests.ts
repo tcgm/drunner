@@ -9,6 +9,7 @@ export type QuestType =
   | 'complete_runs_floor'
   | 'defeat_bosses'
   | 'earn_gold'
+  | 'complete_encounters'
 
 export type QuestDifficulty = 'easy' | 'medium' | 'hard'
 

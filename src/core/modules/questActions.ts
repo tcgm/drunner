@@ -190,6 +190,9 @@ export const createQuestActions: StateCreator<
           case 'earn_gold':
             progressDelta = run.goldEarned ?? 0
             break
+          case 'complete_encounters':
+            progressDelta = run.eventsCompleted ?? 0
+            break
         }
 
         const newProgress = Math.min(quest.requirement, quest.progress + progressDelta)

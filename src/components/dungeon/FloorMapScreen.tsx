@@ -25,10 +25,10 @@ import {
 import type { FloorMap, MapNode, MapNodeType, MapNodeStatus } from '@/types'
 
 // ─── visual constants ───────────────────────────────────────────────────────
-const NODE_W = 72
-const NODE_H = 72
-const ROW_H  = 110  // vertical distance between row centres
-const PAD_X  = 44   // horizontal padding on each side
+const NODE_W      = 72
+const NODE_H      = 72
+const ROW_H       = 110  // vertical distance between row centres
+const COL_SPACING = 100  // pixels between adjacent column centres (cluster stays centred)
 
 // ─── per-type metadata ──────────────────────────────────────────────────────
 type NodeMeta = { label: string; icon: React.ComponentType; color: string }
@@ -66,11 +66,10 @@ function nodeCenter(
   rowNodes: MapNode[],
   containerWidth: number,
 ): { x: number; y: number } {
-  const usable = containerWidth - PAD_X * 2
   const n = rowNodes.length
-  const x = n === 1
-    ? PAD_X + usable / 2
-    : PAD_X + (node.col / (n - 1)) * usable
+  const clusterWidth = (n - 1) * COL_SPACING
+  const startX = containerWidth / 2 - clusterWidth / 2
+  const x = n === 1 ? containerWidth / 2 : startX + node.col * COL_SPACING
   const y = node.row * ROW_H + NODE_H / 2
   return { x, y }
 }

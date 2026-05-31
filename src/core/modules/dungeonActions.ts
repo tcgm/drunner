@@ -97,10 +97,10 @@ export const createDungeonActions: StateCreator<
         timesRevived: 0,
       }
 
-      // Roll random number of events for first floor
-      const eventsRequired = Math.floor(
-        Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
-      ) + GAME_CONFIG.dungeon.minEventsPerFloor
+      // Roll map height for first floor — scales with floor depth
+      const scaledMinStart = Math.floor(GAME_CONFIG.dungeon.minEventsPerFloor + startingFloor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+      const scaledMaxStart = Math.floor(GAME_CONFIG.dungeon.maxEventsPerFloor + startingFloor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+      const eventsRequired = Math.floor(Math.random() * (scaledMaxStart - scaledMinStart + 1)) + scaledMinStart
 
       const floorMap = generateFloorMap(eventsRequired)
       const newAlkahest = alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest
@@ -206,12 +206,15 @@ export const createDungeonActions: StateCreator<
         return updatedVersion || rosterHero
       })
 
-      // Roll new random target for next floor
-      const newEventsRequired = completingFloor
-        ? Math.floor(
-          Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
-        ) + GAME_CONFIG.dungeon.minEventsPerFloor
-        : state.dungeon.eventsRequiredThisFloor
+      // Roll map height for next floor — scales with floor depth
+      let newEventsRequired: number
+      if (completingFloor) {
+        const scaledMin = Math.floor(GAME_CONFIG.dungeon.minEventsPerFloor + newFloor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+        const scaledMax = Math.floor(GAME_CONFIG.dungeon.maxEventsPerFloor + newFloor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+        newEventsRequired = Math.floor(Math.random() * (scaledMax - scaledMin + 1)) + scaledMin
+      } else {
+        newEventsRequired = state.dungeon.eventsRequiredThisFloor
+      }
 
       // Check for victory - completed max floors
       if (newFloor > GAME_CONFIG.dungeon.maxFloors) {
@@ -711,9 +714,13 @@ export const createDungeonActions: StateCreator<
 
       if (!event) return state
 
-      const updatedNodes = floorMap.nodes.map((n) =>
-        n.id === nodeId ? { ...n, status: 'current' as const } : n,
-      )
+      // Mark the selected node as current; lock every other node in the same
+      // row as 'future' so the path through this floor is mutually exclusive.
+      const updatedNodes = floorMap.nodes.map((n) => {
+        if (n.id === nodeId) return { ...n, status: 'current' as const }
+        if (n.row === node.row) return { ...n, status: 'future' as const }
+        return n
+      })
 
       return {
         dungeon: {

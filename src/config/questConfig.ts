@@ -75,8 +75,9 @@ export const QUEST_CONFIG = {
     complete_runs: { max: 15, snap: 5 },
     complete_runs_floor: { max: 15, snap: 5 },
     reach_floor: { max: 95, snap: 1, maxPerDifficulty: { easy: 30, medium: 60, hard: 95 } },
-    defeat_bosses: { max: 20, snap: 5 },
+    defeat_bosses: { max: 12, snap: 1, maxPerDifficulty: { easy: 3, medium: 7, hard: 12 } },
     earn_gold: { max: Infinity, snap: 50 },
+    complete_encounters: { max: Infinity, snap: 25 },
   } as Record<QuestType, { max: number; snap: number; maxPerDifficulty?: Record<QuestDifficulty, number> }>,
 
   // ── Reward floor & rounding ───────────────────────────────────────────────
