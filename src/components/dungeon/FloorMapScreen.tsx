@@ -79,9 +79,11 @@ interface NodeButtonProps {
   node: MapNode
   center: { x: number; y: number }
   onClick: () => void
+  /** When true, future nodes reveal their actual type instead of a locked chest. */
+  revealAll: boolean
 }
 
-function NodeButton({ node, center, onClick }: NodeButtonProps) {
+function NodeButton({ node, center, onClick, revealAll }: NodeButtonProps) {
   const meta  = NODE_META[node.type]
   const isAvailable = node.status === 'available'
   const isVisited   = node.status === 'visited'
@@ -122,10 +124,14 @@ function NodeButton({ node, center, onClick }: NodeButtonProps) {
     >
       {isVisited ? (
         <Icon as={GiCheckMark} color="gray.500" boxSize={5} />
-      ) : isFuture ? (
+      ) : isFuture && !revealAll ? (
         <Icon as={GiLockedChest} color="gray.600" boxSize={5} />
       ) : (
-        <Icon as={meta.icon as React.ComponentType} color={meta.color} boxSize={isBoss ? 7 : 6} />
+        <Icon
+          as={meta.icon as React.ComponentType}
+          color={isFuture ? 'gray.500' : meta.color}
+          boxSize={isBoss ? 7 : 6}
+        />
       )}
       <Text
         fontSize={isBoss ? 'xs' : '2xs'}
@@ -136,7 +142,7 @@ function NodeButton({ node, center, onClick }: NodeButtonProps) {
         textTransform="uppercase"
         lineHeight="1"
       >
-        {isVisited ? 'Done' : meta.label}
+        {isVisited ? 'Done' : isFuture && !revealAll ? '???' : meta.label}
       </Text>
     </Box>
   )
@@ -146,12 +152,28 @@ function NodeButton({ node, center, onClick }: NodeButtonProps) {
 interface FloorMapScreenProps {
   floorMap: FloorMap
   floor: number
-  onSelectNode: (nodeId: string) => void
-}
+  onSelectNode: (nodeId: string) => void  /**
+   * When true, all future node types are visible (for planning).
+   * Default false. Intended hook for a future research/scouting system.
+   */
+  revealAll?: boolean}
 
-export default function FloorMapScreen({ floorMap, floor, onSelectNode }: FloorMapScreenProps) {
+export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAll = false }: FloorMapScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const scrollRef    = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(360)
+
+  // Scroll to the active row whenever the map changes (e.g. after completing a node)
+  useEffect(() => {
+    if (!scrollRef.current) return
+    const activeRow = floorMap.nodes
+      .filter(n => n.status === 'available' || n.status === 'current')
+      .reduce((min, n) => Math.min(min, n.row), Infinity)
+    if (activeRow === Infinity) return
+    // Scroll so one row of context is visible above the active row
+    const targetY = Math.max(0, activeRow * ROW_H - ROW_H)
+    scrollRef.current.scrollTo({ top: targetY, behavior: 'smooth' })
+  }, [floorMap])
 
   // Measure container width so node positions scale with available space
   useEffect(() => {
@@ -199,7 +221,7 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode }: FloorM
   const availableCount = floorMap.nodes.filter(n => n.status === 'available').length
 
   return (
-    <VStack spacing={2} flex={1} minH={0} overflowY="auto" pb={2}>
+    <VStack ref={scrollRef as React.Ref<HTMLDivElement>} spacing={2} flex={1} minH={0} overflowY="auto" pb={2}>
       {/* Header */}
       <HStack w="full" justify="space-between" px={2} pt={1}>
         <Heading size="sm" color="orange.300">
@@ -254,6 +276,7 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode }: FloorM
             node={node}
             center={centres[node.id]}
             onClick={() => onSelectNode(node.id)}
+            revealAll={revealAll}
           />
         ))}
       </Box>
