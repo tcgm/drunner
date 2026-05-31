@@ -372,6 +372,8 @@ export const useGameStore = create<GameStore>()(
             // Hydrate items lazily after render - the heavy per-item work
             // (stat calculation, icon restoration) now runs off the critical path.
             state.hydrateLoadedItems()
+            // Give new players 4 free starting heroes if the roster is empty.
+            state.seedStartingHeroes()
           }
         }
       },

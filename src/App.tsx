@@ -70,13 +70,10 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
   const [hmrCounter, setHmrCounter] = useState(0)
   const [openGuildHallOnTown, setOpenGuildHallOnTown] = useState(false)
-  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration, nexusUpgrades, seedStartingHeroes } = useGameStore()
+  const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration, nexusUpgrades } = useGameStore()
 
   // Sync nexus upgrades into the module-level context used by game systems
   useEffect(() => { setActiveNexusUpgrades(nexusUpgrades ?? {}) }, [nexusUpgrades])
-
-  // Seed 4 free starting heroes if the roster is empty
-  useEffect(() => { seedStartingHeroes() }, [])
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   // HMR: Force component remount on module reload to restore item icons
