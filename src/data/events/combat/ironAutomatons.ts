@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGreaves } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const IRON_AUTOMATONS: DungeonEvent = {
   id: 'iron-automatons',
   type: 'combat',
+  tags: [TAGS.AUTOMATON, TAGS.CONSTRUCT, TAGS.MECHANICAL],
   title: 'Iron Automatons',
   description: 'Mechanical warriors programmed for combat!',
   choices: [

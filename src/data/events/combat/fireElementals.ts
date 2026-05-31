@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFireSpellCast } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FIRE_ELEMENTALS: DungeonEvent = {
     id: 'fire-elementals',
     type: 'combat',
+    tags: [TAGS.ELEMENTAL, TAGS.FIRE, TAGS.VOLCANIC],
     title: 'Fire Elementals',
     description: [
         { weight: 3, text: 'Flames coalesce into humanoid shapes that rush toward you!' },

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGoblinHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GOBLIN_AMBUSH: DungeonEvent = {
   id: 'goblin-ambush',
   type: 'combat',
+  tags: [TAGS.GOBLIN, TAGS.HUMANOID, TAGS.DUNGEON, TAGS.CAVE],
   title: 'Goblin Ambush!',
   description: [
     { weight: 3, text: 'Three goblins leap from the shadows, weapons drawn!' },

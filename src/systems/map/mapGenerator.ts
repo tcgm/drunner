@@ -8,9 +8,9 @@
  *  - Row 0 nodes start as 'available'; all others start as 'future'
  */
 
-import type { MapNode, MapNodeType, FloorMap } from '@/types'
+import type { Biome, MapNode, MapNodeType, FloorMap } from '@/types'
 
-const NODE_TYPE_WEIGHTS: { type: Exclude<MapNodeType, 'boss'>; weight: number }[] = [
+const BASE_NODE_TYPE_WEIGHTS: { type: Exclude<MapNodeType, 'boss'>; weight: number }[] = [
   { type: 'combat',   weight: 35 },
   { type: 'choice',   weight: 22 },
   { type: 'treasure', weight: 14 },
@@ -20,17 +20,28 @@ const NODE_TYPE_WEIGHTS: { type: Exclude<MapNodeType, 'boss'>; weight: number }[
   { type: 'mining',   weight:  4 },
 ]
 
-function pickNodeType(): Exclude<MapNodeType, 'boss'> {
-  const total = NODE_TYPE_WEIGHTS.reduce((s, w) => s + w.weight, 0)
+function buildWeights(
+  biome?: Biome,
+): { type: Exclude<MapNodeType, 'boss'>; weight: number }[] {
+  if (!biome?.nodeTypeWeights) return BASE_NODE_TYPE_WEIGHTS
+  return BASE_NODE_TYPE_WEIGHTS.map((w) => ({
+    type: w.type,
+    weight: biome.nodeTypeWeights![w.type] ?? w.weight,
+  }))
+}
+
+function pickNodeType(biome?: Biome): Exclude<MapNodeType, 'boss'> {
+  const weights = buildWeights(biome)
+  const total = weights.reduce((s, w) => s + w.weight, 0)
   let roll = Math.random() * total
-  for (const w of NODE_TYPE_WEIGHTS) {
+  for (const w of weights) {
     roll -= w.weight
     if (roll <= 0) return w.type
   }
   return 'combat'
 }
 
-export function generateFloorMap(eventsRequired: number): FloorMap {
+export function generateFloorMap(eventsRequired: number, biome?: Biome): FloorMap {
   const nodes: MapNode[] = []
   let nodeId = 0
 
@@ -45,7 +56,7 @@ export function generateFloorMap(eventsRequired: number): FloorMap {
     for (let col = 0; col < colCount; col++) {
       rowNodes.push({
         id: `n${nodeId++}`,
-        type: pickNodeType(),
+        type: pickNodeType(biome),
         row,
         col,
         connections: [],
@@ -117,7 +128,7 @@ export function generateFloorMap(eventsRequired: number): FloorMap {
     })
   }
 
-  return { nodes, rows: rowArrays.length, currentNodeId: null }
+  return { nodes, rows: rowArrays.length, currentNodeId: null, biomeId: biome?.id }
 }
 
 /**

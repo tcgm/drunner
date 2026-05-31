@@ -344,6 +344,25 @@ export interface FloorMap {
   nodes: MapNode[]
   rows: number           // Total number of rows (including boss row)
   currentNodeId: string | null // The node currently being resolved
+  biomeId?: string       // Which biome this floor belongs to
+}
+
+// Biome system
+import type { EventTag } from '@data/tags'
+export type { EventTag }
+
+export interface Biome {
+  id: string
+  name: string
+  description: string
+  /** Tags from the central TAGS registry — events with any matching tag are weighted higher */
+  allowedTags: EventTag[]
+  /** Optional floor range [min, max] where this biome commonly appears */
+  floorRange?: [number, number]
+  /** Override the default node-type distribution for this biome */
+  nodeTypeWeights?: Partial<Record<Exclude<MapNodeType, 'boss'>, number>>
+  /** Hex colour used in UI to tint the floor map */
+  color?: string
 }
 
 // Combat system types
@@ -518,6 +537,8 @@ export interface DungeonEvent {
   description: string | string[] | Array<{ weight: number; text: string }> // Single text, array for variance, or weighted variations
   choices: EventChoice[]
   depth: number
+  /** Tags from the central TAGS registry — used to weight this event higher in matching biomes */
+  tags?: EventTag[]
   icon?: IconType // react-icons icon component
   isFinalBoss?: boolean // True for the Floor 100 final boss only
   isZoneBoss?: boolean // True for major milestone bosses (floors 10, 20, 30, etc.)

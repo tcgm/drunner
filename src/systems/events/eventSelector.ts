@@ -5,6 +5,7 @@ import {
   EVENT_TYPE_WEIGHTS, 
   getEventsByType 
 } from '@data/events'
+import { BIOME_MAP, biomeBonusMultiplier } from '@data/biomes'
 
 /**
  * NOTE: The "depth" property in event data is a LEGACY TERM that actually means "minimum floor".
@@ -145,11 +146,13 @@ export function getNextEvent(
 /**
  * Get an event of a specific type matching the given map node type.
  * Used by the floor-map system so each pre-assigned node resolves the correct event.
+ * When a biomeId is provided, events whose tags overlap the biome's tags are weighted 3× higher.
  */
 export function getEventForNodeType(
   nodeType: Exclude<MapNodeType, 'boss'>,
   floor: number,
   excludeIds: string[] = [],
+  biomeId?: string,
 ): DungeonEvent | null {
   const eventTypeMap: Record<Exclude<MapNodeType, 'boss'>, EventType> = {
     combat:   'combat',
@@ -167,12 +170,33 @@ export function getEventForNodeType(
   )
 
   if (available.length > 0) {
-    return available[Math.floor(Math.random() * available.length)]
+    return weightedPickEvent(available, biomeId)
   }
 
   // Fallback: any non-boss event available at this floor
   const fallback = ALL_EVENTS.filter(
     (e) => e.type !== 'boss' && e.depth <= floor && !excludeIds.includes(e.id),
   )
-  return fallback.length > 0 ? fallback[Math.floor(Math.random() * fallback.length)] : null
+  return fallback.length > 0 ? weightedPickEvent(fallback, biomeId) : null
+}
+
+/**
+ * Randomly pick one event from a pool, biasing toward biome-matching events.
+ * Events that share a tag with the active biome receive a 3× weight bonus.
+ * Untagged events (no `tags` field) are neutral (1×).
+ */
+function weightedPickEvent(pool: DungeonEvent[], biomeId?: string): DungeonEvent {
+  const biome = biomeId ? BIOME_MAP[biomeId] : undefined
+  if (!biome) {
+    return pool[Math.floor(Math.random() * pool.length)]
+  }
+
+  const weights = pool.map((e) => biomeBonusMultiplier(e.tags, biome.allowedTags))
+  const total = weights.reduce((s, w) => s + w, 0)
+  let roll = Math.random() * total
+  for (let i = 0; i < pool.length; i++) {
+    roll -= weights[i]
+    if (roll <= 0) return pool[i]
+  }
+  return pool[pool.length - 1]
 }

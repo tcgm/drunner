@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFrozenOrb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ICE_WRAITHS: DungeonEvent = {
     id: 'ice-wraiths',
     type: 'combat',
+    tags: [TAGS.WRAITH, TAGS.UNDEAD, TAGS.SPIRIT, TAGS.ICE, TAGS.ARCTIC],
     title: 'Ice Wraiths',
     description: [
         { weight: 3, text: 'Ghostly figures made of frost and mist swirl around you!' },

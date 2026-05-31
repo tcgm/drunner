@@ -10,6 +10,7 @@ import { getNextEvent, getEventForNodeType } from '@systems/events/eventSelector
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
 import type { ResolvedEffect } from '@systems/events/eventResolver'
 import { generateFloorMap, updateMapAfterEvent } from '@/systems/map/mapGenerator'
+import { pickBiomeForFloor } from '@data/biomes'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { processUniqueEffects } from '@/systems/items/uniqueEffects'
 import { applyPenaltyToParty } from './statActions'
@@ -102,7 +103,8 @@ export const createDungeonActions: StateCreator<
       const scaledMaxStart = Math.floor(GAME_CONFIG.dungeon.maxEventsPerFloor + startingFloor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
       const eventsRequired = Math.floor(Math.random() * (scaledMaxStart - scaledMinStart + 1)) + scaledMinStart
 
-      const floorMap = generateFloorMap(eventsRequired)
+      const startBiome = pickBiomeForFloor(startingFloor)
+      const floorMap = generateFloorMap(eventsRequired, startBiome)
       const newAlkahest = alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest
       console.log(`[StartDungeon] Setting alkahest to: ${newAlkahest} (was: ${state.alkahest})`)
       return {
@@ -274,7 +276,7 @@ export const createDungeonActions: StateCreator<
       // Otherwise: mark the resolved node as visited and unlock its connections.
       const currentNodeId = state.dungeon.floorMap?.currentNodeId ?? null
       const newFloorMap = completingFloor
-        ? generateFloorMap(newEventsRequired)
+        ? generateFloorMap(newEventsRequired, pickBiomeForFloor(newFloor))
         : (state.dungeon.floorMap && currentNodeId
             ? updateMapAfterEvent(state.dungeon.floorMap, currentNodeId)
             : (state.dungeon.floorMap ?? null))
@@ -710,7 +712,7 @@ export const createDungeonActions: StateCreator<
       const excludeRecent = eventHistory.slice(-10)
       const event = isBoss
         ? getNextEvent(depth, floor, true, isMajorBoss, excludeRecent)
-        : getEventForNodeType(node.type as Exclude<import('@/types').MapNodeType, 'boss'>, floor, excludeRecent)
+        : getEventForNodeType(node.type as Exclude<import('@/types').MapNodeType, 'boss'>, floor, excludeRecent, floorMap.biomeId)
 
       if (!event) return state
 
