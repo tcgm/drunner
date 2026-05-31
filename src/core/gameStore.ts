@@ -55,6 +55,7 @@ const initialState: GameState = {
     eventsThisFloor: 0,
     eventsRequiredThisFloor: 4,
     currentEvent: null,
+    floorMap: null,
     eventHistory: [],
     eventLog: [],
     gold: 0,

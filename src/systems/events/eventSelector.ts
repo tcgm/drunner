@@ -1,4 +1,4 @@
-import type { DungeonEvent, EventType } from '@/types'
+import type { DungeonEvent, EventType, MapNodeType } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { 
   ALL_EVENTS, 
@@ -140,4 +140,39 @@ export function getNextEvent(
 ): DungeonEvent | null {
   const excludeIds = recentEventIds.slice(-maxRecent)
   return selectRandomEvent(depth, floor, isFloorBoss, isMajorBoss, excludeIds)
+}
+
+/**
+ * Get an event of a specific type matching the given map node type.
+ * Used by the floor-map system so each pre-assigned node resolves the correct event.
+ */
+export function getEventForNodeType(
+  nodeType: Exclude<MapNodeType, 'boss'>,
+  floor: number,
+  excludeIds: string[] = [],
+): DungeonEvent | null {
+  const eventTypeMap: Record<Exclude<MapNodeType, 'boss'>, EventType> = {
+    combat:   'combat',
+    choice:   'choice',
+    treasure: 'treasure',
+    rest:     'rest',
+    merchant: 'merchant',
+    trap:     'trap',
+    mining:   'mining',
+  }
+
+  const eventType = eventTypeMap[nodeType]
+  const available = ALL_EVENTS.filter(
+    (e) => e.type === eventType && e.depth <= floor && !excludeIds.includes(e.id),
+  )
+
+  if (available.length > 0) {
+    return available[Math.floor(Math.random() * available.length)]
+  }
+
+  // Fallback: any non-boss event available at this floor
+  const fallback = ALL_EVENTS.filter(
+    (e) => e.type !== 'boss' && e.depth <= floor && !excludeIds.includes(e.id),
+  )
+  return fallback.length > 0 ? fallback[Math.floor(Math.random() * fallback.length)] : null
 }

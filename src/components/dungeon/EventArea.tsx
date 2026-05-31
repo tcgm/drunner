@@ -3,7 +3,8 @@ import { Box } from '@chakra-ui/react'
 import EventDisplay from './EventDisplay'
 import OutcomeDisplay from './OutcomeDisplay'
 import ContinuePrompt from './ContinuePrompt'
-import type { DungeonEvent, EventChoice, Hero } from '@/types'
+import FloorMapScreen from './FloorMapScreen'
+import type { DungeonEvent, EventChoice, FloorMap, Hero } from '@/types'
 import type { ResolvedOutcome } from '@systems/events/eventResolver'
 
 interface EventAreaProps {
@@ -13,9 +14,12 @@ interface EventAreaProps {
   depth: number
   gold: number
   bossType?: 'floor' | 'major' | null
+  floorMap?: FloorMap | null
+  floor?: number
   onSelectChoice: (choice: EventChoice) => void
   onContinue: () => void
   onAdvance: () => void
+  onSelectMapNode?: (nodeId: string) => void
 }
 
 export default function EventArea({ 
@@ -25,9 +29,12 @@ export default function EventArea({
   depth,
   gold,
   bossType,
+  floorMap,
+  floor = 1,
   onSelectChoice, 
   onContinue,
-  onAdvance
+  onAdvance,
+  onSelectMapNode,
 }: EventAreaProps) {
   // Determine background based on boss type
   const isZoneBoss = bossType === 'major'
@@ -75,6 +82,12 @@ export default function EventArea({
           gold={gold}
           bossType={bossType}
           onSelectChoice={onSelectChoice}
+        />
+      ) : floorMap && onSelectMapNode ? (
+        <FloorMapScreen
+          floorMap={floorMap}
+          floor={floor}
+          onSelectNode={onSelectMapNode}
         />
       ) : (
         <ContinuePrompt onContinue={onAdvance} />

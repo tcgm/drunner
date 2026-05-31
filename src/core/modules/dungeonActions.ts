@@ -6,9 +6,10 @@
 import type { StateCreator } from 'zustand'
 import type { GameState, Hero, EventChoice, Run, DungeonEvent } from '@/types'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { getNextEvent } from '@systems/events/eventSelector'
+import { getNextEvent, getEventForNodeType } from '@systems/events/eventSelector'
 import { resolveEventOutcome, resolveChoiceOutcome } from '@systems/events/eventResolver'
 import type { ResolvedEffect } from '@systems/events/eventResolver'
+import { generateFloorMap, updateMapAfterEvent } from '@/systems/map/mapGenerator'
 import { tickEffectsForDepthProgression } from '@/systems/effects'
 import { processUniqueEffects } from '@/systems/items/uniqueEffects'
 import { applyPenaltyToParty } from './statActions'
@@ -21,6 +22,7 @@ export interface DungeonActionsSlice {
   startDungeon: (startingFloor?: number, alkahestCost?: number) => void
   advanceDungeon: () => void
   selectChoice: (choice: EventChoice) => void
+  selectMapNode: (nodeId: string) => void
   endGame: () => void
   victoryGame: () => void
   retreatFromDungeon: () => void
@@ -100,7 +102,7 @@ export const createDungeonActions: StateCreator<
         Math.random() * (GAME_CONFIG.dungeon.maxEventsPerFloor - GAME_CONFIG.dungeon.minEventsPerFloor + 1)
       ) + GAME_CONFIG.dungeon.minEventsPerFloor
 
-      const event = getNextEvent(startingFloor, startingFloor, false, false, [])
+      const floorMap = generateFloorMap(eventsRequired)
       const newAlkahest = alkahestCost > 0 ? Math.max(0, state.alkahest - alkahestCost) : state.alkahest
       console.log(`[StartDungeon] Setting alkahest to: ${newAlkahest} (was: ${state.alkahest})`)
       return {
@@ -112,8 +114,9 @@ export const createDungeonActions: StateCreator<
           floor: startingFloor,
           eventsThisFloor: 0,
           eventsRequiredThisFloor: eventsRequired,
-          currentEvent: event,
-          eventHistory: event ? [event.id] : [],
+          currentEvent: null,
+          floorMap: floorMap,
+          eventHistory: [],
           eventLog: [],
           gold: 0, // Reset gold for each new run
           inventory: [], // Reset inventory for each new run
@@ -210,13 +213,6 @@ export const createDungeonActions: StateCreator<
         ) + GAME_CONFIG.dungeon.minEventsPerFloor
         : state.dungeon.eventsRequiredThisFloor
 
-      // Check if we've completed the required events (next event should be boss)
-      // eventsRequiredThisFloor is the number of events BEFORE the boss, so boss comes when we exceed that
-      const isNextEventBoss = resetEvents > newEventsRequired
-
-      // Check if this is a major boss (zone completion)
-      const isMajorBoss = isNextEventBoss && (newFloor % GAME_CONFIG.dungeon.majorBossInterval === 0)
-
       // Check for victory - completed max floors
       if (newFloor > GAME_CONFIG.dungeon.maxFloors) {
         // Player has completed all floors - update state and trigger victory
@@ -270,7 +266,16 @@ export const createDungeonActions: StateCreator<
         }
       }
 
-      const event = getNextEvent(newDepth, newFloor, isNextEventBoss, isMajorBoss, state.dungeon.eventHistory)
+      // --- Floor map update ---
+      // On floor completion: generate a fresh map for the new floor.
+      // Otherwise: mark the resolved node as visited and unlock its connections.
+      const currentNodeId = state.dungeon.floorMap?.currentNodeId ?? null
+      const newFloorMap = completingFloor
+        ? generateFloorMap(newEventsRequired)
+        : (state.dungeon.floorMap && currentNodeId
+            ? updateMapAfterEvent(state.dungeon.floorMap, currentNodeId)
+            : (state.dungeon.floorMap ?? null))
+      // --- end floor map update ---
 
       // Create resurrection outcome if any heroes were revived or if unique effects triggered
       const resurrectionMessages: string[] = []
@@ -316,10 +321,11 @@ export const createDungeonActions: StateCreator<
           floor: newFloor,
           eventsThisFloor: resetEvents,
           eventsRequiredThisFloor: newEventsRequired,
-          currentEvent: event,
-          eventHistory: event ? [...state.dungeon.eventHistory, event.id] : state.dungeon.eventHistory,
-          isNextEventBoss,
-          bossType: isNextEventBoss ? (isMajorBoss ? 'major' : 'floor') : null,
+          currentEvent: null, // Player returns to the floor map to choose next node
+          floorMap: newFloorMap,
+          eventHistory: state.dungeon.eventHistory, // Event IDs added in selectMapNode, not here
+          isNextEventBoss: false,
+          bossType: null,
         },
         activeRun: updatedRun,
         lastOutcome: resurrectionOutcome
@@ -681,6 +687,44 @@ export const createDungeonActions: StateCreator<
       }
 
       return resultState
+    }),
+
+  /**
+   * Select a map node on the current floor's FloorMap.
+   * Resolves an event matching the node's type and marks it as 'current'.
+   */
+  selectMapNode: (nodeId: string) =>
+    set((state) => {
+      const { floorMap, floor, depth, eventHistory } = state.dungeon
+      if (!floorMap) return state
+
+      const node = floorMap.nodes.find((n) => n.id === nodeId)
+      if (!node || node.status !== 'available') return state
+
+      const isBoss = node.type === 'boss'
+      const isMajorBoss = isBoss && (floor % GAME_CONFIG.dungeon.majorBossInterval === 0)
+
+      const excludeRecent = eventHistory.slice(-10)
+      const event = isBoss
+        ? getNextEvent(depth, floor, true, isMajorBoss, excludeRecent)
+        : getEventForNodeType(node.type as Exclude<import('@/types').MapNodeType, 'boss'>, floor, excludeRecent)
+
+      if (!event) return state
+
+      const updatedNodes = floorMap.nodes.map((n) =>
+        n.id === nodeId ? { ...n, status: 'current' as const } : n,
+      )
+
+      return {
+        dungeon: {
+          ...state.dungeon,
+          currentEvent: event,
+          eventHistory: [...eventHistory, event.id],
+          floorMap: { ...floorMap, nodes: updatedNodes, currentNodeId: nodeId },
+          isNextEventBoss: isBoss,
+          bossType: isBoss ? (isMajorBoss ? 'major' : 'floor') : null,
+        },
+      }
     }),
 
   endGame: () =>

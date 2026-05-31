@@ -327,6 +327,25 @@ export type EventType =
   | 'boss'
   | 'mining'
 
+// Floor map types (Slay the Spire-style node map per floor)
+export type MapNodeType = 'combat' | 'choice' | 'treasure' | 'rest' | 'merchant' | 'trap' | 'mining' | 'boss'
+export type MapNodeStatus = 'future' | 'available' | 'current' | 'visited'
+
+export interface MapNode {
+  id: string
+  type: MapNodeType
+  row: number
+  col: number
+  connections: string[] // IDs of nodes in the next row this connects to
+  status: MapNodeStatus
+}
+
+export interface FloorMap {
+  nodes: MapNode[]
+  rows: number           // Total number of rows (including boss row)
+  currentNodeId: string | null // The node currently being resolved
+}
+
 // Combat system types
 
 export interface EffectBehavior {
@@ -551,6 +570,7 @@ export interface Dungeon {
   inventory: Item[] // In-run inventory
   isNextEventBoss?: boolean // Indicates if next event is a floor boss
   bossType?: 'floor' | 'major' | null // Type of current boss (floor boss vs major boss)
+  floorMap?: FloorMap | null // Current floor's node map (Slay the Spire-style)
 }
 
 export interface Run {

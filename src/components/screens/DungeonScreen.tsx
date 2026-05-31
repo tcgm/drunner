@@ -15,6 +15,7 @@ import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import JournalModal from '@components/dungeon/JournalModal'
 import { CurrentQuestsModal } from '@/components/party/CurrentQuestsModal'
 import { BossCombatScreen } from '@/components/combat'
+import FloorMapScreen from '@components/dungeon/FloorMapScreen'
 import { refreshPartyAbilities } from '@/utils/abilityUtils'
 import { initializeBossCombatState } from '@/systems/combat'
 import { MusicContext } from '@/types/audio'
@@ -32,6 +33,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     party,
     advanceDungeon,
     selectChoice,
+    selectMapNode,
     isGameOver,
     lastOutcome,
     retreatFromDungeon,
@@ -241,13 +243,16 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           depth={dungeon.depth}
           gold={dungeon.gold}
           bossType={dungeon.bossType}
+          floorMap={dungeon.floorMap ?? null}
+          floor={dungeon.floor}
           onSelectChoice={handleSelectChoice}
           onContinue={handleContinue}
           onAdvance={advanceDungeon}
+          onSelectMapNode={selectMapNode}
         />
         
         <DungeonActionBar
-          showContinue={!dungeon.currentEvent && !lastOutcome}
+          showContinue={!dungeon.currentEvent && !lastOutcome && !dungeon.floorMap}
           onContinue={advanceDungeon}
           onInventory={onInventoryOpen}
           onJournal={onJournalOpen}
