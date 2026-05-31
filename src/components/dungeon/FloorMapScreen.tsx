@@ -221,9 +221,9 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
   const availableCount = floorMap.nodes.filter(n => n.status === 'available').length
 
   return (
-    <VStack ref={scrollRef as React.Ref<HTMLDivElement>} spacing={2} flex={1} minH={0} overflowY="auto" pb={2}>
+    <VStack spacing={2} flex={1} minH={0}>
       {/* Header */}
-      <HStack w="full" justify="space-between" px={2} pt={1}>
+      <HStack w="full" justify="space-between" px={2} pt={1} flexShrink={0}>
         <Heading size="sm" color="orange.300">
           Floor {floor} — Choose Your Path
         </Heading>
@@ -235,6 +235,7 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
       </HStack>
 
       {/* Map canvas */}
+      <Box ref={scrollRef as React.Ref<HTMLDivElement>} flex={1} minH={0} overflowY="auto" w="full">
       <Box
         ref={containerRef}
         position="relative"
@@ -280,9 +281,10 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
           />
         ))}
       </Box>
+      </Box>
 
       {/* Legend */}
-      <HStack spacing={3} wrap="wrap" justify="center" px={2} opacity={0.65}>
+      <HStack spacing={3} wrap="wrap" justify="center" px={2} pb={2} opacity={0.65} flexShrink={0}>
         {Object.entries(NODE_META)
           .filter(([t]) => t !== 'boss')
           .map(([type, meta]) => (
