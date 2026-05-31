@@ -36,6 +36,15 @@ export default function EventArea({
   onAdvance,
   onSelectMapNode,
 }: EventAreaProps) {
+  // Trap detection: true when any alive party member is a Rogue or has a
+  // trap-detection ability (hook for future research / passive skill system).
+  const canDetectTraps = party.some(
+    (hero) =>
+      hero.isAlive &&
+      (hero.class.id === 'rogue' ||
+        hero.abilities.some((a) => a.id === 'trap_detection'))
+  )
+
   // Determine background based on boss type
   const isZoneBoss = bossType === 'major'
   const isFloorBoss = bossType === 'floor'
@@ -88,6 +97,7 @@ export default function EventArea({
           floorMap={floorMap}
           floor={floor}
           onSelectNode={onSelectMapNode}
+          canDetectTraps={canDetectTraps}
         />
       ) : (
         <ContinuePrompt onContinue={onAdvance} />

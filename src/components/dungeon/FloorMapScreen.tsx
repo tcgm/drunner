@@ -81,14 +81,27 @@ interface NodeButtonProps {
   onClick: () => void
   /** When true, future nodes reveal their actual type instead of a locked chest. */
   revealAll: boolean
+  /** When true, trap nodes are revealed as traps instead of being disguised as events. */
+  canDetectTraps: boolean
 }
 
-function NodeButton({ node, center, onClick, revealAll }: NodeButtonProps) {
+function NodeButton({ node, center, onClick, revealAll, canDetectTraps }: NodeButtonProps) {
   const meta  = NODE_META[node.type]
   const isAvailable = node.status === 'available'
   const isVisited   = node.status === 'visited'
   const isFuture    = node.status === 'future'
   const isBoss      = node.type === 'boss'
+
+  // Traps are disguised as events unless a detection ability is active.
+  // A detected trap retains its real icon/label but gets a danger ring.
+  const isTrap         = node.type === 'trap'
+  const isDetectedTrap = isTrap && canDetectTraps
+  const displayMeta    = isTrap && !isDetectedTrap && !isVisited ? NODE_META.choice : meta
+
+  // Detected-trap available nodes get a red warning ring instead of the normal orange
+  const ringColor = isDetectedTrap && isAvailable
+    ? '#FC8181' // red.300
+    : STATUS_RING[node.status]
 
   return (
     <Box
@@ -104,8 +117,8 @@ function NodeButton({ node, center, onClick, revealAll }: NodeButtonProps) {
       gap="2px"
       borderRadius={isBoss ? 'lg' : 'md'}
       borderWidth="2px"
-      borderColor={STATUS_RING[node.status]}
-      bg={isVisited ? 'gray.700' : isFuture ? 'gray.800' : isBoss ? 'purple.900' : 'gray.750'}
+      borderColor={ringColor}
+      bg={isVisited ? 'gray.700' : isDetectedTrap && !isVisited ? 'red.950' : isFuture ? 'gray.800' : isBoss ? 'purple.900' : 'gray.750'}
       opacity={isFuture ? 0.45 : 1}
       cursor={isAvailable ? 'pointer' : 'default'}
       transition="background-color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s, opacity 0.15s"
@@ -118,31 +131,42 @@ function NodeButton({ node, center, onClick, revealAll }: NodeButtonProps) {
             ? '0 0 14px rgba(236,201,75,0.55)'
             : 'none'
       }
-      aria-label={`${meta.label} node – ${node.status}`}
+      aria-label={`${isDetectedTrap ? 'Trap (detected)' : displayMeta.label} node – ${node.status}`}
       role={isAvailable ? 'button' : undefined}
       zIndex={1}
     >
       {isVisited ? (
         <Icon as={GiCheckMark} color="gray.500" boxSize={5} />
-      ) : isFuture && !revealAll ? (
+      ) : isFuture && !revealAll && !isDetectedTrap ? (
         <Icon as={GiLockedChest} color="gray.600" boxSize={5} />
       ) : (
         <Icon
-          as={meta.icon as React.ComponentType}
-          color={isFuture ? 'gray.500' : meta.color}
+          as={displayMeta.icon as React.ComponentType}
+          color={isFuture && !isDetectedTrap ? 'gray.500' : displayMeta.color}
           boxSize={isBoss ? 7 : 6}
         />
       )}
       <Text
         fontSize={isBoss ? 'xs' : '2xs'}
         fontWeight="semibold"
-        color={isVisited ? 'gray.500' : isFuture ? 'gray.600' : meta.color}
+        color={
+          isVisited       ? 'gray.500'
+          : isDetectedTrap ? 'red.300'
+          : isFuture      ? 'gray.600'
+          : displayMeta.color
+        }
         textAlign="center"
         letterSpacing="wide"
         textTransform="uppercase"
         lineHeight="1"
       >
-        {isVisited ? 'Done' : isFuture && !revealAll ? '???' : meta.label}
+        {isVisited
+          ? 'Done'
+          : isFuture && !revealAll && !isDetectedTrap
+            ? '???'
+            : isDetectedTrap
+              ? 'Trap!'
+              : displayMeta.label}
       </Text>
     </Box>
   )
@@ -152,13 +176,21 @@ function NodeButton({ node, center, onClick, revealAll }: NodeButtonProps) {
 interface FloorMapScreenProps {
   floorMap: FloorMap
   floor: number
-  onSelectNode: (nodeId: string) => void  /**
+  onSelectNode: (nodeId: string) => void
+  /**
    * When true, all future node types are visible (for planning).
    * Default false. Intended hook for a future research/scouting system.
    */
-  revealAll?: boolean}
+  revealAll?: boolean
+  /**
+   * When true, trap nodes are revealed as traps (red danger ring + "Trap!" label)
+   * instead of being disguised as generic events.
+   * Granted by having a Rogue in the party or a trap-detection passive/research upgrade.
+   */
+  canDetectTraps?: boolean
+}
 
-export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAll = false }: FloorMapScreenProps) {
+export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAll = false, canDetectTraps = false }: FloorMapScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollRef    = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(360)
@@ -280,6 +312,7 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
             center={centres[node.id]}
             onClick={() => onSelectNode(node.id)}
             revealAll={revealAll}
+            canDetectTraps={canDetectTraps}
           />
         ))}
       </Box>
@@ -288,11 +321,17 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
       {/* Legend */}
       <HStack spacing={3} wrap="wrap" justify="center" px={2} pb={2} opacity={0.65} flexShrink={0}>
         {Object.entries(NODE_META)
-          .filter(([t]) => t !== 'boss')
+          .filter(([t]) => {
+            if (t === 'boss') return false
+            // Only show the trap entry when traps can be detected;
+            // otherwise traps appear as events and shouldn't spoil the legend.
+            if (t === 'trap') return canDetectTraps || revealAll
+            return true
+          })
           .map(([type, meta]) => (
             <HStack key={type} spacing={1}>
-              <Icon as={meta.icon as React.ComponentType} color={meta.color} boxSize={3} />
-              <Text fontSize="2xs" color="gray.400">{meta.label}</Text>
+              <Icon as={meta.icon as React.ComponentType} color={type === 'trap' ? 'red.300' : meta.color} boxSize={3} />
+              <Text fontSize="2xs" color={type === 'trap' ? 'red.300' : 'gray.400'}>{type === 'trap' ? 'Trap!' : meta.label}</Text>
             </HStack>
           ))}
       </HStack>
