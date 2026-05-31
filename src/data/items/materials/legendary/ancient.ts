@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiAncientColumns } from 'react-icons/gi'
 
 export const ANCIENT: Material = {
   id: 'ancient',
@@ -7,5 +8,6 @@ export const ANCIENT: Material = {
   rarity: 'legendary',
   statMultiplier: 4.2,
   valueMultiplier: 22.0,
-  description: 'From a forgotten age'
+  description: 'From a forgotten age',
+  icon: GiAncientColumns,
 }

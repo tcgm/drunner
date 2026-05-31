@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiMetalPlate } from 'react-icons/gi'
 
 export const BRONZE: Material = {
   id: 'bronze',
@@ -7,5 +8,6 @@ export const BRONZE: Material = {
   rarity: 'common',
   statMultiplier: 1.1,
   valueMultiplier: 1.2,
-  description: 'Sturdy bronze equipment'
+  description: 'Sturdy bronze equipment',
+  icon: GiMetalPlate,
 }

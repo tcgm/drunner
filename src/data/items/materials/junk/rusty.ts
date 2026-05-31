@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiRustySword } from 'react-icons/gi'
 
 export const RUSTY: Material = {
   id: 'rusty',
@@ -7,5 +8,6 @@ export const RUSTY: Material = {
   rarity: 'junk',
   statMultiplier: 0.5,
   valueMultiplier: 0.3,
-  description: 'Worn and corroded'
+  description: 'Worn and corroded',
+  icon: GiRustySword,
 }

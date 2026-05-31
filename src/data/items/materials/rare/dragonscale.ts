@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiDragonHead } from 'react-icons/gi'
 
 export const DRAGONSCALE: Material = {
   id: 'dragonscale',
@@ -8,5 +9,6 @@ export const DRAGONSCALE: Material = {
   statMultiplier: 2.2,
   valueMultiplier: 5.0,
   description: 'Harvested from dragon hide',
-  blacklist: ['weapon', 'accessory2'] // Scales are for armor, not weapons or rigid accessories (but charms ok)
+  blacklist: ['weapon', 'accessory2'], // Scales are for armor, not weapons or rigid accessories (but charms ok)
+  icon: GiDragonHead,
 }

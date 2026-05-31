@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiSunRadiations } from 'react-icons/gi'
 
 export const CELESTIAL: Material = {
   id: 'celestial',
@@ -7,5 +8,6 @@ export const CELESTIAL: Material = {
   rarity: 'epic',
   statMultiplier: 3.2,
   valueMultiplier: 12.0,
-  description: 'Forged in the heavens'
+  description: 'Forged in the heavens',
+  icon: GiSunRadiations,
 }

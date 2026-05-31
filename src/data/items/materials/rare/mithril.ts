@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiMineralHeart } from 'react-icons/gi'
 
 export const MITHRIL: Material = {
   id: 'mithril',
@@ -7,5 +8,6 @@ export const MITHRIL: Material = {
   rarity: 'rare',
   statMultiplier: 2.0,
   valueMultiplier: 4.0,
-  description: 'Light but incredibly strong'
+  description: 'Light but incredibly strong',
+  icon: GiMineralHeart,
 }

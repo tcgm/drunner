@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiScaleMail } from 'react-icons/gi'
 
 export const REINFORCED_LEATHER: Material = {
   id: 'reinforced_leather',
@@ -8,5 +9,6 @@ export const REINFORCED_LEATHER: Material = {
   statMultiplier: 1.4,
   valueMultiplier: 1.8,
   description: 'Enhanced with metal studs',
-  blacklist: ['weapon', 'accessory2'] // Leather can't be weapons, amulets, or talismans (but charms are ok)
+  blacklist: ['weapon', 'accessory2'], // Leather can't be weapons, amulets, or talismans (but charms are ok)
+  icon: GiScaleMail,
 }

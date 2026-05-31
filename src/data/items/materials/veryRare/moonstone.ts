@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiMoon } from 'react-icons/gi'
 
 export const MOONSTONE: Material = {
   id: 'moonstone',
@@ -7,5 +8,6 @@ export const MOONSTONE: Material = {
   rarity: 'veryRare',
   statMultiplier: 2.5,
   valueMultiplier: 8.0,
-  description: 'Luminescent stone blessed by lunar energies'
+  description: 'Luminescent stone blessed by lunar energies',
+  icon: GiMoon,
 }

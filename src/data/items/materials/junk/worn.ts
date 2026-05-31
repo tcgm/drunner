@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiDustCloud } from 'react-icons/gi'
 
 export const WORN: Material = {
   id: 'worn',
@@ -7,5 +8,6 @@ export const WORN: Material = {
   rarity: 'junk',
   statMultiplier: 0.7,
   valueMultiplier: 0.5,
-  description: 'Heavily used and faded'
+  description: 'Heavily used and faded',
+  icon: GiDustCloud,
 }

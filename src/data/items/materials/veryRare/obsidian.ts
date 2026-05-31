@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiVolcano } from 'react-icons/gi'
 
 export const OBSIDIAN: Material = {
   id: 'obsidian',
@@ -7,5 +8,6 @@ export const OBSIDIAN: Material = {
   rarity: 'veryRare',
   statMultiplier: 2.5,
   valueMultiplier: 8.0,
-  description: 'Volcanic glass hardened by primordial fire'
+  description: 'Volcanic glass hardened by primordial fire',
+  icon: GiVolcano,
 }

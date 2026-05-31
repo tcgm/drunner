@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiStarSattelites } from 'react-icons/gi'
 
 export const ASCENDED: Material = {
   id: 'ascended',
@@ -7,5 +8,6 @@ export const ASCENDED: Material = {
   rarity: 'mythicc',
   statMultiplier: 5.5,
   valueMultiplier: 60.0,
-  description: 'Material that has transcended mortal limitations'
+  description: 'Material that has transcended mortal limitations',
+  icon: GiStarSattelites,
 }

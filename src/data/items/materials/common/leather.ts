@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiLeatherArmor } from 'react-icons/gi'
 
 export const LEATHER: Material = {
   id: 'leather',
@@ -8,5 +9,6 @@ export const LEATHER: Material = {
   statMultiplier: 1.0,
   valueMultiplier: 1.0,
   description: 'Common leather armor',
-  blacklist: ['weapon', 'accessory2'] // Leather can't be weapons, amulets, or talismans (but charms are ok)
+  blacklist: ['weapon', 'accessory2'], // Leather can't be weapons, amulets, or talismans (but charms are ok)
+  icon: GiLeatherArmor,
 }

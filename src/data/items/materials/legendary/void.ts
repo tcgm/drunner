@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiVortex } from 'react-icons/gi'
 
 export const VOIDSTONE: Material = {
   id: 'voidstone',
@@ -7,5 +8,6 @@ export const VOIDSTONE: Material = {
   rarity: 'legendary',
   statMultiplier: 4.5,
   valueMultiplier: 25.0,
-  description: 'Crystallized essence of nothingness itself'
+  description: 'Crystallized essence of nothingness itself',
+  icon: GiVortex,
 }

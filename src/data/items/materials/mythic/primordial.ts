@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiFireGem } from 'react-icons/gi'
 
 export const PRIMORDIAL: Material = {
   id: 'primordial',
@@ -7,5 +8,6 @@ export const PRIMORDIAL: Material = {
   rarity: 'mythic',
   statMultiplier: 5.0,
   valueMultiplier: 40.0,
-  description: 'Existed before creation'
+  description: 'Existed before creation',
+  icon: GiFireGem,
 }

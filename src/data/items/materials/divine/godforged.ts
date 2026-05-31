@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiCoronation } from 'react-icons/gi'
 
 export const GODFORGED: Material = {
   id: 'godforged',
@@ -7,5 +8,6 @@ export const GODFORGED: Material = {
   rarity: 'divine',
   statMultiplier: 7.0,
   valueMultiplier: 100.0,
-  description: 'Forged in the divine anvils of the heavens'
+  description: 'Forged in the divine anvils of the heavens',
+  icon: GiCoronation,
 }

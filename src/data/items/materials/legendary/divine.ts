@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiAngelWings } from 'react-icons/gi'
 
 export const DIVINE: Material = {
   id: 'divine',
@@ -7,5 +8,6 @@ export const DIVINE: Material = {
   rarity: 'legendary',
   statMultiplier: 4.0,
   valueMultiplier: 20.0,
-  description: 'Blessed by the gods themselves'
+  description: 'Blessed by the gods themselves',
+  icon: GiAngelWings,
 }

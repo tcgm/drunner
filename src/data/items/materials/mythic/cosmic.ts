@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiGalaxy } from 'react-icons/gi'
 
 export const COSMIC: Material = {
   id: 'cosmic',
@@ -7,5 +8,6 @@ export const COSMIC: Material = {
   rarity: 'mythic',
   statMultiplier: 5.5,
   valueMultiplier: 45.0,
-  description: 'Forged from stars and galaxies'
+  description: 'Forged from stars and galaxies',
+  icon: GiGalaxy,
 }

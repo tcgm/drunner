@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiGolemHead } from 'react-icons/gi'
 
 export const ADAMANTINE: Material = {
   id: 'adamantine',
@@ -7,5 +8,6 @@ export const ADAMANTINE: Material = {
   rarity: 'epic',
   statMultiplier: 3.0,
   valueMultiplier: 10.0,
-  description: 'Nearly indestructible metal'
+  description: 'Nearly indestructible metal',
+  icon: GiGolemHead,
 }

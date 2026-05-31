@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiSpellBook } from 'react-icons/gi'
 
 export const ARCANE: Material = {
   id: 'arcane',
@@ -7,5 +8,6 @@ export const ARCANE: Material = {
   rarity: 'magical',
   statMultiplier: 3.0,
   valueMultiplier: 11.0,
-  description: 'Material infused with raw magical essence'
+  description: 'Material infused with raw magical essence',
+  icon: GiSpellBook,
 }

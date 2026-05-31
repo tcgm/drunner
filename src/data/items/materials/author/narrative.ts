@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiScrollQuill } from 'react-icons/gi'
 
 export const NARRATIVE: Material = {
   id: 'narrative',
@@ -7,5 +8,6 @@ export const NARRATIVE: Material = {
   rarity: 'author',
   statMultiplier: 30.0,
   valueMultiplier: 1000.0,
-  description: 'The fundamental substance from which all stories are woven'
+  description: 'The fundamental substance from which all stories are woven',
+  icon: GiScrollQuill,
 }

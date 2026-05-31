@@ -1,4 +1,5 @@
 import type { Material } from '../index'
+import { GiGhostAlly } from 'react-icons/gi'
 
 export const SPECTRAL: Material = {
   id: 'spectral',
@@ -7,5 +8,6 @@ export const SPECTRAL: Material = {
   rarity: 'magical',
   statMultiplier: 3.0,
   valueMultiplier: 11.0,
-  description: 'Ethereal matter from the plane of spirits'
+  description: 'Ethereal matter from the plane of spirits',
+  icon: GiGhostAlly,
 }
