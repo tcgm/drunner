@@ -8,7 +8,7 @@
  * Nodes are absolutely positioned over the SVG canvas.
  */
 
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { Box, VStack, Text, Heading, HStack, Badge, Icon } from '@chakra-ui/react'
 import {
   GiCrossedSwords,
@@ -108,7 +108,7 @@ function NodeButton({ node, center, onClick, revealAll }: NodeButtonProps) {
       bg={isVisited ? 'gray.700' : isFuture ? 'gray.800' : isBoss ? 'purple.900' : 'gray.750'}
       opacity={isFuture ? 0.45 : 1}
       cursor={isAvailable ? 'pointer' : 'default'}
-      transition="all 0.15s"
+      transition="background-color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s, opacity 0.15s"
       _hover={isAvailable ? { borderColor: 'orange.300', bg: 'gray.600', transform: 'scale(1.06)' } : {}}
       onClick={isAvailable ? onClick : undefined}
       boxShadow={
@@ -175,8 +175,10 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
     scrollRef.current.scrollTo({ top: targetY, behavior: 'smooth' })
   }, [floorMap])
 
-  // Measure container width so node positions scale with available space
-  useEffect(() => {
+  // Measure container width so node positions scale with available space.
+  // useLayoutEffect fires before the browser paints, preventing a flash where
+  // nodes render at the default 360px width then jump to their real positions.
+  useLayoutEffect(() => {
     const el = containerRef.current
     if (!el) return
     const ro = new ResizeObserver((entries) => {
@@ -225,7 +227,7 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
       {/* Header */}
       <HStack w="full" justify="space-between" px={2} pt={1} flexShrink={0}>
         <Heading size="sm" color="orange.300">
-          Floor {floor} — Choose Your Path
+          Floor {floor}
         </Heading>
         {availableCount > 0 && (
           <Badge colorScheme="orange" variant="subtle" fontSize="xs">
