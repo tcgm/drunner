@@ -38,9 +38,9 @@ export const RABID_WOLF: DungeonEvent = {
       },
     },
     {
-      text: 'Calm the beast (Ranger bonus)',
+      text: 'Calm the beast (Ranger/Druid bonus)',
       requirements: {
-        class: 'Ranger',
+        class: ['Ranger', 'Druid'],
       },
       skipsCombat: true, // Animal handling - wolf backs down peacefully
       outcome: {

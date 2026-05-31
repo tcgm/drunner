@@ -51,13 +51,10 @@ import type { Item, ItemRarity } from '@/types'
 
 const BASE_TYPES: { label: string; value: string }[] = [
   { label: 'Weapon', value: 'weapon' },
-  { label: 'Helmet', value: 'head' },
-  { label: 'Chest', value: 'chest' },
-  { label: 'Legs', value: 'legs' },
-  { label: 'Boots', value: 'feet' },
-  { label: 'Gloves', value: 'hands' },
+  { label: 'Helmet', value: 'helmet' },
+  { label: 'Armor', value: 'armor' },
+  { label: 'Boots', value: 'boots' },
   { label: 'Accessory', value: 'accessory1' },
-  { label: 'Off-hand', value: 'offhand' },
 ]
 
 // ─── Props ────────────────────────────────────────────────────────────────────
