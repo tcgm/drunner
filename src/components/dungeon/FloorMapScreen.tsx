@@ -25,37 +25,37 @@ import {
 import type { FloorMap, MapNode, MapNodeType, MapNodeStatus } from '@/types'
 
 // ─── visual constants ───────────────────────────────────────────────────────
-const NODE_W      = 72
-const NODE_H      = 72
-const ROW_H       = 110  // vertical distance between row centres
+const NODE_W = 72
+const NODE_H = 72
+const ROW_H = 110  // vertical distance between row centres
 const COL_SPACING = 100  // pixels between adjacent column centres (cluster stays centred)
 
 // ─── per-type metadata ──────────────────────────────────────────────────────
 type NodeMeta = { label: string; icon: React.ComponentType; color: string }
 
 const NODE_META: Record<MapNodeType, NodeMeta> = {
-  combat:   { label: 'Combat',   icon: GiCrossedSwords, color: 'red.400'    },
-  choice:   { label: 'Event',    icon: GiScrollUnfurled,color: 'blue.300'   },
-  treasure: { label: 'Treasure', icon: GiTreasureMap,   color: 'yellow.400' },
-  rest:     { label: 'Rest',     icon: GiCampfire,       color: 'green.400'  },
-  merchant: { label: 'Shop',     icon: GiTwoCoins,       color: 'yellow.300' },
-  trap:     { label: 'Trap',     icon: GiSpikedFence,    color: 'orange.400' },
-  mining:   { label: 'Mine',     icon: GiMining,         color: 'gray.300'   },
-  boss:     { label: 'Boss',     icon: GiDragonHead,     color: 'purple.400' },
+  combat: { label: 'Combat', icon: GiCrossedSwords, color: 'red.400' },
+  choice: { label: 'Event', icon: GiScrollUnfurled, color: 'blue.300' },
+  treasure: { label: 'Treasure', icon: GiTreasureMap, color: 'yellow.400' },
+  rest: { label: 'Rest', icon: GiCampfire, color: 'green.400' },
+  merchant: { label: 'Shop', icon: GiTwoCoins, color: 'yellow.300' },
+  trap: { label: 'Trap', icon: GiSpikedFence, color: 'orange.400' },
+  mining: { label: 'Mine', icon: GiMining, color: 'gray.300' },
+  boss: { label: 'Boss', icon: GiDragonHead, color: 'purple.400' },
 }
 
 // Status-driven ring colour
 const STATUS_RING: Record<MapNodeStatus, string> = {
   available: '#ED8936', // orange.400
-  current:   '#ECC94B', // yellow.400
-  visited:   '#4A5568', // gray.600
-  future:    '#2D3748', // gray.700
+  current: '#ECC94B', // yellow.400
+  visited: '#4A5568', // gray.600
+  future: '#2D3748', // gray.700
 }
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 function groupByRow(nodes: MapNode[]): Record<number, MapNode[]> {
   return nodes.reduce<Record<number, MapNode[]>>((acc, n) => {
-    ;(acc[n.row] ??= []).push(n)
+    ; (acc[n.row] ??= []).push(n)
     return acc
   }, {})
 }
@@ -86,17 +86,17 @@ interface NodeButtonProps {
 }
 
 function NodeButton({ node, center, onClick, revealAll, canDetectTraps }: NodeButtonProps) {
-  const meta  = NODE_META[node.type]
+  const meta = NODE_META[node.type]
   const isAvailable = node.status === 'available'
-  const isVisited   = node.status === 'visited'
-  const isFuture    = node.status === 'future'
-  const isBoss      = node.type === 'boss'
+  const isVisited = node.status === 'visited'
+  const isFuture = node.status === 'future'
+  const isBoss = node.type === 'boss'
 
   // Traps are disguised as events unless a detection ability is active.
   // A detected trap retains its real icon/label but gets a danger ring.
-  const isTrap         = node.type === 'trap'
+  const isTrap = node.type === 'trap'
   const isDetectedTrap = isTrap && canDetectTraps
-  const displayMeta    = isTrap && !isDetectedTrap && !isVisited ? NODE_META.choice : meta
+  const displayMeta = isTrap && !isDetectedTrap && !isVisited ? NODE_META.choice : meta
 
   // Detected-trap available nodes get a red warning ring instead of the normal orange
   const ringColor = isDetectedTrap && isAvailable
@@ -107,8 +107,8 @@ function NodeButton({ node, center, onClick, revealAll, canDetectTraps }: NodeBu
     <Box
       position="absolute"
       left={center.x - NODE_W / 2 + 'px'}
-      top={center.y  - NODE_H / 2 + 'px'}
-      w={NODE_W  + 'px'}
+      top={center.y - NODE_H / 2 + 'px'}
+      w={NODE_W + 'px'}
       h={isBoss ? NODE_H + 8 + 'px' : NODE_H + 'px'}
       display="flex"
       flexDirection="column"
@@ -150,10 +150,10 @@ function NodeButton({ node, center, onClick, revealAll, canDetectTraps }: NodeBu
         fontSize={isBoss ? 'xs' : '2xs'}
         fontWeight="semibold"
         color={
-          isVisited       ? 'gray.500'
-          : isDetectedTrap ? 'red.300'
-          : isFuture      ? 'gray.600'
-          : displayMeta.color
+          isVisited ? 'gray.500'
+            : isDetectedTrap ? 'red.300'
+              : isFuture ? 'gray.600'
+                : displayMeta.color
         }
         textAlign="center"
         letterSpacing="wide"
@@ -192,7 +192,7 @@ interface FloorMapScreenProps {
 
 export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAll = false, canDetectTraps = false }: FloorMapScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const scrollRef    = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(360)
 
   // Scroll to the active row whenever the map changes (e.g. after completing a node)
@@ -222,8 +222,8 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
     return () => ro.disconnect()
   }, [])
 
-  const byRow   = groupByRow(floorMap.nodes)
-  const totalH  = floorMap.rows * ROW_H + NODE_H
+  const byRow = groupByRow(floorMap.nodes)
+  const totalH = floorMap.rows * ROW_H + NODE_H
 
   /** Pre-compute all node centres once width is known */
   const centres = useCallback((): Record<string, { x: number; y: number }> => {
@@ -233,7 +233,7 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
       map[n.id] = nodeCenter(n, rowNodes, width)
     })
     return map
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [floorMap.nodes, width])()
 
   // Build connection list for SVG rendering
@@ -246,7 +246,7 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
       const active = node.status === 'visited' || node.status === 'current'
       connections.push({
         from: { x: fc.x, y: fc.y + NODE_H / 2 },
-        to:   { x: tc.x, y: tc.y - NODE_H / 2 },
+        to: { x: tc.x, y: tc.y - NODE_H / 2 },
         active,
       })
     })
@@ -270,52 +270,52 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
 
       {/* Map canvas */}
       <Box ref={scrollRef as React.Ref<HTMLDivElement>} flex={1} minH={0} overflowY="auto" w="full">
-      <Box
-        ref={containerRef}
-        position="relative"
-        w="full"
-        flexShrink={0}
-        style={{ height: totalH + 'px' }}
-      >
-        {/* SVG connection lines */}
-        <svg
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: totalH,
-            pointerEvents: 'none',
-            overflow: 'visible',
-          }}
+        <Box
+          ref={containerRef}
+          position="relative"
+          w="full"
+          flexShrink={0}
+          style={{ height: totalH + 'px' }}
         >
-          {connections.map((c, i) => {
-            const midY = (c.from.y + c.to.y) / 2
-            const d = `M ${c.from.x} ${c.from.y} C ${c.from.x} ${midY}, ${c.to.x} ${midY}, ${c.to.x} ${c.to.y}`
-            return (
-              <path
-                key={i}
-                d={d}
-                stroke={c.active ? '#ED8936' : '#2D3748'}
-                strokeWidth={c.active ? 2 : 1.5}
-                fill="none"
-                opacity={c.active ? 0.7 : 0.35}
-              />
-            )
-          })}
-        </svg>
+          {/* SVG connection lines */}
+          <svg
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: totalH,
+              pointerEvents: 'none',
+              overflow: 'visible',
+            }}
+          >
+            {connections.map((c, i) => {
+              const midY = (c.from.y + c.to.y) / 2
+              const d = `M ${c.from.x} ${c.from.y} C ${c.from.x} ${midY}, ${c.to.x} ${midY}, ${c.to.x} ${c.to.y}`
+              return (
+                <path
+                  key={i}
+                  d={d}
+                  stroke={c.active ? '#ED8936' : '#2D3748'}
+                  strokeWidth={c.active ? 2 : 1.5}
+                  fill="none"
+                  opacity={c.active ? 0.7 : 0.35}
+                />
+              )
+            })}
+          </svg>
 
-        {/* Nodes */}
-        {floorMap.nodes.map((node) => (
-          <NodeButton
-            key={node.id}
-            node={node}
-            center={centres[node.id]}
-            onClick={() => onSelectNode(node.id)}
-            revealAll={revealAll}
-            canDetectTraps={canDetectTraps}
-          />
-        ))}
-      </Box>
+          {/* Nodes */}
+          {floorMap.nodes.map((node) => (
+            <NodeButton
+              key={node.id}
+              node={node}
+              center={centres[node.id]}
+              onClick={() => onSelectNode(node.id)}
+              revealAll={revealAll}
+              canDetectTraps={canDetectTraps}
+            />
+          ))}
+        </Box>
       </Box>
 
       {/* Legend */}
