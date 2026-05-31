@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEmerald } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYSTAL_DRAGON: DungeonEvent = {
   id: 'crystal-dragon',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.CRYSTAL, TAGS.ARCANE],
   title: 'Crystal Dragon',
   description: 'A dragon made entirely of living gemstone gleams in the light. Its breath weapon is a beam of concentrated magical energy that can shatter stone.',
   choices: [

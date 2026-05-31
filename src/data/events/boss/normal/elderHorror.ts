@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSquidHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ELDER_HORROR: DungeonEvent = {
   id: 'elder-horror',
   type: 'boss',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ABYSS],
   title: 'Elder Horror',
   description: 'An ancient thing that predates existence. Looking upon it drives mortals mad. Its very presence distorts reality.',
   choices: [

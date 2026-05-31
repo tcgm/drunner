@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonGas } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TOXIC_OVERLORD: DungeonEvent = {
   id: 'toxic-overlord',
   type: 'boss',
+  tags: [TAGS.OOZE, TAGS.POISON, TAGS.SWAMP, TAGS.TITAN],
   title: 'Toxic Overlord',
   description: 'A demon prince of poison and corruption. The very air around it is lethal. Each breath burns your lungs.',
   choices: [

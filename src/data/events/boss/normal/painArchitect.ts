@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwordWound } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PAIN_ARCHITECT: DungeonEvent = {
   id: 'pain-architect',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL, TAGS.ABERRATION],
   title: 'Pain Architect',
   description: 'A demon that has mastered the art of suffering. It doesn\'t kill - it makes you wish it would.',
   choices: [

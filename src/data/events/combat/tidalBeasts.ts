@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBigWave } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TIDAL_BEASTS: DungeonEvent = {
   id: 'tidal-beasts',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.AQUATIC, TAGS.SWAMP],
   title: 'Tidal Beasts',
   description: 'Massive aquatic horrors surge with overwhelming force!',
   choices: [

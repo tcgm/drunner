@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBatWing } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STIRGES: DungeonEvent = {
   id: 'stirges',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.BAT, TAGS.INSECT, TAGS.SWAMP, TAGS.CAVE],
   title: 'Stirges',
   description: 'Blood-drinking flying creatures dive at you with needle-like proboscises!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCeremonialMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MASKED_CULTISTS: DungeonEvent = {
   id: 'masked-cultists',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.CULTIST, TAGS.ARCANE],
   title: 'Masked Cultists',
   description: 'Hooded figures in disturbing masks chant ominously!',
   choices: [

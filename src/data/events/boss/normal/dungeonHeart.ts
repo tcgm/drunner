@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrown } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DUNGEON_HEART: DungeonEvent = {
   id: 'dungeon-heart',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.DUNGEON, TAGS.ARCANE],
   title: 'Dungeon Heart',
   description: 'The living core of the dungeon itself. It is every trap, every monster, every floor. To destroy it is to end the dungeon.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVortex } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ENTROPY_LORD: DungeonEvent = {
   id: 'entropy-lord',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Entropy Lord',
   description: 'A being of pure decay and disorder. Everything it touches unravels into chaos. Order cannot exist near it.',
   choices: [

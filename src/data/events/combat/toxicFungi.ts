@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonGas } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TOXIC_FUNGI: DungeonEvent = {
   id: 'toxic-fungi',
   type: 'combat',
+  tags: [TAGS.FUNGUS, TAGS.PLANT, TAGS.POISON, TAGS.SWAMP, TAGS.CAVE],
   title: 'Toxic Fungi',
   description: 'Mushroom monsters release poisonous spores!',
   choices: [

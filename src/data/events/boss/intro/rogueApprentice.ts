@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiHoodedAssassin } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ROGUE_APPRENTICE: DungeonEvent = {
   id: 'rogue-apprentice-intro',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Rogue Apprentice',
   description: 'A young thief emerges from the shadows, daggers drawn. They look nervous but determined to prove themselves.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBleedingEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WATCHING_EYES: DungeonEvent = {
   id: 'watching-eyes',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.CAVE, TAGS.SHADOW],
   title: 'Watching Eyes',
   description: 'Disembodied eyes float and fire beams of energy!',
   choices: [

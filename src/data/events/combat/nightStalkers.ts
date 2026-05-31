@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingCloak } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NIGHT_STALKERS: DungeonEvent = {
   id: 'night-stalkers',
   type: 'combat',
+  tags: [TAGS.SHADOW, TAGS.BEAST, TAGS.CAVE],
   title: 'Night Stalkers',
   description: 'Vampiric hunters glide silently through darkness!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBridge } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RICKETY_BRIDGE: DungeonEvent = {
   id: 'rickety-bridge',
   type: 'choice',
+  tags: [TAGS.DUNGEON, TAGS.CAVE],
   title: 'Rickety Bridge',
   description: 'A rope bridge spans a deep chasm. It looks unstable but crossable.',
   choices: [

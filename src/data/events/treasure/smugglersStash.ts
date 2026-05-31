@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiOpenChest } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SMUGGLERS_STASH: DungeonEvent = {
     id: 'smugglers-stash',
     type: 'treasure',
+    tags: [TAGS.DUNGEON, TAGS.HUMANOID],
     title: "Smuggler's Stash",
     description: 'A loose stone in the wall conceals a cache - the mark of a dungeon smuggling operation. The goods are still fresh.',
     choices: [

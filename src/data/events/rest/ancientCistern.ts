@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiWaterfall } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANCIENT_CISTERN: DungeonEvent = {
     id: 'ancient-cistern',
     type: 'rest',
+    tags: [TAGS.RUINS, TAGS.AQUATIC],
     title: 'Ancient Cistern',
     description: 'A vast underground cistern holds still, dark water fed by an unknown spring. The stonework is ancient but immaculate.',
     choices: [

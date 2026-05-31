@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract046 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CAUSALITY_BREAKERS: DungeonEvent = {
   id: 'causality-breakers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Causality Breakers',
   description: 'Beings that sever cause and effect!',
   choices: [

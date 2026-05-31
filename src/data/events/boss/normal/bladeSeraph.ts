@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingedSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLADE_SERAPH: DungeonEvent = {
   id: 'blade-seraph',
   type: 'boss',
+  tags: [TAGS.CELESTIAL, TAGS.HUMANOID, TAGS.ETHEREAL],
   title: 'Blade Seraph',
   description: 'A celestial being of pure combat prowess. It has six arms, each wielding a different legendary weapon.',
   choices: [

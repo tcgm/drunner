@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiClockwiseRotation } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TIME_PREDATORS: DungeonEvent = {
   id: 'time-predators',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.CHRONO],
   title: 'Time Predators',
   description: 'Hunters that stalk through temporal streams attack from past and future!',
   choices: [

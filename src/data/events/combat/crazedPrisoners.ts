@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPunch } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRAZED_PRISONERS: DungeonEvent = {
   id: 'crazed-prisoners',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Crazed Prisoners',
   description: 'Wild-eyed inmates attack with makeshift weapons!',
   choices: [

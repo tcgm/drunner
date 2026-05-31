@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWolfHowl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FERAL_HOUNDS: DungeonEvent = {
   id: 'feral-hounds',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.WOLF, TAGS.DUNGEON, TAGS.CAVE],
   title: 'Feral Hounds',
   description: 'Wild dogs with matted fur and foam-flecked jaws charge forward!',
   choices: [

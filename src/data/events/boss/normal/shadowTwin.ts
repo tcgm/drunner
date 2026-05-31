@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDualityMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_TWIN: DungeonEvent = {
   id: 'shadow-twin',
   type: 'boss',
+  tags: [TAGS.SHADOW, TAGS.HUMANOID, TAGS.ABERRATION],
   title: 'Shadow Twin',
   description: 'Two identical figures move in perfect synchronization, one of light and one of shadow. They attack as one entity, perfectly coordinated.',
   choices: [

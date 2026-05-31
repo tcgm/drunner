@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract045 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const UNIVERSE_EATERS: DungeonEvent = {
   id: 'universe-eaters',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.COSMIC_ENV],
   title: 'Universe Eaters',
   description: 'Cosmic entities that consume entire universes turn their hunger on you!',
   choices: [

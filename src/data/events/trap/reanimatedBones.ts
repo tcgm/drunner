@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiSkullCrack } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const REANIMATED_BONES: DungeonEvent = {
     id: 'reanimated-bones',
     type: 'trap',
+    tags: [TAGS.UNDEAD, TAGS.SKELETON, TAGS.DUNGEON],
     title: 'Reanimated Bones',
     description: 'The floor of the corridor is covered in old bones. As you step on them, they twitch. A necromantic ward still pulses in the walls - whoever made this trap was thorough.',
     choices: [

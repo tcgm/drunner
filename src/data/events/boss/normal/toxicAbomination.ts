@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonGas } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TOXIC_ABOMINATION: DungeonEvent = {
   id: 'toxic-abomination',
   type: 'boss',
+  tags: [TAGS.OOZE, TAGS.POISON, TAGS.SWAMP, TAGS.ABERRATION],
   title: 'Toxic Abomination',
   description: 'A writhing mass of flesh and toxic sludge, created by twisted experiments. Poison gas constantly seeps from its many orifices.',
   choices: [

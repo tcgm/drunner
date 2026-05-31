@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBandaged } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WOUNDED_TRAVELER: DungeonEvent = {
   id: 'wounded-traveler',
   type: 'choice',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Wounded Traveler',
   description: 'A bleeding traveler lies against the wall. He offers gold for healing.',
   choices: [

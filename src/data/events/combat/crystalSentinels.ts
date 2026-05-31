@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalWand } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYSTAL_SENTINELS: DungeonEvent = {
   id: 'crystal-sentinels',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.CRYSTAL, TAGS.CAVE],
   title: 'Crystal Sentinels',
   description: 'Living crystals that refract magic and light!',
   choices: [

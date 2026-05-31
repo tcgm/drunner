@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract107 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const APOCALYPSE_HERALDS: DungeonEvent = {
   id: 'apocalypse-heralds',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Apocalypse Heralds',
   description: 'Harbingers of the end times bring destruction incarnate!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikesFull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SPIKE_HORRORS: DungeonEvent = {
   id: 'spike-horrors',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.CAVE],
   title: 'Spike Horrors',
   description: 'Creatures made entirely of sharp spikes roll toward you!',
   choices: [

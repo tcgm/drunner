@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFlowerPot } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MYSTICAL_GARDEN: DungeonEvent = {
   id: 'mystical-garden',
   type: 'rest',
+  tags: [TAGS.PLANT, TAGS.FOREST, TAGS.ARCANE],
   title: 'Mystical Garden',
   description: 'An underground garden thrives here with glowing plants and strange fruits.',
   choices: [

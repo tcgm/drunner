@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFrozenOrb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABSOLUTE_ZERO: DungeonEvent = {
   id: 'absolute-zero',
   type: 'combat',
+  tags: [TAGS.ICE, TAGS.ELEMENTAL, TAGS.ARCTIC],
   title: 'Absolute Zero',
   description: 'A cold so intense it stops molecular motion!',
   choices: [

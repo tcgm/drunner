@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwapBag } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BODY_SNATCHERS: DungeonEvent = {
   id: 'body-snatchers',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.ABERRATION],
   title: 'Body Snatchers',
   description: 'Parasites that try to steal your physical form!',
   choices: [

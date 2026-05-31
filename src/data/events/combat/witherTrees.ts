@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDeadWood } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WITHER_TREES: DungeonEvent = {
   id: 'wither-trees',
   type: 'combat',
+  tags: [TAGS.PLANT, TAGS.UNDEAD, TAGS.FOREST, TAGS.SWAMP],
   title: 'Wither Trees',
   description: 'Corrupted treants spread death and decay!',
   choices: [

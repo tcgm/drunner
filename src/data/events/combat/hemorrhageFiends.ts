@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBleedingWound } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HEMORRHAGE_FIENDS: DungeonEvent = {
   id: 'hemorrhage-fiends',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.BLOOD, TAGS.INFERNAL],
   title: 'Hemorrhage Fiends',
   description: 'Demons that cause uncontrollable bleeding!',
   choices: [

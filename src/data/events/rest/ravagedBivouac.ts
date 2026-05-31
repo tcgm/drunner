@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiFire } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RAVAGED_BIVOUAC: DungeonEvent = {
     id: 'ravaged-bivouac',
     type: 'rest',
+    tags: [TAGS.DUNGEON],
     title: 'Ravaged Bivouac',
     description: "Someone camped here recently - and didn't leave voluntarily. Scattered gear and an extinguished fire ring remain.",
     choices: [

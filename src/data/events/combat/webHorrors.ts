@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCobweb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WEB_HORRORS: DungeonEvent = {
   id: 'web-horrors',
   type: 'combat',
+  tags: [TAGS.SPIDER, TAGS.SHADOW, TAGS.CAVE],
   title: 'Web Horrors',
   description: 'Massive arachnid aberrations trap you in sticky webs!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTornado } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HURRICANE_PRINCE: DungeonEvent = {
   id: 'hurricane-prince',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.STORM],
   title: 'Hurricane Prince',
   description: 'An elemental lord of wind and storm. It is the eye of an eternal hurricane, commanding winds that could level cities.',
   choices: [

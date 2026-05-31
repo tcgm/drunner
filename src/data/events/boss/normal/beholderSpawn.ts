@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEvilEyes } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BEHOLDER_SPAWN: DungeonEvent = {
   id: 'beholder-spawn',
   type: 'boss',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.CAVE, TAGS.ABYSS],
   title: 'Beholder Spawn',
   description: 'A floating orb covered in eyes hovers before you. Each eye glows with a different magical energy, ready to unleash devastating rays.',
   choices: [

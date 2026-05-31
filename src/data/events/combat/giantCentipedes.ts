@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCentipede } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GIANT_CENTIPEDES: DungeonEvent = {
   id: 'giant-centipedes',
   type: 'combat',
+  tags: [TAGS.INSECT, TAGS.CAVE, TAGS.BEAST],
   title: 'Giant Centipedes',
   description: 'Massive centipedes with hundreds of legs surge forward!',
   choices: [

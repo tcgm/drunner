@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrackedBallDunk } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHAOS_HERALD: DungeonEvent = {
   id: 'chaos-herald',
   type: 'boss',
+  tags: [TAGS.CHAOS, TAGS.DEMON, TAGS.VOID],
   title: 'Chaos Herald',
   description: 'An avatar of pure chaos. Its form constantly shifts, and reality warps unpredictably around it. Order means nothing here.',
   choices: [

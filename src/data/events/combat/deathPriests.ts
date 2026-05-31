@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDeathSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEATH_PRIESTS: DungeonEvent = {
   id: 'death-priests',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.CULTIST],
   title: 'Death Priests',
   description: 'Hooded cultists chant dark prayers as they summon necrotic energy!',
   choices: [

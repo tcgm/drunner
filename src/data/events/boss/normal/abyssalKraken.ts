@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiOctopus } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABYSSAL_KRAKEN: DungeonEvent = {
   id: 'abyssal-kraken',
   type: 'boss',
+  tags: [TAGS.AQUATIC, TAGS.BEAST, TAGS.ABYSS],
   title: 'Abyssal Kraken',
   description: 'A monstrous creature from the deepest trenches, its tentacles writhe with ancient power. Water floods the chamber as it emerges, bringing the crushing pressure of the abyss with it.',
   choices: [

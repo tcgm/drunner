@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSalamander } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FLAME_NEWTS: DungeonEvent = {
   id: 'flame-newts',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.FIRE, TAGS.VOLCANIC],
   title: 'Flame Newts',
   description: 'Small reptiles that spit fire scurry around your feet!',
   choices: [

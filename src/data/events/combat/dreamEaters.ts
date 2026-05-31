@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiNightSleep } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DREAM_EATERS: DungeonEvent = {
   id: 'dream-eaters',
   type: 'combat',
+  tags: [TAGS.ETHEREAL, TAGS.ABERRATION, TAGS.SHADOW],
   title: 'Dream Eaters',
   description: 'Ethereal beings that feed on dreams and sleep!',
   choices: [

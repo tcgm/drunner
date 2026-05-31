@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract080 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ELDER_THINGS: DungeonEvent = {
   id: 'elder-things',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.ABYSS],
   title: 'Elder Things',
   description: 'Ancient cosmic horrors that defy all natural law!',
   choices: [

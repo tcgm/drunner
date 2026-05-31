@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSteampunkGoggles } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GEAR_TYRANT: DungeonEvent = {
   id: 'gear-tyrant',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.TITAN],
   title: 'Gear Tyrant',
   description: 'A clockwork despot powered by countless interlocking mechanisms. Its precision is matched only by its cruelty.',
   choices: [

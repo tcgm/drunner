@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWaterSplash } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SLUDGE_WALKERS: DungeonEvent = {
   id: 'sludge-walkers',
   type: 'combat',
+  tags: [TAGS.OOZE, TAGS.UNDEAD, TAGS.SWAMP],
   title: 'Sludge Walkers',
   description: 'Humanoid figures formed from toxic waste shamble forward!',
   choices: [

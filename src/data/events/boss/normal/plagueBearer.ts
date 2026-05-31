@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonCloud } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLAGUE_BEARER: DungeonEvent = {
   id: 'plague-bearer',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.PLAGUE, TAGS.SWAMP, TAGS.DEMON],
   title: 'Plague Bearer',
   description: 'A bloated demon oozes disease and pestilence. Clouds of toxic gas surround it, and its very touch spreads corruption.',
   choices: [

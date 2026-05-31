@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEyeOfHorus } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_80: DungeonEvent = {
   id: 'zone-boss-80-fate-weaver',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.ARCANE, TAGS.VOID],
   title: 'The Fate Weaver',
   description: 'An incomprehensible being that exists outside time itself. It sees all possible futures and pasts simultaneously. To fight it is to battle probability and causality themselves.',
   depth: 80,

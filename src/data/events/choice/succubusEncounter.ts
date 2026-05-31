@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLips } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SUCCUBUS_ENCOUNTER: DungeonEvent = {
     id: 'succubus-encounter',
     type: 'choice',
+    tags: [TAGS.DEMON, TAGS.INFERNAL],
     title: 'Succubus Temptation',
     description: [
         'A seductive figure emerges from the shadows, her eyes gleaming with otherworldly allure. The succubus smiles knowingly, her presence both intoxicating and dangerous. "Adventurers..." she purrs, "Shall we play?"',

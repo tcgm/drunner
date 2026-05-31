@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWhirlwind } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TEMPEST_LORDS: DungeonEvent = {
   id: 'tempest-lords',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.STORM],
   title: 'Tempest Lords',
   description: 'Elemental rulers of storms attack with wind and lightning!',
   choices: [

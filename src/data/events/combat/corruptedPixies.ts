@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFairyWand } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CORRUPTED_PIXIES: DungeonEvent = {
   id: 'corrupted-pixies',
   type: 'combat',
+  tags: [TAGS.FAE, TAGS.ARCANE, TAGS.FOREST],
   title: 'Corrupted Pixies',
   description: 'Dark fey creatures cast malicious spells and illusions!',
   choices: [

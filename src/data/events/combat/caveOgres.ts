@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCaveman } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CAVE_OGRES: DungeonEvent = {
   id: 'cave-ogres',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.ORC, TAGS.CAVE, TAGS.UNDERGROUND],
   title: 'Cave Ogres',
   description: 'Massive brutes wielding crude clubs lumber toward you!',
   choices: [

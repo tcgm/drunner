@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract062 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CONCEPT_EATERS: DungeonEvent = {
   id: 'concept-eaters',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Concept Eaters',
   description: 'Beings that devour abstract concepts attack your very identity!',
   choices: [

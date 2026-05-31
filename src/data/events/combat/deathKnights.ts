@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEATH_KNIGHTS: DungeonEvent = {
   id: 'death-knights',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.KNIGHT, TAGS.INFERNAL],
   title: 'Death Knights',
   description: 'Undead warriors wielding cursed blades march forth!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMushroomGills } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FUNGAL_SHAMBLER: DungeonEvent = {
   id: 'fungal-shambler',
   type: 'combat',
+  tags: [TAGS.FUNGUS, TAGS.PLANT, TAGS.SWAMP, TAGS.CAVE],
   title: 'Fungal Shambler',
   description: 'A lumbering mass of mushrooms and decay approaches, releasing toxic spores!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBrokenSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEATH_KNIGHT_COMMANDER: DungeonEvent = {
   id: 'death-knight-commander',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.KNIGHT, TAGS.INFERNAL],
   title: 'Death Knight Commander',
   description: 'A fallen paladin cursed to serve in death. Their once-holy blade now radiates necrotic energy, and their armor is etched with runes of undeath.',
   choices: [

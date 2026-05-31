@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGoblinHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GOBLIN_SALESMAN: DungeonEvent = {
     id: 'goblin-salesman',
     type: 'merchant',
+    tags: [TAGS.GOBLIN, TAGS.HUMANOID, TAGS.DUNGEON],
     title: 'Goblin Salesman',
     description: 'A grinning goblin waves you over with an armful of items of questionable provenance. "Very cheap! Very good! Probably not cursed!"',
     choices: [

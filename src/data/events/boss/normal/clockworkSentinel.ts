@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMightySpanner } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CLOCKWORK_SENTINEL: DungeonEvent = {
   id: 'clockwork-sentinel',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL],
   title: 'Clockwork Sentinel',
   description: 'A towering mechanical construct whirs to life, gears grinding and steam hissing. Its brass fists gleam with deadly intent.',
   choices: [

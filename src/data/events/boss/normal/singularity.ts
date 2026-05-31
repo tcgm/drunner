@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBlackHoleBolas } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SINGULARITY: DungeonEvent = {
   id: 'singularity',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.COSMIC_ENV],
   title: 'Singularity',
   description: 'A collapsed star given awareness. Its gravity crushes all matter. Light cannot escape. Nothing can resist its pull.',
   choices: [

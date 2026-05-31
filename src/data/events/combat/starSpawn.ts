@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract117 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STAR_SPAWN: DungeonEvent = {
   id: 'star-spawn',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.COSMIC_ENV],
   title: 'Star Spawn',
   description: 'Children of dying stars radiate lethal cosmic energy!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrossedBones } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BONE_GOLEMS: DungeonEvent = {
   id: 'bone-golems',
   type: 'combat',
+  tags: [TAGS.GOLEM, TAGS.CONSTRUCT, TAGS.UNDEAD, TAGS.SKELETON],
   title: 'Bone Golems',
   description: 'Massive constructs of fused bones lumber into view!',
   choices: [

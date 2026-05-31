@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAnvilImpact } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GRAVITY_GOLEMS: DungeonEvent = {
   id: 'gravity-golems',
   type: 'combat',
+  tags: [TAGS.GOLEM, TAGS.CONSTRUCT, TAGS.ARCANE, TAGS.ABYSS],
   title: 'Gravity Golems',
   description: 'Constructs that control gravitational forces crush you under immense weight!',
   choices: [

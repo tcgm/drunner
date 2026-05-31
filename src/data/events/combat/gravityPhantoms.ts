@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFalling } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GRAVITY_PHANTOMS: DungeonEvent = {
   id: 'gravity-phantoms',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.ARCANE, TAGS.ETHEREAL],
   title: 'Gravity Phantoms',
   description: 'Spirits that manipulate gravitational forces!',
   choices: [

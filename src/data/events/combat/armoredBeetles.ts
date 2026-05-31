@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedShell } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARMORED_BEETLES: DungeonEvent = {
   id: 'armored-beetles',
   type: 'combat',
+  tags: [TAGS.INSECT, TAGS.CAVE, TAGS.BEAST],
   title: 'Armored Beetles',
   description: 'Giant beetles with hard shells scuttle aggressively toward you!',
   choices: [

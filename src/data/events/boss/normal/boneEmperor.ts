@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BONE_EMPEROR: DungeonEvent = {
   id: 'bone-emperor',
   type: 'boss',
+  tags: [TAGS.SKELETON, TAGS.UNDEAD, TAGS.ARCANE],
   title: 'Bone Emperor',
   description: 'An ancient lich-king whose throne is built from the remains of heroes. It commands legions of undead with absolute authority.',
   choices: [

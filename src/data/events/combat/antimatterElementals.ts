@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpottedArrowhead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANTIMATTER_ELEMENTALS: DungeonEvent = {
   id: 'antimatter-elementals',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.COSMIC, TAGS.VOID],
   title: 'Antimatter Elementals',
   description: 'Beings of antimatter annihilate anything they touch!',
   choices: [

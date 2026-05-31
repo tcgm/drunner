@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDrakkarDragon, GiGoldBar } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DRAGON_HOARD: DungeonEvent = {
   id: 'dragon-hoard',
   type: 'treasure',
+  tags: [TAGS.DRAGON, TAGS.VOLCANIC, TAGS.DUNGEON],
   title: 'Dragon\'s Sleeping Hoard',
   description: 'A dragon sleeps atop a massive pile of treasure. Stealing from it is incredibly dangerous.',
   choices: [

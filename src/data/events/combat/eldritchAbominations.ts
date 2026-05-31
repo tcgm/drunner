@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrackedAlienSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ELDRITCH_ABOMINATIONS: DungeonEvent = {
   id: 'eldritch-abominations',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.ABYSS, TAGS.VOID],
   title: 'Eldritch Abominations',
   description: 'Beings so alien they defy comprehension attack with impossible geometries!',
   choices: [

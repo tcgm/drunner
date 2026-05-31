@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiChainedHeart } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SOUL_CHAINS: DungeonEvent = {
   id: 'soul-chains',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Soul Chains',
   description: 'Living chains that bind and drain life energy!',
   choices: [

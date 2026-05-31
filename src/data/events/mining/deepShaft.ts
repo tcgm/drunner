@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiMineWagon } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEEP_SHAFT: DungeonEvent = {
     id: 'deep-shaft',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.UNDERGROUND],
     title: 'Abandoned Mine Shaft',
     description: 'An old mine shaft has been cut into the dungeon wall. Rotting timber supports creak ominously, but the ore veins visible in the walls look rich.',
     choices: [

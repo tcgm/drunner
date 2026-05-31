@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFleshyMass } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CARRION_BEASTS: DungeonEvent = {
   id: 'carrion-beasts',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.UNDEAD, TAGS.DUNGEON, TAGS.CAVE],
   title: 'Carrion Beasts',
   description: 'Grotesque creatures stitched together from corpses attack hungrily!',
   choices: [

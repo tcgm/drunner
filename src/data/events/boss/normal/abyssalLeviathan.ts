@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSeaDragon } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABYSSAL_LEVIATHAN: DungeonEvent = {
   id: 'abyssal-leviathan',
   type: 'boss',
+  tags: [TAGS.AQUATIC, TAGS.BEAST, TAGS.ABYSS, TAGS.VOID],
   title: 'Abyssal Leviathan',
   description: 'A sea monster from impossible depths, somehow dwelling in the dungeon. Water pressure crushes as it moves.',
   choices: [

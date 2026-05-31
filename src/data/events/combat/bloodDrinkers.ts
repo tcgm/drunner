@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVampireDracula } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLOOD_DRINKERS: DungeonEvent = {
   id: 'blood-drinkers',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.BLOOD, TAGS.VAMPIRE],
   title: 'Blood Drinkers',
   description: 'Pale creatures with fangs hiss and lunge for your throat!',
   choices: [

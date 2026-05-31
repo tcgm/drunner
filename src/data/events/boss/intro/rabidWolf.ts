@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWolfHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RABID_WOLF: DungeonEvent = {
   id: 'rabid-wolf-intro',
   type: 'boss',
+  tags: [TAGS.WOLF, TAGS.BEAST, TAGS.FOREST],
   title: 'Rabid Wolf',
   description: 'A snarling wolf guards this passage. Foam drips from its jaws as it prepares to attack.',
   choices: [

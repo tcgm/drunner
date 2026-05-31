@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGooSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLAGUE_LICH: DungeonEvent = {
   id: 'plague-lich',
   type: 'boss',
+  tags: [TAGS.LICH, TAGS.UNDEAD, TAGS.PLAGUE, TAGS.ARCANE],
   title: 'Plague Lich',
   description: 'A lich who specialized in disease magic. Its phylactery is a festering infection that spreads through all living things.',
   choices: [

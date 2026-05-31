@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGargoyle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STONE_GARGOYLES: DungeonEvent = {
     id: 'stone-gargoyles',
     type: 'combat',
+    tags: [TAGS.CONSTRUCT, TAGS.EARTH, TAGS.RUINS, TAGS.CAVE],
     title: 'Stone Gargoyles',
     description: [
         { weight: 3, text: 'Stone statues crack and come to life, spreading stone wings!' },

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedTail } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BEHEMOTH_KING: DungeonEvent = {
   id: 'behemoth-king',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.TITAN],
   title: 'Behemoth King',
   description: 'The largest beast to ever walk the earth. Each footstep causes earthquakes. Its roar alone can kill.',
   choices: [

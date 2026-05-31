@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBlackKnightHelm } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_KNIGHTS: DungeonEvent = {
   id: 'void-knights',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.UNDEAD, TAGS.KNIGHT, TAGS.ABYSS],
   title: 'Void Knights',
   description: 'Warriors clad in living darkness swing weapons of pure void!',
   choices: [

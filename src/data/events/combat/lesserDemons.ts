@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDaemonSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LESSER_DEMONS: DungeonEvent = {
   id: 'lesser-demons',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.INFERNAL],
   title: 'Lesser Demons',
   description: 'Infernal creatures crawl from smoking rifts!',
   choices: [

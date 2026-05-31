@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiderFace } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VENOMOUS_SPIDERS: DungeonEvent = {
     id: 'venomous-spiders',
     type: 'combat',
+    tags: [TAGS.SPIDER, TAGS.POISON, TAGS.FOREST, TAGS.SWAMP, TAGS.CAVE],
     title: 'Venomous Spiders',
     description: [
         { weight: 3, text: 'Giant spiders descend from webs above, fangs dripping venom!' },

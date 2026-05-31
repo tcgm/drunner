@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiImpLaugh } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEMON_EMPEROR: DungeonEvent = {
   id: 'demon-emperor',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL],
   title: 'Demon Emperor',
   description: 'The supreme ruler of the Abyss. Countless demon legions kneel before it. Its power is absolute among demonkind.',
   choices: [

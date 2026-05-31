@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrackedGlass } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHATTERED_REALITIES: DungeonEvent = {
   id: 'shattered-realities',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Shattered Realities',
   description: 'Fragments of broken timelines attack from the past and future!',
   choices: [

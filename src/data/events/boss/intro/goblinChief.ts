@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGoblinHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GOBLIN_CHIEF: DungeonEvent = {
   id: 'goblin-chief-intro',
   type: 'boss',
+  tags: [TAGS.GOBLIN, TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Goblin Chief',
   description: 'A goblin leader barks orders at his minions. He looks mean, but you\'ve fought worse... probably.',
   choices: [

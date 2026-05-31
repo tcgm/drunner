@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTwoCoins, GiPowderBag } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WANDERING_PEDDLER: DungeonEvent = {
     id: 'wandering-peddler',
     type: 'merchant',
+    tags: [TAGS.HUMANOID, TAGS.DUNGEON],
     title: 'Wandering Peddler',
     description: 'A scruffy peddler trudges past with a cart full of odds and ends. His prices are suspiciously low.',
     choices: [

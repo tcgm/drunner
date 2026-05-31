@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract023 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NULL_ZONES: DungeonEvent = {
   id: 'null-zones',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABYSS],
   title: 'Null Zones',
   description: 'Areas of negation given form attack to nullify existence!',
   choices: [

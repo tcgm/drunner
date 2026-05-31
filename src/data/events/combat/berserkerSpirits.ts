@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicAxe } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BERSERKER_SPIRITS: DungeonEvent = {
   id: 'berserker-spirits',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Berserker Spirits',
   description: 'Ethereal warriors fight with endless rage!',
   choices: [

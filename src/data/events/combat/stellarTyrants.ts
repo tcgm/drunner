@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSunRadiations } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STELLAR_TYRANTS: DungeonEvent = {
   id: 'stellar-tyrants',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.COSMIC_ENV],
   title: 'Stellar Tyrants',
   description: 'Beings forged in dying stars command apocalyptic power!',
   choices: [

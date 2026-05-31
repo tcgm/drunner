@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBrutalHelm } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARMORED_COLOSSI: DungeonEvent = {
   id: 'armored-colossi',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.TITAN, TAGS.MECHANICAL],
   title: 'Armored Colossi',
   description: 'Enormous warriors in impenetrable armor advance steadily!',
   choices: [

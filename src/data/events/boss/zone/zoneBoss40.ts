@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVortex } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_40: DungeonEvent = {
   id: 'zone-boss-40-void-herald',
   type: 'boss',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABERRATION],
   title: 'Herald of the Void',
   description: 'A manifestation of absolute nothingness. It consumes light, sound, and hope itself. Where it passes, reality unravels. This entity should not exist.',
   depth: 40,

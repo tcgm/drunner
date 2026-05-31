@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract050 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_REAVERS: DungeonEvent = {
   id: 'void-reavers',
   type: 'boss',
+  tags: [TAGS.VOID, TAGS.HUMANOID, TAGS.ABYSS],
   title: 'The Void Reavers',
   description: 'Three beings of pure antimatter, bound in symbiosis. Where they exist, reality ceases. They move through space by unmaking it. Fighting them means fighting the absence of existence itself.',
   choices: [

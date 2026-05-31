@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBlackHoleBolas } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GRAVITY_WEAVERS: DungeonEvent = {
   id: 'gravity-weavers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ARCANE, TAGS.ABERRATION],
   title: 'Gravity Weavers',
   description: 'Beings that manipulate gravity crush and pull at you!',
   choices: [

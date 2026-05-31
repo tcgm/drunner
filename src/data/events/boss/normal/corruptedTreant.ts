@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTreeFace } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CORRUPTED_TREANT: DungeonEvent = {
   id: 'corrupted-treant',
   type: 'boss',
+  tags: [TAGS.PLANT, TAGS.FOREST, TAGS.UNDEAD],
   title: 'Corrupted Treant',
   description: 'An ancient tree guardian twisted by dark magic. Its bark is blackened, and poisonous sap oozes from its wounds. Root tendrils lash out angrily.',
   choices: [

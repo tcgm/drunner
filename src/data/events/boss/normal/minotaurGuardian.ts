@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBullHorns } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MINOTAUR_GUARDIAN: DungeonEvent = {
   id: 'minotaur-guardian',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Minotaur Guardian',
   description: 'A towering bull-headed warrior blocks the passage, his massive axe gleaming. He snorts and paws the ground, ready to charge.',
   choices: [

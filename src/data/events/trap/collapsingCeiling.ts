@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiStoneStack } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const COLLAPSING_CEILING: DungeonEvent = {
   id: 'collapsing-ceiling',
   type: 'trap',
+  tags: [TAGS.DUNGEON, TAGS.CAVE, TAGS.EARTH],
   title: 'Collapsing Ceiling',
   description: 'The ceiling rumbles ominously. Stones begin to fall!',
   choices: [

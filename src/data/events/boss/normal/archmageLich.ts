@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalWand } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARCHMAGE_LICH: DungeonEvent = {
   id: 'archmage-lich',
   type: 'boss',
+  tags: [TAGS.LICH, TAGS.UNDEAD, TAGS.ARCANE],
   title: 'Archmage Lich',
   description: 'An ancient spellcaster who chose undeath over mortality. Reality warps around their skeletal form as they weave devastating magic.',
   choices: [

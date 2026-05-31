@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVortex } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_SPAWNS: DungeonEvent = {
   id: 'void-spawns',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABERRATION],
   title: 'Void Spawns',
   description: 'Creatures born of absolute nothingness attack with reality-warping claws!',
   choices: [

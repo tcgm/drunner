@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBugleCall } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ALARM_GOLEMS: DungeonEvent = {
   id: 'alarm-golems',
   type: 'combat',
+  tags: [TAGS.GOLEM, TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.DUNGEON],
   title: 'Alarm Golems',
   description: 'Constructs that alert others with piercing sounds!',
   choices: [

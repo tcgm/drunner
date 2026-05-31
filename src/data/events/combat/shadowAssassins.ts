@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBalaclava } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_ASSASSINS: DungeonEvent = {
   id: 'shadow-assassins',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.SHADOW, TAGS.DUNGEON],
   title: 'Shadow Assassins',
   description: 'Perfect killers strike from complete darkness with lethal precision!',
   choices: [

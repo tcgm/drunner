@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWolfHowl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DIRE_WOLF_ALPHA: DungeonEvent = {
   id: 'dire-wolf-alpha',
   type: 'boss',
+  tags: [TAGS.WOLF, TAGS.BEAST, TAGS.FOREST],
   title: 'Dire Wolf Alpha',
   description: 'A massive wolf with midnight black fur leads its pack. Its eyes gleam with predatory intelligence as it circles you.',
   choices: [

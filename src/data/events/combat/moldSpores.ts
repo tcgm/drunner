@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMushroomCloud } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MOLD_SPORES: DungeonEvent = {
   id: 'mold-spores',
   type: 'combat',
+  tags: [TAGS.FUNGUS, TAGS.PLANT, TAGS.CAVE, TAGS.SWAMP],
   title: 'Mold Spores',
   description: 'Thick clouds of aggressive spores fill the corridor!',
   choices: [

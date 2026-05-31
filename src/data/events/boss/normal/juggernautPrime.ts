@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMountedKnight } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const JUGGERNAUT_PRIME: DungeonEvent = {
   id: 'juggernaut-prime',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.TITAN],
   title: 'Juggernaut Prime',
   description: 'An unstoppable force in armor made from collapsing universes. It has never been stopped. It cannot be stopped. It will not be stopped.',
   choices: [

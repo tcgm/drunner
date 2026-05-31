@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDeadHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NECROMANTIC_RITUAL: DungeonEvent = {
   id: 'necromantic-ritual',
   type: 'choice',
+  tags: [TAGS.UNDEAD, TAGS.ARCANE],
   title: 'Dark Ritual Chamber',
   description: 'An ancient ritual circle pulses with dark energy. The power to return the dead lingers here.',
   choices: [

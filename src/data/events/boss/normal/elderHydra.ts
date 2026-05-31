@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSeaDragon } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ELDER_HYDRA: DungeonEvent = {
     id: 'elder-hydra',
     type: 'boss',
+    tags: [TAGS.BEAST, TAGS.DRAGON, TAGS.AQUATIC, TAGS.SWAMP],
     title: 'Elder Hydra',
     description: 'A massive hydra with seven heads rises from the murky waters. Each head weaves independently, searching for prey. Its scales shimmer with an iridescent sheen.',
     choices: [

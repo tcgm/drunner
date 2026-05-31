@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiIceSpear } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FROST_WYRM: DungeonEvent = {
   id: 'frost-wyrm',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.ICE, TAGS.ARCTIC],
   title: 'Frost Wyrm',
   description: 'An undead dragon of ice and death. Its breath freezes all life, and frost spreads from its very presence.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiRat } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GIANT_RAT: DungeonEvent = {
   id: 'giant-rat-intro',
   type: 'boss',
+  tags: [TAGS.RAT, TAGS.BEAST, TAGS.DUNGEON, TAGS.CAVE],
   title: 'Giant Rat',
   description: 'An unusually large rat blocks the passage, its eyes gleaming with hunger. This dungeon dweller looks tough, but beatable.',
   choices: [

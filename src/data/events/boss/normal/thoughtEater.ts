@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBrainTentacle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const THOUGHT_EATER: DungeonEvent = {
   id: 'thought-eater',
   type: 'boss',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ARCANE],
   title: 'Thought Eater',
   description: 'An aberration that consumes thoughts and memories. It grows stronger with every idea it devours from your mind.',
   choices: [

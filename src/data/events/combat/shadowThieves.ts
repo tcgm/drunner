@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCloak } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_THIEVES: DungeonEvent = {
   id: 'shadow-thieves',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.SHADOW, TAGS.DUNGEON],
   title: 'Shadow Thieves',
   description: 'Cloaked rogues emerge from darkness to rob and attack!',
   choices: [

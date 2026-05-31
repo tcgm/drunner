@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShop } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MYSTERIOUS_MERCHANT_CHOICE: DungeonEvent = {
   id: 'mysterious-merchant',
   type: 'choice',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Mysterious Merchant',
   description: 'A hooded figure offers to sell you "special" items at a steep price.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAnubis } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_70: DungeonEvent = {
   id: 'zone-boss-70-death-incarnate',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.SHADOW, TAGS.VOID],
   title: 'Death Incarnate',
   description: 'The personification of mortality itself. It knows the moment of every death, past and future. Its mere presence drains life force. You can feel your souls being weighed.',
   depth: 70,

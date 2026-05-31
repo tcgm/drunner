@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMedusaHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GORGON_MATRIARCH: DungeonEvent = {
   id: 'gorgon-matriarch',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.EARTH, TAGS.CAVE],
   title: 'Gorgon Matriarch',
   description: 'A powerful gorgon with serpents of many colors in place of hair. Her petrifying gaze has created a garden of stone statues - former victims.',
   choices: [

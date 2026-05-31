@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiHornedHelm } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEMON_WARLORD: DungeonEvent = {
   id: 'demon-warlord',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL],
   title: 'Demon Warlord',
   description: 'A tactical genius from the Abyss commands legions with brutal efficiency. Its strategic mind makes it far more dangerous than strength alone.',
   choices: [

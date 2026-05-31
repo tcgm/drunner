@@ -2,6 +2,7 @@ import type { DungeonEvent } from '@/types'
 import { CHAINMAIL_BASE } from '@/data/items/bases/armor/chainmail'
 import { PLATE_ARMOR_BASE } from '@/data/items/bases/armor/plate'
 import { GiSwordInStone } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARMORY_CACHE: DungeonEvent = {
   id: 'armory-cache',

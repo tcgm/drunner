@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAnvilImpact } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const IRON_COLOSSUS: DungeonEvent = {
   id: 'iron-colossus',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.TITAN],
   title: 'Iron Colossus',
   description: 'A massive iron statue animates with grinding metal. Each footstep shakes the floor as it advances with unstoppable force.',
   choices: [

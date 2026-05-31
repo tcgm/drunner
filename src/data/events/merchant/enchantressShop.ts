@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicSwirl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ENCHANTRESS_SHOP: DungeonEvent = {
     id: 'enchantress-shop',
     type: 'merchant',
+    tags: [TAGS.HUMANOID, TAGS.ARCANE, TAGS.DUNGEON],
     title: 'Enchantress\' Stall',
     description: 'A robed enchantress offers temporary magical enhancements. The runes on her stall shimmer with quiet power.',
     choices: [

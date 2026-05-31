@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMushroom } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MUSHROOM_CIRCLE: DungeonEvent = {
     id: 'mushroom-circle',
     type: 'rest',
+    tags: [TAGS.FUNGUS, TAGS.FAE, TAGS.FOREST],
     title: 'Glowing Mushroom Circle',
     description: "A perfect ring of bioluminescent mushrooms pulses with soft blue-green light. The spores in the air carry a faint, pleasant scent.",
     choices: [

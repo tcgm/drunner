@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonBottle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TOXIC_IMPS: DungeonEvent = {
   id: 'toxic-imps',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.POISON, TAGS.SWAMP, TAGS.INFERNAL],
   title: 'Toxic Imps',
   description: 'Small demons giggle as they hurl vials of poison!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAtom } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const QUANTUM_STALKERS: DungeonEvent = {
   id: 'quantum-stalkers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Quantum Stalkers',
   description: 'Beings existing in quantum superposition strike from multiple states!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract050 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CONCEPT_DESTROYER: DungeonEvent = {
   id: 'concept-destroyer',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Concept Destroyer',
   description: 'A being that erases ideas from existence. It doesn\'t kill you - it makes the concept of "you" cease to have ever existed.',
   choices: [

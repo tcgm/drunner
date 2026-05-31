@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDinosaurBones } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SKELETAL_TYRANT: DungeonEvent = {
   id: 'skeletal-tyrant',
   type: 'boss',
+  tags: [TAGS.SKELETON, TAGS.UNDEAD, TAGS.ARCANE],
   title: 'Skeletal Tyrant',
   description: 'The massive fossilized skeleton of an ancient predator has been animated by dark magic. Its bone jaws could swallow you whole.',
   choices: [

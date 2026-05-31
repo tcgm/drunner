@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiDiamondHard } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GEM_CLUSTER: DungeonEvent = {
     id: 'gem-cluster',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.EARTH],
     title: 'Gem Cluster',
     description: 'A small cluster of semi-precious gems protrudes from the rock at eye level, glinting in your torchlight. Easy to reach, though the rock around them is dense.',
     choices: [

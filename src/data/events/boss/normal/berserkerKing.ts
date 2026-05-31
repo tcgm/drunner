@@ -2,10 +2,12 @@ import type { DungeonEvent } from '@/types'
 import { GiMagicAxe } from 'react-icons/gi'
 import { ENRAGE } from '@/data/abilities/boss/enrage'
 import { HEAVY_STRIKE, WHIRLWIND } from '@/data/attackPatterns/boss'
+import { TAGS } from '@data/tags'
 
 export const BERSERKER_KING: DungeonEvent = {
   id: 'berserker-king',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Berserker King',
   description: 'A massive warrior in bloodstained furs roars with primal fury. His twin axes drip with the blood of countless foes, and his eyes burn with battle madness.',
 

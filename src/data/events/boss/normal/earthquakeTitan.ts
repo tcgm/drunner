@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEarthCrack } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const EARTHQUAKE_TITAN: DungeonEvent = {
   id: 'earthquake-titan',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.EARTH, TAGS.TITAN],
   title: 'Earthquake Titan',
   description: 'A colossal earth elemental whose every step triggers tremors. The ground itself obeys its will, creating fissures and spikes at command.',
   choices: [

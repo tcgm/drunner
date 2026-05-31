@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_PROPHET: DungeonEvent = {
   id: 'void-prophet',
   type: 'boss',
+  tags: [TAGS.VOID, TAGS.HUMANOID, TAGS.CULTIST, TAGS.ABYSS],
   title: 'Void Prophet',
   description: 'A being that has gazed too long into the void. It speaks truths that shatter minds and predicts your every move.',
   choices: [

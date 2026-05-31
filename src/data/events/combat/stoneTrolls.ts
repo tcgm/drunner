@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMountains } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STONE_TROLLS: DungeonEvent = {
   id: 'stone-trolls',
   type: 'combat',
+  tags: [TAGS.TROLL, TAGS.EARTH, TAGS.CAVE, TAGS.UNDERGROUND],
   title: 'Stone Trolls',
   description: 'Massive trolls with rock-hard skin smash everything!',
   choices: [

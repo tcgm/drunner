@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVileFluid } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLAGUE_BEARERS: DungeonEvent = {
   id: 'plague-bearers',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.PLAGUE, TAGS.SWAMP, TAGS.DEMON],
   title: 'Plague Bearers',
   description: 'Diseased creatures spread pestilence with every touch!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingedEmblem } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STONE_ANGELS: DungeonEvent = {
   id: 'stone-angels',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.CELESTIAL, TAGS.RUINS],
   title: 'Stone Angels',
   description: 'Corrupted statues with broken wings attack with stone fists!',
   choices: [

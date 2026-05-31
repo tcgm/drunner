@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalBall } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FORTUNE_TELLER: DungeonEvent = {
   id: 'fortune-teller',
   type: 'merchant',
+  tags: [TAGS.HUMANOID, TAGS.ARCANE, TAGS.FAE],
   title: 'Mystic Fortune Teller',
   description: 'A fortune teller offers to reveal your future... for a price.',
   choices: [

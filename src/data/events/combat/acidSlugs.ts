@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSnail } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ACID_SLUGS: DungeonEvent = {
   id: 'acid-slugs',
   type: 'combat',
+  tags: [TAGS.OOZE, TAGS.ACID, TAGS.SWAMP, TAGS.CAVE],
   title: 'Acid Slugs',
   description: 'Giant gastropods leave trails of corrosive slime!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiRuneStone } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANCIENT_RUNE: DungeonEvent = {
   id: 'ancient-rune',
   type: 'choice',
+  tags: [TAGS.RUINS, TAGS.ARCANE],
   title: 'Ancient Rune Circle',
   description: 'A glowing rune circle pulses with arcane energy. Its power could be harnessed... or unleashed.',
   choices: [

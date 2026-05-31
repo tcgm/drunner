@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiralBottle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ALCHEMICAL_ABOMINATIONS: DungeonEvent = {
   id: 'alchemical-abominations',
   type: 'combat',
+  tags: [TAGS.OOZE, TAGS.ABERRATION, TAGS.ARCANE],
   title: 'Alchemical Abominations',
   description: 'Failed experiments bubble and gurgle as they attack!',
   choices: [

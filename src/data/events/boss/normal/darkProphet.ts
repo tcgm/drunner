@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCursedStar } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DARK_PROPHET: DungeonEvent = {
   id: 'dark-prophet',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.CULTIST, TAGS.SHADOW, TAGS.ARCANE],
   title: 'Dark Prophet',
   description: 'A mad cultist who glimpsed forbidden truths. They wield reality-warping powers granted by their eldritch patron, speaking in tongues as they attack.',
   choices: [

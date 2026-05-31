@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalShine } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYSTALLINE_SENTINEL: DungeonEvent = {
   id: 'crystalline-sentinel',
   type: 'boss',
+  tags: [TAGS.CRYSTAL, TAGS.CONSTRUCT],
   title: 'Crystalline Sentinel',
   description: 'A being made entirely of living crystal. Light refracts through its prismatic body in blinding patterns. Each movement creates harmonic tones that resonate through your bones.',
   choices: [

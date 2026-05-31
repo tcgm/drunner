@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCentaurHeart } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CENTAUR_CHAMPION: DungeonEvent = {
   id: 'centaur-champion',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.HUMANOID, TAGS.FOREST],
   title: 'Centaur Champion',
   description: 'A noble centaur warrior charges down the corridor, lance lowered. Battle scars cover his flanks, testament to countless victories.',
   choices: [

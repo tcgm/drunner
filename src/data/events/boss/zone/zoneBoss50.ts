@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiIceCube } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_50: DungeonEvent = {
   id: 'zone-boss-50-eternal-winter',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.ICE, TAGS.ARCTIC, TAGS.TITAN],
   title: 'Avatar of Eternal Winter',
   description: 'An primordial force of nature given form. This being embodies the concept of absolute zero, where all motion ceases and entropy claims everything. The temperature plummets as ice forms on your weapons.',
   depth: 50,

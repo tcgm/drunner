@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSkullCrossedBones } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZOMBIE_BRUTE: DungeonEvent = {
   id: 'zombie-brute-intro',
   type: 'boss',
+  tags: [TAGS.ZOMBIE, TAGS.UNDEAD, TAGS.DUNGEON],
   title: 'Zombie Brute',
   description: 'A shambling undead behemoth blocks your path. It\'s slow but powerful, with arms like battering rams.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiRat } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GIANT_RAT_SWARM: DungeonEvent = {
   id: 'giant-rat-swarm',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.RAT, TAGS.SWARM, TAGS.DUNGEON, TAGS.CAVE],
   title: 'Rat Swarm!',
   description: [
     { weight: 3, text: 'A swarm of giant rats pours from the darkness!' },

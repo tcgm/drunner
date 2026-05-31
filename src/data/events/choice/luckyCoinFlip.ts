@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTwoCoins } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LUCKY_COIN_FLIP: DungeonEvent = {
   id: 'lucky-coin-flip',
   type: 'choice',
+  tags: [TAGS.DUNGEON],
   title: 'Mysterious Stranger',
   description: 'A hooded figure offers a wager: flip their magic coin. Heads you win big, tails you get nothing.',
   choices: [

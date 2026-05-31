@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiIceberg } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FROST_VEIN: DungeonEvent = {
     id: 'frost-vein',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.ICE, TAGS.ARCTIC],
     title: 'Frost Crystal Vein',
     description: 'Ice-blue crystals have grown through the rock - not natural ice, but permafrost minerals that have taken crystalline form over millennia. The cold here is biting.',
     choices: [

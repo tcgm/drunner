@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBurningTree } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WILDFIRE_ANCIENT: DungeonEvent = {
   id: 'wildfire-ancient',
   type: 'boss',
+  tags: [TAGS.SPIRIT, TAGS.FIRE, TAGS.FOREST, TAGS.ELEMENTAL],
   title: 'Wildfire Ancient',
   description: 'An ancient treant consumed by eternal flame. It spreads fire with every step, burning everything in a growing inferno.',
   choices: [

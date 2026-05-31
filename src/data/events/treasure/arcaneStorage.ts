@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLockedChest } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARCANE_STORAGE: DungeonEvent = {
     id: 'arcane-storage',
     type: 'treasure',
+    tags: [TAGS.ARCANE, TAGS.RUINS],
     title: 'Arcane Storage Room',
     description: 'Magical seals preserve a long-abandoned storage chamber. Artifacts float in suspended stasis fields, perfectly preserved.',
     choices: [

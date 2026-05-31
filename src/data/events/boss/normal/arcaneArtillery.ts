@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEvilTower } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARCANE_ARTILLERY: DungeonEvent = {
   id: 'arcane-artillery',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.ARCANE, TAGS.MECHANICAL],
   title: 'Arcane Artillery',
   description: 'A living magical weapon system. It bombards you with spells from impossible ranges, each more devastating than the last.',
   choices: [

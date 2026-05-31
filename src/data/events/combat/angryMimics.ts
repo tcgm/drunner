@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiChestArmor } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANGRY_MIMICS: DungeonEvent = {
     id: 'angry-mimics',
     type: 'combat',
+    tags: [TAGS.MIMIC, TAGS.DUNGEON],
     title: 'Angry Mimics!',
     description: [
         { weight: 3, text: 'What you thought was a treasure chest suddenly sprouts teeth and lunges!' },

@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiCrystalShine } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYSTAL_VEIN: DungeonEvent = {
     id: 'crystal-vein',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.CRYSTAL, TAGS.EARTH, TAGS.UNDERGROUND],
     title: 'Crystal Vein',
     description: 'A shimmering vein of crystals runs through the dungeon wall. The formations pulse with faint magical energy.',
     choices: [

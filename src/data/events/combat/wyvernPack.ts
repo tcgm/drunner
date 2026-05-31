@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WYVERN_PACK: DungeonEvent = {
   id: 'wyvern-pack',
   type: 'combat',
+  tags: [TAGS.DRAKE, TAGS.BEAST, TAGS.VOLCANIC, TAGS.FOREST],
   title: 'Wyvern Pack',
   description: 'Lesser dragons circle above, diving with venomous stingers!',
   choices: [

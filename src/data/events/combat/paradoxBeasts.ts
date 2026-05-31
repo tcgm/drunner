@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract035 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PARADOX_BEASTS: DungeonEvent = {
   id: 'paradox-beasts',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Paradox Beasts',
   description: 'Creatures that embody logical impossibilities attack with contradictions!',
   choices: [

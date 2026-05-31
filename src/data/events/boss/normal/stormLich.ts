@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiThunderSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STORM_LICH: DungeonEvent = {
   id: 'storm-lich',
   type: 'boss',
+  tags: [TAGS.LICH, TAGS.UNDEAD, TAGS.LIGHTNING, TAGS.STORM],
   title: 'Storm Lich',
   description: 'An undead sorcerer who commands the power of storms. Lightning arcs between their skeletal fingers, and thunder accompanies their every word.',
   choices: [

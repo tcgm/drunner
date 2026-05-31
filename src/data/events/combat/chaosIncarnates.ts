@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract053 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHAOS_INCARNATES: DungeonEvent = {
   id: 'chaos-incarnates',
   type: 'combat',
+  tags: [TAGS.CHAOS, TAGS.VOID, TAGS.COSMIC],
   title: 'Chaos Incarnates',
   description: 'Pure chaos given form attacks with complete unpredictability!',
   choices: [

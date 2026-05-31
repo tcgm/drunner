@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDeathSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CURSED_KNIGHTS: DungeonEvent = {
     id: 'cursed-knights',
     type: 'combat',
+    tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.KNIGHT, TAGS.RUINS],
     title: 'Cursed Knights',
     description: [
         { weight: 3, text: 'Armored warriors with hollow eyes block your path, cursed to guard forever!' },

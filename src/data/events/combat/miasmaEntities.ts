@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonCloud } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MIASMA_ENTITIES: DungeonEvent = {
   id: 'miasma-entities',
   type: 'combat',
+  tags: [TAGS.OOZE, TAGS.POISON, TAGS.SWAMP],
   title: 'Miasma Entities',
   description: 'Living clouds of toxic gas coalesce into vaguely humanoid forms!',
   choices: [

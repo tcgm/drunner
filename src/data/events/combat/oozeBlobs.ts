@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSlime } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const OOZE_BLOBS: DungeonEvent = {
   id: 'ooze-blobs',
   type: 'combat',
+  tags: [TAGS.OOZE, TAGS.CAVE, TAGS.SWAMP],
   title: 'Ooze Blobs',
   description: 'Acidic ooze puddles flow together, forming aggressive blobs!',
   choices: [

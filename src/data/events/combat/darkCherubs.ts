@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFluffyWing } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DARK_CHERUBS: DungeonEvent = {
   id: 'dark-cherubs',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.CELESTIAL, TAGS.INFERNAL],
   title: 'Dark Cherubs',
   description: 'Corrupted angel children fire arrows of shadow!',
   choices: [

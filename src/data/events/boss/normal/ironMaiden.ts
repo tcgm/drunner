@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikesInit } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const IRON_MAIDEN: DungeonEvent = {
   id: 'iron-maiden',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.DUNGEON],
   title: 'Iron Maiden',
   description: 'A torture device given horrible life. The sarcophagus opens to reveal dozens of rusted spikes and a hunger for victims. It shuffles forward with grinding metal.',
   choices: [

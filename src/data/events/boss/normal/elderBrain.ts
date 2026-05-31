@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBleedingEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ELDER_BRAIN: DungeonEvent = {
   id: 'elder-brain',
   type: 'boss',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ARCANE, TAGS.ABYSS],
   title: 'Elder Brain',
   description: 'A massive psychic brain that controls legions of mind flayers. Its telepathic assault can break the strongest wills.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFlamingArrow } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HELLFIRE_ARCHERS: DungeonEvent = {
   id: 'hellfire-archers',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.DEMON, TAGS.FIRE, TAGS.INFERNAL],
   title: 'Hellfire Archers',
   description: 'Demonic marksmen fire arrows of infernal flame!',
   choices: [

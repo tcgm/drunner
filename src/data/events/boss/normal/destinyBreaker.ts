@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFallingStar } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DESTINY_BREAKER: DungeonEvent = {
   id: 'destiny-breaker',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Destiny Breaker',
   description: 'A being that defies fate itself. Prophecies fail around it. Destiny means nothing. The future is always uncertain.',
   choices: [

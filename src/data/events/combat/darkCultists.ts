@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCowled } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DARK_CULTISTS: DungeonEvent = {
   id: 'dark-cultists',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.CULTIST, TAGS.ARCANE],
   title: 'Dark Cultists',
   description: 'Hooded figures surround you, chanting in an ancient tongue!',
   choices: [

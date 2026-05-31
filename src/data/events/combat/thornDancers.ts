@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDaggerRose } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const THORN_DANCERS: DungeonEvent = {
   id: 'thorn-dancers',
   type: 'combat',
+  tags: [TAGS.PLANT, TAGS.FOREST, TAGS.FAE],
   title: 'Thorn Dancers',
   description: 'Graceful fey beings dance through combat, their movements deadly!',
   choices: [

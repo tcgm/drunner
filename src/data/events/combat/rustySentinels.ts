@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBroadsword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RUSTY_SENTINELS: DungeonEvent = {
   id: 'rusty-sentinels',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.DUNGEON],
   title: 'Rusty Sentinels',
   description: 'Ancient armored statues creak to life, brandishing corroded weapons!',
   choices: [

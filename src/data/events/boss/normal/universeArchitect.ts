@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGalaxy } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const UNIVERSE_ARCHITECT: DungeonEvent = {
   id: 'universe-architect',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ARCANE],
   title: 'Universe Architect',
   description: 'A being that designs realities. It built this universe and countless others. You are but one atom in its grand design.',
   choices: [

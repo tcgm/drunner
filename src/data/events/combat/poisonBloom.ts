@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonCloud } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const POISON_BLOOM: DungeonEvent = {
   id: 'poison-bloom',
   type: 'combat',
+  tags: [TAGS.PLANT, TAGS.POISON, TAGS.SWAMP, TAGS.FOREST],
   title: 'Poison Bloom',
   description: 'Toxic flowers release clouds of lethal pollen!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiElectric } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STATIC_SHADES: DungeonEvent = {
   id: 'static-shades',
   type: 'combat',
+  tags: [TAGS.SHADOW, TAGS.LIGHTNING, TAGS.ETHEREAL],
   title: 'Static Shades',
   description: 'Ghostly beings made of pure electricity!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBleedingWound } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WOUND_INCARNATES: DungeonEvent = {
   id: 'wound-incarnates',
   type: 'combat',
+  tags: [TAGS.BLOOD, TAGS.DEMON, TAGS.INFERNAL, TAGS.ABERRATION],
   title: 'Wound Incarnates',
   description: 'Living injuries that inflict themselves upon reality!',
   choices: [

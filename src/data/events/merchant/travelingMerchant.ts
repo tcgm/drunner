@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShop } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TRAVELING_MERCHANT: DungeonEvent = {
   id: 'traveling-merchant',
   type: 'merchant',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Traveling Merchant',
   description: 'A cheerful merchant has set up shop in the dungeon. His prices are fair.',
   choices: [

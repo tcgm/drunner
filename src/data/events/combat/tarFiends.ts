@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBoilingBubbles } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TAR_FIENDS: DungeonEvent = {
   id: 'tar-fiends',
   type: 'combat',
+  tags: [TAGS.OOZE, TAGS.EARTH, TAGS.SWAMP],
   title: 'Tar Fiends',
   description: 'Sticky demons trap you in boiling tar!',
   choices: [

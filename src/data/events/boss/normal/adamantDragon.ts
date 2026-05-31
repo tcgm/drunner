@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ADAMANT_DRAGON: DungeonEvent = {
   id: 'adamant-dragon',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.BEAST, TAGS.EARTH],
   title: 'Adamant Dragon',
   description: 'A wyrm with metallic scales harder than any armor. Its breath weapon is superheated metal shards that pierce everything.',
   choices: [

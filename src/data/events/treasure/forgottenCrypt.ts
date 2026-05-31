@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiCryptEntrance } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FORGOTTEN_CRYPT: DungeonEvent = {
     id: 'forgotten-crypt',
     type: 'treasure',
+    tags: [TAGS.UNDEAD, TAGS.RUINS, TAGS.DUNGEON],
     title: 'Forgotten Crypt',
     description: 'A sealed crypt lies behind a crumbling wall. Ancient bones surround a stone sarcophagus adorned with offerings.',
     choices: [

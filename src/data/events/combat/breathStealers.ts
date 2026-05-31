@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWindHole } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BREATH_STEALERS: DungeonEvent = {
   id: 'breath-stealers',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.SHADOW, TAGS.ABYSS],
   title: 'Breath Stealers',
   description: 'Ghostly beings that inhale your very life force!',
   choices: [

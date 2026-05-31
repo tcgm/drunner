@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWaterDrop } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SUNKEN_SHRINE: DungeonEvent = {
     id: 'sunken-shrine',
     type: 'treasure',
+    tags: [TAGS.RUINS, TAGS.AQUATIC],
     title: 'Sunken Shrine',
     description: 'A partially flooded chamber holds a submerged altar. Glinting offerings lie beneath the dark, still water.',
     choices: [

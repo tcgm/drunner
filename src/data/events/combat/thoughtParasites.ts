@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBrain } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const THOUGHT_PARASITES: DungeonEvent = {
   id: 'thought-parasites',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ARCANE],
   title: 'Thought Parasites',
   description: 'Psychic leeches burrow into your consciousness!',
   choices: [

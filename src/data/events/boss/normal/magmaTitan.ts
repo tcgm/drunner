@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFireZone } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MAGMA_TITAN: DungeonEvent = {
   id: 'magma-titan',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.FIRE, TAGS.VOLCANIC, TAGS.TITAN],
   title: 'Magma Titan',
   description: 'A colossal being of molten rock rises from a lava pit. Its body glows white-hot, and the air shimmers with intense heat around it.',
   choices: [

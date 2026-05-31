@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiImplosion } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_HORROR: DungeonEvent = {
   id: 'void-horror',
   type: 'boss',
+  tags: [TAGS.VOID, TAGS.ABERRATION, TAGS.ABYSS],
   title: 'Void Horror',
   description: 'A tear in reality itself takes horrific form. This aberration from the void hungers to unmake all existence. Looking at it causes your mind to reel.',
   choices: [

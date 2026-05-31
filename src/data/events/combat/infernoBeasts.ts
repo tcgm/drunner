@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFlame } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const INFERNO_BEASTS: DungeonEvent = {
   id: 'inferno-beasts',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.FIRE, TAGS.VOLCANIC, TAGS.DEMON],
   title: 'Inferno Beasts',
   description: 'Creatures of living flame roar and charge!',
   choices: [

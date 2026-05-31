@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBoneKnife } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BONE_COLLECTORS: DungeonEvent = {
   id: 'bone-collectors',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.SKELETON, TAGS.DUNGEON],
   title: 'Bone Collectors',
   description: 'Cloaked figures wielding bone weapons advance silently!',
   choices: [

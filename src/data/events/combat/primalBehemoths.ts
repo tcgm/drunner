@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBearFace } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRIMAL_BEHEMOTHS: DungeonEvent = {
   id: 'primal-behemoths',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.EARTH, TAGS.TITAN],
   title: 'Primal Behemoths',
   description: 'Ancient beasts of immense size and strength charge forward!',
   choices: [

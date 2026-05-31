@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGhost } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PHANTOM_KNIGHTS: DungeonEvent = {
   id: 'phantom-knights',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.KNIGHT, TAGS.ETHEREAL],
   title: 'Phantom Knights',
   description: 'Ghostly warriors in ancient armor materialize from the walls!',
   choices: [

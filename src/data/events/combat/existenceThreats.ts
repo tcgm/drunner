@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract076 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const EXISTENCE_THREATS: DungeonEvent = {
   id: 'existence-threats',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Existence Threats',
   description: 'Beings whose mere presence threatens all of existence!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDragonOrb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_20: DungeonEvent = {
   id: 'zone-boss-20-corrupted-drake',
   type: 'boss',
+  tags: [TAGS.DRAKE, TAGS.DRAGON, TAGS.VOLCANIC, TAGS.ABERRATION],
   title: 'Corrupted Drake',
   description: 'A once-noble dragon, now twisted by dark magic. Its scales gleam with unnatural power, and corruption drips from its fangs. This is a creature of nightmares.',
   depth: 20,

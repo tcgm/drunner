@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiScrollUnfurled } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SCROLL_MONGER: DungeonEvent = {
     id: 'scroll-monger',
     type: 'merchant',
+    tags: [TAGS.HUMANOID, TAGS.ARCANE, TAGS.DUNGEON],
     title: 'Scroll Monger',
     description: 'An elderly scholar sells ancient scrolls and tomes recovered from the deeper vaults. Knowledge is worth more than gold - or so he insists.',
     choices: [

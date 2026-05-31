@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShardSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GLASS_KNIGHTS: DungeonEvent = {
   id: 'glass-knights',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.HUMANOID, TAGS.KNIGHT, TAGS.ARCANE],
   title: 'Glass Knights',
   description: 'Transparent warriors made of razor-sharp glass advance silently!',
   choices: [

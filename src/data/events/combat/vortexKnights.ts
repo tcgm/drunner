@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpinningSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VORTEX_KNIGHTS: DungeonEvent = {
   id: 'vortex-knights',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.CONSTRUCT, TAGS.KNIGHT],
   title: 'Vortex Knights',
   description: 'Armored warriors that create whirlwinds of blades!',
   choices: [

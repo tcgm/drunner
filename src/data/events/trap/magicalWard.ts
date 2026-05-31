@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicGate } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MAGICAL_WARD: DungeonEvent = {
   id: 'magical-ward',
   type: 'trap',
+  tags: [TAGS.ARCANE, TAGS.DUNGEON],
   title: 'Magical Ward',
   description: 'A shimmering barrier blocks the passage. Arcane runes glow ominously.',
   choices: [

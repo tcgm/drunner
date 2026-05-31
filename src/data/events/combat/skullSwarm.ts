@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiHornedSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SKULL_SWARM: DungeonEvent = {
   id: 'skull-swarm',
   type: 'combat',
+  tags: [TAGS.SKELETON, TAGS.UNDEAD, TAGS.SWARM, TAGS.DUNGEON],
   title: 'Skull Swarm',
   description: 'Floating skulls cackle and bite with phantom teeth!',
   choices: [

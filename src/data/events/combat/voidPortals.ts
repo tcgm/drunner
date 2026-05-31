@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicPortal } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_PORTALS: DungeonEvent = {
   id: 'void-portals',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABYSS],
   title: 'Void Portals',
   description: 'Living gateways to nothingness try to consume you!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAngelWings } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FALLEN_ANGEL: DungeonEvent = {
   id: 'fallen-angel',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.CELESTIAL, TAGS.ETHEREAL],
   title: 'Fallen Angel',
   description: 'A once-celestial being with blackened wings and a blade of corrupted light. Its beauty is terrible to behold, mixing divine grace with infernal corruption.',
   choices: [

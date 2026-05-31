@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWolfHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CORRUPTED_WOLVES: DungeonEvent = {
     id: 'corrupted-wolves',
     type: 'combat',
+    tags: [TAGS.WOLF, TAGS.BEAST, TAGS.FOREST],
     title: 'Corrupted Wolves',
     description: [
         { weight: 3, text: 'A pack of dark-furred wolves with glowing red eyes emerges from the shadows!' },

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiHydra } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VENOMOUS_HYDRA: DungeonEvent = {
   id: 'venomous-hydra',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.DRAGON, TAGS.POISON, TAGS.SWAMP, TAGS.AQUATIC],
   title: 'Venomous Hydra',
   description: 'A three-headed serpent emerges from the murky water, each head dripping with deadly venom. The air reeks of poison.',
   choices: [

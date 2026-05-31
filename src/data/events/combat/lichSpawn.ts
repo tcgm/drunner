@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDeadHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LICH_SPAWN: DungeonEvent = {
   id: 'lich-spawn',
   type: 'combat',
+  tags: [TAGS.LICH, TAGS.UNDEAD],
   title: 'Lich Spawn',
   description: 'Lesser undead mages cast necrotic spells!',
   choices: [

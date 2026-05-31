@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiHeartBottle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HEALING_FOUNTAIN: DungeonEvent = {
   id: 'healing-fountain',
   type: 'rest',
+  tags: [TAGS.DUNGEON, TAGS.ARCANE],
   title: 'Healing Fountain',
   description: 'A pristine fountain with crystal-clear water. It radiates restorative magic.',
   choices: [

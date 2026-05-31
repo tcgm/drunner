@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGhost } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WAILING_SPIRITS: DungeonEvent = {
   id: 'wailing-spirits',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Wailing Spirits',
   description: 'Ghostly forms shriek and wail, chilling you to the bone!',
   choices: [

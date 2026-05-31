@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSkeletonKey } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SKELETAL_CHAMPION: DungeonEvent = {
   id: 'skeletal-champion',
   type: 'boss',
+  tags: [TAGS.SKELETON, TAGS.UNDEAD, TAGS.DUNGEON],
   title: 'Skeletal Champion',
   description: 'An ancient warrior rises from a throne of bones, its armor rusted but still formidable. Dark magic animates its skeletal form.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingedSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DRAGON_WYRMLING: DungeonEvent = {
   id: 'dragon-wyrmling',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.DRAKE, TAGS.BEAST],
   title: 'Young Dragon',
   description: 'A young but fierce dragon nests in this chamber. Its scales gleam like rubies in the torchlight.',
   choices: [

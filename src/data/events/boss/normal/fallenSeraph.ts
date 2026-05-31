@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAngelOutfit } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FALLEN_SERAPH: DungeonEvent = {
   id: 'fallen-seraph',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.CELESTIAL, TAGS.ETHEREAL, TAGS.INFERNAL],
   title: 'Fallen Seraph',
   description: 'A celestial who chose darkness. It wields corrupted holy power - burning light twisted into painful shadow.',
   choices: [

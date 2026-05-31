@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWalkingScout } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const COLOSSUS_PRIME: DungeonEvent = {
   id: 'colossus-prime',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.TITAN, TAGS.MECHANICAL],
   title: 'Colossus Prime',
   description: 'The first and greatest war machine ever built. Its weapons systems could level cities, and its armor has never been breached.',
   choices: [

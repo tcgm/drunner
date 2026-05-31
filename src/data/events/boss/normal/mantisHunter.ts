@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAlienBug } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MANTIS_HUNTER: DungeonEvent = {
   id: 'mantis-hunter',
   type: 'boss',
+  tags: [TAGS.INSECT, TAGS.FOREST, TAGS.BEAST],
   title: 'Mantis Hunter',
   description: 'An enormous praying mantis with blade-like forelegs stalks from the shadows. Its compound eyes track your every movement with unsettling precision.',
   choices: [

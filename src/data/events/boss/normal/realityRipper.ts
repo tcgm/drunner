@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrackedGlass } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const REALITY_RIPPER: DungeonEvent = {
   id: 'reality-ripper',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Reality Ripper',
   description: 'An aberration that exists between dimensions. It tears holes in space itself, and looking at it causes vertigo as perspectives shift impossibly.',
   choices: [

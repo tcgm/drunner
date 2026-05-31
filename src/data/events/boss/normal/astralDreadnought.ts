@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSevenPointedStar } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ASTRAL_DREADNOUGHT: DungeonEvent = {
   id: 'astral-dreadnought',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.ETHEREAL],
   title: 'Astral Dreadnought',
   description: 'A cosmic beast that devours planes of existence. Its maw can consume anything, and it exists partially outside reality.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwordman } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLADE_DANCER: DungeonEvent = {
   id: 'blade-dancer',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Blade Dancer',
   description: 'An assassin moves with impossible grace, four enchanted blades orbiting their body. They strike with mesmerizing precision.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DRAKE_MATRIARCH: DungeonEvent = {
   id: 'drake-matriarch',
   type: 'boss',
+  tags: [TAGS.DRAKE, TAGS.DRAGON, TAGS.VOLCANIC],
   title: 'Drake Matriarch',
   description: 'A scarred drake guards her nest fiercely. Her scales are battle-worn but her fangs and claws remain razor sharp. Fury burns in her eyes.',
   choices: [

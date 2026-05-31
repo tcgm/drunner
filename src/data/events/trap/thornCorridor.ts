@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikes } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const THORN_CORRIDOR: DungeonEvent = {
     id: 'thorn-corridor',
     type: 'trap',
+    tags: [TAGS.PLANT, TAGS.DUNGEON, TAGS.CAVE, TAGS.FOREST],
     title: 'Thorn Corridor',
     description: 'Dense black thorns have grown through the walls and floor, leaving only a narrow winding path. The thorns are barbed and spring back when touched.',
     choices: [

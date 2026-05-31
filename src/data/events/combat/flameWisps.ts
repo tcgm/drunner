@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBurningEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FLAME_WISPS: DungeonEvent = {
   id: 'flame-wisps',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.FIRE, TAGS.VOLCANIC],
   title: 'Flame Wisps',
   description: 'Dancing lights of fire dart around, leaving burn marks!',
   choices: [

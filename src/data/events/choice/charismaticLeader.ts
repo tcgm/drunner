@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPublicSpeaker } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHARISMATIC_LEADER: DungeonEvent = {
   id: 'charismatic-leader',
   type: 'choice',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Dungeon Denizens',
   description: 'A ragged band of dungeon creatures huddles in the shadows - goblins, kobolds, and other forsaken beings. Their eyes are desperate, searching for purpose. They look to you for leadership, or perhaps just mercy.',
   choices: [

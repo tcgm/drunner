@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAcid } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CORROSION_OOZES: DungeonEvent = {
   id: 'corrosion-oozes',
   type: 'combat',
+  tags: [TAGS.OOZE, TAGS.ACID, TAGS.CAVE],
   title: 'Corrosion Oozes',
   description: 'Living acids that dissolve anything they touch!',
   choices: [

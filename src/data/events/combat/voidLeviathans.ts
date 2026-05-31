@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract094 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_LEVIATHANS: DungeonEvent = {
   id: 'void-leviathans',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABYSS, TAGS.AQUATIC],
   title: 'Void Leviathans',
   description: 'Titanic beings of pure nothingness consume all in their path!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedMace } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const IRON_REAVERS: DungeonEvent = {
   id: 'iron-reavers',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.HUMANOID],
   title: 'Iron Reavers',
   description: 'Armored warriors wielding massive spiked weapons!',
   choices: [

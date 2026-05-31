@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract034 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NIGHTMARE_ENGINES: DungeonEvent = {
   id: 'nightmare-engines',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.SHADOW, TAGS.ETHEREAL, TAGS.NIGHTMARE],
   title: 'Nightmare Engines',
   description: 'Mechanical constructs powered by fear and nightmares!',
   choices: [

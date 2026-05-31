@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpinningSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const REALITY_SLASHERS: DungeonEvent = {
   id: 'reality-slashers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Reality Slashers',
   description: 'Beings that cut through the fabric of reality itself!',
   choices: [

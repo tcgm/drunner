@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpookyHouse } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MEMORY_PHANTOM: DungeonEvent = {
   id: 'memory-phantom',
   type: 'boss',
+  tags: [TAGS.SPIRIT, TAGS.ETHEREAL, TAGS.ARCANE],
   title: 'Memory Phantom',
   description: 'A ghost made from forgotten memories. It knows everything you\'ve forgotten. It is every regret, every lost moment made manifest.',
   choices: [

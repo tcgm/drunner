@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCaveEntrance } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CAVE_LURKERS: DungeonEvent = {
   id: 'cave-lurkers',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.CAVE, TAGS.UNDERGROUND],
   title: 'Cave Lurkers',
   description: 'Pale humanoids with oversized eyes crawl from ceiling cracks!',
   choices: [

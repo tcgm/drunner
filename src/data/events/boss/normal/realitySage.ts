@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEyeOfHorus } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const REALITY_SAGE: DungeonEvent = {
   id: 'reality-sage',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.ARCANE, TAGS.ABERRATION],
   title: 'Reality Sage',
   description: 'An enlightened being who has transcended understanding of reality. It rewrites the rules of existence with mere thoughts.',
   choices: [

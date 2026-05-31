@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedSkull, GiDragonHead, GiLaurelCrown } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FINAL_BOSS: DungeonEvent = {
   id: 'final-boss',
   type: 'boss',
+  tags: [TAGS.DUNGEON, TAGS.HUMANOID, TAGS.ARCANE],
   title: 'The Dungeon Lord',
   isFinalBoss: true, // Only appears at Floor 100
   description: 'An ancient entity of unfathomable power stands before you. This is the dungeon\'s final defense - the master of all you\'ve faced. The very walls tremble with its dark presence.',

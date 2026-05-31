@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract098 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHRONO_HUNTERS: DungeonEvent = {
   id: 'chrono-hunters',
   type: 'combat',
+  tags: [TAGS.CHRONO, TAGS.COSMIC],
   title: 'Chrono Hunters',
   description: 'Time-manipulating predators attack from past and future simultaneously!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikeball } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RUST_MONSTER_ALPHA: DungeonEvent = {
   id: 'rust-monster-alpha',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.CAVE, TAGS.MECHANICAL],
   title: 'Rust Monster Alpha',
   description: 'An enormous rust monster clicks its antennae together menacingly. Your metal equipment begins to corrode just from its proximity.',
   choices: [

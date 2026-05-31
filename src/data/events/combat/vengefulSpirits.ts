@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingedSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VENGEFUL_SPIRITS: DungeonEvent = {
   id: 'vengeful-spirits',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Vengeful Spirits',
   description: 'Angry ghosts seek revenge on the living!',
   choices: [

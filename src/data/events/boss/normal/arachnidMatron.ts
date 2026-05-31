@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiderMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARACHNID_MATRON: DungeonEvent = {
   id: 'arachnid-matron',
   type: 'boss',
+  tags: [TAGS.SPIDER, TAGS.BEAST],
   title: 'Arachnid Matron',
   description: 'A colossal spider-demon hybrid. She births lesser spiders constantly while wrapping you in unbreakable webs.',
   choices: [

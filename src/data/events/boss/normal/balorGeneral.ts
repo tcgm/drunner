@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSkullSabertooth } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BALOR_GENERAL: DungeonEvent = {
   id: 'balor-general',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL, TAGS.FIRE],
   title: 'Balor General',
   description: 'A demon lord wreathed in flames, wielding a sword and whip of fire. Its mere presence causes lesser beings to burst into flames.',
   choices: [

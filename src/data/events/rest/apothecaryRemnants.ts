@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMedicines } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const APOTHECARY_REMNANTS: DungeonEvent = {
     id: 'apothecary-remnants',
     type: 'rest',
+    tags: [TAGS.RUINS, TAGS.DUNGEON],
     title: 'Apothecary Remnants',
     description: 'The remains of a portable apothecary station are scattered across a side alcove. Some vials and bandages are still intact.',
     choices: [

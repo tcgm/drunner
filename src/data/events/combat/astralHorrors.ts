@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiStarSwirl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ASTRAL_HORRORS: DungeonEvent = {
   id: 'astral-horrors',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.ETHEREAL],
   title: 'Astral Horrors',
   description: 'Creatures from beyond the veil phase in and out of reality!',
   choices: [

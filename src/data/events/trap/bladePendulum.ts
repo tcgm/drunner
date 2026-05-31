@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPendulumSwing } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLADE_PENDULUM: DungeonEvent = {
     id: 'blade-pendulum',
     type: 'trap',
+    tags: [TAGS.DUNGEON, TAGS.MECHANICAL],
     title: 'Blade Pendulum',
     description: 'Enormous bladed pendulums sweep the corridor in long, rhythmic arcs. The blades are old but still razor-sharp.',
     choices: [

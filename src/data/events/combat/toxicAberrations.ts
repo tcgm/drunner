@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBrandyBottle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TOXIC_ABERRATIONS: DungeonEvent = {
   id: 'toxic-aberrations',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.POISON, TAGS.SWAMP],
   title: 'Toxic Aberrations',
   description: 'Mutated horrors ooze with lethal toxins!',
   choices: [

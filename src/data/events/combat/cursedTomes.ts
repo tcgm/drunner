@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEvilBook } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CURSED_TOMES: DungeonEvent = {
   id: 'cursed-tomes',
   type: 'combat',
+  tags: [TAGS.ARCANE, TAGS.CONSTRUCT, TAGS.RUINS],
   title: 'Cursed Tomes',
   description: 'Ancient books fly through the air, pages flapping menacingly!',
   choices: [

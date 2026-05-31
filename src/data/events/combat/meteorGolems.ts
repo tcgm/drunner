@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMeteorImpact } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const METEOR_GOLEMS: DungeonEvent = {
   id: 'meteor-golems',
   type: 'combat',
+  tags: [TAGS.GOLEM, TAGS.CONSTRUCT, TAGS.EARTH, TAGS.COSMIC_ENV],
   title: 'Meteor Golems',
   description: 'Constructs of space rock radiate cosmic energy!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSplitCross } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HERETIC_MONKS: DungeonEvent = {
   id: 'heretic-monks',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.CULTIST, TAGS.ARCANE],
   title: 'Heretic Monks',
   description: 'Corrupted holy men channel dark miracles!',
   choices: [

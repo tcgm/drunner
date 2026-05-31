@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBatWing } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_BATS: DungeonEvent = {
   id: 'shadow-bats',
   type: 'combat',
+  tags: [TAGS.BAT, TAGS.SHADOW, TAGS.CAVE],
   title: 'Shadow Bats',
   description: 'A swarm of dark-winged creatures fills the chamber!',
   choices: [

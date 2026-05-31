@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMountainCave } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CAVERN_BEHEMOTH: DungeonEvent = {
   id: 'cavern-behemoth',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.CAVE, TAGS.UNDERGROUND, TAGS.TITAN],
   title: 'Cavern Behemoth',
   description: 'A creature so massive it has become one with the dungeon itself. Fighting it means fighting the very walls around you.',
   choices: [

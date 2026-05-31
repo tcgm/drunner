@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiStoneThrone } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_10: DungeonEvent = {
   id: 'zone-boss-10-dungeon-warden',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.DUNGEON, TAGS.ARCANE],
   title: 'The Dungeon Warden',
   description: 'A massive armored guardian awakens from its vigil. This ancient sentinel has protected these depths for centuries, and it will not yield easily. The first true test of your resolve.',
   depth: 10,

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBatMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NIGHTMARE_SPAWN: DungeonEvent = {
   id: 'nightmare-spawn',
   type: 'combat',
+  tags: [TAGS.SHADOW, TAGS.ETHEREAL, TAGS.ABERRATION, TAGS.NIGHTMARE],
   title: 'Nightmare Spawn',
   description: 'Manifestations of fear take physical form!',
   choices: [

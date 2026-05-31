@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSlime } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GIANT_SLIME: DungeonEvent = {
   id: 'giant-slime-intro',
   type: 'boss',
+  tags: [TAGS.OOZE, TAGS.CAVE, TAGS.SWAMP],
   title: 'Giant Slime',
   description: 'A massive blob of acidic ooze blocks the corridor. It jiggles menacingly as you approach.',
   choices: [

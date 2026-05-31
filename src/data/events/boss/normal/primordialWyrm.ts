@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRIMORDIAL_WYRM: DungeonEvent = {
   id: 'primordial-wyrm',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.EARTH, TAGS.COSMIC],
   title: 'Primordial Wyrm',
   description: 'The first dragon, older than mountains. Its scales are continental plates, its breath shapes weather patterns.',
   choices: [

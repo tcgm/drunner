@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikeball } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const AGONY_SPHERES: DungeonEvent = {
   id: 'agony-spheres',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Agony Spheres',
   description: 'Orbs of concentrated suffering attack your mind!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiRuneStone } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const EXPLOSIVE_RUNE: DungeonEvent = {
     id: 'explosive-rune',
     type: 'trap',
+    tags: [TAGS.ARCANE, TAGS.FIRE, TAGS.DUNGEON],
     title: 'Explosive Rune',
     description: 'A barely-visible sigil sprawls across the corridor floor, glowing faintly orange. The air smells of sulphur. One wrong step and it goes.',
     choices: [

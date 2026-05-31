@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrossedSwords } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RIVAL_ADVENTURERS: DungeonEvent = {
   id: 'rival-adventurers',
   type: 'choice',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Rival Adventurers',
   description: 'You round a corner and find yourselves face-to-face with another adventuring party. They\'re bloodied and battle-worn, clutching weapons and eyeing your equipment with barely concealed greed. Their leader - a scarred warrior with cold eyes - steps forward. "This floor\'s treasure is ours. Turn back now, or we\'ll add your gear to our collection." Behind them, you notice fresh loot scattered on the ground. They\'ve been here a while, and they\'re not leaving without a fight.',
   choices: [

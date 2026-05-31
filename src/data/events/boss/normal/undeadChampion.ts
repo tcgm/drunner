@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSkullCrossedBones } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const UNDEAD_CHAMPION: DungeonEvent = {
   id: 'undead-champion',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Undead Champion',
   description: 'A massive skeletal warrior in tarnished armor blocks your path. His empty eyes glow with unholy light.',
   choices: [

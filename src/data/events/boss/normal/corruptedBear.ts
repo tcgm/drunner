@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBearHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CORRUPTED_BEAR: DungeonEvent = {
   id: 'corrupted-bear',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.FOREST, TAGS.ABERRATION],
   title: 'Corrupted Bear',
   description: 'A once-noble beast, now twisted by dark magic. Its eyes glow with unnatural purple light as it charges.',
   choices: [

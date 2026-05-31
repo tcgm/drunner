@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCometSpark } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GALACTIC_HUNTERS: DungeonEvent = {
   id: 'galactic-hunters',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.COSMIC_ENV],
   title: 'Galactic Hunters',
   description: 'Predators that hunt across galaxies set their sights on you!',
   choices: [

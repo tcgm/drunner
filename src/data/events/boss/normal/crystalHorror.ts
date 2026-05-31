@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalBall } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYSTAL_HORROR: DungeonEvent = {
   id: 'crystal-horror',
   type: 'boss',
+  tags: [TAGS.CRYSTAL, TAGS.ABERRATION, TAGS.ABYSS],
   title: 'Crystal Horror',
   description: 'A bizarre fusion of crystal and flesh shambles forward, razor-sharp shards protruding from its warped body. It pulses with eldritch light.',
   choices: [

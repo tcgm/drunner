@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiPoisonBottle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TOXIC_SPORE_VEIN: DungeonEvent = {
     id: 'toxic-spore-vein',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.POISON, TAGS.FUNGUS, TAGS.SWAMP],
     title: 'Toxic Spore Vein',
     description: 'A vein of bioluminescent green ore pulses softly in the wall. Spores drift from cracks in the surrounding rock - the ore is infested with a parasitic fungus.',
     choices: [

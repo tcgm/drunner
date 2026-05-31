@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSteampunkGoggles } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CLOCKWORK_EMPEROR: DungeonEvent = {
   id: 'clockwork-emperor',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.CHRONO],
   title: 'Clockwork Emperor',
   description: 'The ultimate creation of mad artificers. This mechanical tyrant commands an army of constructs with perfect precision.',
   choices: [

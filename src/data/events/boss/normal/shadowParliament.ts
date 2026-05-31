@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDarkSquad } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_PARLIAMENT: DungeonEvent = {
   id: 'shadow-parliament',
   type: 'boss',
+  tags: [TAGS.SHADOW, TAGS.HUMANOID, TAGS.ABYSS],
   title: 'Shadow Parliament',
   description: 'Thirteen shadow beings that share one consciousness. Destroy one and the others grow stronger. All must fall together.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTentacleStrike } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const OOZE_SOVEREIGN: DungeonEvent = {
   id: 'ooze-sovereign',
   type: 'boss',
+  tags: [TAGS.OOZE, TAGS.ABYSS],
   title: 'Ooze Sovereign',
   description: 'A massive, sentient slime pulses with malevolent intelligence. It splits and reforms, absorbing everything in its path with acidic hunger.',
   choices: [

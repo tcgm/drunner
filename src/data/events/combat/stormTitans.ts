@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLightningTear } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STORM_TITANS: DungeonEvent = {
   id: 'storm-titans',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.TITAN, TAGS.STORM],
   title: 'Storm Titans',
   description: 'Colossal beings made of thunder and lightning!',
   choices: [

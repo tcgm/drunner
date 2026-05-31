@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBlackHoleBolas } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SINGULARITY_BEASTS: DungeonEvent = {
   id: 'singularity-beasts',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.COSMIC_ENV],
   title: 'Singularity Beasts',
   description: 'Creatures containing miniature black holes pull everything toward destruction!',
   choices: [

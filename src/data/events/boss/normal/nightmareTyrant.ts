@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikesHalf } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NIGHTMARE_TYRANT: DungeonEvent = {
   id: 'nightmare-tyrant',
   type: 'boss',
+  tags: [TAGS.NIGHTMARE, TAGS.SHADOW, TAGS.ABERRATION],
   title: 'Nightmare Tyrant',
   description: 'A demon that feeds on fear, manifesting your worst nightmares. The chamber shifts and morphs into scenes of terror.',
   choices: [

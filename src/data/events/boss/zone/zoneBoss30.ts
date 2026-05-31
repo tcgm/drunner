@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDaemonSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_30: DungeonEvent = {
   id: 'zone-boss-30-demon-prince',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL, TAGS.FIRE],
   title: 'Demon Prince Azrathos',
   description: 'A being of pure malevolence, wreathed in hellfire. The Demon Prince commands legions and has conquered countless realms. Reality itself seems to bend around its presence.',
   depth: 30,

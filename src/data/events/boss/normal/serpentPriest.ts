@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSnakeTongue } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SERPENT_PRIEST: DungeonEvent = {
   id: 'serpent-priest',
   type: 'boss',
+  tags: [TAGS.SNAKE, TAGS.HUMANOID, TAGS.CULTIST, TAGS.ARCANE],
   title: 'Serpent Priest',
   description: 'A cultist with serpentine features chants in an ancient tongue. Snakes coil around their staff, and their eyes gleam with reptilian malice.',
   choices: [

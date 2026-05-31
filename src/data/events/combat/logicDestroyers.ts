@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract053 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LOGIC_DESTROYERS: DungeonEvent = {
   id: 'logic-destroyers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Logic Destroyers',
   description: 'Beings that break the laws of reason!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAnts } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ACID_ANTS: DungeonEvent = {
   id: 'acid-ants',
   type: 'combat',
+  tags: [TAGS.INSECT, TAGS.ACID, TAGS.SWAMP],
   title: 'Acid Ants',
   description: 'A swarm of insects spray corrosive acid!',
   choices: [

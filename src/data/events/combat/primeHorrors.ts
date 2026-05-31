@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract021 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRIME_HORRORS: DungeonEvent = {
   id: 'prime-horrors',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Prime Horrors',
   description: 'The first and oldest beings in existence attack!',
   choices: [

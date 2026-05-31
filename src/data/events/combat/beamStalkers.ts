@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLaserWarning } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BEAM_STALKERS: DungeonEvent = {
   id: 'beam-stalkers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.SHADOW, TAGS.ABERRATION],
   title: 'Beam Stalkers',
   description: 'Creatures that fire concentrated energy beams!',
   choices: [

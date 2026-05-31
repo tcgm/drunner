@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiStarSattelites } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const AETHERITE_DEPOSIT: DungeonEvent = {
     id: 'aetherite-deposit',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.ARCANE],
     title: 'Aetherite Deposit',
     description: 'Patches of iridescent ore glimmer with an inner light that shifts between colours. Aetherite - formed where raw magical energy was absorbed into rock over ages. Even a fragment is worth a fortune to the right buyer.',
     choices: [

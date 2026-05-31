@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFire } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WILDFIRE_SPIRITS: DungeonEvent = {
   id: 'wildfire-spirits',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.FIRE, TAGS.FOREST, TAGS.ELEMENTAL],
   title: 'Wildfire Spirits',
   description: 'Elemental flames burn with wild, unpredictable fury!',
   choices: [

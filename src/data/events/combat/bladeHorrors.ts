@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiChainsaw } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLADE_HORRORS: DungeonEvent = {
   id: 'blade-horrors',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.SHADOW],
   title: 'Blade Horrors',
   description: 'Creatures with spinning razor appendages!',
   choices: [

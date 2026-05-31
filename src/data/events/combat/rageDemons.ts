@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBurningPassion } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RAGE_DEMONS: DungeonEvent = {
   id: 'rage-demons',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.INFERNAL, TAGS.FIRE],
   title: 'Rage Demons',
   description: 'Infernal beings driven by endless fury attack relentlessly!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFireBreath } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FLAME_SALAMANDER: DungeonEvent = {
   id: 'flame-salamander',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.FIRE, TAGS.VOLCANIC],
   title: 'Flame Salamander',
   description: 'A serpentine creature of living fire slithers from a pool of lava. The heat is almost unbearable as it coils around the chamber.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSnakeBite } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HYDRA_HEADS: DungeonEvent = {
   id: 'hydra-heads',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.DRAGON, TAGS.SWAMP, TAGS.AQUATIC],
   title: 'Hydra Heads',
   description: 'Multiple serpent heads strike from a writhing mass!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpectreM4 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SPECTRAL_LORD: DungeonEvent = {
   id: 'spectral-lord',
   type: 'boss',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Spectral Lord',
   description: 'The ghost of a tyrant king, still clinging to power. His ethereal form phases through your weapons, and his touch chills the soul.',
   choices: [

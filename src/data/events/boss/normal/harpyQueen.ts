@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBirdLimb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HARPY_QUEEN: DungeonEvent = {
   id: 'harpy-queen',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.HUMANOID, TAGS.FOREST],
   title: 'Harpy Queen',
   description: 'Ruler of a flock of harpies, she commands the skies with talons and song. Her shriek can shatter stone.',
   choices: [

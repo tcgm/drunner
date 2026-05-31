@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSnakeTongue } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VENOMOUS_SERPENTS: DungeonEvent = {
   id: 'venomous-serpents',
   type: 'combat',
+  tags: [TAGS.SNAKE, TAGS.POISON, TAGS.FOREST, TAGS.SWAMP],
   title: 'Venomous Serpents',
   description: 'Hissing snakes coil and strike from the darkness!',
   choices: [

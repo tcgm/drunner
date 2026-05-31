@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShamblingMound } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ENTROPY_COLOSSI: DungeonEvent = {
   id: 'entropy-colossi',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.TITAN],
   title: 'Entropy Colossi',
   description: 'Massive beings that embody universal decay!',
   choices: [

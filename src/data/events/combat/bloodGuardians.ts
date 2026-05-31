@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDrippingSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLOOD_GUARDIANS: DungeonEvent = {
   id: 'blood-guardians',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.BLOOD, TAGS.DEMON],
   title: 'Blood Guardians',
   description: 'Warriors who have bound their life force to their weapons!',
   choices: [

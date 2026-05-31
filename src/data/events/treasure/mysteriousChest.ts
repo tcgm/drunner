@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiOpenChest } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MYSTERIOUS_CHEST: DungeonEvent = {
   id: 'mysterious-chest',
   type: 'treasure',
+  tags: [TAGS.DUNGEON],
   title: 'Mysterious Chest',
   description: 'A chest sits in the middle of the room. It could contain treasure... or danger.',
   choices: [

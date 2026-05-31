@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwordSpade } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SWORD_SAINT: DungeonEvent = {
   id: 'sword-saint',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Sword Saint',
   description: 'A master who has transcended mortality through perfection of the blade. Every strike is flawless, every movement art.',
   choices: [

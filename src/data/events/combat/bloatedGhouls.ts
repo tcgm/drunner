@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShamblingZombie } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLOATED_GHOULS: DungeonEvent = {
   id: 'bloated-ghouls',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.ZOMBIE, TAGS.SWAMP, TAGS.DUNGEON],
   title: 'Bloated Ghouls',
   description: 'Rotting corpses stumble forward, reeking of decay!',
   choices: [

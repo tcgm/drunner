@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAnvil } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WEAPON_SMITH: DungeonEvent = {
   id: 'weapon-smith',
   type: 'merchant',
+  tags: [TAGS.HUMANOID, TAGS.MECHANICAL, TAGS.DUNGEON],
   title: 'Dungeon Weaponsmith',
   description: 'A skilled smith offers to upgrade your weapons or repair your armor.',
   choices: [

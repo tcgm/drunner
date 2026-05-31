@@ -3,10 +3,12 @@ import { STEEL } from '@/data/items/materials'
 import { EXCALIBUR } from '@/data/items/uniques/weapons/excalibur'
 import { RING_OF_OMNIPOTENCE } from '@/data/items/uniques/accessories/ringOfOmnipotence'
 import { GiAnvil } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ENCHANTED_FORGE: DungeonEvent = {
   id: 'enchanted-forge',
   type: 'treasure',
+  tags: [TAGS.ARCANE, TAGS.MECHANICAL, TAGS.RUINS],
   title: 'Enchanted Forge',
   description: 'An ancient forge still burns with magical fire. You can craft something here.',
   choices: [

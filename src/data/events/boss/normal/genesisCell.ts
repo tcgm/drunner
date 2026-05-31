@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGooeyMolecule } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GENESIS_CELL: DungeonEvent = {
   id: 'genesis-cell',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.VOID],
   title: 'Genesis Cell',
   description: 'The first living organism, preserved since creation. It evolves and adapts in real-time, becoming the perfect predator.',
   choices: [

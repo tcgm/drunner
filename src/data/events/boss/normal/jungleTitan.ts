@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVineWhip } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const JUNGLE_TITAN: DungeonEvent = {
   id: 'jungle-titan',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.PLANT, TAGS.FOREST, TAGS.TITAN],
   title: 'Jungle Titan',
   description: 'A massive plant-creature that commands all vegetation. Vines and roots erupt from every surface to ensnare you.',
   choices: [

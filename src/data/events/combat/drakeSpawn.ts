@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DRAKE_SPAWN: DungeonEvent = {
   id: 'drake-spawn',
   type: 'combat',
+  tags: [TAGS.DRAKE, TAGS.DRAGON, TAGS.VOLCANIC, TAGS.BEAST],
   title: 'Drake Spawn',
   description: 'Young dragonlings breathe gouts of flame!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMirrorMirror } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MIRROR_WRAITH: DungeonEvent = {
   id: 'mirror-wraith',
   type: 'boss',
+  tags: [TAGS.WRAITH, TAGS.SHADOW, TAGS.ARCANE],
   title: 'Mirror Wraith',
   description: 'A spectral figure emerges from a cracked mirror, wearing your own face. It mimics your every move perfectly.',
   choices: [

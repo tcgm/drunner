@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpearfishing } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MERFOLK_RAIDERS: DungeonEvent = {
   id: 'merfolk-raiders',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.AQUATIC, TAGS.SWAMP],
   title: 'Merfolk Raiders',
   description: 'Aquatic warriors emerge from flooded passages with tridents!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCobweb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WEB_WEAVER: DungeonEvent = {
   id: 'web-weaver',
   type: 'boss',
+  tags: [TAGS.SPIDER, TAGS.FOREST, TAGS.BEAST],
   title: 'Web Weaver',
   description: 'An intelligent spider the size of a house commands an intricate web that fills the entire chamber. Its many eyes calculate your every move.',
   choices: [

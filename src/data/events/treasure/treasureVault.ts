@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTwoCoins } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TREASURE_VAULT: DungeonEvent = {
   id: 'treasure-vault',
   type: 'treasure',
+  tags: [TAGS.DUNGEON, TAGS.RUINS],
   title: 'Ancient Treasure Vault',
   description: 'A sealed vault stands before you. The lock is complex but promising.',
   choices: [

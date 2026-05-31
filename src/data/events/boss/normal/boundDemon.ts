@@ -2,10 +2,12 @@ import type { DungeonEvent } from '@/types'
 import { GiChainedHeart } from 'react-icons/gi'
 import { DEVASTATING_SLAM, REGENERATION } from '@/data/abilities/boss'
 import { RAPID_STRIKES, EXECUTE } from '@/data/attackPatterns/boss'
+import { TAGS } from '@data/tags'
 
 export const BOUND_DEMON: DungeonEvent = {
   id: 'bound-demon',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL, TAGS.ARCANE],
   title: 'Bound Demon',
   description: 'A fiendish creature strains against magical chains. Though bound, its power is still formidable, and it lashes out with claws and hellfire.',
 

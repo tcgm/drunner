@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCursedStar } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CURSED_PALADIN: DungeonEvent = {
   id: 'cursed-paladin',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.KNIGHT, TAGS.INFERNAL],
   title: 'Cursed Paladin',
   description: 'A once-holy warrior corrupted by darkness. His blessed armor is now tainted, and his sword drips with black ichor. He fights with grim determination.',
   choices: [

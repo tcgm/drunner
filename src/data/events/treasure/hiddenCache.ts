@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLockedChest } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HIDDEN_CACHE: DungeonEvent = {
   id: 'hidden-cache',
   type: 'treasure',
+  tags: [TAGS.DUNGEON],
   title: 'Hidden Cache',
   description: 'You notice a loose stone in the wall. Something glitters behind it.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBoltShield } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RUNE_GUARDIAN: DungeonEvent = {
   id: 'rune-guardian',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.ARCANE, TAGS.RUINS],
   title: 'Rune Guardian',
   description: 'An ancient protector covered in glowing runes. Each symbol grants different powers, and destroying one activates another.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiNinjaHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_STALKERS: DungeonEvent = {
     id: 'shadow-stalkers',
     type: 'combat',
+    tags: [TAGS.SHADOW, TAGS.BEAST, TAGS.CAVE, TAGS.ABYSS],
     title: 'Shadow Stalkers',
     description: [
         { weight: 3, text: 'Dark shapes detach from the walls, taking vaguely humanoid form!' },

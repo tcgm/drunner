@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFossil } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FOSSIL_VEIN: DungeonEvent = {
     id: 'fossil-vein',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.EARTH, TAGS.UNDERGROUND],
     title: 'Fossilised Vein',
     description: 'A seam of ancient fossils is embedded through the rock, some partially mineralized with rare compounds. Scholars would pay well for these, but so would alchemists.',
     choices: [

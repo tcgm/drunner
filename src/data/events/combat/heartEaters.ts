@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTentacleHeart } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HEART_EATERS: DungeonEvent = {
   id: 'heart-eaters',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.INFERNAL, TAGS.ABERRATION],
   title: 'Heart Eaters',
   description: 'Parasitic creatures that consume courage and willpower!',
   choices: [

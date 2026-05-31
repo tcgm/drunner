@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGooExplosion } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLAGUE_COLOSSUS: DungeonEvent = {
   id: 'plague-colossus',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.PLAGUE, TAGS.TITAN],
   title: 'Plague Colossus',
   description: 'A titan made of concentrated disease and rot. Just standing near it causes illness. Its very existence threatens all life.',
   choices: [

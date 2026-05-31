@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMountaintop } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRIMORDIAL_TITAN: DungeonEvent = {
   id: 'primordial-titan',
   type: 'boss',
+  tags: [TAGS.EARTH, TAGS.TITAN, TAGS.COSMIC],
   title: 'Primordial Titan',
   description: 'A being as old as the world itself. Mountains have eroded to dust in the time this creature has existed. It remembers when gods were young. Its every breath is like thunder, its footsteps like earthquakes.',
   choices: [

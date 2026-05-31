@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiHood } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_FENCER: DungeonEvent = {
     id: 'shadow-fencer',
     type: 'merchant',
+    tags: [TAGS.HUMANOID, TAGS.SHADOW, TAGS.DUNGEON],
     title: 'Shadow Fencer',
     description: 'A cloaked figure steps from the shadows holding a sack of "liberated" merchandise. Everything is clearly stolen, but the prices reflect that.',
     choices: [

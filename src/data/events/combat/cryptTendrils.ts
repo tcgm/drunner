@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTentacleHeart } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYPT_TENDRILS: DungeonEvent = {
   id: 'crypt-tendrils',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.PLANT, TAGS.DUNGEON, TAGS.RUINS],
   title: 'Crypt Tendrils',
   description: 'Writhing tentacles burst from a sealed tomb!',
   choices: [

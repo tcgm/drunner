@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiThornyVine } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BRAMBLE_KING: DungeonEvent = {
   id: 'bramble-king',
   type: 'boss',
+  tags: [TAGS.PLANT, TAGS.FOREST, TAGS.FAE],
   title: 'Bramble King',
   description: 'An ancient fey lord transformed into a mass of thorns and darkness. It rules over all twisted plants in the deep dungeon.',
   choices: [

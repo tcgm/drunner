@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLightningArc } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STORM_TYRANT: DungeonEvent = {
   id: 'storm-tyrant',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.STORM, TAGS.TITAN],
   title: 'Storm Tyrant',
   description: 'The elemental lord of all tempests. It is the hurricane, the tornado, the thunderstorm made flesh. Weather obeys its whim.',
   choices: [

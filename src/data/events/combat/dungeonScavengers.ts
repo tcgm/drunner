@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBoneGnawer } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DUNGEON_SCAVENGERS: DungeonEvent = {
   id: 'dungeon-scavengers',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Dungeon Scavengers',
   description: 'Hooded figures wielding rusty knives emerge from the shadows!',
   choices: [

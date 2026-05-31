@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDuality } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DOPPELGANGERS: DungeonEvent = {
   id: 'doppelgangers',
   type: 'combat',
+  tags: [TAGS.SHAPESHIFTER, TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Doppelgangers',
   description: 'Shapeshifters take your form and mirror your abilities!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalBall } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MYSTICAL_VISION: DungeonEvent = {
   id: 'mystical-vision',
   type: 'choice',
+  tags: [TAGS.ARCANE, TAGS.ETHEREAL],
   title: 'Mystical Vision',
   description: 'A shimmering portal reveals glimpses of possible futures. You sense ancient knowledge within.',
   choices: [

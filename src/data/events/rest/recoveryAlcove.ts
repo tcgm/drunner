@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiSleepingBag } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RECOVERY_ALCOVE: DungeonEvent = {
     id: 'recovery-alcove',
     type: 'rest',
+    tags: [TAGS.DUNGEON, TAGS.CAVE],
     title: 'Recovery Alcove',
     description: 'A narrow, defensible alcove with a magically reinforced threshold. The air inside feels faintly warm and protected - a rare safe haven in the deep dungeon.',
     choices: [

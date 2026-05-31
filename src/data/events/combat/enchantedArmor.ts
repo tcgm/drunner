@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMetalPlate } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ENCHANTED_ARMOR: DungeonEvent = {
     id: 'enchanted-armor',
     type: 'combat',
+    tags: [TAGS.CONSTRUCT, TAGS.ARCANE, TAGS.DUNGEON],
     title: 'Enchanted Armor',
     description: [
         { weight: 3, text: 'A suit of ancient armor animates and draws a spectral blade!' },

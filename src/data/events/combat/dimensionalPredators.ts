@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract014 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DIMENSIONAL_PREDATORS: DungeonEvent = {
   id: 'dimensional-predators',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Dimensional Predators',
   description: 'Creatures that hunt across multiple dimensions phase in for the kill!',
   choices: [

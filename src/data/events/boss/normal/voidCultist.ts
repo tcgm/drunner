@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVortex } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_CULTIST: DungeonEvent = {
     id: 'void-cultist',
     type: 'boss',
+    tags: [TAGS.VOID, TAGS.HUMANOID, TAGS.CULTIST, TAGS.ABYSS],
     title: 'Void Cultist',
     description: 'A robed figure stands before an eldritch portal, void energy crackling around them. Their eyes glow with otherworldly power as they chant in an alien tongue.',
     choices: [

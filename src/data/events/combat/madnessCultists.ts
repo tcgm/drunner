@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBleedingEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MADNESS_CULTISTS: DungeonEvent = {
   id: 'madness-cultists',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.CULTIST, TAGS.ARCANE, TAGS.ABYSS],
   title: 'Madness Cultists',
   description: 'Insane worshippers chant reality-warping words!',
   choices: [

@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiFire } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FIRE_TRAP: DungeonEvent = {
     id: 'fire-trap',
     type: 'trap',
+    tags: [TAGS.FIRE, TAGS.DUNGEON],
     title: 'Fire Jet Trap',
     description: 'Scorch marks line the walls ahead, and the heat makes your eyes water. Nozzles are set into the floor at regular intervals.',
     choices: [

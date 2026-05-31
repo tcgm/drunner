@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWarlockEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WARLOCK_OVERLORD: DungeonEvent = {
   id: 'warlock-overlord',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.ARCANE, TAGS.INFERNAL],
   title: 'Warlock Overlord',
   description: 'A master of dark pacts commands legions of demons. Eldritch energy crackles around them as they draw power from their infernal patrons.',
   choices: [

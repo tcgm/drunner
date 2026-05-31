@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBat } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLOOD_BATS: DungeonEvent = {
     id: 'blood-bats',
     type: 'combat',
+    tags: [TAGS.BAT, TAGS.BLOOD, TAGS.UNDEAD, TAGS.CAVE],
     title: 'Blood Bats',
     description: [
         { weight: 3, text: 'A swarm of vampire bats descends, screeching hungrily!' },

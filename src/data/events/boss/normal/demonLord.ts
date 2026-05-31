@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDevilMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEMON_LORD: DungeonEvent = {
   id: 'demon-lord',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL],
   title: 'Lesser Demon Lord',
   description: 'A towering demon wreathed in flames materializes before you. The air reeks of sulfur.',
   choices: [

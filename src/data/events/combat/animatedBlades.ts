@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingedSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANIMATED_BLADES: DungeonEvent = {
   id: 'animated-blades',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.ARCANE, TAGS.RUINS],
   title: 'Animated Blades',
   description: 'Enchanted swords float and spin through the air, attacking on their own!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEyestalk } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABERRANT_SOVEREIGN: DungeonEvent = {
   id: 'aberrant-sovereign',
   type: 'boss',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ABYSS],
   title: 'Aberrant Sovereign',
   description: 'A thing from beyond reality that rules over all aberrations. Its form defies geometry, its existence offends nature.',
   choices: [

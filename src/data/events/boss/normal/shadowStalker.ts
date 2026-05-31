@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShadowFollower } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_STALKER: DungeonEvent = {
   id: 'shadow-stalker',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.SHADOW, TAGS.CAVE, TAGS.ABYSS],
   title: 'Shadow Stalker',
   description: 'A living shadow detaches from the darkness, its form constantly shifting. Red eyes pierce through the gloom.',
   choices: [

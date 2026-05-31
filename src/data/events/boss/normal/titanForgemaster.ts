@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiThorHammer } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TITAN_FORGEMASTER: DungeonEvent = {
   id: 'titan-forgemaster',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.TITAN, TAGS.MECHANICAL, TAGS.FIRE],
   title: 'Titan Forgemaster',
   description: 'A giant who shapes reality with hammer and anvil. Each swing of their cosmic hammer reshapes the battlefield.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiChemicalDrop } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const POTION_MASTER: DungeonEvent = {
   id: 'potion-master',
   type: 'merchant',
+  tags: [TAGS.HUMANOID, TAGS.ARCANE, TAGS.DUNGEON],
   title: 'Master Alchemist',
   description: 'An alchemist offers various potions and elixirs with magical properties.',
   choices: [

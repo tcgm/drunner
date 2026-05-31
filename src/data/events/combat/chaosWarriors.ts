@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiralThrust } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHAOS_WARRIORS: DungeonEvent = {
   id: 'chaos-warriors',
   type: 'combat',
+  tags: [TAGS.CHAOS, TAGS.HUMANOID, TAGS.DEMON],
   title: 'Chaos Warriors',
   description: 'Champions corrupted by raw chaos energy attack erratically!',
   choices: [

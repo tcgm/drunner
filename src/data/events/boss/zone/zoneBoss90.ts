@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_90: DungeonEvent = {
   id: 'zone-boss-90-nightmare-king',
   type: 'boss',
+  tags: [TAGS.NIGHTMARE, TAGS.SHADOW, TAGS.ABERRATION, TAGS.COSMIC],
   title: 'The Nightmare King',
   description: 'The lord of all dark dreams and forbidden thoughts. It is every fear you\'ve ever had given terrible form. The dungeon\'s penultimate guardian, second only to the Lord himself. This is where legends are born or shattered.',
   depth: 90,

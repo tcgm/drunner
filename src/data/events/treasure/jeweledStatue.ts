@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDiamondHard } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const JEWELED_STATUE: DungeonEvent = {
   id: 'jeweled-statue',
   type: 'treasure',
+  tags: [TAGS.RUINS, TAGS.DUNGEON],
   title: 'Jeweled Statue',
   description: 'A statue encrusted with gems stands in the center of the room.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFist } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BRAWLER_GOLEMS: DungeonEvent = {
   id: 'brawler-golems',
   type: 'combat',
+  tags: [TAGS.GOLEM, TAGS.CONSTRUCT, TAGS.DUNGEON],
   title: 'Brawler Golems',
   description: 'Stone constructs programmed for hand-to-hand combat!',
   choices: [

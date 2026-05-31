@@ -1,10 +1,12 @@
 import type { DungeonEvent } from '@/types'
 import { GiFoxTail } from 'react-icons/gi'
 import { KITSUNE_CHARM, KITSUNE_SOUL, KITSUNE_STEPS, KITSUNE_BITE, KITSUNE_GRACE, KITSUNE_VISION } from '@/data/items/sets/kitsune'
+import { TAGS } from '@data/tags'
 
 export const KITSUNE_SHRINE: DungeonEvent = {
   id: 'kitsune-shrine',
   type: 'rest',
+  tags: [TAGS.FAE, TAGS.SPIRIT, TAGS.FOREST],
   title: 'Shrine of the Nine-Tailed Fox',
   description: 'A mischievous kitsune with nine flowing tails lounges at an ornate shrine, eyeing your party with playful interest.',
   choices: [

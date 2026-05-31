@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract087 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const COSMIC_ABERRATIONS: DungeonEvent = {
   id: 'cosmic-aberrations',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.COSMIC_ENV],
   title: 'Cosmic Aberrations',
   description: 'Beings from beyond space attack with incomprehensible powers!',
   choices: [

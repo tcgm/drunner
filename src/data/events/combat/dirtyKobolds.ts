@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLizardman } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DIRTY_KOBOLDS: DungeonEvent = {
   id: 'dirty-kobolds',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.CAVE, TAGS.UNDERGROUND],
   title: 'Dirty Kobolds',
   description: 'Small reptilian creatures emerge from cracks, wielding crude weapons!',
   choices: [

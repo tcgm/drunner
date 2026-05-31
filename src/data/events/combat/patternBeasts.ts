@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiNestedHexagons } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PATTERN_BEASTS: DungeonEvent = {
   id: 'pattern-beasts',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.ARCANE],
   title: 'Pattern Beasts',
   description: 'Creatures made of impossible geometric patterns!',
   choices: [

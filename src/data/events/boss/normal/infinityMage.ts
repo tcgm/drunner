@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicSwirl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const INFINITY_MAGE: DungeonEvent = {
   id: 'infinity-mage',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.ARCANE, TAGS.VOID],
   title: 'Infinity Mage',
   description: 'A wizard who has tapped into infinite magical power. It casts endlessly without limit, each spell more devastating than the last.',
   choices: [

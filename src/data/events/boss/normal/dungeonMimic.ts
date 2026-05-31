@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwapBag } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANCIENT_MIMIC_LORD: DungeonEvent = {
   id: 'ancient-mimic-lord',
   type: 'boss',
+  tags: [TAGS.MIMIC, TAGS.DUNGEON],
   title: 'Ancient Mimic Lord',
   description: 'This is no ordinary mimic - it\'s the progenitor of all mimics, so ancient and cunning it has learned to mimic entire rooms. It has devoured thousands of adventurers over the centuries, growing to monstrous proportions with countless tentacles and maws.',
   choices: [

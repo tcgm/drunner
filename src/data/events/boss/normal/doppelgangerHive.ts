@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShadowFollower } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DOPPELGANGER_HIVE: DungeonEvent = {
   id: 'doppelganger-hive',
   type: 'boss',
+  tags: [TAGS.SHAPESHIFTER, TAGS.HUMANOID, TAGS.ABERRATION],
   title: 'Doppelganger Hive',
   description: 'A colony of shape-shifters that mirror your entire party. Fighting yourself is disconcerting, to say the least.',
   choices: [

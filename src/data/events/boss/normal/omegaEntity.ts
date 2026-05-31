@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedExplosion } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const OMEGA_ENTITY: DungeonEvent = {
   id: 'omega-entity',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Omega Entity',
   description: 'The final boss. The ultimate challenge. The last thing standing between you and complete victory. This is everything.',
   choices: [

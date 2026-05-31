@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFountain } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MYSTERIOUS_FOUNTAIN: DungeonEvent = {
   id: 'mysterious-fountain',
   type: 'treasure',
+  tags: [TAGS.ARCANE, TAGS.DUNGEON],
   title: 'Mysterious Fountain',
   description: 'A fountain filled with glowing water. Gold coins glitter at the bottom.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalBall } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARCANE_CONSTRUCTS: DungeonEvent = {
   id: 'arcane-constructs',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.ARCANE],
   title: 'Arcane Constructs',
   description: 'Magical automatons powered by pure arcane energy!',
   choices: [

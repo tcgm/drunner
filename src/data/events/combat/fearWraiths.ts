@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTerror } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FEAR_WRAITHS: DungeonEvent = {
   id: 'fear-wraiths',
   type: 'combat',
+  tags: [TAGS.WRAITH, TAGS.UNDEAD, TAGS.SHADOW, TAGS.ETHEREAL],
   title: 'Fear Wraiths',
   description: 'Embodiments of terror freeze you with dread!',
   choices: [

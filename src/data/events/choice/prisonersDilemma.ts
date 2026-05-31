@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPrisoner } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRISONERS_DILEMMA: DungeonEvent = {
   id: 'prisoners-dilemma',
   type: 'choice',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Caged Prisoners',
   description: 'Two prisoners beg for freedom. One claims the other is a monster in disguise.',
   choices: [

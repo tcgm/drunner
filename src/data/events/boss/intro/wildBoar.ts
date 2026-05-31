@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBoarEnsign } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WILD_BOAR: DungeonEvent = {
   id: 'wild-boar-intro',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.FOREST],
   title: 'Wild Boar',
   description: 'An enraged boar paws at the ground, snorting angrily. Its tusks gleam dangerously in the dim light.',
   choices: [

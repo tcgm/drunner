@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSquid } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MIND_FLAYER: DungeonEvent = {
   id: 'mind-flayer',
   type: 'boss',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ARCANE, TAGS.ABYSS],
   title: 'Mind Flayer',
   description: 'An illithid emerges from the shadows, its tentacles writhing around its aberrant face. You feel its psychic presence probing your mind.',
   choices: [

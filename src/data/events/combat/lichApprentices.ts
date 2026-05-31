@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LICH_APPRENTICES: DungeonEvent = {
   id: 'lich-apprentices',
   type: 'combat',
+  tags: [TAGS.LICH, TAGS.UNDEAD, TAGS.ARCANE],
   title: 'Lich Apprentices',
   description: 'Aspiring necromancers practice dark magic!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSawedOffShotgun } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SIEGE_AUTOMATON: DungeonEvent = {
   id: 'siege-automaton',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.AUTOMATON],
   title: 'Siege Automaton',
   description: 'A towering war machine designed to break castle walls. Its integrated ballistae and crushing limbs make it a terror on any battlefield.',
   choices: [

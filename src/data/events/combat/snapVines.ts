@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCarnivorousPlant } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SNAP_VINES: DungeonEvent = {
   id: 'snap-vines',
   type: 'combat',
+  tags: [TAGS.PLANT, TAGS.FOREST, TAGS.SWAMP],
   title: 'Snap Vines',
   description: 'Carnivorous plants lash out with thorny tendrils!',
   choices: [

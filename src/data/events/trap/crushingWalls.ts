@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiBrickWall } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRUSHING_WALLS: DungeonEvent = {
     id: 'crushing-walls',
     type: 'trap',
+    tags: [TAGS.DUNGEON, TAGS.MECHANICAL],
     title: 'Crushing Walls',
     description: 'You step past the threshold and hear a heavy click. Stone walls on both sides begin grinding inward. The gap is already narrowing.',
     choices: [

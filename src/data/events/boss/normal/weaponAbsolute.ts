@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAnvilImpact } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WEAPON_ABSOLUTE: DungeonEvent = {
   id: 'weapon-absolute',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.COSMIC, TAGS.VOID],
   title: 'Weapon Absolute',
   description: 'The perfect weapon given life. It was forged to end all things and knows only destruction. It cannot be stopped.',
   choices: [

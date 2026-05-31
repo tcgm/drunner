@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBearFace } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRIMAL_AVATAR: DungeonEvent = {
   id: 'primal-avatar',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.EARTH, TAGS.FOREST, TAGS.TITAN],
   title: 'Primal Avatar',
   description: 'The living embodiment of nature\'s rage. It shifts between predator forms - bear, wolf, eagle, snake - adapting to every threat.',
   choices: [

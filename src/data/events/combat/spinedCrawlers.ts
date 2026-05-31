@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedTail } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SPINED_CRAWLERS: DungeonEvent = {
   id: 'spined-crawlers',
   type: 'combat',
+  tags: [TAGS.INSECT, TAGS.CAVE, TAGS.BEAST],
   title: 'Spined Crawlers',
   description: 'Creatures covered in sharp quills scuttle toward you!',
   choices: [

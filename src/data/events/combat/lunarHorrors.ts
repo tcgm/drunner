@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEvilMoon } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LUNAR_HORRORS: DungeonEvent = {
   id: 'lunar-horrors',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.SHADOW],
   title: 'Lunar Horrors',
   description: 'Nightmare creatures from a dead moon phase in and out of sight!',
   choices: [

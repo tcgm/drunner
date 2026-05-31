@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTentacurl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_GODS_SPAWN: DungeonEvent = {
   id: 'void-gods-spawn',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABERRATION, TAGS.ABYSS],
   title: "Void Gods' Spawn",
   description: 'Children of ancient void deities attack with power beyond comprehension!',
   choices: [

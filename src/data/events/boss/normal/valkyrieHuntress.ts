@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingedSword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VALKYRIE_HUNTRESS: DungeonEvent = {
   id: 'valkyrie-huntress',
   type: 'boss',
+  tags: [TAGS.CELESTIAL, TAGS.HUMANOID, TAGS.ETHEREAL],
   title: 'Valkyrie Huntress',
   description: 'A warrior maiden with gleaming armor and massive wings descends from above. Her spear glows with divine fury as she marks you as her prey.',
   choices: [

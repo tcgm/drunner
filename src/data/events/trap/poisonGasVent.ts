@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGasMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const POISON_GAS_VENT: DungeonEvent = {
     id: 'poison-gas-vent',
     type: 'trap',
+    tags: [TAGS.POISON, TAGS.DUNGEON, TAGS.CAVE],
     title: 'Poison Gas Vent',
     description: 'A faint hissing fills the air, and a sickly green tinge colours the corridor ahead. Gas is seeping through vents in the walls.',
     choices: [

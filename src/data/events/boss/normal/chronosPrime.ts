@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSundial } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHRONOS_PRIME: DungeonEvent = {
   id: 'chronos-prime',
   type: 'boss',
+  tags: [TAGS.CHRONO, TAGS.CONSTRUCT, TAGS.COSMIC],
   title: 'Chronos Prime',
   description: 'The master of all time. Past, present, and future bend to its will. It has already defeated you in the future. Or has it?',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBlackKnightHelm } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const OBSIDIAN_KNIGHT: DungeonEvent = {
   id: 'obsidian-knight',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.KNIGHT, TAGS.EARTH, TAGS.VOLCANIC],
   title: 'Obsidian Knight',
   description: 'A warrior encased in living volcanic glass. Their armor is razor-sharp, and lava seeps through the cracks with each movement.',
   choices: [

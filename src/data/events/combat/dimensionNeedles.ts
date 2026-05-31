@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpaceNeedle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DIMENSION_NEEDLES: DungeonEvent = {
   id: 'dimension-needles',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Dimension Needles',
   description: 'Razor-thin portals slice through space itself!',
   choices: [

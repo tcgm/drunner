@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMatterStates } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ELEMENTAL_FUSION: DungeonEvent = {
   id: 'elemental-fusion',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.ARCANE],
   title: 'Elemental Fusion',
   description: 'Four elemental lords have merged into one being. Fire, ice, earth, and air attack in perfect harmony.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPsychicWaves } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const APOCALYPSE_BEAST: DungeonEvent = {
   id: 'apocalypse-beast',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Apocalypse Beast',
   description: 'The end of all things given form. When it awakens, worlds end. It has ended a thousand realities. Yours is next.',
   choices: [

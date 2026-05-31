@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedTentacle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const KRAKEN_SPAWN: DungeonEvent = {
   id: 'kraken-spawn',
   type: 'boss',
+  tags: [TAGS.AQUATIC, TAGS.ABERRATION, TAGS.ABYSS],
   title: 'Kraken Spawn',
   description: 'A young kraken fills the flooded chamber with writhing tentacles. Though not fully grown, it\'s still a formidable predator of the deep.',
   choices: [

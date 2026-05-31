@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBat } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GIANT_BAT: DungeonEvent = {
   id: 'giant-bat-intro',
   type: 'boss',
+  tags: [TAGS.BAT, TAGS.BEAST, TAGS.CAVE],
   title: 'Giant Bat',
   description: 'A huge bat swoops down from the ceiling, screeching loudly. Its wingspan fills the corridor.',
   choices: [

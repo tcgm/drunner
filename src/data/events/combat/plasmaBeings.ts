@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLightningFrequency } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLASMA_BEINGS: DungeonEvent = {
   id: 'plasma-beings',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.ARCANE],
   title: 'Plasma Beings',
   description: 'Creatures of superheated ionized gas crackle with energy!',
   choices: [

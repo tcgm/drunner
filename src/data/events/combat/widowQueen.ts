@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiderMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WIDOW_QUEEN: DungeonEvent = {
   id: 'widow-queen',
   type: 'combat',
+  tags: [TAGS.SPIDER, TAGS.BEAST, TAGS.CAVE, TAGS.FOREST],
   title: 'Widow Queen',
   description: 'A massive spider matriarch defends her territory!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANCIENT_RED_DRAGON: DungeonEvent = {
   id: 'ancient-red-dragon',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.FIRE, TAGS.VOLCANIC],
   title: 'Ancient Red Dragon',
   description: 'A truly ancient wyrm with scales like molten metal. Its hoard fills the cavern, and its breath could melt stone itself.',
   choices: [

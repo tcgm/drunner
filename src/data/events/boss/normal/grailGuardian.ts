@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiHolyGrail } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GRAIL_GUARDIAN: DungeonEvent = {
   id: 'grail-guardian',
   type: 'boss',
+  tags: [TAGS.CELESTIAL, TAGS.CONSTRUCT, TAGS.RUINS],
   title: 'Grail Guardian',
   description: 'An immortal knight sworn to protect a sacred relic. Its oath gives it power beyond any mortal warrior.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpellBook } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARCHMAGE_SHADE: DungeonEvent = {
   id: 'archmage-shade',
   type: 'boss',
+  tags: [TAGS.SHADOW, TAGS.ARCANE, TAGS.UNDEAD],
   title: 'Archmage Shade',
   description: 'The ghost of a legendary wizard. Even in death, its mastery of magic surpasses any living mage.',
   choices: [

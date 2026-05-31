@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiStoneSphere } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const REALITY_ANCHOR: DungeonEvent = {
   id: 'reality-anchor',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ARCANE],
   title: 'Reality Anchor',
   description: 'A construct that holds reality together in this region. Destroying it risks unraveling existence itself.',
   choices: [

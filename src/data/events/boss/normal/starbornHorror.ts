@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiNightSky } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STARBORN_HORROR: DungeonEvent = {
   id: 'starborn-horror',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.COSMIC_ENV],
   title: 'Starborn Horror',
   description: 'A creature from beyond the stars, its form defies comprehension. It radiates cosmic energy and gravity warps around it unnaturally.',
   choices: [

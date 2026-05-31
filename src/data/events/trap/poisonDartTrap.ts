@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPoisonBottle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const POISON_DART_TRAP: DungeonEvent = {
   id: 'poison-dart-trap',
   type: 'trap',
+  tags: [TAGS.POISON, TAGS.DUNGEON],
   title: 'Poison Dart Trap',
   description: 'You spot pressure plates on the floor. Dart holes line the walls.',
   choices: [

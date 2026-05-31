@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFlamingClaw } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const INFERNAL_CHAMPION: DungeonEvent = {
   id: 'infernal-champion',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.INFERNAL, TAGS.FIRE],
   title: 'Infernal Champion',
   description: 'A pit fiend\'s lieutenant stands in full hellforged armor. Its flaming sword leaves trails of fire, and sulfurous smoke billows from its nostrils.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLeatherArmor } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DWARVEN_ARMOURER: DungeonEvent = {
   id: 'dwarven-armourer',
   type: 'merchant',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Dwarven Armourer',
   description: 'A stout dwarf has set up a portable forge. He specialises exclusively in protective gear.',
   choices: [

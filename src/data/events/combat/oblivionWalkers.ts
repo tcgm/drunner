@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract052 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const OBLIVION_WALKERS: DungeonEvent = {
   id: 'oblivion-walkers',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.UNDEAD, TAGS.ABYSS],
   title: 'Oblivion Walkers',
   description: 'Beings that walk between existence and non-existence!',
   choices: [

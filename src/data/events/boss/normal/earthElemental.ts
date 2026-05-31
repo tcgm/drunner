@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiStonePile } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const EARTH_ELEMENTAL: DungeonEvent = {
   id: 'earth-elemental',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.EARTH],
   title: 'Earth Elemental',
   description: 'A massive being of living stone rumbles to life, shaking the very foundations of the dungeon. Each step creates tremors.',
   choices: [

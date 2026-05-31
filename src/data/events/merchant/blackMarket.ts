@@ -1,9 +1,11 @@
 import type { DungeonEvent} from '@/types'
 import { GiHood } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLACK_MARKET: DungeonEvent = {
   id: 'black-market',
   type: 'merchant',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON, TAGS.SHADOW],
   title: 'Black Market Dealer',
   description: 'A shady figure offers powerful items at steep prices. Some look... cursed.',
   choices: [

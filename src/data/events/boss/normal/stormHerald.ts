@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLightningTear } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STORM_HERALD: DungeonEvent = {
   id: 'storm-herald',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.STORM],
   title: 'Storm Herald',
   description: 'An elemental noble who commands the fury of tempests. Lightning, thunder, and wind answer its call.',
   choices: [

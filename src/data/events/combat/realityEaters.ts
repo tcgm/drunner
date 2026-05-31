@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract071 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const REALITY_EATERS: DungeonEvent = {
   id: 'reality-eaters',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Reality Eaters',
   description: 'Cosmic devourers that consume the fabric of reality itself!',
   choices: [

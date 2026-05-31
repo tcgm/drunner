@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWalkieTalkie } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ECHO_WARRIORS: DungeonEvent = {
   id: 'echo-warriors',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.ETHEREAL, TAGS.ARCANE],
   title: 'Echo Warriors',
   description: 'Sound-based entities that attack with sonic blasts!',
   choices: [

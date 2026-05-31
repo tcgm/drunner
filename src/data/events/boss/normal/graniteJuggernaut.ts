@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiRockGolem } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GRANITE_JUGGERNAUT: DungeonEvent = {
   id: 'granite-juggernaut',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.EARTH, TAGS.TITAN],
   title: 'Granite Juggernaut',
   description: 'A living mountain of stone crashes through walls as it advances. Each step creates shockwaves, and its fists could pulverize castle walls.',
   choices: [

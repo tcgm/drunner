@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiMagicSwirl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RUNIC_ORE: DungeonEvent = {
     id: 'runic-ore',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.ARCANE, TAGS.RUINS],
     title: 'Runic Ore Vein',
     description: 'Strange runes are naturally formed in the mineral pattern of this ore vein - not carved, but grown. The ore hums faintly when touched.',
     choices: [

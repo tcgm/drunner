@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCyborgFace } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MECH_OVERLORD: DungeonEvent = {
   id: 'mech-overlord',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.TITAN],
   title: 'Mech Overlord',
   description: 'An ancient automated war machine. Its original purpose forgotten, it continues to optimize for destruction.',
   choices: [

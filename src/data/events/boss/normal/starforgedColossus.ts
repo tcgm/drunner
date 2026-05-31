@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMetalGolemHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STARFORGED_COLOSSUS: DungeonEvent = {
   id: 'starforged-colossus',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.CONSTRUCT, TAGS.TITAN, TAGS.COSMIC_ENV],
   title: 'Starforged Colossus',
   description: 'A towering construct forged from fallen stars. Its body radiates intense heat and light. This ancient war machine was built by a civilization long extinct, and it still carries out its final orders.',
   choices: [

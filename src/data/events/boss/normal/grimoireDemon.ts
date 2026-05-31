@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBookCover } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GRIMOIRE_DEMON: DungeonEvent = {
   id: 'grimoire-demon',
   type: 'boss',
+  tags: [TAGS.DEMON, TAGS.ARCANE, TAGS.INFERNAL],
   title: 'Grimoire Demon',
   description: 'A demon bound into a spellbook that has gained sentience. Every page contains a different deadly spell.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBlackHoleBolas } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const EVENT_HORIZON_BEASTS: DungeonEvent = {
   id: 'event-horizon-beasts',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.COSMIC_ENV],
   title: 'Event Horizon Beasts',
   description: 'Creatures born at the edge of black holes!',
   choices: [

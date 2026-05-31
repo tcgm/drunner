@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract048 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ENTROPY_BEASTS: DungeonEvent = {
   id: 'entropy-beasts',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Entropy Beasts',
   description: 'Creatures that accelerate decay attack with entropy itself!',
   choices: [

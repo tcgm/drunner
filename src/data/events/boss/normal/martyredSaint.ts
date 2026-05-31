@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownOfThorns } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MARTYRED_SAINT: DungeonEvent = {
   id: 'martyred-saint',
   type: 'boss',
+  tags: [TAGS.CELESTIAL, TAGS.HUMANOID, TAGS.SPIRIT],
   title: 'Martyred Saint',
   description: 'A holy warrior who died for their cause, now twisted into undeath. Divine and necrotic power combine in terrible ways.',
   choices: [

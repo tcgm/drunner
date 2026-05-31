@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFlame } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PHOENIX_CHAMPION: DungeonEvent = {
   id: 'phoenix-champion',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.FIRE, TAGS.CELESTIAL],
   title: 'Phoenix Champion',
   description: 'A warrior bound to a phoenix spirit. Wreathed in flames, they wield a blade of pure fire and can rise from the ashes if not truly destroyed.',
   choices: [

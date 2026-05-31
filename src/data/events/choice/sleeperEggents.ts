@@ -1,10 +1,12 @@
 import type { DungeonEvent } from '@/types'
 import { GiEggClutch, GiEgyptianBird } from 'react-icons/gi'
 import { BLAHAJ_COMPANION } from '@/data/items/uniques/accessories/blahajCompanion'
+import { TAGS } from '@data/tags'
 
 export const SLEEPER_EGGENTS: DungeonEvent = {
     id: 'sleeper-eggents',
     type: 'choice',
+    tags: [TAGS.ABERRATION, TAGS.COSMIC],
     title: 'Sleeper Eggents',
     description: 'You encounter a group of mysterious figures standing in formation, each holding a peculiar egg-shaped artifact. They speak in cryptic phrases about awakening and transformation. "To activate," their leader says, "one must choose: heat from fire, or fire from heat?"',
     choices: [

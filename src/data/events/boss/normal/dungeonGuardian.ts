@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrenelCrown } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DUNGEON_GUARDIAN: DungeonEvent = {
   id: 'dungeon-guardian',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.DUNGEON, TAGS.GOLEM],
   title: 'Dungeon Guardian',
   description: 'A massive golem of stone and iron awakens. It is this floor\'s final defense.',
   choices: [

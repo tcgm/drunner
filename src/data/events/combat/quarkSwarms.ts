@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMaterialsScience } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const QUARK_SWARMS: DungeonEvent = {
   id: 'quark-swarms',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.SWARM],
   title: 'Quark Swarms',
   description: 'Subatomic particles form living clouds of destruction!',
   choices: [

@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiFireGem } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BLAZE_ORE: DungeonEvent = {
     id: 'blaze-ore',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.VOLCANIC, TAGS.FIRE],
     title: 'Blaze Ore Seam',
     description: 'The rock wall glows with internal heat. Veins of deep orange ore pulse thickly - blaze ore, formed where magma cooled over centuries. You can feel the heat through your gloves.',
     choices: [

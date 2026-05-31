@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiConcentricCrescents } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MOON_BEAST: DungeonEvent = {
   id: 'moon-beast',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.COSMIC, TAGS.ETHEREAL],
   title: 'Moon Beast',
   description: 'A creature of lunar madness. Its power waxes and wanes with phases you cannot see, making it unpredictable and deadly.',
   choices: [

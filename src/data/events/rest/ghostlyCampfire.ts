@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiGhost } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GHOSTLY_CAMPFIRE: DungeonEvent = {
     id: 'ghostly-campfire',
     type: 'rest',
+    tags: [TAGS.GHOST, TAGS.UNDEAD, TAGS.SPIRIT, TAGS.ETHEREAL],
     title: 'Ghostly Campfire',
     description: "A campfire burns with cold blue flames that cast no shadows. A translucent figure sits beside it, staring into the fire. It doesn't seem hostile.",
     choices: [

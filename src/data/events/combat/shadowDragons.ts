@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_DRAGONS: DungeonEvent = {
   id: 'shadow-dragons',
   type: 'combat',
+  tags: [TAGS.DRAGON, TAGS.SHADOW, TAGS.ABYSS],
   title: 'Shadow Dragons',
   description: 'Young dragons of pure darkness breathe shadowy flames!',
   choices: [

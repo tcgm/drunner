@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDervishSwords } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WHIRLWIND_ASSASSIN: DungeonEvent = {
   id: 'whirlwind-assassin',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.SHADOW, TAGS.DUNGEON],
   title: 'Whirlwind Assassin',
   description: 'An elemental assassin that becomes a living cyclone of blades. They move with the wind itself, striking from impossible angles.',
   choices: [

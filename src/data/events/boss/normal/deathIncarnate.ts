@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDeathSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DEATH_INCARNATE: DungeonEvent = {
   id: 'death-incarnate',
   type: 'boss',
+  tags: [TAGS.UNDEAD, TAGS.SHADOW, TAGS.VOID],
   title: 'Death Incarnate',
   description: 'The physical manifestation of mortality itself. Its touch is instant death. Its gaze ends existence. It is inevitable.',
   choices: [

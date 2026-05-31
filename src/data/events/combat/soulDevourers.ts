@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSoulVessel } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SOUL_DEVOURERS: DungeonEvent = {
   id: 'soul-devourers',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL, TAGS.VOID],
   title: 'Soul Devourers',
   description: 'Ethereal predators that consume the essence of living beings!',
   choices: [

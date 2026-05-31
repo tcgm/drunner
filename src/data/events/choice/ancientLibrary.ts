@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBookshelf } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANCIENT_LIBRARY: DungeonEvent = {
   id: 'ancient-library',
   type: 'choice',
+  tags: [TAGS.RUINS, TAGS.ARCANE],
   title: 'Ancient Library',
   description: 'Dusty tomes line the shelves of this forgotten library. Their knowledge could be invaluable... if you can decipher them.',
   choices: [

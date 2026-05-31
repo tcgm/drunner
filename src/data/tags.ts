@@ -44,6 +44,15 @@ export const TAGS = {
   ABERRATION:   'aberration',
   CELESTIAL:    'celestial',
   FAE:          'fae',
+  CULTIST:      'cultist',
+  KNIGHT:       'knight',
+  MIMIC:        'mimic',
+  LYCANTHROPE:  'lycanthrope',
+  SHAPESHIFTER: 'shapeshifter',
+  VAMPIRE:      'vampire',
+  DJINN:        'djinn',
+  RAT:          'rat',
+  SWARM:        'swarm',
 
   // ── Elemental / damage flavours ────────────────────────────────────────────
   FIRE:         'fire',
@@ -56,6 +65,13 @@ export const TAGS = {
   ARCANE:       'arcane',
   BLOOD:        'blood',
   PLAGUE:       'plague',
+  CHAOS:        'chaos',
+  STORM:        'storm',
+  NIGHTMARE:    'nightmare',
+  CHRONO:       'chrono',
+  CRYSTAL:      'crystal',
+  AQUATIC:      'aquatic',
+  TITAN:        'titan',
 
   // ── Environments ───────────────────────────────────────────────────────────
   DUNGEON:      'dungeon',

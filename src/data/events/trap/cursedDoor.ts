@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDoorHandle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CURSED_DOOR: DungeonEvent = {
   id: 'cursed-door',
   type: 'trap',
+  tags: [TAGS.ARCANE, TAGS.RUINS],
   title: 'Cursed Door',
   description: 'A door covered in dark runes pulses with malevolent energy.',
   choices: [

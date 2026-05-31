@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWinterGloves } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WINTER_SOVEREIGN: DungeonEvent = {
   id: 'winter-sovereign',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.ICE, TAGS.ARCTIC, TAGS.TITAN],
   title: 'Winter Sovereign',
   description: 'The embodiment of eternal winter. Wherever it walks, spring never comes. Its touch brings the final, coldest sleep.',
   choices: [

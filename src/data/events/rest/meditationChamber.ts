@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMeditation } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MEDITATION_CHAMBER: DungeonEvent = {
   id: 'meditation-chamber',
   type: 'rest',
+  tags: [TAGS.RUINS, TAGS.ARCANE],
   title: 'Meditation Chamber',
   description: 'A serene chamber with ancient meditative symbols on the walls.',
   choices: [

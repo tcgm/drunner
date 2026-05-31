@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiShatteredGlass } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MIRROR_FIENDS: DungeonEvent = {
   id: 'mirror-fiends',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.SHADOW, TAGS.ARCANE],
   title: 'Mirror Fiends',
   description: 'Demons trapped in mirrors attack with reflections!',
   choices: [

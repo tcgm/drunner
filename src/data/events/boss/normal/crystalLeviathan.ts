@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMineralHeart } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYSTAL_LEVIATHAN: DungeonEvent = {
   id: 'crystal-leviathan',
   type: 'boss',
+  tags: [TAGS.CRYSTAL, TAGS.AQUATIC, TAGS.BEAST],
   title: 'Crystal Leviathan',
   description: 'A colossal serpent made of living diamond. Light refracts through its body into devastating prismatic beams.',
   choices: [

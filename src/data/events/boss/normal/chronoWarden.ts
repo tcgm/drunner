@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiHourglass } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHRONO_WARDEN: DungeonEvent = {
   id: 'chrono-warden',
   type: 'boss',
+  tags: [TAGS.CHRONO, TAGS.CONSTRUCT],
   title: 'Chrono Warden',
   description: 'A guardian that exists in multiple time streams simultaneously. It attacks from past, present, and future all at once. Time itself seems to bend and fracture around its form.',
   choices: [

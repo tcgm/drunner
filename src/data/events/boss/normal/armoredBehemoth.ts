@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedShell } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARMORED_BEHEMOTH: DungeonEvent = {
   id: 'armored-behemoth',
   type: 'boss',
+  tags: [TAGS.BEAST, TAGS.TITAN],
   title: 'Armored Behemoth',
   description: 'A massive creature covered in natural armor plates. Its shell deflects most attacks, and its crushing bulk can flatten anything in its path.',
   choices: [

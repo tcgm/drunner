@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSundial } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TEMPORAL_ECHOES: DungeonEvent = {
   id: 'temporal-echoes',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.ETHEREAL, TAGS.ARCANE, TAGS.CHRONO],
   title: 'Temporal Echoes',
   description: 'Duplicates of past adventurers flicker in and out of time!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicLamp } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CURSED_DJINN: DungeonEvent = {
   id: 'cursed-djinn',
   type: 'combat',
+  tags: [TAGS.DJINN, TAGS.SPIRIT, TAGS.ARCANE],
   title: 'Cursed Djinn',
   description: 'A twisted genie bound to evil grants only pain!',
   choices: [

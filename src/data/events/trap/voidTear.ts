@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVortex } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_TEAR: DungeonEvent = {
     id: 'void-tear',
     type: 'trap',
+    tags: [TAGS.VOID, TAGS.ABYSS, TAGS.DUNGEON],
     title: 'Void Tear',
     description: 'A jagged rift in reality hangs in the middle of the corridor, pulsing with absolute darkness. Objects near it drift sideways as if gravity has opinions.',
     choices: [

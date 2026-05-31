@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BANDIT_KING: DungeonEvent = {
   id: 'bandit-king',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Bandit King',
   description: 'A notorious outlaw sits on a throne of stolen treasure. His gang of cutthroats surrounds him, but he looks confident.',
   choices: [

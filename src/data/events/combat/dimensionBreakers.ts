@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiArmoredPants } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DIMENSION_BREAKERS: DungeonEvent = {
   id: 'dimension-breakers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Dimension Breakers',
   description: 'Beings that shatter dimensional barriers attack from fractured realities!',
   choices: [

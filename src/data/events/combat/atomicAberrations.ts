@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiRadioactive } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ATOMIC_ABERRATIONS: DungeonEvent = {
   id: 'atomic-aberrations',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Atomic Aberrations',
   description: 'Mutated horrors that emit deadly radiation!',
   choices: [

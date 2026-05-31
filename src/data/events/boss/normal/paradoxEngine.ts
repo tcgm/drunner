@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTwoCoins } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PARADOX_ENGINE: DungeonEvent = {
   id: 'paradox-engine',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.CONSTRUCT, TAGS.CHRONO],
   title: 'Paradox Engine',
   description: 'A machine that runs on impossibilities. It exists and doesn\'t exist. It has already won and already lost. Logic breaks near it.',
   choices: [

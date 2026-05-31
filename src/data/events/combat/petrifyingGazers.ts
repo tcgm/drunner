@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrystalEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PETRIFYING_GAZERS: DungeonEvent = {
   id: 'petrifying-gazers',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.CAVE, TAGS.ABYSS],
   title: 'Petrifying Gazers',
   description: 'Multi-eyed horrors whose stare turns flesh to stone!',
   choices: [

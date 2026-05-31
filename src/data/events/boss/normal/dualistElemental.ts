@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFrostfire } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DUALIST_ELEMENTAL: DungeonEvent = {
   id: 'dualist-elemental',
   type: 'boss',
+  tags: [TAGS.ELEMENTAL, TAGS.ARCANE],
   title: 'Dualist Elemental',
   description: 'Fire and ice fused into one being. One half burns while the other freezes. Both deadly, both impossible to resist.',
   choices: [

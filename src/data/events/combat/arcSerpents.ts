@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLightningHelix } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ARC_SERPENTS: DungeonEvent = {
   id: 'arc-serpents',
   type: 'combat',
+  tags: [TAGS.SNAKE, TAGS.LIGHTNING, TAGS.BEAST],
   title: 'Arc Serpents',
   description: 'Electric snakes coil and strike with lightning fangs!',
   choices: [

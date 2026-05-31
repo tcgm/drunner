@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPunchBlast } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TITAN_BREAKER: DungeonEvent = {
   id: 'titan-breaker',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.TITAN, TAGS.COSMIC],
   title: 'Titan Breaker',
   description: 'A warrior who has slain gods. Its strength is legendary. Armor means nothing. Defense is futile. Only power matters.',
   choices: [

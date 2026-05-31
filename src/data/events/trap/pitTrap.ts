@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMantrap } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PIT_TRAP: DungeonEvent = {
   id: 'pit-trap',
   type: 'trap',
+  tags: [TAGS.DUNGEON, TAGS.CAVE],
   title: 'Hidden Pit Trap',
   description: 'The floor ahead looks suspicious. Cracks suggest a hidden pit.',
   choices: [

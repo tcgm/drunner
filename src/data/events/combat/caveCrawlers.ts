@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiderBot } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CAVE_CRAWLERS: DungeonEvent = {
   id: 'cave-crawlers',
   type: 'combat',
+  tags: [TAGS.INSECT, TAGS.SPIDER, TAGS.CAVE, TAGS.UNDERGROUND],
   title: 'Cave Crawlers',
   description: 'Chittering insects with armored carapaces skitter across the walls!',
   choices: [

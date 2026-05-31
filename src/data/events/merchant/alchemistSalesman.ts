@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiChemicalDrop } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ALCHEMIST_SALESMAN: DungeonEvent = {
     id: 'alchemist-salesman',
     type: 'merchant',
+    tags: [TAGS.HUMANOID, TAGS.ARCANE, TAGS.DUNGEON],
     title: 'Alchemist Salesman',
     description: 'A travelling alchemist has set up a bubbling stall. Flasks and vials clutter every surface, each one labelled in cramped handwriting.',
     choices: [

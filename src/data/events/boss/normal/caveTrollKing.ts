@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMountainCave } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CAVE_TROLL_KING: DungeonEvent = {
   id: 'cave-troll-king',
   type: 'boss',
+  tags: [TAGS.TROLL, TAGS.CAVE, TAGS.UNDERGROUND],
   title: 'Cave Troll King',
   description: 'An enormous troll covered in stone-like hide rules this deep cavern. His massive club is a stalagmite torn from the floor, and his roar shakes loose rocks from above.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGhost } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WAILING_BANSHEE: DungeonEvent = {
   id: 'wailing-banshee',
   type: 'boss',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Wailing Banshee',
   description: 'A ghostly woman in tattered robes floats before you. Her sorrowful face twists in rage as she opens her mouth to unleash her deadly scream.',
   choices: [

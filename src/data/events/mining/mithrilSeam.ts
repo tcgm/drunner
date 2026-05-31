@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiSilverBullet } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MITHRIL_SEAM: DungeonEvent = {
     id: 'mithril-seam',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.UNDERGROUND, TAGS.EARTH],
     title: 'Mithril Seam',
     description: 'A thread of pale silver metal runs through the rock - unmistakably mithril. Rare even in the deep places. The seam is thin but pure.',
     choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTroll } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CAVE_TROLL: DungeonEvent = {
   id: 'cave-troll',
   type: 'combat',
+  tags: [TAGS.TROLL, TAGS.CAVE, TAGS.UNDERGROUND],
   title: 'Cave Troll',
   description: 'A massive troll emerges from its lair, club in hand!',
   choices: [

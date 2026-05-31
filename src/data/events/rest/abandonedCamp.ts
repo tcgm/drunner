@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCampfire } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABANDONED_CAMP: DungeonEvent = {
   id: 'abandoned-camp',
   type: 'rest',
+  tags: [TAGS.DUNGEON, TAGS.CAVE],
   title: 'Abandoned Camp',
   description: 'A recently abandoned campsite with supplies left behind. It looks safe.',
   choices: [

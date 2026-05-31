@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEvilBat } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NIGHTMARE_LORDS: DungeonEvent = {
   id: 'nightmare-lords',
   type: 'combat',
+  tags: [TAGS.SHADOW, TAGS.ETHEREAL, TAGS.ABERRATION, TAGS.NIGHTMARE],
   title: 'Nightmare Lords',
   description: 'Masters of terror manifest your worst fears into lethal reality!',
   choices: [

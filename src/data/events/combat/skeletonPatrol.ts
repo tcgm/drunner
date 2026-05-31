@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSkeletonKey } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SKELETON_PATROL: DungeonEvent = {
   id: 'skeleton-patrol',
   type: 'combat',
+  tags: [TAGS.SKELETON, TAGS.UNDEAD, TAGS.DUNGEON],
   title: 'Skeleton Patrol',
   description: 'Two animated skeletons block your path, their bones rattling ominously.',
   choices: [

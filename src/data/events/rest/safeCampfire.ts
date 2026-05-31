@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCampfire } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SAFE_CAMPFIRE: DungeonEvent = {
   id: 'safe-campfire',
   type: 'rest',
+  tags: [TAGS.DUNGEON],
   title: 'Safe Campfire',
   description: 'A warm campfire flickers in a secure alcove. This seems like a good place to rest.',
   choices: [

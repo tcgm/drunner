@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiderFace } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PHASE_SPIDER: DungeonEvent = {
   id: 'phase-spider',
   type: 'boss',
+  tags: [TAGS.SPIDER, TAGS.ETHEREAL, TAGS.COSMIC],
   title: 'Phase Spider',
   description: 'An otherworldly arachnid flickers in and out of reality. One moment it\'s before you, the next it phases through walls to attack from behind.',
   choices: [

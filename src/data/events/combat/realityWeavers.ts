@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract040 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const REALITY_WEAVERS: DungeonEvent = {
   id: 'reality-weavers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ARCANE, TAGS.ABERRATION],
   title: 'Reality Weavers',
   description: 'Entities that reshape reality itself attack your existence!',
   choices: [

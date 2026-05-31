@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSundial } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TIME_EATER: DungeonEvent = {
   id: 'time-eater',
   type: 'boss',
+  tags: [TAGS.CHRONO, TAGS.COSMIC, TAGS.VOID],
   title: 'Time Eater',
   description: 'A being that feeds on moments. It ages you with a touch and can rewind its own wounds. Time itself warps around it.',
   choices: [

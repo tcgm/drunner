@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiGemPendant } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const RELIQUARY_DEALER: DungeonEvent = {
   id: 'reliquary-dealer',
   type: 'merchant',
+  tags: [TAGS.HUMANOID, TAGS.RUINS, TAGS.ARCANE],
   title: 'Reliquary Dealer',
   description: 'A well-dressed collector deals exclusively in rare artefacts and relics. Everything in his cabinet looks like it belongs in a museum.',
   choices: [

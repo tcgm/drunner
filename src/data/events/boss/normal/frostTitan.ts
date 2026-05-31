@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiIceCube } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FROST_TITAN: DungeonEvent = {
     id: 'frost-titan',
     type: 'boss',
+    tags: [TAGS.ELEMENTAL, TAGS.ICE, TAGS.ARCTIC, TAGS.TITAN],
     title: 'Frost Titan',
     description: 'An enormous being of living ice towers before you, its frozen breath turning the air to mist. Icicles the size of spears hang from its massive frame.',
     choices: [

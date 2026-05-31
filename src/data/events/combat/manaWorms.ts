@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMagicSwirl } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MANA_WORMS: DungeonEvent = {
   id: 'mana-worms',
   type: 'combat',
+  tags: [TAGS.ARCANE, TAGS.INSECT, TAGS.CAVE],
   title: 'Mana Worms',
   description: 'Parasites that feed on magical energy!',
   choices: [

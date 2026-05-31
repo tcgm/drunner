@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMushroomCloud } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SPORE_MIND: DungeonEvent = {
   id: 'spore-mind',
   type: 'boss',
+  tags: [TAGS.FUNGUS, TAGS.ABERRATION, TAGS.SWAMP],
   title: 'Spore Mind',
   description: 'A fungal hivemind that spreads through the air. Breathe its spores and become part of its collective consciousness.',
   choices: [

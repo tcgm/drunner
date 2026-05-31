@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLightningStorm } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLASMA_DJINN: DungeonEvent = {
   id: 'plasma-djinn',
   type: 'combat',
+  tags: [TAGS.DJINN, TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.ARCANE],
   title: 'Plasma Djinn',
   description: 'Genies of superheated matter attack with burning plasma!',
   choices: [

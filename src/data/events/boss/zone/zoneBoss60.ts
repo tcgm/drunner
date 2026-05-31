@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDualityMask } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ZONE_BOSS_60: DungeonEvent = {
   id: 'zone-boss-60-twin-archons',
   type: 'boss',
+  tags: [TAGS.CELESTIAL, TAGS.HUMANOID, TAGS.ETHEREAL],
   title: 'The Twin Archons',
   description: 'Two ancient beings bound as one - Order and Chaos incarnate. They move in perfect synchronization, one defending while the other attacks. To defeat them, you must disrupt their harmony.',
   depth: 60,

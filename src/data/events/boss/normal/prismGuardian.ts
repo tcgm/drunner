@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiLaserWarning } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRISM_GUARDIAN: DungeonEvent = {
   id: 'prism-guardian',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.CRYSTAL, TAGS.ARCANE],
   title: 'Prism Guardian',
   description: 'A being of pure light refracted through countless crystals. It can split into duplicates and attack with focused light beams.',
   choices: [

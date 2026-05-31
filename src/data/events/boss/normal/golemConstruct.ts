@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiStoneBlock } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GOLEM_CONSTRUCT: DungeonEvent = {
     id: 'golem-construct',
     type: 'boss',
+    tags: [TAGS.GOLEM, TAGS.CONSTRUCT, TAGS.MECHANICAL],
     title: 'Golem Construct',
     description: 'An enormous stone golem blocks your path, ancient runes glowing across its massive frame. Each step shakes the ground beneath you.',
     choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiInfinity } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const INFINITY_HORRORS: DungeonEvent = {
   id: 'infinity-horrors',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Infinity Horrors',
   description: 'Beings from beyond infinity that defy comprehension!',
   choices: [

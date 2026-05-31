@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedTentacle } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABERRANT_TENTACLES: DungeonEvent = {
   id: 'aberrant-tentacles',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ABYSS],
   title: 'Aberrant Tentacles',
   description: 'Monstrous appendages from an unseen horror lash out!',
   choices: [

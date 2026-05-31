@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiNightSky } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STAR_EATER: DungeonEvent = {
   id: 'star-eater',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.COSMIC_ENV],
   title: 'Star Eater',
   description: 'A cosmic entity that devours suns. It hungers for light and heat, consuming them until only cold void remains.',
   choices: [

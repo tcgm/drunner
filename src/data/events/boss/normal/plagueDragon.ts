@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwampBat } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLAGUE_DRAGON: DungeonEvent = {
   id: 'plague-dragon',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.PLAGUE, TAGS.SWAMP, TAGS.POISON],
   title: 'Plague Dragon',
   description: 'A wyrm corrupted by disease. Its breath spreads pestilence, and flies swarm around its rotting form.',
   choices: [

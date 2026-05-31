@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract025 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PRIMORDIAL_TITANS: DungeonEvent = {
   id: 'primordial-titans',
   type: 'combat',
+  tags: [TAGS.EARTH, TAGS.TITAN, TAGS.COSMIC],
   title: 'Primordial Titans',
   description: 'Ancient beings that predate reality itself awaken!',
   choices: [

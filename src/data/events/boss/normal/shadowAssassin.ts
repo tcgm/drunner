@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiNinjaStar } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_ASSASSIN: DungeonEvent = {
     id: 'shadow-assassin',
     type: 'boss',
+    tags: [TAGS.HUMANOID, TAGS.SHADOW, TAGS.DUNGEON],
     title: 'Shadow Assassin',
     description: 'A figure materializes from the darkness, twin daggers gleaming. Their form flickers between shadow and substance, making them nearly impossible to track.',
     choices: [

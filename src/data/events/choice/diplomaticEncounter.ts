@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTwoCoins } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DIPLOMATIC_ENCOUNTER: DungeonEvent = {
   id: 'diplomatic-encounter',
   type: 'choice',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Diplomatic Encounter',
   description: 'Two rival dungeon factions are about to clash. Perhaps you can mediate... or profit.',
   choices: [

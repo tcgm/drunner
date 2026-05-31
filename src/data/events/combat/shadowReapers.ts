@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWingCloak } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_REAPERS: DungeonEvent = {
   id: 'shadow-reapers',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.SHADOW, TAGS.ABYSS],
   title: 'Shadow Reapers',
   description: 'Cloaked figures wielding scythes harvest souls!',
   choices: [

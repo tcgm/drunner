@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiGems } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const UNSTABLE_GEM_CACHE: DungeonEvent = {
     id: 'unstable-gem-cache',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.EARTH],
     title: 'Unstable Gem Cache',
     description: 'A cluster of volatile magical gems protrudes from the floor, radiating heat. They\'re worth a fortune - if you can extract them without triggering a rupture.',
     choices: [

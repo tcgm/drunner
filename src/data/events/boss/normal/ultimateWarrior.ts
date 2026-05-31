@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwordClash } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ULTIMATE_WARRIOR: DungeonEvent = {
   id: 'ultimate-warrior',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Ultimate Warrior',
   description: 'The greatest fighter who ever lived. Every combat technique perfected. Every weakness eliminated. Pure martial perfection.',
   choices: [

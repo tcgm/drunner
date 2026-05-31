@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBatWing } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VAMPIRE_LORD: DungeonEvent = {
   id: 'vampire-lord',
   type: 'boss',
+  tags: [TAGS.VAMPIRE, TAGS.UNDEAD, TAGS.BLOOD, TAGS.INFERNAL],
   title: 'Vampire Lord',
   description: 'An elegant figure in crimson robes watches you with ancient eyes. His fangs glint as he smiles coldly, confident in his immortality.',
   choices: [

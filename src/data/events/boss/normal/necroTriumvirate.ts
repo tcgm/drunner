@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSkullSlices } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NECRO_TRIUMVIRATE: DungeonEvent = {
   id: 'necro-triumvirate',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.UNDEAD, TAGS.ARCANE, TAGS.CULTIST],
   title: 'Necro-Triumvirate',
   description: 'Three liches who share a single phylactery. They coordinate perfectly, complementing each other\'s spells in deadly combinations.',
   choices: [

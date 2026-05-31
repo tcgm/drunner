@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const COSMIC_DRAGON: DungeonEvent = {
   id: 'cosmic-dragon',
   type: 'boss',
+  tags: [TAGS.DRAGON, TAGS.COSMIC, TAGS.ABERRATION],
   title: 'Cosmic Dragon',
   description: 'A wyrm born from the stars themselves. It breathes galaxies and bleeds starlight. Reality bends in its presence.',
   choices: [

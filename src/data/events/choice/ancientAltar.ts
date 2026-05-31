@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTemplarShield } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANCIENT_ALTAR: DungeonEvent = {
   id: 'ancient-altar',
   type: 'choice',
+  tags: [TAGS.RUINS, TAGS.ARCANE],
   title: 'Ancient Altar',
   description: 'An altar dedicated to a forgotten god. It demands an offering.',
   choices: [

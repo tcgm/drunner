@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDaemonSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ANCIENT_LICH: DungeonEvent = {
   id: 'ancient-lich',
   type: 'boss',
+  tags: [TAGS.LICH, TAGS.UNDEAD, TAGS.ARCANE],
   title: 'Ancient Lich',
   description: 'A skeletal sorcerer crowned in dark metal hovers before you. Necromantic power radiates from its phylactery.',
   choices: [

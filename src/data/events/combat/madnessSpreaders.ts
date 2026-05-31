@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSkullCrack } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MADNESS_SPREADERS: DungeonEvent = {
   id: 'madness-spreaders',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.SHADOW],
   title: 'Madness Spreaders',
   description: 'Beings that infect minds with insanity!',
   choices: [

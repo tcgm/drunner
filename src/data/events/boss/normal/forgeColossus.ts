@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSmokingOrb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FORGE_COLOSSUS: DungeonEvent = {
   id: 'forge-colossus',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.MECHANICAL, TAGS.TITAN, TAGS.FIRE],
   title: 'Forge Colossus',
   description: 'A living foundry that shapes metal with its bare hands. It reforges itself constantly, adapting to counter every attack.',
   choices: [

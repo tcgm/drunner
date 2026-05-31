@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTroll } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ROTTEN_TROLL: DungeonEvent = {
   id: 'rotten-troll',
   type: 'boss',
+  tags: [TAGS.TROLL, TAGS.UNDEAD, TAGS.SWAMP, TAGS.CAVE],
   title: 'Rotten Troll',
   description: 'A massive troll covered in festering wounds blocks your path. The stench of decay fills the chamber as it roars with primal rage.',
   choices: [

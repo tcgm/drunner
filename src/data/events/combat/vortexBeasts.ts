@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiVortex } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VORTEX_BEASTS: DungeonEvent = {
   id: 'vortex-beasts',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ELEMENTAL],
   title: 'Vortex Beasts',
   description: 'Creatures made of swirling energy tear at reality!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiImp } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DUNGEON_GREMLINS: DungeonEvent = {
   id: 'dungeon-gremlins',
   type: 'combat',
+  tags: [TAGS.HUMANOID, TAGS.GOBLIN, TAGS.DUNGEON],
   title: 'Dungeon Gremlins',
   description: 'Mischievous creatures throw rocks and screech loudly!',
   choices: [

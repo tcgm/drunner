@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFloatingPlatforms } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DIMENSION_RIPPER: DungeonEvent = {
   id: 'dimension-ripper',
   type: 'boss',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Dimension Ripper',
   description: 'A creature that exists in multiple dimensions simultaneously. It attacks from angles that don\'t exist in normal space.',
   choices: [

@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiHotSurface } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const HOT_SPRING: DungeonEvent = {
     id: 'hot-spring',
     type: 'rest',
+    tags: [TAGS.VOLCANIC, TAGS.AQUATIC],
     title: 'Underground Hot Spring',
     description: 'Geothermal heat warms a natural pool of crystal-clear water. Steam rises in lazy spirals, and the air smells of minerals.',
     choices: [

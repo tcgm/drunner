@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBoilingBubbles } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MAGMA_TITANS: DungeonEvent = {
   id: 'magma-titans',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.FIRE, TAGS.VOLCANIC, TAGS.TITAN],
   title: 'Magma Titans',
   description: 'Giants made of molten rock wade through pools of lava!',
   choices: [

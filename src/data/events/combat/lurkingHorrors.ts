@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBeastEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LURKING_HORRORS: DungeonEvent = {
   id: 'lurking-horrors',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.SHADOW, TAGS.CAVE, TAGS.ABYSS],
   title: 'Lurking Horrors',
   description: 'Unseen predators attack from dark corners!',
   choices: [

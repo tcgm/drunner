@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpiderBot } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GIANT_SPIDER_QUEEN: DungeonEvent = {
   id: 'giant-spider-queen',
   type: 'boss',
+  tags: [TAGS.SPIDER, TAGS.BEAST],
   title: 'Giant Spider Queen',
   description: 'An enormous arachnid descends from the ceiling, her chitinous body gleaming in the dim light. Webs cover every surface.',
   choices: [

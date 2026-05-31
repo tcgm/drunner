@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFlame } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SUPERNOVA_BEASTS: DungeonEvent = {
   id: 'supernova-beasts',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.FIRE, TAGS.COSMIC_ENV],
   title: 'Supernova Beasts',
   description: 'Creatures containing stellar cores ready to explode!',
   choices: [

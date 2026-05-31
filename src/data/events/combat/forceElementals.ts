@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPunchBlast } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FORCE_ELEMENTALS: DungeonEvent = {
   id: 'force-elementals',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.ARCANE, TAGS.ABYSS],
   title: 'Force Elementals',
   description: 'Beings of pure kinetic energy slam into you!',
   choices: [

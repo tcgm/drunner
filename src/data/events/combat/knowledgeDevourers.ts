@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBurningBook } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const KNOWLEDGE_DEVOURERS: DungeonEvent = {
   id: 'knowledge-devourers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.ABERRATION, TAGS.ARCANE],
   title: 'Knowledge Devourers',
   description: 'Beings that consume memories and knowledge attack your mind!',
   choices: [

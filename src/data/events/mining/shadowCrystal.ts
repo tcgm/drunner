@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiNightVision } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHADOW_CRYSTAL: DungeonEvent = {
     id: 'shadow-crystal',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.SHADOW, TAGS.ABYSS],
     title: 'Shadow Crystal Deposit',
     description: 'Clusters of pitch-black crystals grow from the ceiling and walls, absorbing torchlight around them. The area near them is oddly, deeply dark.',
     choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiPsychicWaves } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MIND_FLAYERS: DungeonEvent = {
   id: 'mind-flayers',
   type: 'combat',
+  tags: [TAGS.ABERRATION, TAGS.COSMIC, TAGS.ARCANE, TAGS.ABYSS],
   title: 'Mind Flayers',
   description: 'Psychic predators assault your thoughts and memories!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWhirlwind } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STORM_SHADES: DungeonEvent = {
   id: 'storm-shades',
   type: 'combat',
+  tags: [TAGS.SHADOW, TAGS.LIGHTNING, TAGS.ETHEREAL, TAGS.STORM],
   title: 'Storm Shades',
   description: 'Beings of crackling electricity dart through the air!',
   choices: [

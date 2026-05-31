@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFrozenOrb } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ICE_BURST_GLYPH: DungeonEvent = {
     id: 'ice-burst-glyph',
     type: 'trap',
+    tags: [TAGS.ICE, TAGS.ARCANE, TAGS.DUNGEON],
     title: 'Ice Burst Glyph',
     description: 'A shimmering blue rune is inscribed on the floor. The temperature drops sharply as you approach. Someone didn\'t want visitors.',
     choices: [

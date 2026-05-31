@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBroadsword } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PHANTOM_LEGION: DungeonEvent = {
   id: 'phantom-legion',
   type: 'boss',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Phantom Legion',
   description: 'Dozens of ghostly warriors materialize, an entire fallen army risen again. They move in perfect formation, spectral weapons gleaming.',
   choices: [

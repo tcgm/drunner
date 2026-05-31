@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDoubleDragon } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const TWIN_HEADED_DRAKE: DungeonEvent = {
   id: 'twin-headed-drake',
   type: 'boss',
+  tags: [TAGS.DRAKE, TAGS.DRAGON, TAGS.VOLCANIC],
   title: 'Twin-Headed Drake',
   description: 'A mutant dragon with two heads constantly bickering with each other. One breathes fire, the other frost. Despite their quarreling, they fight as one beast.',
   choices: [

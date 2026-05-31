@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiMineWagon } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ORE_DEPOSIT: DungeonEvent = {
     id: 'ore-deposit',
     type: 'mining',
+    tags: [TAGS.CAVE, TAGS.EARTH, TAGS.UNDERGROUND],
     title: 'Rich Ore Deposit',
     description: 'A thick seam of metallic ore glints in the torchlight. Someone has been here before - rusted mining tools lie nearby.',
     choices: [

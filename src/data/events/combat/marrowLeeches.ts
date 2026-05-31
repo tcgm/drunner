@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBoneKnife } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MARROW_LEECHES: DungeonEvent = {
   id: 'marrow-leeches',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.INSECT, TAGS.BLOOD, TAGS.CAVE],
   title: 'Marrow Leeches',
   description: 'Parasites that drain essence from bones!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiMineExplosion } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const EXPLODING_CORPSES: DungeonEvent = {
   id: 'exploding-corpses',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.ZOMBIE],
   title: 'Exploding Corpses',
   description: 'Bloated bodies lurch forward, ready to detonate!',
   choices: [

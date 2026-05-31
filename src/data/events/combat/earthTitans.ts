@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiStonePile } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const EARTH_TITANS: DungeonEvent = {
   id: 'earth-titans',
   type: 'combat',
+  tags: [TAGS.ELEMENTAL, TAGS.EARTH, TAGS.TITAN],
   title: 'Earth Titans',
   description: 'Massive stone behemoths shake the ground with every step!',
   choices: [

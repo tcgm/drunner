@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiWerewolf } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const LYCANTHROPES: DungeonEvent = {
   id: 'lycanthropes',
   type: 'combat',
+  tags: [TAGS.LYCANTHROPE, TAGS.BEAST, TAGS.WOLF, TAGS.HUMANOID, TAGS.FOREST],
   title: 'Lycanthropes',
   description: 'Cursed shapeshifters in beast form attack with savage fury!',
   choices: [

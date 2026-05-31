@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiChainMail } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const FALLEN_PALADINS: DungeonEvent = {
   id: 'fallen-paladins',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.INFERNAL, TAGS.KNIGHT],
   title: 'Fallen Paladins',
   description: 'Once-holy warriors now serve darkness, wielding corrupted blades!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiDeathSkull } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NECROMANCER_ADEPT: DungeonEvent = {
   id: 'necromancer-adept',
   type: 'boss',
+  tags: [TAGS.HUMANOID, TAGS.UNDEAD, TAGS.ARCANE, TAGS.CULTIST],
   title: 'Necromancer Adept',
   description: 'A robed figure raises skeletal minions from the floor. Dark energy crackles around their staff as they chant forbidden words.',
   choices: [

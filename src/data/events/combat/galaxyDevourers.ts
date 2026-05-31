@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGalaxy } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const GALAXY_DEVOURERS: DungeonEvent = {
   id: 'galaxy-devourers',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.COSMIC_ENV],
   title: 'Galaxy Devourers',
   description: 'Cosmic horrors that consume entire star systems!',
   choices: [

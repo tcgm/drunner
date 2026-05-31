@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownedExplosion } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_EMPEROR: DungeonEvent = {
   id: 'void-emperor',
   type: 'boss',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABYSS],
   title: 'Void Emperor',
   description: 'A being that exists between existence and non-existence. It seeks to unmake reality itself, spreading entropy and nothingness.',
   choices: [

@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiLotus } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const MEDITATION_POOL: DungeonEvent = {
     id: 'meditation-pool',
     type: 'rest',
+    tags: [TAGS.RUINS, TAGS.ARCANE],
     title: 'Meditation Pool',
     description: 'A still, mirror-black pool sits in a perfectly circular chamber. The air hums with latent magical energy. This is a place of quiet power.',
     choices: [

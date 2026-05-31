@@ -1,9 +1,11 @@
 import type { DungeonEvent} from '@/types'
 import { GiSpikedDragonHead } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const VOID_WYRM: DungeonEvent = {
   id: 'void-wyrm',
   type: 'boss',
+  tags: [TAGS.VOID, TAGS.DRAGON, TAGS.ABYSS],
   title: 'Void Wyrm',
   description: 'A dragon that has become one with the abyss. Its breath doesn\'t burn - it erases, removing things from existence entirely.',
   choices: [

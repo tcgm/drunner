@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikedArmor } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const THORNED_WARRIORS: DungeonEvent = {
   id: 'thorned-warriors',
   type: 'combat',
+  tags: [TAGS.PLANT, TAGS.FOREST, TAGS.BEAST],
   title: 'Thorned Warriors',
   description: 'Armored foes covered in razor-sharp thorns charge forward!',
   choices: [

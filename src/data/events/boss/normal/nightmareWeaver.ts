@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiBleedingEye } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NIGHTMARE_WEAVER: DungeonEvent = {
   id: 'nightmare-weaver',
   type: 'boss',
+  tags: [TAGS.NIGHTMARE, TAGS.SHADOW, TAGS.ARCANE, TAGS.ETHEREAL],
   title: 'Nightmare Weaver',
   description: 'An entity that pulls your worst fears from your mind and makes them real. Fighting your nightmares is never easy.',
   choices: [

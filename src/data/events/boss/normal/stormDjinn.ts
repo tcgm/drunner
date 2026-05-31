@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTornado } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const STORM_DJINN: DungeonEvent = {
   id: 'storm-djinn',
   type: 'boss',
+  tags: [TAGS.DJINN, TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.STORM],
   title: 'Storm Djinn',
   description: 'A being of living wind and lightning materializes from a swirling vortex. Thunder crashes with each gesture as it regards you with ancient eyes.',
   choices: [

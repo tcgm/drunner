@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract066 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABSOLUTE_DESTROYERS: DungeonEvent = {
   id: 'absolute-destroyers',
   type: 'combat',
+  tags: [TAGS.VOID, TAGS.COSMIC, TAGS.ABERRATION],
   title: 'Absolute Destroyers',
   description: 'Beings whose sole purpose is total annihilation!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrownOfThorns } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PAIN_LICH: DungeonEvent = {
   id: 'pain-lich',
   type: 'combat',
+  tags: [TAGS.LICH, TAGS.UNDEAD, TAGS.INFERNAL],
   title: 'Pain Lich',
   description: 'An undead sorcerer sustained by suffering attacks with agony magic!',
   choices: [

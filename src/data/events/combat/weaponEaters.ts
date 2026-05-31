@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSwordBreak } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const WEAPON_EATERS: DungeonEvent = {
   id: 'weapon-eaters',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.ARCANE, TAGS.DUNGEON],
   title: 'Weapon Eaters',
   description: 'Rust monsters that devour metal equipment!',
   choices: [

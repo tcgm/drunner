@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiFireBreath } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PLASMA_DRAGONS: DungeonEvent = {
   id: 'plasma-dragons',
   type: 'combat',
+  tags: [TAGS.DRAGON, TAGS.ELEMENTAL, TAGS.LIGHTNING, TAGS.ARCANE],
   title: 'Plasma Dragons',
   description: 'Dragons that breathe superheated plasma incinerate everything!',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiGlowingHands } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CHAOS_SHAPER: DungeonEvent = {
   id: 'chaos-shaper',
   type: 'boss',
+  tags: [TAGS.CHAOS, TAGS.ARCANE, TAGS.VOID],
   title: 'Chaos Shaper',
   description: 'A sorcerer who has embraced pure chaos magic. Reality warps unpredictably around them. Anything could happen.',
   choices: [

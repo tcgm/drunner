@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiRat } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CRYPT_VERMIN: DungeonEvent = {
   id: 'crypt-vermin',
   type: 'combat',
+  tags: [TAGS.INSECT, TAGS.UNDEAD, TAGS.DUNGEON, TAGS.CAVE],
   title: 'Crypt Vermin',
   description: 'Diseased rats pour from burial alcoves, their eyes glowing red!',
   choices: [

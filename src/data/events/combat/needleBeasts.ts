@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikesHalf } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const NEEDLE_BEASTS: DungeonEvent = {
   id: 'needle-beasts',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.CAVE, TAGS.INSECT],
   title: 'Needle Beasts',
   description: 'Creatures covered in thousands of stabbing needles!',
   choices: [

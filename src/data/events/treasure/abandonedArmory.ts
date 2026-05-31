@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbdominalArmor } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const ABANDONED_ARMORY: DungeonEvent = {
   id: 'abandoned-armory',
   type: 'treasure',
+  tags: [TAGS.DUNGEON, TAGS.RUINS],
   title: 'Abandoned Armory',
   description: 'An old armory stands before you, weapons and armor scattered about.',
   choices: [

@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiAbstract112 } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PARADOX_ENTITIES: DungeonEvent = {
   id: 'paradox-entities',
   type: 'combat',
+  tags: [TAGS.COSMIC, TAGS.VOID, TAGS.ABERRATION],
   title: 'Paradox Entities',
   description: 'Impossible beings that exist and do not exist!',
   choices: [

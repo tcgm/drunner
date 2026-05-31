@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiEvilLove } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SUCCUBI_THRALLS: DungeonEvent = {
   id: 'succubi-thralls',
   type: 'combat',
+  tags: [TAGS.DEMON, TAGS.DEVIL, TAGS.INFERNAL, TAGS.HUMANOID],
   title: 'Succubi Thralls',
   description: 'Charmed servants of succubi attack with desperate devotion!',
   choices: [

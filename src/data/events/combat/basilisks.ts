@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSeaSerpent } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BASILISKS: DungeonEvent = {
   id: 'basilisks',
   type: 'combat',
+  tags: [TAGS.BEAST, TAGS.SNAKE, TAGS.CAVE],
   title: 'Basilisks',
   description: 'Serpentine creatures with petrifying gazes slither toward you!',
   choices: [

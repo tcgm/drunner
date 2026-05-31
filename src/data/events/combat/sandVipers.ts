@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSandSnake } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SAND_VIPERS: DungeonEvent = {
   id: 'sand-vipers',
   type: 'combat',
+  tags: [TAGS.SNAKE, TAGS.BEAST, TAGS.EARTH],
   title: 'Sand Vipers',
   description: 'Camouflaged serpents strike from dusty corners!',
   choices: [

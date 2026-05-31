@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTwoCoins } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CURSED_TREASURERS: DungeonEvent = {
   id: 'cursed-treasurers',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.HUMANOID, TAGS.DUNGEON],
   title: 'Cursed Treasurers',
   description: 'Undead guardians of wealth attack with coin-studded flails!',
   choices: [

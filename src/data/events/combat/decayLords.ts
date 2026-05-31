@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiNuclearWaste } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const DECAY_LORDS: DungeonEvent = {
   id: 'decay-lords',
   type: 'combat',
+  tags: [TAGS.UNDEAD, TAGS.PLAGUE, TAGS.SWAMP],
   title: 'Decay Lords',
   description: 'Masters of entropy accelerate the death of all things!',
   choices: [

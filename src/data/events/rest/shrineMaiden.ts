@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiTempleGate } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const SHRINE_MAIDEN: DungeonEvent = {
   id: 'shrine-maiden',
   type: 'rest',
+  tags: [TAGS.CELESTIAL, TAGS.SPIRIT, TAGS.ARCANE],
   title: 'Shrine of the Fallen',
   description: 'A serene shrine glows with divine light. A maiden offers to revive your fallen companions.',
   choices: [

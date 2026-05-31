@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiSpikesInit } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const PAIN_CONSTRUCTS: DungeonEvent = {
   id: 'pain-constructs',
   type: 'combat',
+  tags: [TAGS.CONSTRUCT, TAGS.DEMON, TAGS.INFERNAL],
   title: 'Pain Constructs',
   description: 'Living torture devices seek to inflict maximum agony!',
   choices: [

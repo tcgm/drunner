@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiChainedHeart } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BOUND_SOULS: DungeonEvent = {
   id: 'bound-souls',
   type: 'combat',
+  tags: [TAGS.SPIRIT, TAGS.UNDEAD, TAGS.ETHEREAL],
   title: 'Bound Souls',
   description: 'Tortured spirits chained to the dungeon walls attack in anguish!',
   choices: [

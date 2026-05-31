@@ -1,9 +1,11 @@
 import type { DungeonEvent } from '@/types'
 import { GiCrackedShield } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const BULWARK_TITAN: DungeonEvent = {
   id: 'bulwark-titan',
   type: 'boss',
+  tags: [TAGS.CONSTRUCT, TAGS.TITAN, TAGS.MECHANICAL],
   title: 'Bulwark Titan',
   description: 'An immense construct designed for absolute defense. Its shield has never been breached, its armor never dented.',
   choices: [

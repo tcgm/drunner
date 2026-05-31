@@ -1,9 +1,11 @@
-﻿import type { DungeonEvent } from '@/types'
+import type { DungeonEvent } from '@/types'
 import { GiHealing } from 'react-icons/gi'
+import { TAGS } from '@data/tags'
 
 export const CURSE_LIFTER: DungeonEvent = {
     id: 'curse-lifter',
     type: 'merchant',
+    tags: [TAGS.ARCANE, TAGS.HUMANOID, TAGS.DUNGEON],
     title: 'Curse Lifter',
     description: 'A solemn cleric offers his services to weary adventurers. Wounds, ailments, or spiritual burdens - he says he can handle them all, for a price.',
     choices: [
