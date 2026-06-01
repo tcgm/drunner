@@ -89,7 +89,7 @@ export function PartySetupSlots({
         ) : (
           // Desktop Layout - Header in grid, slots horizontal
           <>
-            <SimpleGrid className="party-setup-slots-desktop-header" columns={3} w="full" flexShrink={0} gap={4} alignItems="center">
+            <SimpleGrid className="party-setup-slots-desktop-header" columns={3} w="full" flexShrink={0} gap={1} alignItems="center">
               <Heading size="sm" color="orange.300">
                 Your Party
               </Heading>

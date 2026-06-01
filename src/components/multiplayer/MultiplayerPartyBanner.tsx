@@ -7,7 +7,7 @@
  */
 
 import { Box, HStack, VStack, Text, Badge, Icon, Tooltip } from '@chakra-ui/react'
-import { GiPerson } from 'react-icons/gi'
+import { GiCrossedSwords, GiPerson, GiSwordsEmblem } from 'react-icons/gi'
 import { useMultiplayerStore, useSessionStore } from '@/multiplayer'
 import { PLAYER_COLORS, calculateSlotOwnership, MULTIPLAYER_CONFIG } from '@/config/multiplayerConfig'
 
@@ -35,12 +35,10 @@ export function MultiplayerPartyBanner({ localPlayerId }: MultiplayerPartyBanner
       {/* Header */}
       <HStack spacing={2} mb={2}>
         <Box as="span" color="blue.400" fontSize="1rem" lineHeight={1} display="flex" alignItems="center">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="1em" height="1em">
-            <path d="M6.5 2L2 6.5l2.5 2.5-4 4L2 15l4-4 2.5 2.5L13 9zm11 0l4.5 4.5-2.5 2.5 4 4L22 15l-4-4-2.5 2.5L11 9z" />
-          </svg>
+          <GiSwordsEmblem />
         </Box>
         <Text color="blue.300" fontSize="xs" fontWeight="bold" letterSpacing="wide">
-          MULTIPLAYER PARTY — {players.length} PLAYER{players.length !== 1 ? 'S' : ''}
+          MULTIPLAYER PARTY: {players.length} PLAYER{players.length !== 1 ? 'S' : ''}
         </Text>
       </HStack>
 
