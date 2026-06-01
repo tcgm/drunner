@@ -199,6 +199,50 @@ io.on('connection', (socket) => {
     socket.to(code).emit('run-stats-sync', { run })
   })
 
+  // ── Any → Host: cast a vote for an event choice ───────────────────────────
+  socket.on('cast-vote', ({ code, choiceIndex }) => {
+    const room = rooms.get(code)
+    if (!room) return
+    io.to(room.hostId).emit('cast-vote', { playerId: socket.id, choiceIndex })
+  })
+
+  // ── Host → All: broadcast current vote tally ─────────────────────────────
+  socket.on('vote-update', ({ code, votes, totalPlayers }) => {
+    socket.to(code).emit('vote-update', { votes, totalPlayers })
+  })
+
+  // ── Host → All: start loot draft at run end ───────────────────────────────
+  socket.on('draft-start', ({ code, pool, goldByPlayer, heroReturnsByPlayer, order, run }) => {
+    socket.to(code).emit('draft-start', { pool, goldByPlayer, heroReturnsByPlayer, order, run })
+  })
+
+  // ── Any → Host: pick an item from the draft pool ─────────────────────────
+  socket.on('draft-pick', ({ code, itemIndex }) => {
+    const room = rooms.get(code)
+    if (!room) return
+    io.to(room.hostId).emit('draft-pick', { playerId: socket.id, itemIndex })
+  })
+
+  // ── Host → All: updated draft state after each pick ──────────────────────
+  socket.on('draft-update', ({ code, pool, picks, currentPickerIndex, order }) => {
+    socket.to(code).emit('draft-update', { pool, picks, currentPickerIndex, order })
+  })
+
+  // ── Host → All: draft complete — send personalised run-ended to each guest ─
+  socket.on('draft-complete', ({ code, heroReturnsByPlayer, lootByPlayer, goldByPlayer, run }) => {
+    const room = rooms.get(code)
+    if (!room) return
+    for (const player of room.players) {
+      if (player.id === room.hostId) continue
+      io.to(player.id).emit('run-ended', {
+        heroReturns: heroReturnsByPlayer[player.id] ?? {},
+        loot:        lootByPlayer[player.id]        ?? [],
+        gold:        goldByPlayer[player.id]        ?? 0,
+        run,
+      })
+    }
+  })
+
   // ── Disconnect cleanup ────────────────────────────────────────────────────
   socket.on('disconnect', () => {
     console.log(`[Server] Client disconnected: ${socket.id}`)

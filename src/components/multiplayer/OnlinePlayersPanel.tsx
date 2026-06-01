@@ -2,8 +2,11 @@
  * OnlinePlayersPanel
  *
  * Shown in TownHubScreen when a multiplayer session is active.
- * Lists connected players with their hero roster previews so you can
+ * Lists connected players with their active party previews so you can
  * see your party-mates at a glance.
+ *
+ * Guests also see a slot-picker for their own allocated party slots so they
+ * can choose which heroes to bring into the dungeon.
  */
 
 import { useState } from 'react'
@@ -19,12 +22,16 @@ import {
   Tooltip,
   IconButton,
   Collapse,
+  Button,
+  Select,
 } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import { GiSwordsEmblem, GiCastle, GiPerson } from 'react-icons/gi'
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi'
-import { useMultiplayerStore, useSessionStore } from '@/multiplayer'
+import { useMultiplayerStore, useSessionStore, usePartySync } from '@/multiplayer'
+import { useGameStore } from '@/core/gameStore'
+import { getSocket } from '@/multiplayer/socket'
 import { PLAYER_COLORS } from '@/config/multiplayerConfig'
 
 const LOCATION_LABELS: Record<string, string> = {
@@ -38,7 +45,20 @@ export function OnlinePlayersPanel() {
   const players = useMultiplayerStore((s) => s.players)
   const role = useMultiplayerStore((s) => s.role)
   const playerProfiles = useSessionStore((s) => s.playerProfiles)
+  const slotOwnershipByIndex = useSessionStore((s) => s.slotOwnershipByIndex)
+  const slotAssignments      = useSessionStore((s) => s.slotAssignments)
+  const heroRoster = useGameStore((s) => s.heroRoster)
+  const { claimSlot, releaseSlot } = usePartySync()
   const [isExpanded, setIsExpanded] = useState(true)
+
+  const mySocketId = getSocket()?.id ?? ''
+  // Player index of the local client (0 = host, 1 = first guest, …)
+  const myPlayerIndex = players.findIndex((p) => p.id === mySocketId)
+  // Slot indices the local player is responsible for filling
+  const mySlotIndices = slotOwnershipByIndex.reduce<number[]>((acc, owner, slotIdx) => {
+    if (owner === myPlayerIndex) acc.push(slotIdx)
+    return acc
+  }, [])
 
   if (!role || players.length <= 1) return null
 
@@ -175,6 +195,98 @@ export function OnlinePlayersPanel() {
             )
           })}
         </VStack>
+
+        {/* ── My slot picker (all players) ── */}
+        {role !== null && mySlotIndices.length > 0 && (
+          <>
+            <Divider borderColor="blue.900" mt={2} mb={2} />
+            <Text color="blue.300" fontWeight="bold" fontSize="xs" letterSpacing="wide" mb={2}>
+              YOUR DUNGEON SLOTS ({mySlotIndices.length})
+            </Text>
+            <VStack spacing={2} align="stretch">
+              {mySlotIndices.map((slotIdx) => {
+                const assigned = slotAssignments[slotIdx]
+                return (
+                  <HStack key={slotIdx} spacing={2}>
+                    <Text color="gray.400" fontSize="xs" minW="40px">
+                      Slot {slotIdx + 1}
+                    </Text>
+                    {assigned ? (
+                      <HStack
+                        flex={1}
+                        bg="blue.900"
+                        borderRadius="md"
+                        px={2}
+                        py={1}
+                        border="1px solid"
+                        borderColor="blue.700"
+                        justify="space-between"
+                      >
+                        <HStack spacing={1}>
+                          <Icon
+                            as={
+                              ((GameIcons as Record<string, IconType>)[
+                                heroRoster.find((h) => h.id === assigned.heroSourceId)?.class.icon ?? ''
+                              ] ?? GameIcons.GiSwordman) as IconType
+                            }
+                            color="blue.300"
+                            boxSize={4}
+                          />
+                          <Text color="blue.200" fontSize="xs" noOfLines={1}>
+                            {assigned.heroSnapshot.name}
+                          </Text>
+                          <Text color="blue.400" fontSize="2xs">
+                            Lv.{assigned.heroSnapshot.level}
+                          </Text>
+                        </HStack>
+                        <Tooltip label="Remove from slot" placement="top" hasArrow>
+                          <IconButton
+                            aria-label="Remove hero"
+                            icon={<Icon as={GameIcons.GiCancel} />}
+                            size="xs"
+                            variant="ghost"
+                            colorScheme="red"
+                            onClick={() => releaseSlot(slotIdx)}
+                          />
+                        </Tooltip>
+                      </HStack>
+                    ) : (
+                      <Select
+                        flex={1}
+                        size="xs"
+                        bg="gray.800"
+                        borderColor="gray.600"
+                        color="gray.300"
+                        placeholder="— pick a hero —"
+                        value=""
+                        onChange={(e) => {
+                          const heroId = e.target.value
+                          if (!heroId) return
+                          const hero = heroRoster.find((h) => h.id === heroId)
+                          if (!hero) return
+                          claimSlot(slotIdx, hero)
+                        }}
+                      >
+                        {heroRoster
+                          .filter((h) => {
+                            // Exclude heroes already assigned to a *different* slot
+                            return !Object.entries(slotAssignments).some(
+                              ([k, a]) => a?.heroSourceId === h.id && Number(k) !== slotIdx
+                            )
+                          })
+                          .map((h) => (
+                            <option key={h.id} value={h.id}>
+                              {h.name} ({h.class.name} Lv.{h.level})
+                            </option>
+                          ))}
+                      </Select>
+                    )}
+                  </HStack>
+                )
+              })}
+            </VStack>
+          </>
+        )}
       </Collapse>
     </Box>
   )

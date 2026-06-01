@@ -10,6 +10,7 @@ import { Box, VStack, HStack, Text, useToast, Icon, IconButton, Modal, ModalOver
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import type { DungeonEvent, Hero, BossCombatState } from '@/types'
+import { useSessionStore } from '@/multiplayer'
 import * as GameIcons from 'react-icons/gi'
 import { GiSkullCrossedBones, GiSwordman, GiScrollUnfurled } from 'react-icons/gi'
 import BossDisplay from './BossDisplay'
@@ -44,6 +45,10 @@ interface BossCombatScreenProps {
     onVictory: () => void
     onDefeat: () => void
     onFlee: () => void
+    /** IDs of heroes owned by the local player (guests only). When provided, actions on other heroes are disabled. */
+    myHeroIds?: string[]
+    /** Callback for guests to submit an action for their hero. Host calls handleHeroAction directly. */
+    onGuestCombatAction?: (heroId: string, action: string) => void
 }
 
 export interface CombatLogEntry {
@@ -61,7 +66,9 @@ export default function BossCombatScreen({
     party,
     onVictory,
     onDefeat,
-    onFlee
+    onFlee,
+    myHeroIds,
+    onGuestCombatAction,
 }: BossCombatScreenProps) {
     const [combatState, setCombatState] = useState<BossCombatState>(event.combatState!)
     const [combatLog, setCombatLog] = useState<CombatLogEntry[]>([])
@@ -287,7 +294,26 @@ export default function BossCombatScreen({
         }
     }, [event.combatState?.currentHp])
 
-    const handleHeroAction = async (heroId: string, action: string) => {
+    // Host: auto-execute queued actions from guests when it's their hero's turn
+    const combatQueue = useSessionStore((s) => s.combatQueue)
+    const clearCombatQueueEntry = useSessionStore((s) => s.clearCombatQueueEntry)
+    useEffect(() => {
+        if (onGuestCombatAction) return // guests don't process the queue
+        const current = getCurrentCombatant(combatState)
+        if (!current || isProcessing) return
+        const queuedAction = combatQueue[current.id]
+        if (queuedAction) {
+            clearCombatQueueEntry(current.id)
+            handleHeroAction(current.id, queuedAction)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [combatState.currentTurnIndex, combatQueue])
+        // Guests with onGuestCombatAction send the action to the host
+        if (onGuestCombatAction) {
+            onGuestCombatAction(heroId, action)
+            return
+        }
+
         const manager = managerRef.current
         if (!manager || manager.isCurrentlyProcessing() || manager.getStatus() !== 'active') return
 
@@ -763,6 +789,7 @@ export default function BossCombatScreen({
                             onAction={handleHeroAction}
                             onEndTurn={handleEndTurn}
                             onFlee={onFlee}
+                            myHeroIds={myHeroIds}
                         />
                     </Box>
                 </VStack>
@@ -786,6 +813,7 @@ export default function BossCombatScreen({
                             onAction={handleHeroAction}
                             onEndTurn={handleEndTurn}
                             onFlee={onFlee}
+                            myHeroIds={myHeroIds}
                         />
                     </Box>
 

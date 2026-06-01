@@ -36,7 +36,7 @@ export function usePartySync() {
   const roomCode  = useMultiplayerStore((s) => s.roomCode)
   const players   = useMultiplayerStore((s) => s.players)
 
-  const heroRoster = useGameStore((s) => s.heroRoster)
+  const party      = useGameStore((s) => s.party)
   const bankGold   = useGameStore((s) => s.bankGold)
 
   const initSlotOwnership    = useSessionStore((s) => s.initSlotOwnership)
@@ -70,13 +70,15 @@ export function usePartySync() {
     const profile: PlayerProfile = {
       playerId:          socket.id,
       playerName:        useMultiplayerStore.getState().localPlayerName,
-      heroRosterPreview: heroRoster.map((h) => ({
-        id:        h.id,
-        name:      h.name,
-        className: h.class.name,
-        classIcon: h.class.icon,
-        level:     h.level,
-      })),
+      heroRosterPreview: party
+        .filter((h): h is import('@/types').Hero => h !== null)
+        .map((h) => ({
+          id:        h.id,
+          name:      h.name,
+          className: h.class.name,
+          classIcon: h.class.icon,
+          level:     h.level,
+        })),
       bankGold,
       currentLocation: 'town',
     }
@@ -88,7 +90,7 @@ export function usePartySync() {
     // Store own profile locally — server only relays to others, not back to sender
     updatePlayerProfile(socket.id, profile)
     socket.emit('broadcast-profile', { code: roomCode, profile })
-  }, [role, roomCode, heroRoster, bankGold, updatePlayerProfile])
+  }, [role, roomCode, party, bankGold, updatePlayerProfile])
 
   // ── Re-broadcast own profile when a peer asks for it ─────────────────────
   // This fires when a new player joins and requests profiles from existing players.
@@ -241,34 +243,74 @@ export function usePartySync() {
     }
   }, [role, roomCode, setSlotAssignments, updatePlayerProfile])
 
-  // ── Guest helpers exposed to party-setup UI ───────────────────────────────
+  // ── Slot helpers exposed to party-setup UI ─────────────────────────────
   const claimSlot = useCallback(
     (slotIndex: number, hero: Hero) => {
-      if (role !== 'guest' || !roomCode) return
-      const socket = getSocket()
-      socket.emit('claim-slot', {
-        code:         roomCode,
-        slotIndex,
-        heroSnapshot: hero,
-        heroSourceId: hero.id,
-      })
+      if (!roomCode) return
+
+      if (role === 'host') {
+        const socket = getSocket()
+        // Clear whatever is in this slot first, then place the new hero
+        useGameStore.getState().clearGuestHeroAtSlot(slotIndex)
+        useGameStore.getState().setGuestHeroAtSlot(hero, slotIndex)
+        const assignment: SlotAssignment = {
+          playerId:      socket.id ?? 'host',
+          playerName:    useMultiplayerStore.getState().localPlayerName,
+          heroSnapshot:  hero,
+          heroSourceId:  hero.id,
+        }
+        setSlotAssignment(slotIndex, assignment)
+        // Broadcast updated assignments to guests
+        const updatedAssignments = {
+          ...useSessionStore.getState().slotAssignments,
+          [slotIndex]: assignment,
+        }
+        socket.emit('slot-assignments-update', { code: roomCode, assignments: updatedAssignments })
+        return
+      }
+
+      if (role === 'guest') {
+        const socket = getSocket()
+        socket.emit('claim-slot', {
+          code:         roomCode,
+          slotIndex,
+          heroSnapshot: hero,
+          heroSourceId: hero.id,
+        })
+      }
     },
-    [role, roomCode],
+    [role, roomCode, setSlotAssignment],
   )
 
   const releaseSlot = useCallback(
     (slotIndex: number) => {
-      if (role !== 'guest' || !roomCode) return
-      const socket = getSocket()
-      socket.emit('release-slot', { code: roomCode, slotIndex })
+      if (!roomCode) return
+
+      if (role === 'host') {
+        const socket = getSocket()
+        useGameStore.getState().clearGuestHeroAtSlot(slotIndex)
+        setSlotAssignment(slotIndex, null)
+        const updatedAssignments = {
+          ...useSessionStore.getState().slotAssignments,
+          [slotIndex]: null,
+        }
+        socket.emit('slot-assignments-update', { code: roomCode, assignments: updatedAssignments })
+        return
+      }
+
+      if (role === 'guest') {
+        const socket = getSocket()
+        socket.emit('release-slot', { code: roomCode, slotIndex })
+      }
     },
-    [role, roomCode],
+    [role, roomCode, setSlotAssignment],
   )
 
   /**
-   * Called by the HOST at run end to distribute loot and return guest heroes.
-   * Reads party + dungeon state from the game store and slot assignments from
-   * the session store, then emits the 'run-ended' socket event.
+   * Called by the HOST at run end.
+   * Builds hero returns and the draft pool, then broadcasts draft-start to
+   * guests so a LootDraftModal can open on every client.
+   * The actual loot distribution happens only after the draft completes.
    */
   const distributeRunEnd = useCallback(() => {
     if (role !== 'host' || !roomCode) return
@@ -276,58 +318,204 @@ export function usePartySync() {
     const gameState    = useGameStore.getState()
     const sessionState = useSessionStore.getState()
 
-    const assignments   = sessionState.slotAssignments
-    const dungeonItems  = gameState.dungeon.inventory ?? []
-    const dungeonGold   = gameState.dungeon.gold       ?? 0
+    const assignments  = sessionState.slotAssignments
+    const dungeonItems = gameState.dungeon.inventory ?? []
+    const dungeonGold  = gameState.dungeon.gold       ?? 0
 
     // Build hero returns: for each assigned slot, return the current party hero
     // to its owning player.
     const heroReturnsByPlayer: Record<string, Record<string, Hero>> = {}
     for (const [slotStr, assignment] of Object.entries(assignments)) {
       if (!assignment) continue
-      const slotIdx       = Number(slotStr)
-      const updatedHero   = gameState.party[slotIdx]
+      const slotIdx     = Number(slotStr)
+      const updatedHero = gameState.party[slotIdx]
       if (!updatedHero) continue
-
       const { playerId, heroSourceId } = assignment
       if (!heroReturnsByPlayer[playerId]) heroReturnsByPlayer[playerId] = {}
       heroReturnsByPlayer[playerId][heroSourceId] = updatedHero
     }
 
-    // Distribute dungeon items round-robin across ALL players (including host)
-    const allPlayerIds = players.map((p) => p.id)
-    const lootByPlayer: Record<string, Item[]>  = {}
-    const goldByPlayer: Record<string, number>  = {}
-    for (const pid of allPlayerIds) { lootByPlayer[pid] = []; goldByPlayer[pid] = 0 }
-
-    dungeonItems.forEach((item, i) => {
-      const owner = allPlayerIds[i % allPlayerIds.length]
-      lootByPlayer[owner].push(item)
-    })
-
-    // Split gold evenly
+    // Split gold evenly (not part of the draft — automatic)
+    const allPlayerIds  = players.map((p) => p.id)
     const goldPerPlayer = Math.floor(dungeonGold / (allPlayerIds.length || 1))
-    for (const pid of allPlayerIds) { goldByPlayer[pid] = goldPerPlayer }
+    const goldByPlayer: Record<string, number> = {}
+    for (const pid of allPlayerIds) goldByPlayer[pid] = goldPerPlayer
 
     const run = gameState.activeRun
 
-    socket.emit('run-ended', {
-      code: roomCode,
-      heroReturnsByPlayer,
-      lootByPlayer,
+    // If there is nothing to draft (no items), skip straight to distribution
+    if (dungeonItems.length === 0) {
+      _applyRunEnd(socket, roomCode, heroReturnsByPlayer, {}, goldByPlayer, run, allPlayerIds, sessionState)
+      return
+    }
+
+    // Otherwise start a draft
+    const draftState = {
+      pool:                 dungeonItems,
+      picks:                Object.fromEntries(allPlayerIds.map((id) => [id, []])) as Record<string, Item[]>,
       goldByPlayer,
+      heroReturnsByPlayer,
+      order:                allPlayerIds,
+      currentPickerIndex:   0,
+      run,
+    }
+
+    // Store locally for the host's LootDraftModal
+    sessionState.setDraftState(draftState)
+
+    // Broadcast to guests (server relay sends draft-start to all non-host clients)
+    socket.emit('draft-start', {
+      code: roomCode,
+      pool:                 draftState.pool,
+      picks:                draftState.picks,
+      goldByPlayer,
+      heroReturnsByPlayer,
+      order:                draftState.order,
       run,
     })
 
-    // Apply the host's own share immediately (the event only goes to guests)
-    const hostId = socket.id
-    if (hostId && lootByPlayer[hostId]) {
-      useGameStore.getState().applyRunLoot(lootByPlayer[hostId], goldByPlayer[hostId] ?? 0)
+    // Listen for guest picks while draft is active
+    const handleDraftPick = ({ playerId, itemIndex }: { playerId: string; itemIndex: number }) => {
+      const current = useSessionStore.getState().draftState
+      if (!current) return
+
+      const currentPicker = current.order[current.currentPickerIndex % current.order.length]
+      if (playerId !== currentPicker) return // not their turn
+
+      _processDraftPick(socket, roomCode!, current, itemIndex, sessionState, allPlayerIds, run)
     }
+
+    socket.on('draft-pick', handleDraftPick)
+    // Cleanup listener once draft is done (handled inside _processDraftPick when pool empties)
+    const cleanup = () => socket.off('draft-pick', handleDraftPick)
+    ;(socket as typeof socket & { _draftCleanup?: () => void })._draftCleanup = cleanup
 
     // Clear guest slot assignments now that the run has ended
     sessionState.clearSlotAssignments()
   }, [role, roomCode, players])
 
-  return { claimSlot, releaseSlot, distributeRunEnd }
+  /**
+   * Pick an item from the active draft pool.
+   * Host applies it directly; guests emit a socket event.
+   */
+  const pickDraftItem = useCallback(
+    (itemIndex: number) => {
+      if (!roomCode) return
+
+      if (role === 'host') {
+        // Apply directly on the host
+        const socket       = getSocket()
+        const sessionState = useSessionStore.getState()
+        const current      = sessionState.draftState
+        if (!current) return
+        _processDraftPick(socket, roomCode, current, itemIndex, sessionState, players.map((p) => p.id), current.run)
+      } else if (role === 'guest') {
+        const socket = getSocket()
+        socket.emit('draft-pick', { code: roomCode, itemIndex })
+      }
+    },
+    [role, roomCode, players],
+  )
+
+  return { claimSlot, releaseSlot, distributeRunEnd, pickDraftItem }
 }
+
+// ── Draft helpers (module-level) ──────────────────────────────────────────────
+
+function _processDraftPick(
+  socket: ReturnType<typeof getSocket>,
+  roomCode: string,
+  current: import('./types').DraftState,
+  itemIndex: number,
+  sessionState: ReturnType<typeof useSessionStore.getState>,
+  allPlayerIds: string[],
+  run: unknown,
+) {
+  if (itemIndex < 0 || itemIndex >= current.pool.length) return
+
+  const pickedItem   = current.pool[itemIndex]
+  const newPool      = current.pool.filter((_, i) => i !== itemIndex)
+  const currentPicker = current.order[current.currentPickerIndex % current.order.length]
+  const newPicks     = {
+    ...current.picks,
+    [currentPicker]: [...(current.picks[currentPicker] ?? []), pickedItem],
+  }
+  const newPickerIndex = current.currentPickerIndex + 1
+
+  if (newPool.length === 0) {
+    // Draft complete
+    sessionState.setDraftState(null)
+
+    // Build final loot map and finish
+    const lootByPlayer: Record<string, Item[]> = Object.fromEntries(
+      allPlayerIds.map((id) => [id, newPicks[id] ?? []]),
+    )
+
+    _applyRunEnd(
+      socket, roomCode,
+      current.heroReturnsByPlayer,
+      lootByPlayer,
+      current.goldByPlayer,
+      run,
+      allPlayerIds,
+      sessionState,
+    )
+
+    // Remove draft-pick listener
+    const s = socket as typeof socket & { _draftCleanup?: () => void }
+    if (s._draftCleanup) { s._draftCleanup(); s._draftCleanup = undefined }
+  } else {
+    // More items remain — update state and broadcast
+    const updatedDraft: import('./types').DraftState = {
+      ...current,
+      pool:               newPool,
+      picks:              newPicks,
+      currentPickerIndex: newPickerIndex,
+    }
+    sessionState.setDraftState(updatedDraft)
+
+    socket.emit('draft-update', {
+      code:               roomCode,
+      pool:               newPool,
+      picks:              newPicks,
+      currentPickerIndex: newPickerIndex,
+      order:              current.order,
+    })
+  }
+}
+
+function _applyRunEnd(
+  socket: ReturnType<typeof getSocket>,
+  roomCode: string,
+  heroReturnsByPlayer: Record<string, Record<string, import('@/types').Hero>>,
+  lootByPlayer:        Record<string, import('@/types').Item[]>,
+  goldByPlayer:        Record<string, number>,
+  run:                 unknown,
+  allPlayerIds:        string[],
+  sessionState:        ReturnType<typeof useSessionStore.getState>,
+) {
+  // Ensure all players have entries
+  for (const pid of allPlayerIds) {
+    if (!lootByPlayer[pid])  lootByPlayer[pid]  = []
+    if (!goldByPlayer[pid])  goldByPlayer[pid]  = 0
+  }
+
+  // Send personalised payloads to guests
+  socket.emit('draft-complete', {
+    code: roomCode,
+    heroReturnsByPlayer,
+    lootByPlayer,
+    goldByPlayer,
+    run,
+  })
+
+  // Apply host's own share immediately
+  const hostId = socket.id
+  if (hostId) {
+    useGameStore.getState().applyRunLoot(lootByPlayer[hostId] ?? [], goldByPlayer[hostId] ?? 0)
+  }
+
+  sessionState.clearSlotAssignments()
+  sessionState.setDraftState(null)
+}
+

@@ -117,6 +117,8 @@ interface CombatActionsPanelProps {
     onAction: (heroId: string, action: string) => void
     onEndTurn: () => void
     onFlee: () => void
+    /** When provided, actions are only enabled for heroes whose id is in this list. */
+    myHeroIds?: string[]
 }
 
 export default function CombatActionsPanel({
@@ -126,6 +128,7 @@ export default function CombatActionsPanel({
     onAction,
     onEndTurn,
     onFlee,
+    myHeroIds,
 }: CombatActionsPanelProps) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { isOpen: isAbilitiesOpen, onOpen: onAbilitiesOpen, onClose: onAbilitiesClose } = useDisclosure()
@@ -138,6 +141,10 @@ export default function CombatActionsPanel({
         if (!currentCombatant || currentCombatant.id === 'boss') return null
         return party.find(h => h.id === currentCombatant.id)
     }, [combatState.turnOrder, combatState.currentTurnIndex, party])
+
+    // In multiplayer, guests can only act on their own heroes
+    const isMyHeroTurn = !myHeroIds || (activeHero !== null && activeHero !== undefined && myHeroIds.includes(activeHero.id))
+    const effectivelyProcessing = isProcessing || !isMyHeroTurn
 
     const isBossTurn = useMemo(() => {
         if (!combatState.turnOrder || combatState.turnOrder.length === 0) return true
@@ -251,7 +258,7 @@ export default function CombatActionsPanel({
                                     h="48px"
                                     flexDirection="column"
                                     gap={0}
-                                    isDisabled={isProcessing}
+                                    isDisabled={effectivelyProcessing}
                                     onClick={() => onAction(activeHero.id, 'attack')}
                                 >
                                     <Icon as={GiSwordman} boxSize={5} />
@@ -267,7 +274,7 @@ export default function CombatActionsPanel({
                                     h="48px"
                                     flexDirection="column"
                                     gap={0}
-                                    isDisabled={isProcessing}
+                                    isDisabled={effectivelyProcessing}
                                     onClick={() => onAction(activeHero.id, 'defend')}
                                 >
                                     <Icon as={GiShield} boxSize={5} />
@@ -291,7 +298,7 @@ export default function CombatActionsPanel({
                                             h="48px"
                                             flexDirection="column"
                                             gap={0}
-                                            isDisabled={isProcessing || allAbilities.length === 0}
+                                            isDisabled={effectivelyProcessing || allAbilities.length === 0}
                                             onClick={onAbilitiesOpen}
                                         >
                                             <Icon as={GiSparkles} boxSize={5} />
@@ -462,7 +469,7 @@ export default function CombatActionsPanel({
                                         h="48px"
                                         flexDirection="column"
                                         gap={0}
-                                        isDisabled={isProcessing}
+                                        isDisabled={effectivelyProcessing}
                                         onClick={onAbilitiesOpen}
                                     >
                                         <Icon as={GiMightySpanner} boxSize={5} />
@@ -489,7 +496,7 @@ export default function CombatActionsPanel({
                                     variant="outline"
                                     size="sm"
                                     h="48px"
-                                    isDisabled={isProcessing}
+                                    isDisabled={effectivelyProcessing}
                                     onClick={onOpen}
                                 />
                             </>
@@ -502,7 +509,7 @@ export default function CombatActionsPanel({
                                 h="48px"
                                 flexDirection="column"
                                 gap={0}
-                                isDisabled={isProcessing}
+                                isDisabled={effectivelyProcessing}
                                 onClick={onEndTurn}
                             >
                                 <Icon as={GiRunningNinja} boxSize={5} />
@@ -623,7 +630,7 @@ export default function CombatActionsPanel({
                             h="clamp(50px, 6vh, 65px)"
                             flexDirection="column"
                             gap={0}
-                            isDisabled={isProcessing}
+                            isDisabled={effectivelyProcessing}
                             onClick={onEndTurn}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -644,7 +651,7 @@ export default function CombatActionsPanel({
                                 h="clamp(50px, 6vh, 65px)"
                                 flexDirection="column"
                                 gap={0}
-                                isDisabled={isProcessing}
+                                isDisabled={effectivelyProcessing}
                                 onClick={() => onAction(activeHero.id, 'attack')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -666,7 +673,7 @@ export default function CombatActionsPanel({
                                 h="clamp(50px, 6vh, 65px)"
                                 flexDirection="column"
                                 gap={0}
-                                isDisabled={isProcessing}
+                                isDisabled={effectivelyProcessing}
                                 onClick={() => onAction(activeHero.id, 'defend')}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -715,7 +722,7 @@ export default function CombatActionsPanel({
                                             w="full"
                                             h="auto"
                                             py={1}
-                                            isDisabled={isProcessing || !activeHero.isAlive || !isUsable}
+                                            isDisabled={effectivelyProcessing || !activeHero.isAlive || !isUsable}
                                             onClick={() => onAction(activeHero.id, `ability:${ability.id}`)}
                                             opacity={isUsable ? 1 : 0.5}
                                             whileHover={{ scale: isUsable ? 1.02 : 1 }}
@@ -800,7 +807,7 @@ export default function CombatActionsPanel({
                     colorScheme="purple"
                     variant="outline"
                     size="sm"
-                    isDisabled={isProcessing}
+                    isDisabled={effectivelyProcessing}
                     onClick={onOpen}
                     leftIcon={<Icon as={GiRunningNinja} />}
                 >

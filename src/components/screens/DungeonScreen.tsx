@@ -1,5 +1,5 @@
 import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, IconButton, Box, VStack, HStack, Badge, Text, Tooltip } from '@chakra-ui/react'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import PartySidebar from '@components/dungeon/PartySidebar'
@@ -16,11 +16,12 @@ import JournalModal from '@components/dungeon/JournalModal'
 import { CurrentQuestsModal } from '@/components/party/CurrentQuestsModal'
 import { BossCombatScreen } from '@/components/combat'
 import FloorMapScreen from '@components/dungeon/FloorMapScreen'
+import LootDraftModal from '@components/dungeon/LootDraftModal'
 import { refreshPartyAbilities } from '@/utils/abilityUtils'
 import { initializeBossCombatState } from '@/systems/combat'
 import { MusicContext } from '@/types/audio'
 import { GiCardJackHearts, GiInfo, GiSwordsEmblem } from 'react-icons/gi'
-import { useDungeonActions, useMultiplayerStore, usePartySync } from '@/multiplayer'
+import { useDungeonActions, useMultiplayerStore, usePartySync, useSessionStore, setVoteCompleteCallback, getSocket } from '@/multiplayer'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
@@ -48,10 +49,13 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     selectChoice,
     selectMapNode,
     retreatFromDungeon,
+    submitCombatAction,
   } = useDungeonActions()
   const mpPlayers = useMultiplayerStore((s) => s.players)
   const mpRole = useMultiplayerStore((s) => s.role)
-  const { distributeRunEnd } = usePartySync()
+  const { distributeRunEnd, pickDraftItem } = usePartySync()
+  const voteState  = useSessionStore((s) => s.voteState)
+  const draftState = useSessionStore((s) => s.draftState)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
@@ -120,34 +124,70 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     }
   }, [mpRole, isGameOver, activeRun?.result, distributeRunEnd])
 
-  const handleSelectChoice = (choice: EventChoice) => {
-    // Capture current event before selectChoice clears it
+  /**
+   * Initiates boss combat for the given event + choice on the host.
+   * Guests must NOT call this — they wait for state sync.
+   */
+  const _startBossCombat = useCallback((currentEvent: DungeonEvent, choice: EventChoice) => {
+    const choiceIndex = currentEvent.choices.findIndex(c => c === choice)
+    const eventWithCombatState = {
+      ...currentEvent,
+      combatState: initializeBossCombatState(currentEvent, dungeon),
+      selectedChoiceIndex: choiceIndex
+    }
+    setTimeout(() => {
+      setBossEvent(eventWithCombatState)
+      setInBossCombat(true)
+    }, 100)
+  }, [dungeon])
+
+  /**
+   * HOST callback fired by voteManager when majority is reached.
+   * Executes the winning choice exactly as if the host had picked it.
+   */
+  const handleVoteComplete = useCallback((choiceIndex: number) => {
     const currentEvent = dungeon.currentEvent
-    // If floorBossesHaveCombat is disabled, only zone bosses and the final boss engage turn-based combat
+    if (!currentEvent) return
+    const choice = currentEvent.choices[choiceIndex]
+    if (!choice) return
+
+    const bossNeedsCombat = currentEvent.isZoneBoss || currentEvent.isFinalBoss || GAME_CONFIG.combat.turnBased.floorBossesHaveCombat
+    const shouldInitiateCombat = currentEvent.type === 'boss' && !choice.skipsCombat && bossNeedsCombat
+
+    if (shouldInitiateCombat) {
+      _startBossCombat(currentEvent, choice)
+    } else {
+      // Use the raw store action (no voting — we already have the winner)
+      useGameStore.getState().selectChoice(choice)
+    }
+  }, [dungeon.currentEvent, _startBossCombat])
+
+  // Register vote-complete callback on the host
+  useEffect(() => {
+    if (mpRole !== 'host') return
+    setVoteCompleteCallback(handleVoteComplete)
+    return () => setVoteCompleteCallback(null)
+  }, [mpRole, handleVoteComplete])
+
+  const handleSelectChoice = (choice: EventChoice) => {
+    const currentEvent = dungeon.currentEvent
+
+    // In multiplayer, selecting a choice means casting a vote (host and guests).
+    // The actual execution happens in handleVoteComplete once majority is reached.
+    if (mpRole !== null) {
+      selectChoice(choice)  // voting-aware (see useDungeonActions)
+      return
+    }
+
+    // Single-player path
     const bossNeedsCombat = !currentEvent
       ? false
       : (currentEvent.isZoneBoss || currentEvent.isFinalBoss || GAME_CONFIG.combat.turnBased.floorBossesHaveCombat)
     const shouldInitiateCombat = currentEvent && currentEvent.type === 'boss' && !choice.skipsCombat && bossNeedsCombat
     
-    // If this choice initiates combat, don't resolve it yet - just store it for after combat victory
     if (shouldInitiateCombat && currentEvent) {
-      // Find which choice index this is
-      const choiceIndex = currentEvent.choices.findIndex(c => c === choice)
-      
-      // Initialize combat state and store the selected choice index
-      const eventWithCombatState = {
-        ...currentEvent,
-        combatState: initializeBossCombatState(currentEvent, dungeon),
-        selectedChoiceIndex: choiceIndex // Store which choice was selected
-      }
-      
-      // Small delay to show choice feedback before combat
-      setTimeout(() => {
-        setBossEvent(eventWithCombatState)
-        setInBossCombat(true)
-      }, 100)
+      _startBossCombat(currentEvent, choice)
     } else {
-      // Non-combat choice or choice that skips combat - resolve normally
       selectChoice(choice)
     }
   }
@@ -232,7 +272,19 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   if (inBossCombat && bossEvent) {
     // Refresh party abilities to ensure current definitions and icons are loaded
     const refreshedParty = refreshPartyAbilities(party)
-    
+
+    // Compute which heroSourceIds belong to the local player (guests only)
+    let myHeroIds: string[] | undefined
+    if (isGuest) {
+      const mySocketId = getSocket()?.id
+      if (mySocketId) {
+        const assignments = useSessionStore.getState().slotAssignments
+        myHeroIds = Object.values(assignments)
+          .filter((a) => a?.playerId === mySocketId)
+          .map((a) => a!.heroSourceId)
+      }
+    }
+
     return (
       <BossCombatScreen
         event={bossEvent}
@@ -241,6 +293,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         onVictory={handleBossVictory}
         onDefeat={handleBossDefeat}
         onFlee={handleBossFlee}
+        myHeroIds={myHeroIds}
+        onGuestCombatAction={isGuest ? submitCombatAction : undefined}
       />
     )
   }
@@ -307,6 +361,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           onContinue={handleContinue}
           onAdvance={advanceDungeon}
           onSelectMapNode={selectMapNode}
+          voteState={voteState}
+          myPlayerId={mpRole ? getSocket()?.id : undefined}
         />
         
         <DungeonActionBar
@@ -434,6 +490,17 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           _active={{ transform: "scale(0.9)" }}
         />
       </Box>
+
+      {/* Loot Draft Modal — shown at run end in multiplayer */}
+      {draftState && (
+        <LootDraftModal
+          draftState={draftState}
+          myPlayerId={getSocket()?.id ?? ''}
+          players={mpPlayers}
+          role={mpRole}
+          onPick={(itemIndex) => pickDraftItem(itemIndex)}
+        />
+      )}
     </Flex>
   )
 }

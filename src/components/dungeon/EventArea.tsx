@@ -6,6 +6,7 @@ import ContinuePrompt from './ContinuePrompt'
 import FloorMapScreen from './FloorMapScreen'
 import type { DungeonEvent, EventChoice, FloorMap, Hero } from '@/types'
 import type { ResolvedOutcome } from '@systems/events/eventResolver'
+import type { VoteState } from '@/multiplayer/types'
 
 interface EventAreaProps {
   currentEvent: DungeonEvent | null
@@ -20,6 +21,8 @@ interface EventAreaProps {
   onContinue: () => void
   onAdvance: () => void
   onSelectMapNode?: (nodeId: string) => void
+  voteState?: VoteState | null
+  myPlayerId?: string
 }
 
 export default function EventArea({ 
@@ -35,6 +38,8 @@ export default function EventArea({
   onContinue,
   onAdvance,
   onSelectMapNode,
+  voteState,
+  myPlayerId,
 }: EventAreaProps) {
   // Trap detection: true when any alive party member is a Rogue or has a
   // trap-detection ability (hook for future research / passive skill system).
@@ -91,6 +96,8 @@ export default function EventArea({
           gold={gold}
           bossType={bossType}
           onSelectChoice={onSelectChoice}
+          voteState={voteState}
+          myPlayerId={myPlayerId}
         />
       ) : floorMap && onSelectMapNode ? (
         <FloorMapScreen

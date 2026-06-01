@@ -29,6 +29,7 @@ export type GuestAction =
   | { type: 'select-map-node'; nodeId: string }
   | { type: 'retreat' }
   | { type: 'start-dungeon'; startingFloor?: number; alkahestCost?: number }
+  | { type: 'combat-action'; heroId: string; action: string }
 
 // ── Extended multiplayer session types ──────────────────────────────────────
 
@@ -70,4 +71,29 @@ export interface RunEndPayload {
   goldByPlayer: Record<string, number>
   /** The completed Run record for quest processing on each client. */
   run: Run
+}
+
+/** Live vote tally shown to all players while an event choice vote is open. */
+export interface VoteState {
+  /** playerId → choiceIndex they voted for */
+  votes: Record<string, number>
+  totalPlayers: number
+}
+
+/** State of the post-run loot draft. Held in session store until complete. */
+export interface DraftState {
+  /** Items available to pick from (shrinks as players pick). */
+  pool: Item[]
+  /** Items each player has already claimed. playerId → Item[]. */
+  picks: Record<string, Item[]>
+  /** Fixed gold split, determined before the draft starts. */
+  goldByPlayer: Record<string, number>
+  /** Pre-built hero return map (heroes go back to owners after draft). */
+  heroReturnsByPlayer: Record<string, Record<string, Hero>>
+  /** Player IDs in draft order (loops until pool is empty). */
+  order: string[]
+  /** Which position in `order` is currently picking (mod order.length). */
+  currentPickerIndex: number
+  /** The completed Run record, passed through for quest processing. */
+  run: unknown
 }

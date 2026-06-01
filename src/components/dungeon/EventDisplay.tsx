@@ -7,7 +7,8 @@ import { checkRequirements } from '@systems/events/eventResolver'
 import type { Hero } from '@/types'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { GAME_CONFIG } from '@/config/gameConfig'
-import { GiCrossedSwords, GiSkullCrossedBones } from 'react-icons/gi'
+import { GiCrossedSwords, GiSkullCrossedBones, GiVote } from 'react-icons/gi'
+import type { VoteState } from '@/multiplayer/types'
 
 const MotionButton = motion.create(Button)
 const MotionBox = motion.create(Box)
@@ -19,6 +20,10 @@ interface EventDisplayProps {
   gold: number
   bossType?: 'floor' | 'major' | null
   onSelectChoice: (choice: EventChoice) => void
+  /** Live vote tally from multiplayer session. Null when not in multiplayer. */
+  voteState?: VoteState | null
+  /** The local player's socket id. Used to show "voted" state. */
+  myPlayerId?: string
 }
 
 const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
@@ -57,7 +62,7 @@ function selectText(text: string | string[] | Array<{ weight: number; text: stri
   return weighted[weighted.length - 1].text // Fallback to last option
 }
 
-export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice }: EventDisplayProps) {
+export default function EventDisplay({ event, party, depth, gold, bossType, onSelectChoice, voteState, myPlayerId }: EventDisplayProps) {
   // Select description text once when event loads
   const description = useMemo(() => selectText(event.description), [event.description])
   
@@ -308,6 +313,17 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
           .map(({ choice, originalIndex }, index) => {
           const canSelect = checkRequirements(choice.requirements, party, depth, gold)
           const successChance = calculateSuccessChance(choice, party)
+
+          // Vote tally for this choice
+          const voteCount = voteState
+            ? Object.values(voteState.votes).filter((v) => v === originalIndex).length
+            : 0
+          const iVotedThis = voteState && myPlayerId
+            ? voteState.votes[myPlayerId] === originalIndex
+            : false
+          const iVotedOther = voteState && myPlayerId
+            ? myPlayerId in voteState.votes && !iVotedThis
+            : false
           
           return (
             <MotionButton
@@ -315,8 +331,8 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
               key={originalIndex}
               size="sm"
               variant="outline"
-              colorScheme={canSelect ? 'orange' : 'gray'}
-              isDisabled={!canSelect}
+              colorScheme={iVotedThis ? 'purple' : canSelect ? 'orange' : 'gray'}
+              isDisabled={!canSelect || iVotedOther}
               onClick={() => onSelectChoice(choice)}
               textAlign="left"
               whiteSpace="normal"
@@ -325,13 +341,13 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
               px={4}
               justifyContent="flex-start"
               initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: canSelect ? 1 : 0.4, x: 0 }}
+              animate={{ opacity: canSelect && !iVotedOther ? 1 : 0.4, x: 0 }}
               transition={{
                 duration: 0.4,
                 delay: index * 0.05,
                 ease: "easeOut"
               }}
-              _hover={canSelect ? {
+              _hover={canSelect && !iVotedOther ? {
                 backgroundColor: 'rgba(237, 137, 54, 0.2)',
                 borderColor: '#ED8936',
                 boxShadow: '0 0 12px rgba(237, 137, 54, 0.4)',
@@ -342,29 +358,40 @@ export default function EventDisplay({ event, party, depth, gold, bossType, onSe
                 transition: 'background-color 0.2s, border-color 0.2s, box-shadow 0.2s, padding 0.2s'
               }}
             >
-              <VStack className="event-display-choice-content" align="start" spacing={0.5}>
+              <VStack className="event-display-choice-content" align="start" spacing={0.5} w="full">
                 <HStack className="event-display-choice-header" justify="space-between" w="full">
                   <Text className="event-display-choice-text" fontWeight="bold" fontSize="sm">
                     {choice.text}
                   </Text>
-                  {successChance !== null && (
-                    <Badge 
-                      className="event-display-choice-chance"
-                      colorScheme={
-                        successChance >= 0.75 ? 'green' : 
-                        successChance >= 0.5 ? 'yellow' : 
-                        successChance >= 0.25 ? 'orange' : 'red'
-                      }
-                      fontSize="xs"
-                    >
-                      {Math.round(successChance * 100)}%
-                    </Badge>
-                  )}
+                  <HStack spacing={1}>
+                    {voteState && voteCount > 0 && (
+                      <Badge colorScheme="purple" fontSize="xs" display="flex" alignItems="center" gap={1}>
+                        <Icon as={GiVote} />
+                        {voteCount}/{voteState.totalPlayers}
+                      </Badge>
+                    )}
+                    {successChance !== null && (
+                      <Badge 
+                        className="event-display-choice-chance"
+                        colorScheme={
+                          successChance >= 0.75 ? 'green' : 
+                          successChance >= 0.5 ? 'yellow' : 
+                          successChance >= 0.25 ? 'orange' : 'red'
+                        }
+                        fontSize="xs"
+                      >
+                        {Math.round(successChance * 100)}%
+                      </Badge>
+                    )}
+                  </HStack>
                 </HStack>
                 {choice.requirements && (
                   <Text className="event-display-choice-requirements" fontSize="xs" color={canSelect ? 'gray.400' : 'red.400'}>
                     {getRequirementText(choice.requirements, depth)}
                   </Text>
+                )}
+                {iVotedThis && (
+                  <Text fontSize="xs" color="purple.300">Your vote</Text>
                 )}
               </VStack>
             </MotionButton>

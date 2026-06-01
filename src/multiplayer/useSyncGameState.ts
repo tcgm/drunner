@@ -13,7 +13,10 @@ import { useEffect, useRef } from 'react'
 import { useMultiplayerStore } from './multiplayerStore'
 import { getSocket } from './socket'
 import { useGameStore } from '@/core/gameStore'
-import type { MultiplayerSyncState, GuestAction } from './types'
+import { useSessionStore } from './sessionStore'
+import { recordVote, initVotes, clearVotes } from './voteManager'
+import type { MultiplayerSyncState, GuestAction, DraftState } from './types'
+import type { Item } from '@/types'
 
 /** Extract only the fields that need to be replicated to guests. */
 function extractSync(
@@ -32,7 +35,9 @@ function extractSync(
 export function useSyncGameState() {
   const role = useMultiplayerStore((s) => s.role)
   const roomCode = useMultiplayerStore((s) => s.roomCode)
+  const players = useMultiplayerStore((s) => s.players)
   const prevSerializedRef = useRef<string>('')
+  const prevEventIdRef = useRef<string | null | undefined>(undefined)
 
   useEffect(() => {
     if (!role || !roomCode) return
@@ -48,10 +53,22 @@ export function useSyncGameState() {
         if (serialized === prevSerializedRef.current) return
         prevSerializedRef.current = serialized
         socket.emit('state-update', { code: roomCode, state: sync })
+
+        // Re-init votes when a new event arrives (event id changed) or event clears
+        const eventId = state.dungeon.currentEvent?.id ?? null
+        if (eventId !== prevEventIdRef.current) {
+          prevEventIdRef.current = eventId
+          if (eventId !== null) {
+            initVotes(players.length, roomCode)
+          } else {
+            clearVotes()
+          }
+        }
       })
 
       // Execute guest action requests on the authoritative store
       const handleGuestAction = ({
+        playerId,
         action,
       }: {
         playerId: string
@@ -64,6 +81,7 @@ export function useSyncGameState() {
             store.advanceDungeon()
             break
           case 'select-choice': {
+            // Legacy path – kept for backwards compat; voting uses cast-vote
             const event = store.dungeon.currentEvent
             if (event && action.choiceIndex >= 0 && action.choiceIndex < event.choices.length) {
               store.selectChoice(event.choices[action.choiceIndex])
@@ -79,14 +97,26 @@ export function useSyncGameState() {
           case 'start-dungeon':
             store.startDungeon(action.startingFloor, action.alkahestCost)
             break
+          case 'combat-action':
+            // Store in queue; BossCombatScreen auto-fires it on the hero's turn
+            useSessionStore.getState().setCombatQueueEntry(action.heroId, action.action)
+            break
         }
       }
 
+      // Handle vote cast from guests
+      const handleCastVote = ({ playerId, choiceIndex }: { playerId: string; choiceIndex: number }) => {
+        recordVote(playerId, choiceIndex)
+      }
+
       socket.on('guest-action', handleGuestAction)
+      socket.on('cast-vote', handleCastVote)
 
       return () => {
         unsubscribe()
         socket.off('guest-action', handleGuestAction)
+        socket.off('cast-vote', handleCastVote)
+        clearVotes()
       }
     }
 
@@ -95,11 +125,8 @@ export function useSyncGameState() {
       const handleStateUpdate = (state: MultiplayerSyncState) => {
         const local = useGameStore.getState()
         if (state.activeRun?.result === 'active') {
-          // Run is live – host is authoritative for dungeon + party
           local.applyMultiplayerState(state)
         } else {
-          // No active run – only sync run metadata so the guest's own
-          // town / party setup / hero roster is never clobbered.
           local.applyMultiplayerState({
             ...state,
             party:   local.party,
@@ -108,11 +135,53 @@ export function useSyncGameState() {
         }
       }
 
+      // Live vote tally from host
+      const handleVoteUpdate = ({ votes, totalPlayers }: { votes: Record<string, number>; totalPlayers: number }) => {
+        useSessionStore.getState().setVoteState({ votes, totalPlayers })
+      }
+
+      // Draft started by host at run end
+      const handleDraftStart = (ds: Omit<DraftState, 'picks'> & { picks?: Record<string, Item[]> }) => {
+        useSessionStore.getState().setDraftState({
+          ...ds,
+          picks: ds.picks ?? {},
+        } as DraftState)
+      }
+
+      // Draft updated after each pick
+      const handleDraftUpdate = ({
+        pool,
+        picks,
+        currentPickerIndex,
+        order,
+      }: {
+        pool: DraftState['pool']
+        picks: DraftState['picks']
+        currentPickerIndex: number
+        order: string[]
+      }) => {
+        const current = useSessionStore.getState().draftState
+        if (!current) return
+        useSessionStore.getState().setDraftState({
+          ...current,
+          pool,
+          picks,
+          currentPickerIndex,
+          order,
+        })
+      }
+
       socket.on('state-update', handleStateUpdate)
+      socket.on('vote-update', handleVoteUpdate)
+      socket.on('draft-start', handleDraftStart)
+      socket.on('draft-update', handleDraftUpdate)
 
       return () => {
         socket.off('state-update', handleStateUpdate)
+        socket.off('vote-update', handleVoteUpdate)
+        socket.off('draft-start', handleDraftStart)
+        socket.off('draft-update', handleDraftUpdate)
       }
     }
-  }, [role, roomCode])
+  }, [role, roomCode, players.length])
 }

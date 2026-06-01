@@ -31,8 +31,8 @@ interface MultiplayerModalProps {
 
 export function MultiplayerModal({ isOpen, onClose, onJoined }: MultiplayerModalProps) {
   const mp = useMultiplayerStore()
-  const heroRoster = useGameStore((s) => s.heroRoster)
-  const bankGold   = useGameStore((s) => s.bankGold)
+  const party    = useGameStore((s) => s.party)
+  const bankGold = useGameStore((s) => s.bankGold)
 
   const [mpTab, setMpTab]         = useState<'host' | 'join'>('host')
   const [joinCode, setJoinCode]   = useState('')
@@ -51,7 +51,9 @@ export function MultiplayerModal({ isOpen, onClose, onJoined }: MultiplayerModal
     const profile: PlayerProfile = {
       playerId:          socket.id,
       playerName:        mp.localPlayerName,
-      heroRosterPreview: heroRoster.map((h) => ({
+      heroRosterPreview: party
+        .filter((h): h is import('@/types').Hero => h !== null)
+        .map((h) => ({
         id:        h.id,
         name:      h.name,
         className: h.class.name,
