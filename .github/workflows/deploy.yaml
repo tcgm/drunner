@@ -79,14 +79,15 @@ jobs:
 
       - name: Build multiplayer branch
         env:
-          VITE_MULTIPLAYER_URL: ${{ secrets.VITE_MULTIPLAYER_URL }}
+          VITE_MULTIPLAYER_URL: ${{ vars.VITE_MULTIPLAYER_URL || secrets.VITE_MULTIPLAYER_URL }}
         run: |
           echo "Building multiplayer branch..."
           git checkout multiplayer
           npm ci
           BASE_URL=/${{ github.event.repository.name }}/multiplayer/ npx vite build
           echo "--- Verifying VITE_MULTIPLAYER_URL baked into bundle ---"
-          grep -r "VITE_MULTIPLAYER_URL\|wss://\|https://" dist/assets/*.js | head -5 || true
+          echo "Secret value prefix: ${VITE_MULTIPLAYER_URL:0:30}..."
+          grep -oh '["\047][^"\047]*multiplayer[^"\047]*["\047]' dist/assets/*.js | head -10 || echo "No multiplayer URL found in bundle!"
           mkdir -p ../deploy/multiplayer
           cp -r dist/* ../deploy/multiplayer/
       

@@ -15,7 +15,7 @@ let _socketUrl: string | null = null
 
 const DEFAULT_URL = (): string => {
   const configured =
-    (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) ?? 'http://localhost:3001'
+    (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) || 'http://localhost:3001'
   // When a guest opens the app from another machine (e.g. http://192.168.1.x:5173),
   // "localhost" in the baked-in URL resolves to *their* machine, not the server.
   // Substitute the actual page hostname so the relay is always reachable.
