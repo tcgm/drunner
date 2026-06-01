@@ -1,20 +1,34 @@
-import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon, Collapse, IconButton } from '@chakra-ui/react'
+import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon, Collapse, IconButton, Input, FormControl, FormLabel, Alert, AlertIcon, Spinner } from '@chakra-ui/react'
 import { useState, useRef, useMemo } from 'react'
 import { useGameStore } from '@/core/gameStore'
-import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance } from 'react-icons/gi'
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance, GiSwordsEmblem } from 'react-icons/gi'
+import { FaChevronDown, FaChevronUp, FaCopy, FaCheck } from 'react-icons/fa'
 import LZString from 'lz-string'
 import { idbGet, idbSet } from '@/utils/idbStorage'
+import { useMultiplayerStore } from '@/multiplayer'
 
 interface MainMenuScreenProps {
   onNewRun: () => void
   onContinue: () => void
   onRunHistory: () => void
+  onMultiplayerJoined?: () => void
 }
 
-export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: MainMenuScreenProps) {
+export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory, onMultiplayerJoined }: MainMenuScreenProps) {
   const { activeRun, listBackups, createManualBackup, restoreFromBackup, downloadBackup, exportSave, importSave } = useGameStore()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    isOpen: isMpOpen,
+    onOpen: onMpOpen,
+    onClose: onMpClose,
+  } = useDisclosure()
+  const mp = useMultiplayerStore()
+  const [mpTab, setMpTab] = useState<'host' | 'join'>('host')
+  const [joinCode, setJoinCode] = useState('')
+  const [mpLoading, setMpLoading] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
+  const [hostMode, setHostMode] = useState<'relay' | 'direct'>('relay')
+  const [directCode, setDirectCode] = useState<string | null>(null)
   const [backups, setBackups] = useState<string[]>([])
   const [backupStats, setBackupStats] = useState<Record<string, { itemCount: number; heroCount: number }>>({})
   const [expandedBackups, setExpandedBackups] = useState<Set<string>>(new Set())
@@ -245,6 +259,52 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
     if (!confirm(`⚠️ DANGER: Overwrite current save with localStorage data from "${key}" and reload?\n\nThis cannot be undone.`)) return
     await idbSet('dungeon-runner-storage', raw)
     window.location.reload()
+  }
+
+  const handleHostGame = async () => {
+    setMpLoading(true)
+    mp.clearError()
+    try {
+      if (hostMode === 'direct') {
+        const code7 = await mp.createRoomDirect()
+        setDirectCode(code7)
+      } else {
+        await mp.createRoom()
+      }
+    } catch (err) {
+      // error is set in the store
+    } finally {
+      setMpLoading(false)
+    }
+  }
+
+  const handleJoinGame = async () => {
+    if (!joinCode.trim()) return
+    setMpLoading(true)
+    mp.clearError()
+    try {
+      await mp.joinRoom(joinCode)
+      onMpClose()
+      onMultiplayerJoined?.()
+    } catch (err) {
+      // error is set in the store
+    } finally {
+      setMpLoading(false)
+    }
+  }
+
+  const handleCopyCode = () => {
+    const codeToCopy = directCode ?? mp.roomCode
+    if (!codeToCopy) return
+    navigator.clipboard.writeText(codeToCopy)
+    setCodeCopied(true)
+    setTimeout(() => setCodeCopied(false), 2000)
+  }
+
+  const handleLeaveRoom = () => {
+    mp.leaveRoom()
+    setJoinCode('')
+    setDirectCode(null)
   }
   
   return (
@@ -497,6 +557,32 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
           >
             Run History
           </Button>
+          <Button
+            className="btn-multiplayer"
+            colorScheme={mp.role ? 'green' : 'purple'}
+            variant="outline"
+            size="lg"
+            width="100%"
+            height="clamp(50px, 6vh, 60px)"
+            fontSize="lg"
+            fontWeight="semibold"
+            letterSpacing="wide"
+            onClick={onMpOpen}
+            borderWidth="2px"
+            _hover={{
+              transform: 'scale(1.05)',
+              borderColor: mp.role ? 'green.400' : 'purple.400',
+              color: mp.role ? 'green.400' : 'purple.400',
+            }}
+            transition="all 0.2s"
+            leftIcon={<Icon as={GiSwordsEmblem} boxSize={5} />}
+          >
+            {mp.role === 'host'
+              ? `Hosting · ${mp.roomCode}`
+              : mp.role === 'guest'
+              ? `In Room · ${mp.roomCode}`
+              : 'Multiplayer'}
+          </Button>
           <Button 
             className="btn-manage-saves"
             colorScheme="blue" 
@@ -534,6 +620,241 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory }: M
           </Button>
         </VStack>
       </VStack>
+
+      {/* ── Multiplayer Modal ─────────────────────────────────────────────── */}
+      <Modal isOpen={isMpOpen} onClose={onMpClose} size="md" isCentered>
+        <ModalOverlay bg="blackAlpha.800" backdropFilter="blur(4px)" />
+        <ModalContent bg="gray.800" borderWidth="1px" borderColor="purple.700">
+          <ModalHeader color="purple.300">
+            <HStack>
+              <Icon as={GiSwordsEmblem} />
+              <Text>Multiplayer</Text>
+            </HStack>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            {mp.error && (
+              <Alert status="error" mb={4} borderRadius="md">
+                <AlertIcon />
+                {mp.error}
+              </Alert>
+            )}
+
+            {/* ── Not in a room yet ── */}
+            {!mp.role && (
+              <VStack spacing={4} align="stretch">
+                <FormControl>
+                  <FormLabel color="gray.300" fontSize="sm">Your name</FormLabel>
+                  <Input
+                    value={mp.localPlayerName}
+                    onChange={(e) => mp.setLocalPlayerName(e.target.value)}
+                    placeholder="Player"
+                    bg="gray.700"
+                    borderColor="gray.600"
+                    maxLength={20}
+                  />
+                </FormControl>
+
+                <HStack spacing={2}>
+                  <Button
+                    flex={1}
+                    variant={mpTab === 'host' ? 'solid' : 'outline'}
+                    colorScheme="purple"
+                    onClick={() => setMpTab('host')}
+                    size="sm"
+                  >
+                    Host Game
+                  </Button>
+                  <Button
+                    flex={1}
+                    variant={mpTab === 'join' ? 'solid' : 'outline'}
+                    colorScheme="purple"
+                    onClick={() => setMpTab('join')}
+                    size="sm"
+                  >
+                    Join Game
+                  </Button>
+                </HStack>
+
+                {mpTab === 'host' ? (
+                  <VStack spacing={3} align="stretch">
+                    <Text fontSize="sm" color="gray.400">
+                      Create a room and share the code with your friends. Then start a run as normal — they'll see everything you do.
+                    </Text>
+                    <HStack spacing={2}>
+                      <Button
+                        flex={1} size="xs"
+                        variant={hostMode === 'relay' ? 'solid' : 'outline'}
+                        colorScheme="gray"
+                        onClick={() => setHostMode('relay')}
+                      >
+                        Relay server
+                      </Button>
+                      <Button
+                        flex={1} size="xs"
+                        variant={hostMode === 'direct' ? 'solid' : 'outline'}
+                        colorScheme="gray"
+                        onClick={() => setHostMode('direct')}
+                      >
+                        Direct / LAN
+                      </Button>
+                    </HStack>
+                    {hostMode === 'direct' && (
+                      <Text fontSize="xs" color="yellow.400">
+                        Run the server locally first. Guests on your LAN (or via port-forward) connect using a 7-character code.
+                      </Text>
+                    )}
+                    <Button
+                      colorScheme="purple"
+                      isLoading={mpLoading}
+                      onClick={handleHostGame}
+                      leftIcon={<Icon as={GiSwordsEmblem} />}
+                    >
+                      Create Room
+                    </Button>
+                  </VStack>
+                ) : (
+                  <VStack spacing={3} align="stretch">
+                    <Text fontSize="sm" color="gray.400">
+                      Enter the code your host shared. 4 characters for relay, 7 for direct/LAN.
+                    </Text>
+                    <FormControl>
+                      <FormLabel color="gray.300" fontSize="sm">Join code</FormLabel>
+                      <HStack spacing={2}>
+                        <Input
+                          value={joinCode}
+                          onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                          placeholder="ABCD or 7-CHAR"
+                          bg="gray.700"
+                          borderColor="gray.600"
+                          maxLength={7}
+                          letterSpacing="widest"
+                          fontFamily="mono"
+                          fontSize="xl"
+                          textAlign="center"
+                          onKeyDown={(e) => e.key === 'Enter' && handleJoinGame()}
+                        />
+                        <IconButton
+                          aria-label="Paste code"
+                          icon={<Icon as={FaCopy} />}
+                          size="md"
+                          variant="outline"
+                          colorScheme="gray"
+                          onClick={async () => {
+                            try {
+                              const text = await navigator.clipboard.readText()
+                              setJoinCode(text.toUpperCase().trim().slice(0, 7))
+                            } catch { /* clipboard denied */ }
+                          }}
+                        />
+                      </HStack>
+                    </FormControl>
+                    <Button
+                      colorScheme="purple"
+                      isLoading={mpLoading}
+                      isDisabled={joinCode.length !== 4 && joinCode.length !== 7}
+                      onClick={handleJoinGame}
+                    >
+                      Join Room
+                    </Button>
+                  </VStack>
+                )}
+              </VStack>
+            )}
+
+            {/* ── In a room ── */}
+            {mp.role && (
+              <VStack spacing={4} align="stretch">
+                {mp.role === 'host' && (
+                  <Box bg="purple.900" p={4} borderRadius="md" textAlign="center">
+                    <Text fontSize="sm" color="gray.400" mb={1}>Share this code with friends</Text>
+                    <HStack justify="center" spacing={3}>
+                      <Text
+                        fontSize="4xl"
+                        fontFamily="mono"
+                        fontWeight="bold"
+                        color="purple.200"
+                        letterSpacing="widest"
+                      >
+                        {directCode ?? mp.roomCode}
+                      </Text>
+                      <IconButton
+                        aria-label="Copy code"
+                        icon={codeCopied ? <Icon as={FaCheck} color="green.300" /> : <Icon as={FaCopy} />}
+                        size="sm"
+                        variant="ghost"
+                        colorScheme="purple"
+                        onClick={handleCopyCode}
+                      />
+                    </HStack>
+                  </Box>
+                )}
+                {mp.role === 'guest' && (
+                  <Box bg="purple.900" p={3} borderRadius="md" textAlign="center">
+                    <Text fontSize="sm" color="gray.400" mb={1}>Connected to room</Text>
+                    <HStack justify="center" spacing={2}>
+                      <Text fontSize="2xl" fontFamily="mono" fontWeight="bold" color="purple.200" letterSpacing="widest">
+                        {mp.roomCode}
+                      </Text>
+                      <IconButton
+                        aria-label="Copy room code"
+                        icon={codeCopied ? <Icon as={FaCheck} color="green.300" /> : <Icon as={FaCopy} />}
+                        size="sm"
+                        variant="ghost"
+                        colorScheme="purple"
+                        onClick={() => {
+                          navigator.clipboard.writeText(mp.roomCode ?? '')
+                          setCodeCopied(true)
+                          setTimeout(() => setCodeCopied(false), 2000)
+                        }}
+                      />
+                    </HStack>
+                  </Box>
+                )}
+
+                <Box>
+                  <Text fontSize="sm" fontWeight="bold" color="gray.300" mb={2}>
+                    Players ({mp.players.length})
+                  </Text>
+                  <VStack spacing={1} align="stretch">
+                    {mp.players.map((p) => (
+                      <HStack key={p.id} bg="gray.700" p={2} borderRadius="md" justify="space-between">
+                        <Text color="gray.200" fontSize="sm">{p.name}</Text>
+                        {p.id === mp.players[0]?.id && (
+                          <Badge colorScheme="purple" fontSize="xs">Host</Badge>
+                        )}
+                      </HStack>
+                    ))}
+                  </VStack>
+                </Box>
+
+                {mp.role === 'host' && (
+                  <Text fontSize="xs" color="gray.500" textAlign="center">
+                    Close this window and start a run — guests will sync automatically.
+                  </Text>
+                )}
+                {mp.role === 'guest' && (
+                  <Box bg="blue.900" p={3} borderRadius="md">
+                    <HStack>
+                      <Spinner size="sm" color="blue.300" />
+                      <Text fontSize="sm" color="blue.200">Waiting for host to start a run…</Text>
+                    </HStack>
+                  </Box>
+                )}
+
+                <Button
+                  colorScheme="red"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLeaveRoom}
+                >
+                  Leave Room
+                </Button>
+              </VStack>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
 
       {/* Save Management Modal */}
       <Modal id="save-management-modal" isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">

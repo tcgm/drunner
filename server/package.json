@@ -1,0 +1,13 @@
+{
+  "name": "drunner-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Dungeon Runner Socket.io relay server",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  }
+}

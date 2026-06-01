@@ -23,6 +23,7 @@ import {
   createUtilityActions,
   createQuestActions,
   createHeroBoardActions,
+  createMultiplayerActions,
   type HeroActionsSlice,
   type DungeonActionsSlice,
   type InventoryActionsSlice,
@@ -32,6 +33,7 @@ import {
   type UtilityActionsSlice,
   type QuestActionsSlice,
   type HeroBoardActionsSlice,
+  type MultiplayerActionsSlice,
 } from './modules'
 
 interface GameStore extends GameState, 
@@ -43,6 +45,7 @@ interface GameStore extends GameState,
   SaveActionsSlice,
   UtilityActionsSlice,
   QuestActionsSlice,
+  MultiplayerActionsSlice,
   HeroBoardActionsSlice {}
 
 const initialState: GameState = {
@@ -166,6 +169,7 @@ export const useGameStore = create<GameStore>()(
         ...createUtilityActions(initialState)(set, get, api),
         ...createQuestActions(set, get, api),
         ...createHeroBoardActions(set, get, api),
+        ...createMultiplayerActions(set, get, api),
       })
     ),
     {

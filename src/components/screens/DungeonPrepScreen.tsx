@@ -2,7 +2,7 @@ import './DungeonPrepScreen.css'
 import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { useGameStore } from '../../core/gameStore'
 import { GAME_CONFIG } from '../../config/gameConfig'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { Hero, Consumable, Item } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
@@ -21,6 +21,10 @@ import { CurrentQuestsModal } from '../party/CurrentQuestsModal'
 import { useMusicContext } from '@/utils/useMusicContext'
 import { MusicContext } from '@/types/audio'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
+import { useMultiplayerStore, useSessionStore, usePartySync } from '@/multiplayer'
+import { getSlotsForPlayerIndex } from '@/config/multiplayerConfig'
+import { getSocket } from '@/multiplayer/socket'
+import { MultiplayerPartyBanner } from '@/components/multiplayer/MultiplayerPartyBanner'
 
 interface DungeonPrepScreenProps {
   onBack: () => void
@@ -130,16 +134,25 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
 
   const handleAddHeroClick = (index: number) => {
     if (selectedHeroFromRoster !== null) {
-      // Add hero from roster to the clicked slot
       const hero = heroRoster[selectedHeroFromRoster]
-      addHero(hero, index)
+      if (mpRole === 'guest') {
+        // Guests can only fill their own slots
+        if (!myMpSlots?.includes(index)) return
+        claimSlot(index, hero)
+      } else {
+        addHero(hero, index)
+      }
       setSelectedHeroFromRoster(null)
     }
   }
 
   const handleAddHeroFromRosterDirect = (rosterIndex: number, slotIndex: number) => {
     const hero = heroRoster[rosterIndex]
-    if (hero) {
+    if (!hero) return
+    if (mpRole === 'guest') {
+      if (!myMpSlots?.includes(slotIndex)) return
+      claimSlot(slotIndex, hero)
+    } else {
       addHero(hero, slotIndex)
     }
   }
@@ -147,7 +160,14 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   const handleRemoveHero = (index: number) => {
     const hero = party[index]
     if (hero) {
-      removeHero(hero.id)
+      if (mpRole === 'guest') {
+        // Guests can only remove heroes from their own slots
+        if (!myMpSlots?.includes(index)) return
+        releaseSlot(index)
+        // Host will clear the slot and broadcast the updated party state
+      } else {
+        removeHero(hero.id)
+      }
       if (selectedHeroIndex === index) {
         setSelectedHeroIndex(null)
       }
@@ -226,6 +246,21 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
 
   const { handlePurchasePotion, handlePurchaseConsumable, handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
 
+  // ── Multiplayer party slot system ─────────────────────────────────────────
+  const mpRole       = useMultiplayerStore((s) => s.role)
+  const mpPlayers    = useMultiplayerStore((s) => s.players)
+  const slotOwnership = useSessionStore((s) => s.slotOwnershipByIndex)
+  const { claimSlot, releaseSlot } = usePartySync()
+
+  // Slots owned by the local player (null = not in a session)
+  const myMpSlots = useMemo(() => {
+    if (!mpRole || mpPlayers.length === 0 || slotOwnership.length === 0) return null
+    const socketId = getSocket().id
+    const myIdx    = mpPlayers.findIndex((p) => p.id === socketId)
+    if (myIdx === -1) return null
+    return getSlotsForPlayerIndex(myIdx, slotOwnership)
+  }, [mpRole, mpPlayers, slotOwnership])
+
   return (
     <Box className="dungeon-prep-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
       {/* Header */}
@@ -256,6 +291,10 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
 
         {/* Center - Party Slots */}
         <Box className="dungeon-prep-screen-center" flex={1} minW={0} minH={0} display="flex" flexDirection="column">
+          {/* Multiplayer slot ownership banner */}
+          {mpRole && mpPlayers.length > 0 && (
+            <MultiplayerPartyBanner localPlayerId={getSocket().id ?? ''} />
+          )}
           {isPortrait ? (
             // Portrait Layout - PartySummary outside scroll area
             <>

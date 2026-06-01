@@ -1,4 +1,4 @@
-import { Box, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Button } from '@chakra-ui/react'
+import { Box, useDisclosure, useToast, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Button } from '@chakra-ui/react'
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
@@ -17,6 +17,7 @@ import { OrientationProvider } from '@/contexts/OrientationContext'
 import { useGameStore } from '@/core/gameStore'
 import { setActiveNexusUpgrades } from '@/data/nexus'
 import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
+import { useSyncGameState, useMultiplayerStore, usePartySync } from '@/multiplayer'
 import type { Hero } from '@/types'
 
 const MotionBox = motion.create(Box)
@@ -71,10 +72,39 @@ function App() {
   const [hmrCounter, setHmrCounter] = useState(0)
   const [openGuildHallOnTown, setOpenGuildHallOnTown] = useState(false)
   const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration, nexusUpgrades } = useGameStore()
+  const mpRole = useMultiplayerStore((s) => s.role)
+  const mpActiveRun = useGameStore((s) => s.activeRun)
+
+  // Mount the multiplayer sync hook for the lifetime of the app
+  useSyncGameState()
+  // Mount the party sync hook (slot ownership + profile broadcast + run-end distribution)
+  usePartySync()
 
   // Sync nexus upgrades into the module-level context used by game systems
   useEffect(() => { setActiveNexusUpgrades(nexusUpgrades ?? {}) }, [nexusUpgrades])
   const { isOpen, onOpen, onClose } = useDisclosure()
+
+  // Guest: show a toast when the host starts or ends a run so the
+  // player is informed without being forcibly redirected.
+  const toast = useToast()
+  const prevRunResultRef = useRef<string | null | undefined>(undefined)
+  useEffect(() => {
+    const prev = prevRunResultRef.current
+    const cur  = mpActiveRun?.result
+    prevRunResultRef.current = cur
+    if (mpRole !== 'guest') return
+    if (prev === undefined) return // skip initial mount
+    if (cur === 'active' && prev !== 'active') {
+      toast({
+        title: 'Run started!',
+        description: 'The host has begun a dungeon run. Head to the dungeon when ready.',
+        status: 'info',
+        duration: 6000,
+        isClosable: true,
+        position: 'bottom-right',
+      })
+    }
+  }, [mpRole, mpActiveRun?.result, toast])
 
   // HMR: Force component remount on module reload to restore item icons
   useEffect(() => {
@@ -187,6 +217,10 @@ function App() {
                 onNewRun={handleNewRun}
                 onContinue={handleContinue}
                 onRunHistory={() => setCurrentScreen('run-history')}
+                onMultiplayerJoined={() => {
+                  // Joining a session doesn't force any screen change.
+                  // Players access the dungeon / town themselves.
+                }}
               />
             </MotionBox>
           )}

@@ -23,6 +23,8 @@ import { HeroShrineModal } from '../ui/HeroShrineModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
 import type { Consumable, Item, ItemRarity } from '@/types'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
+import { useMultiplayerStore, usePartySync } from '@/multiplayer'
+import { OnlinePlayersPanel } from '@/components/multiplayer/OnlinePlayersPanel'
 
 interface TownHubScreenProps {
   onEnterDungeon: () => void
@@ -194,6 +196,10 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
 
   const { handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
 
+  // Multiplayer: broadcast profile while in town
+  const mpRole = useMultiplayerStore((s) => s.role)
+  usePartySync() // initialises slot ownership + profile broadcast
+
   return (
     <Box className="town-hub-screen" position="relative" h="100vh" overflow="hidden">
       {/* Sky gradient at top */}
@@ -308,6 +314,13 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
               </HStack>
             </Tooltip>
           </HStack>
+
+          {/* Online players panel (visible when in a multiplayer session) */}
+          {mpRole && (
+            <Box mt={3} maxW="520px" mx="auto">
+              <OnlinePlayersPanel />
+            </Box>
+          )}
         </Box>
 
         {/* Town Square - grid-based 2.5D space */}

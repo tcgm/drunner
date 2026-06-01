@@ -1,4 +1,4 @@
-import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, IconButton, Box, VStack } from '@chakra-ui/react'
+import { Flex, Button, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, IconButton, Box, VStack, HStack, Badge, Text, Tooltip } from '@chakra-ui/react'
 import { useRef, useState, useEffect } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -19,7 +19,8 @@ import FloorMapScreen from '@components/dungeon/FloorMapScreen'
 import { refreshPartyAbilities } from '@/utils/abilityUtils'
 import { initializeBossCombatState } from '@/systems/combat'
 import { MusicContext } from '@/types/audio'
-import { GiCardJackHearts, GiInfo } from 'react-icons/gi'
+import { GiCardJackHearts, GiInfo, GiSwordsEmblem } from 'react-icons/gi'
+import { useDungeonActions, useMultiplayerStore, usePartySync } from '@/multiplayer'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
@@ -31,18 +32,26 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const {
     dungeon,
     party,
-    advanceDungeon,
-    selectChoice,
-    selectMapNode,
     isGameOver,
     lastOutcome,
-    retreatFromDungeon,
     activeRun,
     applyBossVictoryRewards,
     endGame,
     changeMusicContext,
     quests,
   } = useGameStore()
+
+  // Multiplayer-aware action wrappers (guests forward actions to host via socket)
+  const {
+    isGuest,
+    advanceDungeon,
+    selectChoice,
+    selectMapNode,
+    retreatFromDungeon,
+  } = useDungeonActions()
+  const mpPlayers = useMultiplayerStore((s) => s.players)
+  const mpRole = useMultiplayerStore((s) => s.role)
+  const { distributeRunEnd } = usePartySync()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
@@ -94,7 +103,23 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
       clearTimeout(clearTimer)
     }
   }, [lastOutcome])
-  
+
+  // Host: distribute loot and return guest heroes whenever the run ends via the
+  // engine (party wipe, victory via dungeon completion, etc.).
+  const hasDistributedRef = useRef(false)
+  useEffect(() => {
+    if (mpRole !== 'host') return
+    if (!isGameOver && activeRun?.result === 'active') {
+      // Run is still ongoing – reset the guard
+      hasDistributedRef.current = false
+      return
+    }
+    if (isGameOver && !hasDistributedRef.current) {
+      hasDistributedRef.current = true
+      distributeRunEnd()
+    }
+  }, [mpRole, isGameOver, activeRun?.result, distributeRunEnd])
+
   const handleSelectChoice = (choice: EventChoice) => {
     // Capture current event before selectChoice clears it
     const currentEvent = dungeon.currentEvent
@@ -132,6 +157,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }
   
   const handleRetreat = () => {
+    // Host distributes loot and returns guest heroes before ending the run
+    if (mpRole === 'host') distributeRunEnd()
     retreatFromDungeon()
     onClose()
     onExit()
@@ -163,6 +190,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const handleBossDefeat = () => {
     setInBossCombat(false)
     setBossEvent(null)
+    // Host distributes loot and returns guest heroes before triggering game over
+    if (mpRole === 'host') distributeRunEnd()
     // Trigger game over
     endGame()
   }
@@ -235,6 +264,35 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           depth={dungeon.depth}
           gold={dungeon.gold} 
         />
+
+        {/* Multiplayer player list */}
+        {mpRole && mpPlayers.length > 1 && (
+          <HStack spacing={2} px={1} flexWrap="wrap">
+            {mpPlayers.map((p, i) => (
+              <Tooltip key={p.id} label={i === 0 ? 'Host' : 'Guest'} placement="bottom">
+                <Badge
+                  colorScheme="purple"
+                  variant={i === 0 ? 'solid' : 'outline'}
+                  fontSize="xs"
+                  px={2}
+                  py={0.5}
+                  borderRadius="full"
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                >
+                  <GiSwordsEmblem style={{ display: 'inline', marginRight: 2 }} />
+                  <Text as="span">{p.name}</Text>
+                </Badge>
+              </Tooltip>
+            ))}
+            {isGuest && (
+              <Badge colorScheme="blue" variant="outline" fontSize="xs" px={2} py={0.5} borderRadius="full">
+                Spectating
+              </Badge>
+            )}
+          </HStack>
+        )}
         
         <EventArea
           currentEvent={dungeon.currentEvent}
