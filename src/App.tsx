@@ -1,5 +1,5 @@
-import { Box, useDisclosure, useToast, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Button } from '@chakra-ui/react'
-import { useState, useRef, useEffect } from 'react'
+import { Box, useDisclosure, useToast, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, Button, Text, HStack, Icon, Badge } from '@chakra-ui/react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import MainMenuScreen from '@components/screens/MainMenuScreen'
 import TownHubScreen from '@components/screens/TownHubScreen'
@@ -18,6 +18,9 @@ import { useGameStore } from '@/core/gameStore'
 import { setActiveNexusUpgrades } from '@/data/nexus'
 import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
 import { useSyncGameState, useMultiplayerStore, usePartySync } from '@/multiplayer'
+import { useSessionStore } from '@/multiplayer/sessionStore'
+import { getSocket } from '@/multiplayer/socket'
+import { GiDungeonGate, GiBootKick } from 'react-icons/gi'
 import { usePlayerProfileStore } from '@/core/playerProfileStore'
 import { GlobalMultiplayerButton } from '@/components/multiplayer/GlobalMultiplayerButton'
 import type { Hero } from '@/types'
@@ -73,8 +76,12 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('menu')
   const [hmrCounter, setHmrCounter] = useState(0)
   const [openGuildHallOnTown, setOpenGuildHallOnTown] = useState(false)
+  // Pending navigate: shown as a Helldivers-style countdown banner for guests
+  const [pendingNav, setPendingNav] = useState<{ destination: string; countdown: number } | null>(null)
+  const pendingNavTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const { activeRun, retreatFromDungeon, startDungeon, party, alkahest, pendingMigration, nexusUpgrades } = useGameStore()
   const mpRole = useMultiplayerStore((s) => s.role)
+  const mpRoomCode = useMultiplayerStore((s) => s.roomCode)
   const mpActiveRun = useGameStore((s) => s.activeRun)
 
   // Mount the multiplayer sync hook for the lifetime of the app
@@ -116,6 +123,48 @@ function App() {
     }
   }, [mpRole, mpActiveRun?.result, toast])
 
+  // Guest: show Helldivers-style countdown when host navigates — don't hard-override
+  const doNavigate = useCallback((destination: string) => {
+    setPendingNav(null)
+    if (pendingNavTimerRef.current) { clearInterval(pendingNavTimerRef.current); pendingNavTimerRef.current = null }
+    if (destination === 'dungeon-prep') {
+      setCurrentScreen('dungeon-prep')
+    } else if (destination === 'dungeon') {
+      setCurrentScreen('dungeon')
+    } else if (destination === 'town-hub') {
+      setCurrentScreen('town-hub')
+    }
+  }, [])
+
+  useEffect(() => {
+    if (mpRole !== 'guest') return
+    const socket = getSocket()
+    const handleNavigate = ({ destination }: { destination: string }) => {
+      // Start a 10-second countdown; player can move early or wait for auto-redirect
+      if (pendingNavTimerRef.current) clearInterval(pendingNavTimerRef.current)
+      setPendingNav({ destination, countdown: 10 })
+      pendingNavTimerRef.current = setInterval(() => {
+        setPendingNav((prev) => {
+          if (!prev) return null
+          if (prev.countdown <= 1) {
+            clearInterval(pendingNavTimerRef.current!)
+            pendingNavTimerRef.current = null
+            // Auto-navigate
+            doNavigate(destination)
+            return null
+          }
+          return { ...prev, countdown: prev.countdown - 1 }
+        })
+      }, 1000)
+    }
+    socket.on('navigate', handleNavigate)
+    return () => {
+      socket.off('navigate', handleNavigate)
+      if (pendingNavTimerRef.current) { clearInterval(pendingNavTimerRef.current); pendingNavTimerRef.current = null }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mpRole, doNavigate])
+
   // HMR: Force component remount on module reload to restore item icons
   useEffect(() => {
     if (import.meta.hot) {
@@ -153,8 +202,15 @@ function App() {
     console.log(`[HandleStartDungeon] freeFloorThreshold: ${freeFloorThreshold}, startingFloor: ${startingFloor}`)
     console.log(`[HandleStartDungeon] alkahestCost: ${alkahestCost}${alkahestCost === 0 ? ' (FREE)' : ''}`)
     
-    startDungeon(startingFloor, alkahestCost) // Actually start the dungeon in the game store
+    startDungeon(startingFloor, alkahestCost)
     usePlayerProfileStore.getState().incrementRunsStarted()
+
+    // Tell guests to navigate to the dungeon screen
+    if (mpRole === 'host' && mpRoomCode) {
+      getSocket().emit('navigate', { code: mpRoomCode, destination: 'dungeon' })
+      useSessionStore.getState().clearReadyPlayers()
+    }
+
     setCurrentScreen('dungeon')
   }
   
@@ -189,7 +245,11 @@ function App() {
     if (activeRun && activeRun.result === 'active') {
       handleContinue()
     } else {
-      // Navigate from town hub to dungeon prep to start a new run
+      // Tell guests to navigate to dungeon prep
+      if (mpRole === 'host' && mpRoomCode) {
+        getSocket().emit('navigate', { code: mpRoomCode, destination: 'dungeon-prep' })
+        useSessionStore.getState().clearReadyPlayers()
+      }
       setCurrentScreen('dungeon-prep')
     }
   }
@@ -249,6 +309,7 @@ function App() {
                 onEnterDungeon={handleEnterDungeonPrep}
                 onBack={handleBackToMenu}
                     openGuildHallOnMount={openGuildHallOnTown}
+                flashEntrance={pendingNav?.destination === 'dungeon-prep' || pendingNav?.destination === 'dungeon'}
               />
             </MotionBox>
           )}
@@ -313,6 +374,88 @@ function App() {
             </MotionBox>
           )}
         </AnimatePresence>
+
+        {/* Guest: Helldivers-style move-out countdown banner */}
+        {pendingNav && (
+          <Box
+            position="fixed"
+            top={0}
+            left={0}
+            right={0}
+            zIndex={9999}
+            pointerEvents="all"
+          >
+            {/* Flashing top stripe */}
+            <Box
+              h="4px"
+              bgGradient="linear(to-r, orange.600, yellow.400, orange.600)"
+              sx={{
+                animation: 'pulse 0.6s ease-in-out infinite alternate',
+                '@keyframes pulse': { from: { opacity: 0.4 }, to: { opacity: 1 } },
+              }}
+            />
+            <HStack
+              bg="rgba(20, 10, 0, 0.92)"
+              backdropFilter="blur(8px)"
+              borderBottom="1px solid"
+              borderColor="orange.700"
+              px={6}
+              py={3}
+              justify="space-between"
+              spacing={4}
+            >
+              <HStack spacing={3}>
+                <Icon as={GiDungeonGate} color="orange.400" boxSize={6}
+                  sx={{ animation: 'spin 1s linear infinite', '@keyframes spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } } }}
+                />
+                <Box>
+                  <Text color="orange.300" fontWeight="bold" fontSize="sm" letterSpacing="wide">
+                    HOST MOVING OUT
+                  </Text>
+                  <Text color="gray.400" fontSize="xs">
+                    {pendingNav.destination === 'dungeon' ? 'Entering the dungeon…' : 'Moving to party setup…'}
+                  </Text>
+                </Box>
+              </HStack>
+              <HStack spacing={3}>
+                <Badge
+                  colorScheme="orange"
+                  fontSize="xl"
+                  px={3}
+                  py={1}
+                  borderRadius="md"
+                  sx={{
+                    fontVariantNumeric: 'tabular-nums',
+                    animation: pendingNav.countdown <= 3 ? 'blink 0.4s step-end infinite' : undefined,
+                    '@keyframes blink': { '50%': { opacity: 0 } },
+                  }}
+                >
+                  {pendingNav.countdown}s
+                </Badge>
+                <Button
+                  colorScheme="orange"
+                  size="sm"
+                  leftIcon={<Icon as={GiBootKick} />}
+                  onClick={() => doNavigate(pendingNav.destination)}
+                  px={4}
+                >
+                  Move Out
+                </Button>
+                <Button
+                  variant="ghost"
+                  colorScheme="gray"
+                  size="sm"
+                  onClick={() => {
+                    setPendingNav(null)
+                    if (pendingNavTimerRef.current) { clearInterval(pendingNavTimerRef.current); pendingNavTimerRef.current = null }
+                  }}
+                >
+                  Stay
+                </Button>
+              </HStack>
+            </HStack>
+          </Box>
+        )}
 
         {/* New Run Confirmation Dialog */}
         <AlertDialog

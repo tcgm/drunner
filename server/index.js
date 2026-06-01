@@ -243,6 +243,23 @@ io.on('connection', (socket) => {
     }
   })
 
+  // ── Host → Guests: navigate to a screen ──────────────────────────────────
+  socket.on('navigate', ({ code, destination }) => {
+    socket.to(code).emit('navigate', { destination })
+  })
+
+  // ── Any → Host: player signals they are ready to enter the dungeon ────────
+  socket.on('player-ready', ({ code }) => {
+    const room = rooms.get(code)
+    if (!room) return
+    io.to(room.hostId).emit('player-ready', { playerId: socket.id })
+  })
+
+  // ── Host → All: broadcast current ready-player list ──────────────────────
+  socket.on('ready-update', ({ code, readyPlayers }) => {
+    socket.to(code).emit('ready-update', { readyPlayers })
+  })
+
   // ── Disconnect cleanup ────────────────────────────────────────────────────
   socket.on('disconnect', () => {
     console.log(`[Server] Client disconnected: ${socket.id}`)

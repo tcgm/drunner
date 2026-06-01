@@ -112,10 +112,23 @@ export function useSyncGameState() {
       socket.on('guest-action', handleGuestAction)
       socket.on('cast-vote', handleCastVote)
 
+      // Handle ready signal from any player
+      const handlePlayerReady = ({ playerId }: { playerId: string }) => {
+        const session = useSessionStore.getState()
+        const updated = session.readyPlayers.includes(playerId)
+          ? session.readyPlayers
+          : [...session.readyPlayers, playerId]
+        session.setReadyPlayers(updated)
+        socket.emit('ready-update', { code: roomCode, readyPlayers: updated })
+      }
+
+      socket.on('player-ready', handlePlayerReady)
+
       return () => {
         unsubscribe()
         socket.off('guest-action', handleGuestAction)
         socket.off('cast-vote', handleCastVote)
+        socket.off('player-ready', handlePlayerReady)
         clearVotes()
       }
     }
@@ -176,11 +189,18 @@ export function useSyncGameState() {
       socket.on('draft-start', handleDraftStart)
       socket.on('draft-update', handleDraftUpdate)
 
+      // Ready-up list broadcast by host
+      const handleReadyUpdate = ({ readyPlayers }: { readyPlayers: string[] }) => {
+        useSessionStore.getState().setReadyPlayers(readyPlayers)
+      }
+      socket.on('ready-update', handleReadyUpdate)
+
       return () => {
         socket.off('state-update', handleStateUpdate)
         socket.off('vote-update', handleVoteUpdate)
         socket.off('draft-start', handleDraftStart)
         socket.off('draft-update', handleDraftUpdate)
+        socket.off('ready-update', handleReadyUpdate)
       }
     }
   }, [role, roomCode, players.length])

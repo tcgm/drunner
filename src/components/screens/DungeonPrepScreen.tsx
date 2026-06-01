@@ -1,8 +1,9 @@
 import './DungeonPrepScreen.css'
-import { Box, Flex, useDisclosure } from '@chakra-ui/react'
+import { Box, Flex, useDisclosure, HStack, VStack, Text, Badge, Icon, Button, Tooltip, useToast } from '@chakra-ui/react'
+import { GiCheckMark, GiHourglass } from 'react-icons/gi'
 import { useGameStore } from '../../core/gameStore'
 import { GAME_CONFIG } from '../../config/gameConfig'
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import type { Hero, Consumable, Item } from '../../types'
 import { PartySetupHeader } from '../party/PartySetupHeader'
 import { HeroSelectionSidebar } from '../party/HeroSelectionSidebar'
@@ -246,20 +247,58 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
 
   const { handlePurchasePotion, handlePurchaseConsumable, handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
 
-  // ── Multiplayer party slot system ─────────────────────────────────────────
+  // ── Multiplayer party slot system ────────────────────────────────────────
   const mpRole       = useMultiplayerStore((s) => s.role)
   const mpPlayers    = useMultiplayerStore((s) => s.players)
   const slotOwnership = useSessionStore((s) => s.slotOwnershipByIndex)
+  const readyPlayers  = useSessionStore((s) => s.readyPlayers)
   const { claimSlot, releaseSlot } = usePartySync()
+  const toast = useToast()
+
+  const mySocketId = getSocket().id ?? ''
 
   // Slots owned by the local player (null = not in a session)
   const myMpSlots = useMemo(() => {
     if (!mpRole || mpPlayers.length === 0 || slotOwnership.length === 0) return null
-    const socketId = getSocket().id
-    const myIdx    = mpPlayers.findIndex((p) => p.id === socketId)
+    const myIdx    = mpPlayers.findIndex((p) => p.id === mySocketId)
     if (myIdx === -1) return null
     return getSlotsForPlayerIndex(myIdx, slotOwnership)
-  }, [mpRole, mpPlayers, slotOwnership])
+  }, [mpRole, mpPlayers, slotOwnership, mySocketId])
+
+  const iAmReady = readyPlayers.includes(mySocketId)
+  const allPlayersReady = mpRole && mpPlayers.length > 0
+    ? mpPlayers.every(p => readyPlayers.includes(p.id))
+    : true
+
+  // Toast when everyone is ready
+  const prevAllReadyRef = useRef(false)
+  useEffect(() => {
+    if (allPlayersReady && !prevAllReadyRef.current && mpRole && mpPlayers.length > 1) {
+      toast({
+        title: 'All players ready!',
+        description: mpRole === 'host' ? 'You can now enter the dungeon.' : 'Waiting for host to start…',
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+        position: 'top',
+      })
+    }
+    prevAllReadyRef.current = allPlayersReady
+  }, [allPlayersReady, mpRole, mpPlayers.length, toast])
+
+  const handleReadyUp = useCallback(() => {
+    if (iAmReady) return
+    if (mpRole === 'host') {
+      const updated = [...readyPlayers, mySocketId]
+      useSessionStore.getState().setReadyPlayers(updated)
+      getSocket().emit('ready-update', { code: useMultiplayerStore.getState().roomCode, readyPlayers: updated })
+    } else {
+      getSocket().emit('player-ready', { code: useMultiplayerStore.getState().roomCode })
+    }
+  }, [iAmReady, mpRole, readyPlayers, mySocketId])
+
+  // Effective canStart: also requires all ready in multiplayer
+  const effectiveCanStart = canStart && allPlayersReady
 
   return (
     <Box className="dungeon-prep-screen" h="100vh" w="100vw" bg="gray.900" display="flex" flexDirection="column" overflow="hidden">
@@ -272,7 +311,7 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
         bankStorageSlots={bankStorageSlots}
         activeQuestCount={quests.filter(q => q.status === 'active').length}
         completedQuestCount={quests.filter(q => q.status === 'completed').length}
-        canStart={canStart}
+        canStart={effectiveCanStart}
         onBack={onBack}
         onStart={handleStart}
         onOpenShop={onShopOpen}
@@ -294,6 +333,78 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
           {/* Multiplayer slot ownership banner */}
           {mpRole && mpPlayers.length > 0 && (
             <MultiplayerPartyBanner localPlayerId={getSocket().id ?? ''} />
+          )}
+          {/* ── Multiplayer ready-up bar ─────────────────────────────── */}
+          {mpRole && mpPlayers.length > 0 && (
+            <Box
+              bg="gray.850"
+              borderBottom="1px solid"
+              borderColor="gray.700"
+              px={4}
+              py={2}
+              flexShrink={0}
+            >
+              <HStack justify="space-between" align="center">
+                <HStack spacing={3} flexWrap="wrap">
+                  <Text color="gray.400" fontSize="xs" fontWeight="bold" letterSpacing="wide">
+                    READY STATUS
+                  </Text>
+                  {mpPlayers.map((p) => {
+                    const isReady = readyPlayers.includes(p.id)
+                    return (
+                      <Tooltip key={p.id} label={isReady ? 'Ready!' : 'Not ready'} placement="top" hasArrow>
+                        <HStack
+                          spacing={1}
+                          bg={isReady ? 'green.900' : 'gray.800'}
+                          border="1px solid"
+                          borderColor={isReady ? 'green.600' : 'gray.600'}
+                          borderRadius="md"
+                          px={2}
+                          py={0.5}
+                          transition="all 0.2s"
+                        >
+                          <Icon
+                            as={isReady ? GiCheckMark : GiHourglass}
+                            color={isReady ? 'green.400' : 'gray.500'}
+                            boxSize={3}
+                          />
+                          <Text
+                            fontSize="xs"
+                            color={isReady ? 'green.300' : 'gray.400'}
+                            maxW="80px"
+                            noOfLines={1}
+                          >
+                            {p.name}
+                          </Text>
+                          {p.id === mySocketId && (
+                            <Badge colorScheme="blue" fontSize="2xs">you</Badge>
+                          )}
+                        </HStack>
+                      </Tooltip>
+                    )
+                  })}
+                </HStack>
+                {!iAmReady ? (
+                  <Button
+                    colorScheme="green"
+                    size="sm"
+                    onClick={handleReadyUp}
+                    leftIcon={<Icon as={GiCheckMark} />}
+                  >
+                    I'm Ready
+                  </Button>
+                ) : (
+                  <HStack spacing={2}>
+                    <Icon as={GiCheckMark} color="green.400" boxSize={4} />
+                    <Text color="green.400" fontSize="sm" fontWeight="bold">
+                      {allPlayersReady
+                        ? mpRole === 'host' ? 'All ready — click Enter Dungeon!' : 'All ready — waiting for host…'
+                        : 'Waiting for others…'}
+                    </Text>
+                  </HStack>
+                )}
+              </HStack>
+            </Box>
           )}
           {isPortrait ? (
             // Portrait Layout - PartySummary outside scroll area

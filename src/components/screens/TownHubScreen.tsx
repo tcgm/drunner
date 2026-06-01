@@ -30,12 +30,14 @@ interface TownHubScreenProps {
   onEnterDungeon: () => void
   onBack: () => void
   openGuildHallOnMount?: boolean
+  /** Guest-only: flash the dungeon entrance while the host's move-out countdown is active */
+  flashEntrance?: boolean
 }
 
 const MotionBox = motion.create(Box)
 const MotionFlex = motion.create(Flex)
 
-export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnMount }: TownHubScreenProps) {
+export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnMount, flashEntrance = false }: TownHubScreenProps) {
   // Set town music
   useMusicContext(MusicContext.MAIN_MENU)
 
@@ -381,6 +383,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
                     gridRow: effectiveRow,
                   }}
                   onClick={action === 'enter-dungeon' ? onEnterDungeon : () => handleBuildingClick(building.id)}
+                  flashing={action === 'enter-dungeon' && flashEntrance}
                 />
               )
             })}
@@ -489,14 +492,14 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
       />
 
       {/* Online players panel — floats in the bottom-right corner,
-          outside the blurred header so it never blocks town interaction */}
+          above the blurred header (zIndex > 200) */}
       {mpRole && (
         <Box
           position="absolute"
           bottom={4}
           right={4}
           maxW="280px"
-          zIndex={150}
+          zIndex={250}
           pointerEvents="auto"
         >
           <OnlinePlayersPanel />
@@ -515,9 +518,10 @@ interface BuildingCardProps extends Building {
   decorative?: boolean
   opacity?: number
   depthScale?: number
+  flashing?: boolean
 }
 
-function BuildingCard({ icon, label, color, disabled = false, sizeMultiplier = 1, labelSize, side, index, onClick, className, style, decorative = false, opacity: opacityProp, depthScale = 1 }: BuildingCardProps) {
+function BuildingCard({ icon, label, color, disabled = false, sizeMultiplier = 1, labelSize, side, index, onClick, className, style, decorative = false, opacity: opacityProp, depthScale = 1, flashing = false }: BuildingCardProps) {
   const effectiveOpacity = opacityProp ?? (disabled ? 0.5 : 1)
   const buildingVariants = {
     hidden: { 
@@ -558,6 +562,13 @@ function BuildingCard({ icon, label, color, disabled = false, sizeMultiplier = 1
       initial="hidden"
       animate="visible"
       style={{ transformStyle: 'preserve-3d', ...style }}
+      sx={flashing ? {
+        animation: 'entranceFlash 0.7s ease-in-out infinite alternate',
+        '@keyframes entranceFlash': {
+          from: { filter: `drop-shadow(0 0 8px ${color}80)` },
+          to:   { filter: `drop-shadow(0 0 30px ${color}) drop-shadow(0 0 60px ${color}90)` },
+        },
+      } : undefined}
     >
       {/* Fixed-size 120px container so the card layout never shifts regardless of sizeMultiplier */}
       <Box position="relative" boxSize="120px" flexShrink={0} mb={2} overflow="visible" display="flex" alignItems="center" justifyContent="center">
