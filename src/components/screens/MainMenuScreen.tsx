@@ -1,11 +1,12 @@
-import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Text, Divider, HStack, Badge, useToast, Icon, Collapse, IconButton, Input, FormControl, FormLabel, Alert, AlertIcon, Spinner } from '@chakra-ui/react'
+import { VStack, Heading, Button, Box, useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, ModalFooter, Text, Divider, HStack, Badge, useToast, Icon, Collapse, IconButton, Input, Textarea, FormControl, FormLabel, Alert, AlertIcon, Spinner } from '@chakra-ui/react'
 import { useState, useRef, useMemo } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { GiCrossedSwords, GiCurlyWing, GiRun, GiScrollUnfurled, GiSave, GiGearHammer, GiCryptEntrance, GiSwordsEmblem } from 'react-icons/gi'
-import { FaChevronDown, FaChevronUp, FaCopy, FaCheck } from 'react-icons/fa'
+import { FaChevronDown, FaChevronUp, FaCopy, FaCheck, FaUser } from 'react-icons/fa'
 import LZString from 'lz-string'
 import { idbGet, idbSet } from '@/utils/idbStorage'
 import { useMultiplayerStore } from '@/multiplayer'
+import { usePlayerProfileStore } from '@/core/playerProfileStore'
 
 interface MainMenuScreenProps {
   onNewRun: () => void
@@ -23,6 +24,14 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory, onM
     onClose: onMpClose,
   } = useDisclosure()
   const mp = useMultiplayerStore()
+  const profile = usePlayerProfileStore()
+  const {
+    isOpen: isProfileOpen,
+    onOpen: onProfileOpen,
+    onClose: onProfileClose,
+  } = useDisclosure()
+  const [profileNameDraft, setProfileNameDraft] = useState('')
+  const [profileTaglineDraft, setProfileTaglineDraft] = useState('')
   const [mpTab, setMpTab] = useState<'host' | 'join'>('host')
   const [joinCode, setJoinCode] = useState('')
   const [mpLoading, setMpLoading] = useState(false)
@@ -46,7 +55,20 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory, onM
   
   // Check if there's an active dungeon run in progress
   const hasActiveRun = activeRun !== null && activeRun.result === 'active'
-  
+
+  const handleOpenProfile = () => {
+    setProfileNameDraft(profile.displayName)
+    setProfileTaglineDraft(profile.tagline)
+    onProfileOpen()
+  }
+
+  const handleSaveProfile = () => {
+    profile.setDisplayName(profileNameDraft)
+    profile.setTagline(profileTaglineDraft)
+    mp.setLocalPlayerName(profileNameDraft)
+    onProfileClose()
+  }
+
   const handleOpenSaveManager = async () => {
     const availableBackups = await listBackups()
     setBackups(availableBackups)
@@ -605,6 +627,18 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory, onM
           >
             Manage Saves
           </Button>
+          <Button
+            className="btn-player-profile"
+            colorScheme="teal"
+            variant="ghost"
+            size="md"
+            width="100%"
+            fontSize="sm"
+            onClick={handleOpenProfile}
+            leftIcon={<Icon as={FaUser} boxSize={4} />}
+          >
+            {profile.displayName}
+          </Button>
           <Button 
             className="btn-settings" 
             colorScheme="gray" 
@@ -1138,6 +1172,62 @@ export default function MainMenuScreen({ onNewRun, onContinue, onRunHistory, onM
         style={{ display: 'none' }}
         onChange={handleFileChange}
       />
+
+      {/* Player Profile Modal */}
+      <Modal isOpen={isProfileOpen} onClose={onProfileClose} isCentered>
+        <ModalOverlay />
+        <ModalContent bg="gray.800" borderWidth="1px" borderColor="teal.700" maxW="420px">
+          <ModalHeader color="teal.300">
+            <HStack spacing={2}>
+              <Icon as={FaUser} boxSize={4} />
+              <Text>Player Profile</Text>
+            </HStack>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={4}>
+            <VStack spacing={4} align="stretch">
+              <FormControl>
+                <FormLabel color="gray.300" fontSize="sm">Display Name</FormLabel>
+                <Input
+                  value={profileNameDraft}
+                  onChange={(e) => setProfileNameDraft(e.target.value)}
+                  placeholder="Adventurer"
+                  maxLength={24}
+                  bg="gray.700"
+                  borderColor="teal.600"
+                  _focus={{ borderColor: 'teal.400', boxShadow: '0 0 0 1px teal' }}
+                />
+                <Text fontSize="xs" color="gray.500" mt={1}>
+                  Shown in multiplayer lobbies. Max 24 characters.
+                </Text>
+              </FormControl>
+              <FormControl>
+                <FormLabel color="gray.300" fontSize="sm">Tagline <Text as="span" color="gray.500">(optional)</Text></FormLabel>
+                <Textarea
+                  value={profileTaglineDraft}
+                  onChange={(e) => setProfileTaglineDraft(e.target.value)}
+                  placeholder="e.g. Slayer of dragons, finder of gold"
+                  maxLength={60}
+                  rows={2}
+                  resize="none"
+                  bg="gray.700"
+                  borderColor="gray.600"
+                  _focus={{ borderColor: 'teal.400', boxShadow: '0 0 0 1px teal' }}
+                />
+              </FormControl>
+              <Divider borderColor="gray.600" />
+              <HStack justify="space-between" fontSize="xs" color="gray.500">
+                <Text>Runs started: {profile.totalRunsStarted}</Text>
+                <Text>Profile since: {new Date(profile.createdAt).toLocaleDateString()}</Text>
+              </HStack>
+            </VStack>
+          </ModalBody>
+          <ModalFooter gap={2}>
+            <Button variant="ghost" onClick={onProfileClose}>Cancel</Button>
+            <Button colorScheme="teal" onClick={handleSaveProfile}>Save Profile</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   )
 }

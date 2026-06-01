@@ -315,12 +315,6 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
             </Tooltip>
           </HStack>
 
-          {/* Online players panel (visible when in a multiplayer session) */}
-          {mpRole && (
-            <Box mt={3} maxW="520px" mx="auto">
-              <OnlinePlayersPanel />
-            </Box>
-          )}
         </Box>
 
         {/* Town Square - grid-based 2.5D space */}
@@ -493,6 +487,21 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
         onAccept={handleShiftyGuyAccept}
         onDecline={handleShiftyGuyDecline}
       />
+
+      {/* Online players panel — floats in the bottom-right corner,
+          outside the blurred header so it never blocks town interaction */}
+      {mpRole && (
+        <Box
+          position="absolute"
+          bottom={4}
+          right={4}
+          maxW="280px"
+          zIndex={150}
+          pointerEvents="auto"
+        >
+          <OnlinePlayersPanel />
+        </Box>
+      )}
     </Box>
   )
 }
@@ -616,6 +625,7 @@ function BuildingCard({ icon, label, color, disabled = false, sizeMultiplier = 1
           )}
         </>
       )}
+
     </MotionFlex>
   )
 }

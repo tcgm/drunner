@@ -13,8 +13,23 @@ import type { Socket } from 'socket.io-client'
 let _socket: Socket | null = null
 let _socketUrl: string | null = null
 
-const DEFAULT_URL = () =>
-  (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) ?? 'http://localhost:3001'
+const DEFAULT_URL = (): string => {
+  const configured =
+    (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) ?? 'http://localhost:3001'
+  // When a guest opens the app from another machine (e.g. http://192.168.1.x:5173),
+  // "localhost" in the baked-in URL resolves to *their* machine, not the server.
+  // Substitute the actual page hostname so the relay is always reachable.
+  try {
+    const u = new URL(configured)
+    if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
+      u.hostname = window.location.hostname
+      return u.toString()
+    }
+  } catch {
+    // malformed env var — fall through and return as-is
+  }
+  return configured
+}
 
 /**
  * Returns the shared socket instance, creating it if necessary.

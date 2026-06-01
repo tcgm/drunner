@@ -10,6 +10,7 @@ import { create } from 'zustand'
 import { connectSocket, disconnectSocket, getSocket } from './socket'
 import type { MultiplayerPlayer } from './types'
 import { isDirectCode, decodeCodeToIp, encodeIpToCode, MULTIPLAYER_CONFIG } from '@/config/multiplayerConfig'
+import { usePlayerProfileStore } from '@/core/playerProfileStore'
 
 export type MultiplayerRole = 'host' | 'guest' | null
 
@@ -39,7 +40,11 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
   error: null,
   localPlayerName: 'Player',
 
-  setLocalPlayerName: (name) => set({ localPlayerName: name }),
+  setLocalPlayerName: (name) => {
+    set({ localPlayerName: name })
+    // Persist to player profile so it survives page reloads
+    usePlayerProfileStore.getState().setDisplayName(name)
+  },
 
   // ── Host: create a room and return the 4-char code ──────────────────────
   createRoom: () =>

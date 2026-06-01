@@ -18,6 +18,7 @@ import { useGameStore } from '@/core/gameStore'
 import { setActiveNexusUpgrades } from '@/data/nexus'
 import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
 import { useSyncGameState, useMultiplayerStore, usePartySync } from '@/multiplayer'
+import { usePlayerProfileStore } from '@/core/playerProfileStore'
 import type { Hero } from '@/types'
 
 const MotionBox = motion.create(Box)
@@ -79,6 +80,14 @@ function App() {
   useSyncGameState()
   // Mount the party sync hook (slot ownership + profile broadcast + run-end distribution)
   usePartySync()
+
+  // Seed multiplayer display name from persisted player profile on first mount
+  const profileName = usePlayerProfileStore((s) => s.displayName)
+  const setLocalPlayerName = useMultiplayerStore((s) => s.setLocalPlayerName)
+  useEffect(() => {
+    setLocalPlayerName(profileName)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Sync nexus upgrades into the module-level context used by game systems
   useEffect(() => { setActiveNexusUpgrades(nexusUpgrades ?? {}) }, [nexusUpgrades])
@@ -144,6 +153,7 @@ function App() {
     console.log(`[HandleStartDungeon] alkahestCost: ${alkahestCost}${alkahestCost === 0 ? ' (FREE)' : ''}`)
     
     startDungeon(startingFloor, alkahestCost) // Actually start the dungeon in the game store
+    usePlayerProfileStore.getState().incrementRunsStarted()
     setCurrentScreen('dungeon')
   }
   
