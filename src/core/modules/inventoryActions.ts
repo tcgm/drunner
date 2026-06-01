@@ -766,6 +766,12 @@ export const createInventoryActions: StateCreator<
       materialId
     )
 
+    // Guard: if generation fell back to an alkahest shard, bail without consuming materials
+    if (newItem.name === 'Alkahest Shard') {
+      console.error(`[forgeItem] generateItem returned alkahest shard fallback for type="${baseType}" material="${materialId}" rarity="${targetRarity}" — aborting forge`)
+      return null
+    }
+
     // Consume 1 fragment from stack (remove item if quantity reaches 0)
     const newBankInventory = state.bankInventory.flatMap(i => {
       if (i.id !== fragItem.id) return [i]

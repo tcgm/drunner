@@ -33,6 +33,8 @@ export interface HeroBoardActionsSlice {
   passHero: (heroId: string) => void
   /** Fire a roster hero, depositing all their gear into the bank */
   dismissHero: (heroId: string) => void
+  /** If the roster is empty, add 4 random starting heroes for free */
+  seedStartingHeroes: () => void
 }
 
 export const createHeroBoardActions: StateCreator<
@@ -193,4 +195,17 @@ export const createHeroBoardActions: StateCreator<
         hiredUniqueHeroIds,
       }
     }),
+
+    seedStartingHeroes: () =>
+      set((state) => {
+        if (state.heroRoster.length > 0) return state
+        const now = Date.now()
+        const startingHeroes = Array.from({ length: 4 }, (_, i) => {
+          const hireable = generateHireableHero(now + i * 0xf00dcafe, now)
+          const hero = hireableHeroToHero(hireable)
+          const effectiveMaxHp = calculateTotalStats(hero).maxHp
+          return { ...hero, stats: { ...hero.stats, hp: effectiveMaxHp } }
+        })
+        return { heroRoster: startingHeroes }
+      }),
 })
