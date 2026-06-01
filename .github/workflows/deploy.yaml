@@ -78,11 +78,15 @@ jobs:
           cp -r dist/* ../deploy/test/
 
       - name: Build multiplayer branch
+        env:
+          VITE_MULTIPLAYER_URL: ${{ secrets.VITE_MULTIPLAYER_URL }}
         run: |
           echo "Building multiplayer branch..."
           git checkout multiplayer
           npm ci
-          BASE_URL=/${{ github.event.repository.name }}/multiplayer/ VITE_MULTIPLAYER_URL=${{ secrets.VITE_MULTIPLAYER_URL }} npx vite build
+          BASE_URL=/${{ github.event.repository.name }}/multiplayer/ npx vite build
+          echo "--- Verifying VITE_MULTIPLAYER_URL baked into bundle ---"
+          grep -r "VITE_MULTIPLAYER_URL\|wss://\|https://" dist/assets/*.js | head -5 || true
           mkdir -p ../deploy/multiplayer
           cp -r dist/* ../deploy/multiplayer/
       
