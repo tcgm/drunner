@@ -154,6 +154,13 @@ io.on('connection', (socket) => {
     socket.to(code).emit('slot-assignments-update', { assignments })
   })
 
+  // ── Any → Others: request all peers to re-send their profiles ──────────────
+  socket.on('request-profiles', ({ code }) => {
+    const room = rooms.get(code)
+    if (!room) return
+    socket.to(code).emit('profile-request', { requesterId: socket.id })
+  })
+
   // ── Any → All: broadcast player profile (roster preview, location) ─────────
   socket.on('broadcast-profile', ({ code, profile }) => {
     const room = rooms.get(code)

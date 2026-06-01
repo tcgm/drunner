@@ -85,8 +85,25 @@ export function usePartySync() {
     if (serialised === profileRef.current) return // no change
     profileRef.current = serialised
 
+    // Store own profile locally — server only relays to others, not back to sender
+    updatePlayerProfile(socket.id, profile)
     socket.emit('broadcast-profile', { code: roomCode, profile })
-  }, [role, roomCode, heroRoster, bankGold])
+  }, [role, roomCode, heroRoster, bankGold, updatePlayerProfile])
+
+  // ── Re-broadcast own profile when a peer asks for it ─────────────────────
+  // This fires when a new player joins and requests profiles from existing players.
+  useEffect(() => {
+    if (!role || !roomCode) return
+    const socket = getSocket()
+
+    const onProfileRequest = () => {
+      // Reset the dedupe ref so the broadcast effect runs again unconditionally
+      profileRef.current = ''
+    }
+
+    socket.on('profile-request', onProfileRequest)
+    return () => { socket.off('profile-request', onProfileRequest) }
+  }, [role, roomCode])
 
   // ── Host-side socket listeners ────────────────────────────────────────────
   useEffect(() => {
@@ -150,14 +167,14 @@ export function usePartySync() {
       updatePlayerProfile(playerId, profile)
     }
 
-    socket.on('guest-slot-claimed',  onGuestSlotClaimed)
-    socket.on('guest-slot-released', onGuestSlotReleased)
-    socket.on('player-profile',      onProfileUpdate)
+    socket.on('guest-slot-claimed',    onGuestSlotClaimed)
+    socket.on('guest-slot-released',   onGuestSlotReleased)
+    socket.on('player-profile-update', onProfileUpdate)
 
     return () => {
-      socket.off('guest-slot-claimed',  onGuestSlotClaimed)
-      socket.off('guest-slot-released', onGuestSlotReleased)
-      socket.off('player-profile',      onProfileUpdate)
+      socket.off('guest-slot-claimed',    onGuestSlotClaimed)
+      socket.off('guest-slot-released',   onGuestSlotReleased)
+      socket.off('player-profile-update', onProfileUpdate)
     }
   }, [role, roomCode, setSlotAssignment, updatePlayerProfile])
 

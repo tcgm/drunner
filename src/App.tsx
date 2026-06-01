@@ -19,6 +19,7 @@ import { setActiveNexusUpgrades } from '@/data/nexus'
 import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
 import { useSyncGameState, useMultiplayerStore, usePartySync } from '@/multiplayer'
 import { usePlayerProfileStore } from '@/core/playerProfileStore'
+import { GlobalMultiplayerButton } from '@/components/multiplayer/GlobalMultiplayerButton'
 import type { Hero } from '@/types'
 
 const MotionBox = motion.create(Box)
@@ -347,6 +348,9 @@ function App() {
 
         {/* Global Music Controls */}
         <MusicControls />
+
+        {/* Global Multiplayer Button — accessible from every screen */}
+        <GlobalMultiplayerButton />
 
         <DevTools />
         </Box>
