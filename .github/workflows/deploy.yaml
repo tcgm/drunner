@@ -7,6 +7,7 @@ on:
       - development
       - test
       - combat
+      - multiplayer
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -75,6 +76,15 @@ jobs:
           BASE_URL=/${{ github.event.repository.name }}/test/ npx vite build
           mkdir -p ../deploy/test
           cp -r dist/* ../deploy/test/
+
+      - name: Build multiplayer branch
+        run: |
+          echo "Building multiplayer branch..."
+          git checkout multiplayer
+          npm ci
+          BASE_URL=/${{ github.event.repository.name }}/multiplayer/ VITE_MULTIPLAYER_URL=${{ secrets.VITE_MULTIPLAYER_URL }} npx vite build
+          mkdir -p ../deploy/multiplayer
+          cp -r dist/* ../deploy/multiplayer/
       
       - name: Move deploy folder
         run: |
