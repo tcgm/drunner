@@ -14,5 +14,5 @@ export const stormcaller: UniqueHeroDefinition = {
         { stat: 'speed', value: 9 },
     ],
     hireCostOverride: 3300,
-    lore: 'Lightning follows him wherever he goes. He doesn't know why.He thinks it's kind of convenient for keeping insects away.',
+    lore: "Lightning follows him wherever he goes. He doesn't know why. He thinks it's kind of convenient for keeping insects away.",
 }
