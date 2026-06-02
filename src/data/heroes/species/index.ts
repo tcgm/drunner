@@ -21,8 +21,10 @@ import { nekomata } from './nekomata'
 import { oni } from './oni'
 import { tengu } from './tengu'
 import { dryad } from './dryad'
+import { dragon } from './dragon'
+import { construct } from './construct'
 
-export { human, elf, dwarf, orc, halfling, gnome, hellborn, celestine, fae, drakin, devil, angel, tanuki, kitsune, nekomata, oni, tengu, dryad }
+export { human, elf, dwarf, orc, halfling, gnome, hellborn, celestine, fae, drakin, devil, angel, tanuki, kitsune, nekomata, oni, tengu, dryad, dragon, construct }
 
 export const SPECIES_DEFINITIONS: Record<HeroSpecies, SpeciesDefinition> = {
   human,
@@ -43,6 +45,8 @@ export const SPECIES_DEFINITIONS: Record<HeroSpecies, SpeciesDefinition> = {
   oni,
   tengu,
   dryad,
+  dragon,
+  construct,
 }
 
 export const ALL_SPECIES = Object.values(SPECIES_DEFINITIONS)
