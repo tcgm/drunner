@@ -134,6 +134,10 @@ import { sylvara } from './sylvara'
 import { briarzen } from './briarzen'
 import { thornveil } from './thornveil'
 import { mosshallow } from './mosshallow'
+// additional
+import { ancientconstruct } from './ancientconstruct'
+import { stormcaller } from './stormcaller'
+import { voidwalker } from './voidwalker'
 
 export const ALL_UNIQUE_HEROES = [
     // original 6
@@ -180,4 +184,6 @@ export const ALL_UNIQUE_HEROES = [
     luci, beel, asmo, levi, mami, belphy, mephie, lili, beli, asta, abby, val, bellend,
     // dryad
     sylvara, briarzen, thornveil, mosshallow,
+    // additional
+    ancientconstruct, stormcaller, voidwalker,
 ]
