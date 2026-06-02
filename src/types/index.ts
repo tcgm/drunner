@@ -178,6 +178,8 @@ export type HeroSpecies =
   | 'devil'
   | 'angel'
   | 'tanuki'
+  | 'dragon'
+  | 'construct'
   | 'kitsune'
   | 'nekomata'
   | 'oni'

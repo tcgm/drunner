@@ -51,6 +51,8 @@ const STYLE_BY_SPECIES: Record<HeroSpecies, NameStyle> = {
   oni: 'yokai',
   tengu: 'yokai',
   dryad: 'sylvan',
+  dragon: 'draconic',
+  construct: 'gnomish',
 }
 
 function pick<T>(arr: T[], rng: () => number): T {

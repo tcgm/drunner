@@ -138,6 +138,8 @@ import { mosshallow } from './mosshallow'
 import { ancientconstruct } from './ancientconstruct'
 import { stormcaller } from './stormcaller'
 import { voidwalker } from './voidwalker'
+import { embermaw } from './embermaw'
+import { morrowmoss } from './morrowmoss'
 
 export const ALL_UNIQUE_HEROES = [
     // original 6
@@ -185,5 +187,5 @@ export const ALL_UNIQUE_HEROES = [
     // dryad
     sylvara, briarzen, thornveil, mosshallow,
     // additional
-    ancientconstruct, stormcaller, voidwalker,
+    ancientconstruct, stormcaller, voidwalker, embermaw, morrowmoss,
 ]
