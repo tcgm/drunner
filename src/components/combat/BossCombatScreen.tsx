@@ -308,6 +308,8 @@ export default function BossCombatScreen({
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [combatState.currentTurnIndex, combatQueue])
+
+    const handleHeroAction = async (heroId: string, action: string) => {
         // Guests with onGuestCombatAction send the action to the host
         if (onGuestCombatAction) {
             onGuestCombatAction(heroId, action)
