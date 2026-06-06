@@ -4,6 +4,12 @@ import type { Hero, Item } from '../../types'
 import { PartySlot } from './PartySlot'
 import { PartySlotPopover } from './PartySlotPopover'
 import { useState, useEffect } from 'react'
+import { PLAYER_COLORS } from '@/config/multiplayerConfig'
+
+interface PlayerInfo {
+  id: string
+  name: string
+}
 
 interface PartySlotsProps {
   party: (Hero | null)[]
@@ -19,6 +25,12 @@ interface PartySlotsProps {
   onUnequipItem: (heroIndex: number, slotId: string) => void
   onEquipItem: (heroIndex: number, item: Item, slotId: string) => void
   isBankModalOpen: boolean
+  /** Multiplayer: which player index owns each slot (parallel array to `party`) */
+  slotOwnership?: number[]
+  /** Multiplayer: ordered list of players (index 0 = host) */
+  mpPlayers?: PlayerInfo[]
+  /** Multiplayer: local player's socket id */
+  localPlayerId?: string
 }
 
 export function PartySetupSlots({
@@ -35,9 +47,25 @@ export function PartySetupSlots({
   onUnequipItem,
   onEquipItem,
   isBankModalOpen,
+  slotOwnership,
+  mpPlayers,
+  localPlayerId,
 }: PartySlotsProps) {
   const partyCount = party.filter(h => h !== null).length
   const [isPortrait, setIsPortrait] = useState(false)
+
+  const getOwner = (index: number) => {
+    if (!slotOwnership || !mpPlayers || mpPlayers.length === 0) return undefined
+    const playerIdx = slotOwnership[index]
+    if (playerIdx === undefined) return undefined
+    const player = mpPlayers[playerIdx]
+    if (!player) return undefined
+    return {
+      name: player.name,
+      colors: PLAYER_COLORS[playerIdx] ?? PLAYER_COLORS[0],
+      isMe: player.id === localPlayerId,
+    }
+  }
 
   // Detect orientation
   useEffect(() => {
@@ -82,6 +110,7 @@ export function PartySetupSlots({
                   onUnequipItem={onUnequipItem}
                   onEquipItem={onEquipItem}
                   isBankModalOpen={isBankModalOpen}
+                  owner={getOwner(index)}
                 />
               ))}
             </VStack>
@@ -110,6 +139,7 @@ export function PartySetupSlots({
                   onAdd={() => onAddHero(index)}
                   onRemove={() => onRemoveHero(index)}
                   onSelect={() => onSelectHero(index)}
+                  owner={getOwner(index)}
                 />
               ))}
             </HStack>

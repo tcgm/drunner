@@ -25,7 +25,6 @@ import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 import { useMultiplayerStore, useSessionStore, usePartySync } from '@/multiplayer'
 import { getSlotsForPlayerIndex } from '@/config/multiplayerConfig'
 import { getSocket } from '@/multiplayer/socket'
-import { MultiplayerPartyBanner } from '@/components/multiplayer/MultiplayerPartyBanner'
 
 interface DungeonPrepScreenProps {
   onBack: () => void
@@ -330,10 +329,6 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
 
         {/* Center - Party Slots */}
         <Box className="dungeon-prep-screen-center" flex={1} minW={0} minH={0} display="flex" flexDirection="column">
-          {/* Multiplayer slot ownership banner */}
-          {mpRole && mpPlayers.length > 0 && (
-            <MultiplayerPartyBanner localPlayerId={getSocket().id ?? ''} />
-          )}
           {/* ── Multiplayer ready-up bar ─────────────────────────────── */}
           {mpRole && mpPlayers.length > 0 && (
             <Box
@@ -423,6 +418,9 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
                 onUnequipItem={handleUnequipItem}
                 onEquipItem={handleEquipItemDirect}
                 isBankModalOpen={isOpen}
+                slotOwnership={mpRole && mpPlayers.length > 0 ? slotOwnership : undefined}
+                mpPlayers={mpRole && mpPlayers.length > 0 ? mpPlayers : undefined}
+                localPlayerId={mySocketId}
               />
               <PartySummary party={party.filter((h): h is Hero => h !== null)} />
             </>
@@ -443,6 +441,9 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
                 onUnequipItem={handleUnequipItem}
                 onEquipItem={handleEquipItemDirect}
                 isBankModalOpen={isOpen}
+                  slotOwnership={mpRole && mpPlayers.length > 0 ? slotOwnership : undefined}
+                  mpPlayers={mpRole && mpPlayers.length > 0 ? mpPlayers : undefined}
+                  localPlayerId={mySocketId}
               />
               <PartySummary party={party.filter((h): h is Hero => h !== null)} />
             </>

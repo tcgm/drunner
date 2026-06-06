@@ -8,7 +8,9 @@
 
 import { create } from 'zustand'
 import { connectSocket, disconnectSocket, getSocket } from './socket'
+import { startMultiplayerService, stopMultiplayerService } from './multiplayerService'
 import type { MultiplayerPlayer } from './types'
+import type { DungeonEvent } from '@/types'
 import { isDirectCode, decodeCodeToIp, encodeIpToCode, MULTIPLAYER_CONFIG } from '@/config/multiplayerConfig'
 import { usePlayerProfileStore } from '@/core/playerProfileStore'
 
@@ -22,6 +24,9 @@ interface MultiplayerState {
   isConnected: boolean
   error: string | null
   localPlayerName: string
+  // Boss combat state — lives here so socket handlers read it via getState() with no stale closures
+  inBossCombat: boolean
+  bossEvent: DungeonEvent | null
 
   setLocalPlayerName: (name: string) => void
   createRoom: () => Promise<string>
@@ -29,6 +34,8 @@ interface MultiplayerState {
   joinRoom: (code: string) => Promise<void>
   leaveRoom: () => void
   clearError: () => void
+  setBossCombat: (event: DungeonEvent) => void
+  clearBossCombat: () => void
 }
 
 export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
@@ -39,6 +46,8 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
   isConnected: false,
   error: null,
   localPlayerName: 'Player',
+  inBossCombat: false,
+  bossEvent: null,
 
   setLocalPlayerName: (name) => {
     set({ localPlayerName: name })
@@ -78,6 +87,7 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
               set((s) => ({ players: s.players.filter((p) => p.id !== playerId) }))
             })
 
+            startMultiplayerService('host', code)
             resolve(code)
           },
         )
@@ -131,6 +141,7 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
               socket.on('player-left', ({ playerId }: { playerId: string }) => {
                 set((s) => ({ players: s.players.filter((p) => p.id !== playerId) }))
               })
+              startMultiplayerService('host', res.code!)
               resolve(code7)
             },
           )
@@ -208,6 +219,7 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
                 set({ error: 'The host disconnected.' })
               })
 
+              startMultiplayerService('guest', roomCode)
               resolve()
             },
           )
@@ -223,6 +235,7 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
 
   // ── Leave / clean up ─────────────────────────────────────────────────────
   leaveRoom: () => {
+    stopMultiplayerService()
     disconnectSocket()
     set({
       role: null,
@@ -231,8 +244,12 @@ export const useMultiplayerStore = create<MultiplayerState>((set, get) => ({
       players: [],
       isConnected: false,
       error: null,
+      inBossCombat: false,
+      bossEvent: null,
     })
   },
 
   clearError: () => set({ error: null }),
+  setBossCombat: (event) => set({ inBossCombat: true, bossEvent: event }),
+  clearBossCombat: () => set({ inBossCombat: false, bossEvent: null }),
 }))

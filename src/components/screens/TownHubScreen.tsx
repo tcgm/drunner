@@ -23,7 +23,7 @@ import { HeroShrineModal } from '../ui/HeroShrineModal'
 import { townLayout, townGridCols, townGridRowSizes, townRowDepthScale, mobileTownGridCols, mobileTownGridRowSizes, type Building } from '@/data/buildings'
 import type { Consumable, Item, ItemRarity } from '@/types'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
-import { useMultiplayerStore, usePartySync } from '@/multiplayer'
+import { useMultiplayerStore } from '@/multiplayer'
 import { OnlinePlayersPanel } from '@/components/multiplayer/OnlinePlayersPanel'
 
 interface TownHubScreenProps {
@@ -40,8 +40,6 @@ const MotionFlex = motion.create(Flex)
 export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnMount, flashEntrance = false }: TownHubScreenProps) {
   // Set town music
   useMusicContext(MusicContext.MAIN_MENU)
-
-  // Mobile portrait detection
   const [isMobile, setIsMobile] = React.useState(() => window.innerWidth <= 768)
   React.useEffect(() => {
     const mq = window.matchMedia('(max-width: 768px)')
@@ -200,7 +198,6 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
 
   // Multiplayer: broadcast profile while in town
   const mpRole = useMultiplayerStore((s) => s.role)
-  usePartySync() // initialises slot ownership + profile broadcast
 
   return (
     <Box className="town-hub-screen" position="relative" h="100vh" overflow="hidden">

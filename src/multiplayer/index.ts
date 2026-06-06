@@ -6,6 +6,7 @@ export { usePartySync } from './usePartySync'
 export { useSessionStore } from './sessionStore'
 export { getSocket } from './socket'
 export { setVoteCompleteCallback, initVotes, recordVote, clearVotes } from './voteManager'
+export { startMultiplayerService, stopMultiplayerService, claimSlot, releaseSlot, distributeRunEnd, pickDraftItem } from './multiplayerService'
 export type {
   MultiplayerPlayer,
   MultiplayerSyncState,

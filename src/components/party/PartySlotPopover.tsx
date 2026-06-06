@@ -45,6 +45,7 @@ interface PartySlotPopoverProps {
   onUnequipItem: (heroIndex: number, slotId: string) => void
   onEquipItem: (heroIndex: number, item: Item, slotId: string) => void
   isBankModalOpen: boolean
+  owner?: { name: string; colors: { border: string; bg: string; badge: string; text: string; label: string }; isMe: boolean }
 }
 
 export function PartySlotPopover({
@@ -62,6 +63,7 @@ export function PartySlotPopover({
   onUnequipItem,
   onEquipItem,
   isBankModalOpen,
+  owner,
 }: PartySlotPopoverProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const isEmpty = !hero
@@ -92,6 +94,7 @@ export function PartySlotPopover({
             onClose()
           }}
           onSelect={() => {}} // Disable default behavior - handled by modal
+          owner={owner}
         />
       </Box>
 

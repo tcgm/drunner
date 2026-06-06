@@ -5,7 +5,7 @@
   "type": "module",
   "license": "AGPL-3.0-or-later",
   "scripts": {
-    "start": "docker compose -f ../docker-compose.yml up --build",
+    "start": "docker compose -f ../docker-compose.yml up --build -d",
     "stop": "docker compose -f ../docker-compose.yml down",
     "dev": "vite",
     "dev:local": "concurrently -n vite,server -c cyan,yellow \"vite\" \"node server/index.js\"",

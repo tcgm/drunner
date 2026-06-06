@@ -17,7 +17,7 @@ import { OrientationProvider } from '@/contexts/OrientationContext'
 import { useGameStore } from '@/core/gameStore'
 import { setActiveNexusUpgrades } from '@/data/nexus'
 import { calculateFreeFloorThreshold, calculateFloorSkipCost } from '@/utils/dungeonUtils'
-import { useSyncGameState, useMultiplayerStore, usePartySync } from '@/multiplayer'
+import { useMultiplayerStore } from '@/multiplayer'
 import { useSessionStore } from '@/multiplayer/sessionStore'
 import { getSocket } from '@/multiplayer/socket'
 import { GiDungeonGate, GiBootKick } from 'react-icons/gi'
@@ -83,11 +83,6 @@ function App() {
   const mpRole = useMultiplayerStore((s) => s.role)
   const mpRoomCode = useMultiplayerStore((s) => s.roomCode)
   const mpActiveRun = useGameStore((s) => s.activeRun)
-
-  // Mount the multiplayer sync hook for the lifetime of the app
-  useSyncGameState()
-  // Mount the party sync hook (slot ownership + profile broadcast + run-end distribution)
-  usePartySync()
 
   // Seed multiplayer display name from persisted player profile on first mount
   const profileName = usePlayerProfileStore((s) => s.displayName)

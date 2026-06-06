@@ -1,6 +1,7 @@
 import { Box, Flex, VStack, Text, Badge, Button, HStack, SimpleGrid, Icon, Image } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import * as GameIcons from 'react-icons/gi'
+import { GiPerson } from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
@@ -9,15 +10,23 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 import { EquipmentPips } from './EquipmentPips'
 import { HeroName } from '@/components/ui/HeroName'
 
+interface SlotOwnerInfo {
+  name: string
+  colors: { border: string; bg: string; badge: string; text: string; label: string }
+  isMe: boolean
+}
+
 interface PartySlotProps {
   hero: Hero | null
   slotIndex: number
   onAdd: () => void
   onRemove: () => void
   onSelect: () => void
+  /** When in a multiplayer session, pass owner info to render an ownership strip */
+  owner?: SlotOwnerInfo
 }
 
-export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartySlotProps) {
+export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }: PartySlotProps) {
   const isEmpty = !hero
   const IconComponent = hero ? ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType : null
   const [isPortrait, setIsPortrait] = useState(false)
@@ -41,7 +50,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
       bg={isEmpty ? 'gray.800' : 'linear-gradient(135deg, rgba(26, 32, 44, 0.9) 0%, rgba(45, 55, 72, 0.9) 100%)'}
       borderRadius="xl"
       borderWidth="3px"
-      borderColor={isEmpty ? 'gray.700' : 'orange.800'}
+      borderColor={isEmpty ? (owner ? owner.colors.border : 'gray.700') : (owner ? owner.colors.border : 'orange.800')}
       cursor="pointer"
       onClick={() => isEmpty ? onAdd() : onSelect()}
       transition="all 0.3s"
@@ -52,6 +61,25 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect }: PartyS
       overflow="hidden"
       boxShadow={isEmpty ? 'none' : '0 4px 16px rgba(0,0,0,0.4)'}
     >
+      {/* Multiplayer owner strip */}
+      {owner && (
+        <HStack
+          className="party-slot-owner-strip"
+          spacing={1}
+          px={2}
+          py={0.5}
+          bg={owner.colors.bg}
+          borderBottom="1px solid"
+          borderColor={owner.colors.border}
+          flexShrink={0}
+        >
+          <Icon as={GiPerson} color={owner.colors.text} boxSize={2.5} />
+          <Text fontSize="2xs" fontWeight="bold" color={owner.colors.text} noOfLines={1} flex={1}>
+            {owner.name}
+          </Text>
+          {owner.isMe && <Badge colorScheme={owner.colors.badge} fontSize="2xs" px={1}>you</Badge>}
+        </HStack>
+      )}
       {isEmpty ? (
         <Flex className="party-slot-empty-content" h="full" align="center" justify={isPortrait ? "start" : "center"} direction={isPortrait ? "row" : "column"} w="full" px={isPortrait ? 2 : 0}>
           <Box

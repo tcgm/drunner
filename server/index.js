@@ -111,6 +111,33 @@ io.on('connection', (socket) => {
     socket.to(code).emit('state-update', state)
   })
 
+  // ── Host → Guests: broadcast boss combat start ────────────────────────────
+  socket.on('boss-combat-start', ({ code, event }) => {
+    const room = rooms.get(code)
+    const roomSize = room ? room.players.length : 0
+    console.log(`[Server] boss-combat-start from ${socket.id}, room ${code}, players: ${roomSize}`)
+    socket.to(code).emit('boss-combat-start', { event })
+  })
+
+  // ── Host → specific guest: send boss combat state on late join ────────────
+  socket.on('boss-combat-start-to', ({ event, targetId }) => {
+    console.log(`[Server] boss-combat-start-to: from ${socket.id} to ${targetId}`)
+    io.to(targetId).emit('boss-combat-start', { event })
+  })
+
+  // ── Host → Guests: broadcast boss combat end ──────────────────────────────
+  socket.on('boss-combat-end', ({ code }) => {
+    socket.to(code).emit('boss-combat-end')
+  })
+
+  // ── Guest → Host: request current boss state (continue run / reconnect) ───
+  socket.on('request-boss-state', ({ code }) => {
+    const room = rooms.get(code)
+    console.log(`[Server] request-boss-state from ${socket.id}, code: ${code}, room found: ${!!room}, hostId: ${room?.hostId}`)
+    if (!room) return
+    io.to(room.hostId).emit('request-boss-state', { requesterId: socket.id })
+  })
+
   // ── Guest → Host: request a game action ──────────────────────────────────
   socket.on('guest-action', ({ code, action }) => {
     const room = rooms.get(code)

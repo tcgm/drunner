@@ -53,6 +53,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   } = useDungeonActions()
   const mpPlayers = useMultiplayerStore((s) => s.players)
   const mpRole = useMultiplayerStore((s) => s.role)
+  const inBossCombat = useMultiplayerStore((s) => s.inBossCombat)
+  const bossEvent = useMultiplayerStore((s) => s.bossEvent)
   const { distributeRunEnd, pickDraftItem } = usePartySync()
   const voteState  = useSessionStore((s) => s.voteState)
   const draftState = useSessionStore((s) => s.draftState)
@@ -65,8 +67,6 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   // const { isOpen: isCombatLogOpen, onOpen: onCombatLogOpen, onClose: onCombatLogClose } = useDisclosure() // Disabled
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [heroEffects, setHeroEffects] = useState<Record<string, Array<{ type: 'damage' | 'heal' | 'xp' | 'gold'; value: number; id: string }>>>({})
-  const [inBossCombat, setInBossCombat] = useState(false)
-  const [bossEvent, setBossEvent] = useState<DungeonEvent | null>(null)
   
   // When outcome changes, create floating numbers
   useEffect(() => {
@@ -108,6 +108,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     }
   }, [lastOutcome])
 
+
   // Host: distribute loot and return guest heroes whenever the run ends via the
   // engine (party wipe, victory via dungeon completion, etc.).
   const hasDistributedRef = useRef(false)
@@ -135,11 +136,21 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
       combatState: initializeBossCombatState(currentEvent, dungeon),
       selectedChoiceIndex: choiceIndex
     }
-    setTimeout(() => {
-      setBossEvent(eventWithCombatState)
-      setInBossCombat(true)
-    }, 100)
-  }, [dungeon])
+    // Broadcast to guests so they enter boss combat too.
+    // Send only the event definition (no combatState) — guests re-initialize
+    // their own combatState locally to avoid Map serialization issues.
+    if (mpRole === 'host') {
+      const socket = getSocket()
+      const roomCode = useMultiplayerStore.getState().roomCode
+      console.log('[DungeonScreen] _startBossCombat: emitting boss-combat-start', { roomCode, hasSocket: !!socket })
+      if (socket && roomCode) {
+        const { combatState: _cs, ...eventWithoutCombatState } = eventWithCombatState
+        socket.emit('boss-combat-start', { code: roomCode, event: eventWithoutCombatState })
+      }
+    }
+    // Write to store synchronously — socket handlers read via getState(), no timing windows
+    useMultiplayerStore.getState().setBossCombat(eventWithCombatState)
+  }, [dungeon, mpRole])
 
   /**
    * HOST callback fired by voteManager when majority is reached.
@@ -147,6 +158,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
    */
   const handleVoteComplete = useCallback((choiceIndex: number) => {
     const currentEvent = dungeon.currentEvent
+    console.log('[DungeonScreen] handleVoteComplete', { choiceIndex, eventType: currentEvent?.type, eventId: currentEvent?.id })
     if (!currentEvent) return
     const choice = currentEvent.choices[choiceIndex]
     if (!choice) return
@@ -205,8 +217,17 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }
 
   // Boss combat handlers
+  const emitBossCombatEnd = useCallback(() => {
+    if (mpRole === 'host') {
+      const socket = getSocket()
+      const roomCode = useMultiplayerStore.getState().roomCode
+      if (socket && roomCode) socket.emit('boss-combat-end', { code: roomCode })
+    }
+  }, [mpRole])
+
   const handleBossVictory = () => {
     console.log('[DungeonScreen] handleBossVictory called')
+    emitBossCombatEnd()
     // Capture bossEvent before clearing it
     const currentBossEvent = bossEvent
     
@@ -222,14 +243,13 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     // THEN unmount combat screen in next tick after store updates have propagated
     setTimeout(() => {
       console.log('[DungeonScreen] Unmounting combat screen')
-      setInBossCombat(false)
-      setBossEvent(null)
+      useMultiplayerStore.getState().clearBossCombat()
     }, 50) // Small delay to ensure store updates have rendered
   }
 
   const handleBossDefeat = () => {
-    setInBossCombat(false)
-    setBossEvent(null)
+    emitBossCombatEnd()
+    useMultiplayerStore.getState().clearBossCombat()
     // Host distributes loot and returns guest heroes before triggering game over
     if (mpRole === 'host') distributeRunEnd()
     // Trigger game over
@@ -237,8 +257,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }
 
   const handleBossFlee = () => {
-    setInBossCombat(false)
-    setBossEvent(null)
+    emitBossCombatEnd()
+    useMultiplayerStore.getState().clearBossCombat()
     retreatFromDungeon()
     onExit()
   }
