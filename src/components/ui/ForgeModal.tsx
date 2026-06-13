@@ -328,9 +328,14 @@ function BreakDownTab({ bankInventory, materialChargeProgress, nexusUpgrades, on
     nexusUpgrades
   ) / 100
 
+  const breakdownAllowedTypes = React.useMemo(
+    () => new Set(GAME_CONFIG.forge.breakdown.allowedItemTypes),
+    []
+  )
+
   const breakableItems = React.useMemo(
-    () => bankInventory.filter(item => item.materialId),
-    [bankInventory]
+    () => bankInventory.filter(item => breakdownAllowedTypes.has(item.type) && item.materialId),
+    [bankInventory, breakdownAllowedTypes]
   )
 
   /** Items that pass current filter */

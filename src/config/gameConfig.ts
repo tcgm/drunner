@@ -427,6 +427,8 @@ export const GAME_CONFIG = {
     goldCostPercent: 0.08, // 8% – "modest gold fee"
     // Fraction of the normal manual-discard alkahest you actually receive (Shifty Guy takes a cut)
     alkahestReturnPercent: 0.75, // 75% of what manual discarding would give
+    // Item types eligible for the deal. Only these types will ever be offered.
+    allowedItemTypes: ['weapon', 'armor', 'helmet', 'boots', 'accessory1', 'accessory2'] as import('@/types').ItemSlot[],
     // Default rarity threshold shown in the UI when the modal first opens.
     // Items AT or BELOW this rarity are pre-selected for scrapping.
     defaultRarityThreshold: 'common' as import('@/types').ItemRarity,
@@ -501,6 +503,8 @@ export const GAME_CONFIG = {
     // Item breakdown - feeds items into per-material charge meters
     breakdown: {
       enabled: true,
+      // Item types eligible for breakdown. Only these types will appear in the Break Down tab.
+      allowedItemTypes: ['weapon', 'armor', 'helmet', 'boots', 'accessory1', 'accessory2'] as import('@/types').ItemSlot[],
       carryOverExcess: true,              // leftover charge rolls into next cycle
       uniqueBreakdownMultiplier: 1.5,
       setBreakdownMultiplier: 1.3,
