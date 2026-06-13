@@ -87,6 +87,8 @@ function formatConsumableEffect(effect: ConsumableEffect): string {
       return `Deals ${effect.value ?? 0} damage${targetStr}`
     case 'special':
       return `Special effect${targetStr}`
+    case 'teleport':
+      return `Teleports to floor ${effect.value ?? 0}${targetStr}`
     default:
       return 'Unknown effect'
   }

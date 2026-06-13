@@ -5,6 +5,7 @@ export * from './ironSkin'
 export * from './haste'
 export * from './luck'
 export * from './phoenixDown'
+export * from './teleportCrystal'
 
 import { HEALTH_BASE } from './health'
 import { STRENGTH_BASE } from './strength'
@@ -12,6 +13,7 @@ import { IRON_SKIN_BASE } from './ironSkin'
 import { HASTE_BASE } from './haste'
 import { LUCK_BASE } from './luck'
 import { PHOENIX_DOWN_BASE } from './phoenixDown'
+import { TELEPORT_CRYSTAL_BASE } from './teleportCrystal'
 import { ALL_FOOD_BASES } from '../food'
 import { ALL_SUPPLY_BASES } from '../supplies'
 import type { ConsumableBase } from './types'
@@ -26,9 +28,15 @@ export const ALL_POTION_BASES: ConsumableBase[] = [
   PHOENIX_DOWN_BASE,
 ]
 
+// Crystal bases (magical focus consumables)
+export const ALL_CRYSTAL_BASES: ConsumableBase[] = [
+  TELEPORT_CRYSTAL_BASE,
+]
+
 // All consumable bases combined
 export const ALL_CONSUMABLE_BASES: ConsumableBase[] = [
   ...ALL_POTION_BASES,
+  ...ALL_CRYSTAL_BASES,
   ...ALL_FOOD_BASES,
   ...ALL_SUPPLY_BASES,
 ]

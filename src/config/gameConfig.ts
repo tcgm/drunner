@@ -123,6 +123,13 @@ export const GAME_CONFIG = {
       neutral: 'gray.400',
       highlight: 'orange.400',
     },
+    teleport: {
+      base: 'blue.400',
+      light: 'blue.300',
+      dark: 'blue.500',
+      glow: 'rgba(104, 153, 255, 0.8)', // #6899ff
+      hex: '#6899ff',
+    },
   },
 
   // Floating Numbers (visual feedback)

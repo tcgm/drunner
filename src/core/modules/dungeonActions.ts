@@ -29,6 +29,7 @@ export interface DungeonActionsSlice {
   retreatFromDungeon: () => void
   applyPenalty: () => void
   applyBossVictoryRewards: (bossEvent: DungeonEvent) => void
+  teleportToFloor: (targetFloor: number) => void
 }
 
 export const createDungeonActions: StateCreator<
@@ -1076,6 +1077,28 @@ export const createDungeonActions: StateCreator<
         },
         activeRun: updatedRun,
         lastOutcome: resolvedOutcome,
+      }
+    }),
+
+  teleportToFloor: (targetFloor: number) =>
+    set((state) => {
+      const floor = Math.max(1, Math.floor(targetFloor))
+      const scaledMin = Math.floor(GAME_CONFIG.dungeon.minEventsPerFloor + floor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+      const scaledMax = Math.floor(GAME_CONFIG.dungeon.maxEventsPerFloor + floor * GAME_CONFIG.dungeon.eventsPerFloorScaling)
+      const eventsRequired = Math.floor(Math.random() * (scaledMax - scaledMin + 1)) + scaledMin
+      const floorMap = generateFloorMap(eventsRequired, pickBiomeForFloor(floor))
+
+      return {
+        dungeon: {
+          ...state.dungeon,
+          floor,
+          eventsThisFloor: 0,
+          eventsRequiredThisFloor: eventsRequired,
+          currentEvent: null,
+          floorMap,
+          isNextEventBoss: false,
+          bossType: null,
+        },
       }
     }),
 })

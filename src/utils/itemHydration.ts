@@ -560,7 +560,7 @@ function deriveConsumableItem(item: ConsumableV3): Consumable {
     stats: {}, // Consumables don't have stat bonuses
     value,
     icon: base.icon,
-    consumableType: 'potion', // Default type - could be derived from base if needed
+    consumableType: base.consumableType ?? 'potion',
     effects,
     usableInCombat: base.usableInCombat,
     usableOutOfCombat: base.usableOutOfCombat,

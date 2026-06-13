@@ -18,6 +18,7 @@ export function useConsumable(
   hero: Hero
   party: (Hero | null)[]
   message: string
+  teleportFloor?: number
 } {
   const consumable = hero.slots[slotId] as Consumable | null
   
@@ -35,6 +36,7 @@ export function useConsumable(
   let updatedHero = { ...hero }
   let updatedParty = [...party]
   const messages: string[] = []
+  let teleportFloor: number | undefined
 
   // Apply all consumable effects
   for (const effect of effects) {
@@ -117,6 +119,17 @@ export function useConsumable(
       case 'special':
         messages.push(`Used ${consumable.name}`)
         break
+
+      case 'teleport': {
+        const targetFloor = Math.max(1, Math.floor(effect.value ?? 1))
+        if (targetFloor > currentDepth) {
+          teleportFloor = targetFloor
+          messages.push(`Teleported to floor ${targetFloor}`)
+        } else {
+          messages.push(`Crystal fizzles — already at or past floor ${targetFloor}`)
+        }
+        break
+      }
     }
   }
 
@@ -143,7 +156,7 @@ export function useConsumable(
   // Update party with modified hero
   updatedParty = updatedParty.map((p) => (p?.id === hero.id ? updatedHero : p))
 
-  return { hero: updatedHero, party: updatedParty, message }
+  return { hero: updatedHero, party: updatedParty, message, teleportFloor }
 }
 
 /**

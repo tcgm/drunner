@@ -19,4 +19,5 @@ export interface ConsumableBase {
   baseGoldValue: number // Base gold value before multipliers
   usableInCombat: boolean
   usableOutOfCombat: boolean
+  consumableType?: import('@/types').Consumable['consumableType'] // Overrides default 'potion' if set
 }

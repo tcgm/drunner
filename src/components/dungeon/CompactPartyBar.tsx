@@ -20,7 +20,7 @@ interface CompactPartyBarProps {
 }
 
 export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps) {
-  const { updateHero, dungeon, useAbility: activateAbility } = useGameStore()
+  const { updateHero, dungeon, teleportToFloor, useAbility: activateAbility } = useGameStore()
   const [openPopoverId, setOpenPopoverId] = useState<string | null>(null)
 
   const handleUseConsumable = (hero: Hero, slotId: string, event: React.MouseEvent) => {
@@ -30,6 +30,9 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
       const result = applyConsumable(hero, slotId, dungeon.floor, party)
       if (result.hero) {
         updateHero(result.hero.id, result.hero)
+        if (result.teleportFloor) {
+          teleportToFloor(result.teleportFloor)
+        }
         console.log(result.message)
       }
     }

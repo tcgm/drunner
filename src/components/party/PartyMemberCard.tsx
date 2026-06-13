@@ -32,7 +32,7 @@ interface PartyMemberCardProps {
 export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon = false }: PartyMemberCardProps) {
   const { openHeroModal } = useHeroModal()
   const [isHovered, setIsHovered] = useState(false)
-  const { updateHero, party, dungeon, useAbility: activateAbility } = useGameStore()
+  const { updateHero, party, dungeon, teleportToFloor, useAbility: activateAbility } = useGameStore()
   
   // Restore ability icons if missing (handles deserialization issues)
   const heroWithIcons = useMemo(() => refreshHeroAbilities(hero), [hero])
@@ -47,7 +47,9 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
       const result = applyConsumable(hero, slotId, dungeon.floor, party)
       if (result.hero) {
         updateHero(result.hero.id, result.hero)
-        // TODO: Show message to user
+        if (result.teleportFloor) {
+          teleportToFloor(result.teleportFloor)
+        }
         console.log(result.message)
       }
     }

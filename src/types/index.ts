@@ -284,7 +284,7 @@ export interface Item {
 }
 
 export interface Consumable extends Item {
-  consumableType: 'potion' | 'scroll' | 'food' | 'supply'
+  consumableType: 'potion' | 'scroll' | 'food' | 'supply' | 'crystal'
   effects: ConsumableEffect[] // Array of effects to apply
   usableInCombat: boolean
   usableOutOfCombat: boolean
@@ -297,7 +297,7 @@ export interface Consumable extends Item {
 }
 
 export interface ConsumableEffect {
-  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special' | 'revive' | 'hot'
+  type: 'heal' | 'buff' | 'cleanse' | 'damage' | 'special' | 'revive' | 'hot' | 'teleport'
   value?: number // Heal amount, damage, or stat modifier (or HP restored on revive, or HP per tick for HOT)
   stat?: keyof Stats // For buff effects
   duration?: number // In events (depths)

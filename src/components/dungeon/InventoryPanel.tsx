@@ -53,7 +53,7 @@ const RARITY_COLORS: Record<string, string> = {
 }
 
 export default function InventoryPanel({ hero, onSlotClick, showBankOption }: InventoryPanelProps) {
-  const { unequipItemFromHero, addItemToDungeonInventory, updateHero, party, dungeon } = useGameStore()
+  const { unequipItemFromHero, addItemToDungeonInventory, updateHero, party, dungeon, teleportToFloor } = useGameStore()
 
   const handleUnequip = (slotId: string) => {
     const item = unequipItemFromHero(hero.id, slotId)
@@ -69,7 +69,9 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
       const result = applyConsumable(hero, slotId, dungeon.floor, party)
       if (result.hero) {
         updateHero(result.hero.id, result.hero)
-        // TODO: Show message to user
+        if (result.teleportFloor) {
+          teleportToFloor(result.teleportFloor)
+        }
         console.log(result.message)
       }
     }
