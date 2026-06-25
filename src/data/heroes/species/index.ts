@@ -1,4 +1,4 @@
-export type { SpeciesDefinition, NameStyle } from './_types'
+export type { SpeciesDefinition, NameStyle, IconOffset } from './_types'
 
 import type { HeroSpecies } from '@/types'
 import type { SpeciesDefinition } from './_types'

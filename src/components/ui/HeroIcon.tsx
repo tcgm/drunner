@@ -1,9 +1,10 @@
-import { Box, Icon } from '@chakra-ui/react'
+import { Box, Icon, Image } from '@chakra-ui/react'
 import type { BoxProps } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { HeroSpecies } from '@/types'
 import { SPECIES_DEFINITIONS } from '@/data/heroes/species'
+import type { IconOffset } from '@/data/heroes/species'
 
 interface HeroIconProps extends Omit<BoxProps, 'position' | 'display' | 'color'> {
   /** react-icons/gi name from HeroClass.icon */
@@ -18,6 +19,11 @@ interface HeroIconProps extends Omit<BoxProps, 'position' | 'display' | 'color'>
 
 function resolveIcon(name: string | undefined): IconType | undefined {
   return name ? ((GameIcons as Record<string, IconType>)[name] as IconType | undefined) : undefined
+}
+
+function offsetTransform(offset: IconOffset | undefined): string {
+  const { x = 0, y = 0, scale = 1 } = offset ?? {}
+  return `translate(${x}%, ${y}%) scale(${scale})`
 }
 
 /**
@@ -46,16 +52,28 @@ export function HeroIcon({
 
   return (
     <Box position="relative" display="inline-flex" boxSize={boxSize} flexShrink={flexShrink} {...rest}>
-      {BackgroundIconComponent && (
-        <Icon
-          as={BackgroundIconComponent}
+      {speciesDef?.backgroundImage ? (
+        <Image
+          src={speciesDef.backgroundImage}
           position="absolute"
           inset={0}
           boxSize="100%"
-          color={backgroundColor}
-          opacity={1}
+          objectFit="contain"
           zIndex={0}
+          style={{ transform: offsetTransform(speciesDef.backgroundOffset) }}
         />
+      ) : (
+        BackgroundIconComponent && (
+          <Icon
+            as={BackgroundIconComponent}
+            position="absolute"
+            inset={0}
+            boxSize="100%"
+            color={backgroundColor}
+            opacity={1}
+            zIndex={0}
+          />
+        )
       )}
       <Icon
         as={ClassIconComponent}
@@ -66,15 +84,27 @@ export function HeroIcon({
         color={color}
         zIndex={1}
       />
-      {ForegroundIconComponent && (
-        <Icon
-          as={ForegroundIconComponent}
+      {speciesDef?.foregroundImage ? (
+        <Image
+          src={speciesDef.foregroundImage}
           position="absolute"
           inset={0}
           boxSize="100%"
-          color={foregroundColor}
+          objectFit="contain"
           zIndex={2}
+          style={{ transform: offsetTransform(speciesDef.foregroundOffset) }}
         />
+      ) : (
+        ForegroundIconComponent && (
+          <Icon
+            as={ForegroundIconComponent}
+            position="absolute"
+            inset={0}
+            boxSize="100%"
+            color={foregroundColor}
+            zIndex={2}
+          />
+        )
       )}
     </Box>
   )

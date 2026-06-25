@@ -48,6 +48,7 @@ import { levelUpHero } from '@/utils/heroUtils'
 import { BOSS_EVENTS } from '@/data/events/boss/normal'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import QuantityInputModal from './QuantityInputModal'
+import SpeciesIconEditor from './SpeciesIconEditor'
 
 type ConfirmAction = 'reset-heroes' | 'apply-penalty' | 'reset-game' | null
 type ResourceModal = 'gold' | 'alkahest' | 'xp' | null
@@ -539,6 +540,7 @@ export default function DevTools() {
                 <Tab>Dungeon</Tab>
                 <Tab>Event</Tab>
                 <Tab>System</Tab>
+                {import.meta.env.DEV && <Tab>Icons</Tab>}
               </TabList>
 
               <TabPanels>
@@ -882,6 +884,11 @@ export default function DevTools() {
                     )}
                   </VStack>
                 </TabPanel>
+                {import.meta.env.DEV && (
+                  <TabPanel>
+                    <SpeciesIconEditor />
+                  </TabPanel>
+                )}
               </TabPanels>
             </Tabs>
           </ModalBody>

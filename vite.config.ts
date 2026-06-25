@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
+import { speciesIconToolPlugin } from './vite-plugins/speciesIconTool'
 
 // When launched from Electron, ELECTRON_HMR_PORT is the exact port Vite is
 // bound to.  Setting hmr.clientPort tells Vite to inject that value as
@@ -12,7 +13,7 @@ const electronHmrPort = process.env.ELECTRON_HMR_PORT
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), speciesIconToolPlugin()],
   base: process.env.BASE_URL || '/',
   logLevel: 'info', // Increase visibility for debugging
   // Allow Electron's app:// scheme to connect to the HMR WebSocket without
