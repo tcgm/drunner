@@ -47,16 +47,16 @@ export function HeroIcon({
           inset={0}
           boxSize="100%"
           color={backgroundColor}
-          opacity={0.55}
+          opacity={1}
           zIndex={0}
         />
       )}
       <Icon
         as={ClassIconComponent}
         position="absolute"
-        boxSize="70%"
-        top="15%"
-        left="15%"
+        boxSize="80%"
+        top="10%"
+        left="10%"
         color={color}
         zIndex={1}
       />
