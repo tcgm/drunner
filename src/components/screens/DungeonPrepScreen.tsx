@@ -89,6 +89,24 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
     return () => window.removeEventListener('resize', checkOrientation)
   }, [])
 
+  // ── Multiplayer party slot system ────────────────────────────────────────
+  const mpRole       = useMultiplayerStore((s) => s.role)
+  const mpPlayers    = useMultiplayerStore((s) => s.players)
+  const slotOwnership = useSessionStore((s) => s.slotOwnershipByIndex)
+  const readyPlayers  = useSessionStore((s) => s.readyPlayers)
+  const { claimSlot, releaseSlot } = usePartySync()
+  const toast = useToast()
+
+  const mySocketId = getSocket().id ?? ''
+
+  // Slots owned by the local player (null = not in a session)
+  const myMpSlots = useMemo(() => {
+    if (!mpRole || mpPlayers.length === 0 || slotOwnership.length === 0) return null
+    const myIdx    = mpPlayers.findIndex((p) => p.id === mySocketId)
+    if (myIdx === -1) return null
+    return getSlotsForPlayerIndex(myIdx, slotOwnership)
+  }, [mpRole, mpPlayers, slotOwnership, mySocketId])
+
   // Bank modal
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -263,24 +281,6 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   }
 
   const { handlePurchasePotion, handlePurchaseConsumable, handlePurchaseItem, handleExpandBank, isBuySlotsOpen, onBuySlotsClose } = useBankShopHandlers()
-
-  // ── Multiplayer party slot system ────────────────────────────────────────
-  const mpRole       = useMultiplayerStore((s) => s.role)
-  const mpPlayers    = useMultiplayerStore((s) => s.players)
-  const slotOwnership = useSessionStore((s) => s.slotOwnershipByIndex)
-  const readyPlayers  = useSessionStore((s) => s.readyPlayers)
-  const { claimSlot, releaseSlot } = usePartySync()
-  const toast = useToast()
-
-  const mySocketId = getSocket().id ?? ''
-
-  // Slots owned by the local player (null = not in a session)
-  const myMpSlots = useMemo(() => {
-    if (!mpRole || mpPlayers.length === 0 || slotOwnership.length === 0) return null
-    const myIdx    = mpPlayers.findIndex((p) => p.id === mySocketId)
-    if (myIdx === -1) return null
-    return getSlotsForPlayerIndex(myIdx, slotOwnership)
-  }, [mpRole, mpPlayers, slotOwnership, mySocketId])
 
   const iAmReady = readyPlayers.includes(mySocketId)
   const allPlayersReady = mpRole && mpPlayers.length > 0
