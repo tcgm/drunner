@@ -29,6 +29,7 @@ export interface MultiplayerActionsSlice {
   applyMultiplayerState: (payload: MultiplayerSyncPayload) => void
   setGuestHeroAtSlot: (hero: Hero, slotIndex: number) => void
   clearGuestHeroAtSlot: (slotIndex: number) => void
+  updateGuestHeroAtSlot: (hero: Hero, slotIndex: number) => void
   applyHeroReturn: (heroSourceId: string, updatedHero: Hero) => void
   applyRunLoot: (items: Item[], gold: number) => void
 }
@@ -73,6 +74,16 @@ export const createMultiplayerActions: StateCreator<
       if (slotIndex < 0 || slotIndex >= state.party.length) return state
       const newParty = [...state.party]
       newParty[slotIndex] = null
+      return { party: newParty }
+    }),
+
+  // ── Host updates an existing guest hero in a slot (equipment sync) ────────
+  // Unlike setGuestHeroAtSlot, this overwrites an occupied slot and does not heal.
+  updateGuestHeroAtSlot: (hero, slotIndex) =>
+    set((state) => {
+      if (slotIndex < 0 || slotIndex >= state.party.length) return state
+      const newParty = [...state.party]
+      newParty[slotIndex] = hero
       return { party: newParty }
     }),
 

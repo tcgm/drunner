@@ -23,6 +23,7 @@ import { useMusicContext } from '@/utils/useMusicContext'
 import { MusicContext } from '@/types/audio'
 import { useBankShopHandlers } from '@/hooks/useBankShopHandlers'
 import { useMultiplayerStore, useSessionStore, usePartySync } from '@/multiplayer'
+import { syncGuestSlotHero } from '@/multiplayer/multiplayerService'
 import { getSlotsForPlayerIndex } from '@/config/multiplayerConfig'
 import { getSocket } from '@/multiplayer/socket'
 
@@ -192,6 +193,10 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
       const item = bankInventory.find(i => i.id === itemId)
       if (hero && item) {
         equipItemFromBank(hero.id, item, pendingSlot)
+        if (mpRole === 'guest') {
+          const updated = useGameStore.getState().party[pendingSlotIndex]
+          if (updated) syncGuestSlotHero(pendingSlotIndex, updated)
+        }
       }
     }
     onClose()
@@ -205,6 +210,10 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
       const unequippedItem = unequipItemFromHero(hero.id, slotId)
       if (unequippedItem) {
         moveItemToBank(unequippedItem)
+        if (mpRole === 'guest') {
+          const updated = useGameStore.getState().party[heroIndex]
+          if (updated) syncGuestSlotHero(heroIndex, updated)
+        }
       }
     }
   }
@@ -213,9 +222,13 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
     const hero = party[heroIndex]
     if (hero) {
       equipItemFromBank(hero.id, item, slotId)
-      onClose() // Close bank modal after swap
+      if (mpRole === 'guest') {
+        const updated = useGameStore.getState().party[heroIndex]
+        if (updated) syncGuestSlotHero(heroIndex, updated)
+      }
+      onClose()
     }
-  }, [party, equipItemFromBank, onClose])
+  }, [party, equipItemFromBank, mpRole, onClose])
 
   const handleKeepOverflow = (itemId: string) => {
     keepOverflowItem(itemId)

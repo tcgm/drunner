@@ -9,7 +9,8 @@
  */
 
 import { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
-import { Box, VStack, Text, Heading, HStack, Badge, Icon } from '@chakra-ui/react'
+import { Box, VStack, Text, Heading, HStack, Badge, Icon, Tooltip } from '@chakra-ui/react'
+import type { NodeVoteState } from '@/multiplayer/types'
 import {
   GiCrossedSwords,
   GiScrollUnfurled,
@@ -83,9 +84,15 @@ interface NodeButtonProps {
   revealAll: boolean
   /** When true, trap nodes are revealed as traps instead of being disguised as events. */
   canDetectTraps: boolean
+  /** Number of votes cast for this node (multiplayer). */
+  voteCount?: number
+  /** Total players voting (to show X/N). */
+  totalVoters?: number
+  /** True if the local player already voted for this node. */
+  isMyVote?: boolean
 }
 
-function NodeButton({ node, center, onClick, revealAll, canDetectTraps }: NodeButtonProps) {
+function NodeButton({ node, center, onClick, revealAll, canDetectTraps, voteCount, totalVoters, isMyVote }: NodeButtonProps) {
   const meta = NODE_META[node.type]
   const isAvailable = node.status === 'available'
   const isVisited = node.status === 'visited'
@@ -168,6 +175,19 @@ function NodeButton({ node, center, onClick, revealAll, canDetectTraps }: NodeBu
               ? 'Trap!'
               : displayMeta.label}
       </Text>
+      {(voteCount !== undefined && voteCount > 0) && (
+        <Tooltip label={isMyVote ? 'Your vote' : `${voteCount}/${totalVoters ?? '?'} votes`} placement="top" hasArrow>
+          <Badge
+            colorScheme={isMyVote ? 'green' : 'orange'}
+            fontSize="2xs"
+            borderRadius="full"
+            px={1}
+            mt="1px"
+          >
+            {voteCount}/{totalVoters ?? '?'}
+          </Badge>
+        </Tooltip>
+      )}
     </Box>
   )
 }
@@ -188,9 +208,13 @@ interface FloorMapScreenProps {
    * Granted by having a Rogue in the party or a trap-detection passive/research upgrade.
    */
   canDetectTraps?: boolean
+  /** Live node vote tally (multiplayer). */
+  nodeVoteState?: NodeVoteState | null
+  /** The local player's socket ID (to highlight their vote). */
+  myPlayerId?: string
 }
 
-export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAll = false, canDetectTraps = false }: FloorMapScreenProps) {
+export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAll = false, canDetectTraps = false, nodeVoteState, myPlayerId }: FloorMapScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(360)
@@ -305,16 +329,25 @@ export default function FloorMapScreen({ floorMap, floor, onSelectNode, revealAl
           </svg>
 
           {/* Nodes */}
-          {floorMap.nodes.map((node) => (
-            <NodeButton
-              key={node.id}
-              node={node}
-              center={centres[node.id]}
-              onClick={() => onSelectNode(node.id)}
-              revealAll={revealAll}
-              canDetectTraps={canDetectTraps}
-            />
-          ))}
+          {floorMap.nodes.map((node) => {
+            const voteCount = nodeVoteState
+              ? Object.values(nodeVoteState.votes).filter((id) => id === node.id).length
+              : 0
+            const isMyVote = !!(myPlayerId && nodeVoteState?.votes[myPlayerId] === node.id)
+            return (
+              <NodeButton
+                key={node.id}
+                node={node}
+                center={centres[node.id]}
+                onClick={() => onSelectNode(node.id)}
+                revealAll={revealAll}
+                canDetectTraps={canDetectTraps}
+                voteCount={voteCount > 0 ? voteCount : undefined}
+                totalVoters={nodeVoteState?.totalPlayers}
+                isMyVote={isMyVote}
+              />
+            )
+          })}
         </Box>
       </Box>
 

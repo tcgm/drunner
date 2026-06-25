@@ -14,7 +14,7 @@ import {
   getSlotsForPlayerIndex,
   MULTIPLAYER_CONFIG,
 } from '@/config/multiplayerConfig'
-import type { SlotAssignment, PlayerProfile, VoteState, DraftState } from './types'
+import type { SlotAssignment, PlayerProfile, VoteState, NodeVoteState, DraftState } from './types'
 import type { Item } from '@/types'
 
 interface SessionState {
@@ -39,6 +39,8 @@ interface SessionState {
   // ── Voting ─────────────────────────────────────────────────────────────────
   /** Live vote tally for the current event. Null when no vote is active. */
   voteState: VoteState | null
+  /** Live vote tally for map node selection. Null when no vote is active. */
+  nodeVoteState: NodeVoteState | null
 
   // ── Loot draft ─────────────────────────────────────────────────────────────
   /** Active draft state. Null when no draft is in progress. */
@@ -86,6 +88,8 @@ interface SessionState {
 
   /** Set or clear the current vote state. */
   setVoteState: (vs: VoteState | null) => void
+  /** Set or clear the current node vote state. */
+  setNodeVoteState: (vs: NodeVoteState | null) => void
 
   /** Set or clear the active draft state. */
   setDraftState: (ds: DraftState | null) => void
@@ -125,6 +129,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   pendingLoot: [],
   pendingGold: {},
   voteState: null,
+  nodeVoteState: null,
   draftState: null,
   combatQueue: {},
   readyPlayers: [],
@@ -164,6 +169,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   clearPendingLoot: () => set({ pendingLoot: [], pendingGold: {} }),
 
   setVoteState: (vs) => set({ voteState: vs }),
+  setNodeVoteState: (vs) => set({ nodeVoteState: vs }),
 
   setDraftState: (ds) => set({ draftState: ds }),
 

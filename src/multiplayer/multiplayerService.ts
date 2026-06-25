@@ -13,7 +13,7 @@ import { getSocket } from './socket'
 import { useMultiplayerStore } from './multiplayerStore'
 import { useGameStore } from '@/core/gameStore'
 import { useSessionStore } from './sessionStore'
-import { recordVote, initVotes, clearVotes } from './voteManager'
+import { recordVote, initVotes, clearVotes, recordNodeVote, initNodeVotes, clearNodeVotes } from './voteManager'
 import { initializeBossCombatState } from '@/systems/combat'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { MultiplayerSyncState, GuestAction, DraftState, SlotAssignment, PlayerProfile } from './types'
@@ -113,6 +113,8 @@ function _setupHost(
 ) {
     let prevGameSerialized = ''
     let prevEventId: string | null | undefined = undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let prevFloorMap: any = undefined
 
     // Broadcast game state on every change
     cleanups.push(useGameStore.subscribe((state) => {
@@ -128,6 +130,13 @@ function _setupHost(
             if (eventId !== null) initVotes(useMultiplayerStore.getState().players.length, roomCode)
             else clearVotes()
         }
+
+        const currentFloorMap = state.dungeon.floorMap ?? null
+        if (currentFloorMap !== prevFloorMap) {
+            prevFloorMap = currentFloorMap
+            if (currentFloorMap !== null) initNodeVotes(useMultiplayerStore.getState().players.length, roomCode)
+            else clearNodeVotes()
+        }
     }))
 
     // Re-sync vote count when players join or leave
@@ -135,13 +144,17 @@ function _setupHost(
         if (s.players.length === prev.players.length) return
         const currentEventId = useGameStore.getState().dungeon.currentEvent?.id ?? null
         if (currentEventId !== null) initVotes(s.players.length, roomCode)
+        const currentFloorMap = useGameStore.getState().dungeon.floorMap ?? null
+        if (currentFloorMap !== null) initNodeVotes(s.players.length, roomCode)
     }))
 
-    // Initial vote sync if event is already active
+    // Initial vote sync if event or floor map is already active
     const currentEventId = useGameStore.getState().dungeon.currentEvent?.id ?? null
     if (currentEventId !== null) initVotes(useMultiplayerStore.getState().players.length, roomCode)
+    const initialFloorMap = useGameStore.getState().dungeon.floorMap ?? null
+    if (initialFloorMap !== null) initNodeVotes(useMultiplayerStore.getState().players.length, roomCode)
 
-    cleanups.push(() => clearVotes())
+    cleanups.push(() => { clearVotes(); clearNodeVotes() })
 
     // Guest action requests
     on('guest-action', ({ action }: { playerId: string; playerName: string; action: GuestAction }) => {
@@ -165,6 +178,18 @@ function _setupHost(
 
     on('cast-vote', ({ playerId, choiceIndex }: { playerId: string; choiceIndex: number }) => {
         recordVote(playerId, choiceIndex)
+    })
+
+    on('cast-node-vote', ({ playerId, nodeId }: { playerId: string; nodeId: string }) => {
+        recordNodeVote(playerId, nodeId)
+    })
+
+    on('update-slot-hero', ({ playerId, slotIndex, hero }: { playerId: string; slotIndex: number; hero: Hero }) => {
+        const assignment = useSessionStore.getState().slotAssignments[slotIndex]
+        if (assignment?.playerId !== playerId) return
+        useGameStore.getState().updateGuestHeroAtSlot(hero, slotIndex)
+        const updatedAssignment = { ...assignment, heroSnapshot: hero }
+        useSessionStore.getState().setSlotAssignment(slotIndex, updatedAssignment)
     })
 
     on('player-ready', ({ playerId }: { playerId: string }) => {
@@ -209,8 +234,12 @@ function _setupHost(
         socket.emit('boss-combat-start-to', { event: ev, targetId: requesterId })
     })
 
-    // Also respond to late-joining players during active boss fight
+    // Also respond to late-joining players during active boss fight, and re-broadcast state
     on('player-joined', ({ player }: { player: { id: string } }) => {
+        // Re-broadcast current game state so the new guest sees up-to-date party/dungeon immediately
+        const sync = _extractSync(useGameStore.getState())
+        socket.emit('state-update', { code: roomCode, state: sync })
+
         const { inBossCombat, bossEvent } = useMultiplayerStore.getState()
         if (!inBossCombat || !bossEvent) return
         const { combatState: _cs, ...ev } = bossEvent
@@ -230,6 +259,20 @@ function _setupGuest(
     socket: ReturnType<typeof getSocket>,
     roomCode: string,
 ) {
+    // Clear party slots that don't belong to this guest so stale heroes from previous
+    // sessions don't appear in the host's slots until the first state-update arrives.
+    const { players } = useMultiplayerStore.getState()
+    const myPlayerIdx = players.findIndex((p) => p.id === socket.id)
+    const session = useSessionStore.getState()
+    const ownership = session.slotOwnershipByIndex
+    if (myPlayerIdx >= 0 && ownership.length > 0) {
+        for (let i = 0; i < ownership.length; i++) {
+            if (ownership[i] !== myPlayerIdx) {
+                useGameStore.getState().clearGuestHeroAtSlot(i)
+            }
+        }
+    }
+
     // Boss state polling: if on a boss event but not in combat, poll every 2s
     let bossPollInterval: ReturnType<typeof setInterval> | null = null
 
@@ -266,8 +309,26 @@ function _setupGuest(
         if (state.activeRun?.result === 'active') {
             local.applyMultiplayerState(state)
         } else {
-            local.applyMultiplayerState({ ...state, party: local.party, dungeon: local.dungeon })
+            // During prep: apply host's party for host-owned slots, keep local party for guest-owned slots.
+            // This lets guests see the host's heroes in real-time while preserving their own claimed heroes.
+            const session = useSessionStore.getState()
+            const players = useMultiplayerStore.getState().players
+            const myPlayerIdx = players.findIndex((p) => p.id === socket.id)
+            const mySlots = myPlayerIdx >= 0
+                ? session.slotOwnershipByIndex.reduce<number[]>((acc, owner, i) => {
+                    if (owner === myPlayerIdx) acc.push(i)
+                    return acc
+                }, [])
+                : []
+            const mergedParty = state.party.map((hero, i) =>
+                mySlots.includes(i) ? local.party[i] : hero
+            ) as typeof state.party
+            local.applyMultiplayerState({ ...state, party: mergedParty, dungeon: local.dungeon })
         }
+    })
+
+    on('node-vote-update', ({ votes, totalPlayers }: { votes: Record<string, string>; totalPlayers: number }) => {
+        useSessionStore.getState().setNodeVoteState({ votes, totalPlayers })
     })
 
     on('vote-update', ({ votes, totalPlayers }: { votes: Record<string, number>; totalPlayers: number }) => {
@@ -344,6 +405,13 @@ function _setupGuest(
 }
 
 // ── Action helpers (called from UI, read from stores — no hooks) ──────────────
+
+/** Guests call this after equipping/unequipping to keep the host's party slot in sync. */
+export function syncGuestSlotHero(slotIndex: number, hero: Hero): void {
+    const { role, roomCode } = useMultiplayerStore.getState()
+    if (role !== 'guest' || !roomCode) return
+    getSocket().emit('update-slot-hero', { code: roomCode, slotIndex, hero })
+}
 
 export function claimSlot(slotIndex: number, hero: Hero): void {
     const { role, roomCode } = useMultiplayerStore.getState()

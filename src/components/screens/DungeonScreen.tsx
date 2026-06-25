@@ -22,6 +22,7 @@ import { initializeBossCombatState } from '@/systems/combat'
 import { MusicContext } from '@/types/audio'
 import { GiCardJackHearts, GiInfo, GiSwordsEmblem } from 'react-icons/gi'
 import { useDungeonActions, useMultiplayerStore, usePartySync, useSessionStore, setVoteCompleteCallback, getSocket } from '@/multiplayer'
+import { setNodeVoteCompleteCallback } from '@/multiplayer/voteManager'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
@@ -56,7 +57,8 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const inBossCombat = useMultiplayerStore((s) => s.inBossCombat)
   const bossEvent = useMultiplayerStore((s) => s.bossEvent)
   const { distributeRunEnd, pickDraftItem } = usePartySync()
-  const voteState  = useSessionStore((s) => s.voteState)
+  const voteState     = useSessionStore((s) => s.voteState)
+  const nodeVoteState = useSessionStore((s) => s.nodeVoteState)
   const draftState = useSessionStore((s) => s.draftState)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
@@ -180,6 +182,17 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     setVoteCompleteCallback(handleVoteComplete)
     return () => setVoteCompleteCallback(null)
   }, [mpRole, handleVoteComplete])
+
+  // HOST callback fired by voteManager when map node majority is reached
+  const handleNodeVoteComplete = useCallback((nodeId: string) => {
+    useGameStore.getState().selectMapNode(nodeId)
+  }, [])
+
+  useEffect(() => {
+    if (mpRole !== 'host') return
+    setNodeVoteCompleteCallback(handleNodeVoteComplete)
+    return () => setNodeVoteCompleteCallback(null)
+  }, [mpRole, handleNodeVoteComplete])
 
   const handleSelectChoice = (choice: EventChoice) => {
     const currentEvent = dungeon.currentEvent
@@ -382,6 +395,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
           onAdvance={advanceDungeon}
           onSelectMapNode={selectMapNode}
           voteState={voteState}
+          nodeVoteState={nodeVoteState}
           myPlayerId={mpRole ? getSocket()?.id : undefined}
         />
         

@@ -79,16 +79,14 @@ function _getMajority(votes: Record<string, number>): number {
   for (const idx of Object.values(votes)) {
     counts[idx] = (counts[idx] ?? 0) + 1
   }
-  let best = -1
-  let bestCount = -1
-  for (const [idxStr, count] of Object.entries(counts)) {
-    const idx = Number(idxStr)
-    if (count > bestCount || (count === bestCount && idx < best)) {
-      best = idx
-      bestCount = count
-    }
+  let maxCount = 0
+  for (const count of Object.values(counts)) {
+    if (count > maxCount) maxCount = count
   }
-  return best
+  const tied = Object.entries(counts)
+    .filter(([, c]) => c === maxCount)
+    .map(([idx]) => Number(idx))
+  return tied[Math.floor(Math.random() * tied.length)]
 }
 
 function _applyMajority() {
@@ -98,5 +96,68 @@ function _applyMajority() {
 
   if (winner >= 0 && _onComplete) {
     _onComplete(winner)
+  }
+}
+
+// ── Map-node vote (separate accumulator, votes are nodeId strings) ─────────────
+
+let _nodeVotes: Record<string, string> = {}
+let _nodeTotalPlayers = 0
+let _nodeRoomCode: string | null = null
+let _onNodeComplete: ((nodeId: string) => void) | null = null
+
+export function setNodeVoteCompleteCallback(cb: ((nodeId: string) => void) | null) {
+  _onNodeComplete = cb
+}
+
+export function initNodeVotes(totalPlayers: number, roomCode: string) {
+  _nodeVotes = {}
+  _nodeTotalPlayers = totalPlayers
+  _nodeRoomCode = roomCode
+  useSessionStore.getState().setNodeVoteState(null)
+}
+
+export function recordNodeVote(playerId: string, nodeId: string) {
+  _nodeVotes = { ..._nodeVotes, [playerId]: nodeId }
+
+  const voteState = { votes: _nodeVotes, totalPlayers: _nodeTotalPlayers }
+  useSessionStore.getState().setNodeVoteState(voteState)
+
+  const socket = getSocket()
+  if (_nodeRoomCode) {
+    socket.emit('node-vote-update', { code: _nodeRoomCode, votes: _nodeVotes, totalPlayers: _nodeTotalPlayers })
+  }
+
+  if (_nodeTotalPlayers > 0 && Object.keys(_nodeVotes).length >= _nodeTotalPlayers) {
+    _applyNodeMajority()
+  }
+}
+
+export function clearNodeVotes() {
+  _nodeVotes = {}
+  useSessionStore.getState().setNodeVoteState(null)
+}
+
+function _getNodeMajority(votes: Record<string, string>): string {
+  const counts: Record<string, number> = {}
+  for (const nodeId of Object.values(votes)) {
+    counts[nodeId] = (counts[nodeId] ?? 0) + 1
+  }
+  let maxCount = 0
+  for (const count of Object.values(counts)) {
+    if (count > maxCount) maxCount = count
+  }
+  const tied = Object.entries(counts)
+    .filter(([, c]) => c === maxCount)
+    .map(([nodeId]) => nodeId)
+  return tied[Math.floor(Math.random() * tied.length)]
+}
+
+function _applyNodeMajority() {
+  const winner = _getNodeMajority(_nodeVotes)
+  _nodeVotes = {}
+  useSessionStore.getState().setNodeVoteState(null)
+  if (winner && _onNodeComplete) {
+    _onNodeComplete(winner)
   }
 }

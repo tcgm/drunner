@@ -80,6 +80,13 @@ export interface VoteState {
   totalPlayers: number
 }
 
+/** Live vote tally for map node selection. */
+export interface NodeVoteState {
+  /** playerId → nodeId they voted for */
+  votes: Record<string, string>
+  totalPlayers: number
+}
+
 /** State of the post-run loot draft. Held in session store until complete. */
 export interface DraftState {
   /** Items available to pick from (shrinks as players pick). */

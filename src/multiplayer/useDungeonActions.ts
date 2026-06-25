@@ -12,7 +12,7 @@
 import { useMultiplayerStore } from './multiplayerStore'
 import { getSocket } from './socket'
 import { useGameStore } from '@/core/gameStore'
-import { recordVote } from './voteManager'
+import { recordVote, recordNodeVote } from './voteManager'
 import type { EventChoice } from '@/types'
 import type { GuestAction } from './types'
 import type { DungeonEvent } from '@/types'
@@ -75,8 +75,16 @@ export function useDungeonActions() {
 
     selectChoice,
 
-    selectMapNode: isGuest
-      ? (nodeId: string) => sendGuestAction(roomCode!, { type: 'select-map-node', nodeId })
+    // In multiplayer, node selection is voted on. Both host and guests cast a vote;
+    // the node-vote-complete callback in DungeonScreen executes the winning node.
+    selectMapNode: isMultiplayer
+      ? (nodeId: string) => {
+          if (isGuest) {
+            getSocket().emit('cast-node-vote', { code: roomCode, nodeId })
+          } else {
+            recordNodeVote(getSocket().id ?? 'host', nodeId)
+          }
+        }
       : storeSelectNode,
 
     retreatFromDungeon: isGuest
