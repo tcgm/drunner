@@ -53,6 +53,7 @@ export function startMultiplayerService(role: 'host' | 'guest', roomCode: string
                     name: h.name,
                     className: h.class.name,
                     classIcon: h.class.icon,
+                    species: h.species,
                     level: h.level,
                 })),
             bankGold,

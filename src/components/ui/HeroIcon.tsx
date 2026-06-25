@@ -1,10 +1,11 @@
 import { Box, Icon } from '@chakra-ui/react'
+import type { BoxProps } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
 import type { IconType } from 'react-icons'
 import type { HeroSpecies } from '@/types'
 import { SPECIES_DEFINITIONS } from '@/data/heroes/species'
 
-interface HeroIconProps {
+interface HeroIconProps extends Omit<BoxProps, 'position' | 'display' | 'color'> {
   /** react-icons/gi name from HeroClass.icon */
   classIcon: string
   /** Species id - if present, its background/foreground icons are layered with the class icon */
@@ -30,16 +31,21 @@ export function HeroIcon({
   species,
   boxSize = 6,
   color = 'orange.400',
-  backgroundColor = 'gray.500',
-  foregroundColor = 'gray.300',
+  backgroundColor,
+  foregroundColor,
+  flexShrink = 0,
+  ...rest
 }: HeroIconProps) {
   const ClassIconComponent = (resolveIcon(classIcon) ?? GameIcons.GiSwordman) as IconType
   const speciesDef = species ? SPECIES_DEFINITIONS[species] : undefined
   const BackgroundIconComponent = resolveIcon(speciesDef?.backgroundIcon)
   const ForegroundIconComponent = resolveIcon(speciesDef?.foregroundIcon)
 
+  backgroundColor = backgroundColor || color || 'orange.400'
+  foregroundColor = foregroundColor || color || 'orange.400'
+
   return (
-    <Box position="relative" display="inline-flex" boxSize={boxSize} flexShrink={0}>
+    <Box position="relative" display="inline-flex" boxSize={boxSize} flexShrink={flexShrink} {...rest}>
       {BackgroundIconComponent && (
         <Icon
           as={BackgroundIconComponent}

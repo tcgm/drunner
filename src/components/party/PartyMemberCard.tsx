@@ -20,6 +20,7 @@ import { ItemSlot } from '@components/ui/ItemSlot'
 import { EquipmentPips } from './EquipmentPips'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { HeroName } from '@/components/ui/HeroName'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 const MotionBox = motion.create(Box)
 
@@ -62,9 +63,6 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
     console.log(result.message)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-  
   const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
   
   return (
@@ -130,7 +128,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               >
                 {hero.customPortrait
                   ? <Image src={hero.customPortrait} boxSize={8} objectFit="cover" borderRadius="md" flexShrink={0} />
-                  : <Icon as={IconComponent} boxSize={8} color="orange.400" flexShrink={0} />}
+                  : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={8} color="orange.400" />}
               </motion.div>
               
               <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0}>

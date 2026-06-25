@@ -8,13 +8,13 @@
  */
 import { Icon, Image, Box, IconButton } from '@chakra-ui/react'
 import { GiCctvCamera } from 'react-icons/gi'
-import * as GameIcons from 'react-icons/gi'
 import type { Hero } from '@/types'
 import { useRef, useState } from 'react'
 import { useGameStore } from '@/core/gameStore'
 import { useSyncHeroToHost } from '@/multiplayer'
 import { PortraitCropModal } from '@/components/ui/PortraitCropModal'
 import { RiCameraFill } from 'react-icons/ri'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 interface HeroPortraitProps {
   hero: Hero
@@ -44,9 +44,6 @@ export function HeroPortrait({
   const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null)
   const [pendingOutputFormat, setPendingOutputFormat] = useState<'jpeg' | 'png'>('jpeg')
   const [cropOpen, setCropOpen] = useState(false)
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -134,13 +131,13 @@ export function HeroPortrait({
       flexShrink={0}
     />
   ) : (
-    <Icon
-      as={IconComponent}
+    <HeroIcon
+      classIcon={hero.class.icon}
+      species={hero.species}
       boxSize={boxSize}
       color={color}
       filter={filter}
       display="block"
-      flexShrink={0}
     />
   )
 

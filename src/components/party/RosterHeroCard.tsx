@@ -1,7 +1,5 @@
 import { Box, VStack, HStack, Text, Badge, Icon, Tooltip, SimpleGrid, Flex, Image } from '@chakra-ui/react'
-import * as GameIcons from 'react-icons/gi'
 import { GiDiamondHard } from 'react-icons/gi'
-import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
@@ -9,6 +7,7 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 import { EquipmentPips } from './EquipmentPips'
 import { getRarityColors } from '@/systems/rarity/rarities'
 import { HeroName } from '@/components/ui/HeroName'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 interface RosterHeroCardProps {
   hero: Hero
@@ -17,7 +16,6 @@ interface RosterHeroCardProps {
 }
 
 export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProps) {
-  const IconComponent = ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType
   const equippedItems = Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)
   
   const tooltipLabel = (
@@ -78,7 +76,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
       >
         {/* Icon Background */}
         <Box className="roster-hero-card-bg-icon" position="absolute" top={-2} right={-2} opacity={0.05}>
-          <Icon as={IconComponent} boxSize={20} color="blue.400" />
+          <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={20} color="blue.400" />
         </Box>
         
         <Flex className="roster-hero-card-content" gap={3} position="relative" zIndex={1} align="center">
@@ -95,7 +93,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
           >
             {hero.customPortrait
               ? <Image src={hero.customPortrait} boxSize={10} objectFit="cover" borderRadius="md" />
-              : <Icon as={IconComponent} boxSize={10} color="blue.300" />}
+              : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={10} color="blue.300" />}
             
             {/* Equipment pips around icon */}
             <EquipmentPips 

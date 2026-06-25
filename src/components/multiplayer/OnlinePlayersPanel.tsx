@@ -26,13 +26,13 @@ import {
   Select,
 } from '@chakra-ui/react'
 import * as GameIcons from 'react-icons/gi'
-import type { IconType } from 'react-icons'
 import { GiSwordsEmblem, GiCastle, GiPerson } from 'react-icons/gi'
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi'
 import { useMultiplayerStore, useSessionStore, usePartySync } from '@/multiplayer'
 import { useGameStore } from '@/core/gameStore'
 import { getSocket } from '@/multiplayer/socket'
 import { PLAYER_COLORS } from '@/config/multiplayerConfig'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 const LOCATION_LABELS: Record<string, string> = {
   menu: 'Main Menu',
@@ -141,11 +141,6 @@ export function OnlinePlayersPanel() {
                 {profile && profile.heroRosterPreview.length > 0 ? (
                   <SimpleGrid columns={Math.min(profile.heroRosterPreview.length, 4)} spacing={1}>
                     {profile.heroRosterPreview.map((hero) => {
-                      const HeroIcon = (
-                        (GameIcons as Record<string, IconType>)[hero.classIcon] ??
-                        GameIcons.GiSwordman
-                      ) as IconType
-
                       return (
                         <Tooltip
                           key={hero.id}
@@ -164,7 +159,7 @@ export function OnlinePlayersPanel() {
                             _hover={{ borderColor: colors.border }}
                             transition="border-color 0.15s"
                           >
-                            <Icon as={HeroIcon} color={colors.text} boxSize={5} />
+                            <HeroIcon classIcon={hero.classIcon} species={hero.species} color={colors.text} boxSize={5} />
                             <Text fontSize="2xs" color="gray.300" noOfLines={1}>
                               {hero.name}
                             </Text>
@@ -223,12 +218,9 @@ export function OnlinePlayersPanel() {
                         justify="space-between"
                       >
                         <HStack spacing={1}>
-                          <Icon
-                            as={
-                              ((GameIcons as Record<string, IconType>)[
-                                heroRoster.find((h) => h.id === assigned.heroSourceId)?.class.icon ?? ''
-                              ] ?? GameIcons.GiSwordman) as IconType
-                            }
+                          <HeroIcon
+                            classIcon={assigned.heroSnapshot.class.icon}
+                            species={assigned.heroSnapshot.species}
                             color="blue.300"
                             boxSize={4}
                           />

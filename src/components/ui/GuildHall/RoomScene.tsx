@@ -20,8 +20,7 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { HeroName } from '@/components/ui/HeroName'
 import type { Hero, HireableHero } from '@/types'
-import * as GameIcons from 'react-icons/gi'
-import type { IconType } from 'react-icons'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 import { HERO_RARITY_CONFIG } from '@/systems/heroGeneration'
 import { ROOM_SPOTS, heroLevelColor } from './roomSceneData'
 import type { RoomSpot } from './roomSceneData'
@@ -130,8 +129,6 @@ function HireableHeroToken({ hero, pos, floatDelay, onClick }: {
 }) {
   const rCfg = HERO_RARITY_CONFIG[hero.heroRarity]
   const color = rCfg.color
-  const iconName = hero.heroClass.icon as keyof typeof GameIcons
-  const ClassIcon: IconType = (GameIcons[iconName] ?? GameIcons.GiSwordman) as IconType
   return (
     <Tooltip
       label={`${hero.name} · ${hero.heroClass.name} · ${rCfg.label} · Lv ${hero.level} - click to hire`}
@@ -178,7 +175,7 @@ function HireableHeroToken({ hero, pos, floatDelay, onClick }: {
             transition="box-shadow 0.2s, border-color 0.2s"
             opacity={0.85}
           >
-            <Icon as={ClassIcon} color={color} boxSize={5} />
+            <HeroIcon classIcon={hero.heroClass.icon} species={hero.species} color={color} boxSize={5} />
           </Box>
 
           {/* "?" hire badge */}

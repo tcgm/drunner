@@ -15,6 +15,7 @@ import { calculateXpForLevel } from '@utils/heroUtils'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { HeroName } from '@/components/ui/HeroName'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 interface HeroTooltipProps {
   hero: Hero
@@ -22,9 +23,6 @@ interface HeroTooltipProps {
 }
 
 export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-
   return (
     <Tooltip
       label={
@@ -33,7 +31,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
           <HStack className="hero-tooltip-header" spacing={3}>
             {hero.customPortrait
               ? <Image className="hero-tooltip-icon" src={hero.customPortrait} boxSize={10} objectFit="cover" borderRadius="md" />
-              : <Icon className="hero-tooltip-icon" as={IconComponent} boxSize={10} color="orange.400" />}
+              : <HeroIcon className="hero-tooltip-icon" classIcon={hero.class.icon} species={hero.species} boxSize={10} color="orange.400" />}
             <VStack className="hero-tooltip-info" align="start" spacing={0} flex={1}>
               <Text className="hero-tooltip-name" fontSize="md" fontWeight="bold" color="orange.400">
                 <HeroName hero={hero} />

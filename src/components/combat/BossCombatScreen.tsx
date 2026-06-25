@@ -11,8 +11,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useRef } from 'react'
 import type { DungeonEvent, Hero, BossCombatState } from '@/types'
 import { useSessionStore } from '@/multiplayer'
-import * as GameIcons from 'react-icons/gi'
-import { GiSkullCrossedBones, GiSwordman, GiScrollUnfurled } from 'react-icons/gi'
+import { GiSkullCrossedBones, GiScrollUnfurled } from 'react-icons/gi'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 import BossDisplay from './BossDisplay'
 import PartyHealthDisplay from './PartyHealthDisplay'
 import TurnOrderDisplay from './TurnOrderDisplay'
@@ -715,19 +715,17 @@ export default function BossCombatScreen({
                             const hero = isBoss ? null : activeHeroes.find(h => h.id === combatant.id)
                             const isCurrent = index === (combatState.currentTurnIndex || 0)
                             const isPast = index < (combatState.currentTurnIndex || 0)
-                            
-                            const CombatantIcon = isBoss 
-                                ? GiSkullCrossedBones 
-                                : hero 
-                                    ? (GameIcons as any)[hero.class.icon] || GiSwordman
-                                    : GiSwordman
 
                             return (
                                 <Box
                                     key={`turn-${combatant.id}-${index}`}
                                     className={`turn-indicator-portrait ${isCurrent ? 'current' : ''} ${isPast ? 'past' : ''} ${isBoss ? 'boss' : 'hero'}`}
                                 >
-                                    <Icon as={CombatantIcon} />
+                                    {isBoss ? (
+                                        <Icon as={GiSkullCrossedBones} />
+                                    ) : (
+                                        <HeroIcon classIcon={hero?.class.icon || 'GiSwordman'} species={hero?.species} />
+                                    )}
                                     <Text>{isBoss ? 'Boss' : hero?.name || '?'}</Text>
                                 </Box>
                             )

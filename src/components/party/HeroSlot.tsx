@@ -6,6 +6,7 @@ import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { HeroName } from '@/components/ui/HeroName'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 interface HeroSlotProps {
   hero: Hero | null
@@ -66,11 +67,7 @@ export default function HeroSlot({
             opacity={0.08}
             transform="rotate(-15deg)"
           >
-            <Icon 
-              as={(GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman} 
-              boxSize={40} 
-              color="orange.400"
-            />
+            <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={40} color="orange.400" />
           </Box>
           
           <VStack className="hero-slot-content" spacing={1} p={1} position="relative" zIndex={1}>
@@ -87,11 +84,7 @@ export default function HeroSlot({
             >
               {hero.customPortrait
                 ? <Image src={hero.customPortrait} boxSize={12} objectFit="cover" borderRadius="md" />
-                : <ChakraIcon 
-                    as={(GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman} 
-                    boxSize={12} 
-                    color="orange.300"
-                  />}
+                : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={12} color="orange.300" />}
               {/* Glow effect */}
               <Box
                 position="absolute"

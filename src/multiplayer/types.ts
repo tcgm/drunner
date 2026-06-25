@@ -2,7 +2,7 @@
  * Multiplayer types shared between the store, sync hook, and UI.
  */
 
-import type { GameState, Hero, Item, Run } from '@/types'
+import type { GameState, Hero, HeroSpecies, Item, Run } from '@/types'
 
 export interface MultiplayerPlayer {
   id: string
@@ -51,6 +51,7 @@ export interface PlayerProfile {
     name: string
     className: string
     classIcon: string
+    species?: HeroSpecies
     level: number
   }>
   bankGold: number

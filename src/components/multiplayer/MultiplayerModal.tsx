@@ -58,6 +58,7 @@ export function MultiplayerModal({ isOpen, onClose, onJoined }: MultiplayerModal
         name:      h.name,
         className: h.class.name,
         classIcon: h.class.icon,
+        species:   h.species,
         level:     h.level,
       })),
       bankGold,

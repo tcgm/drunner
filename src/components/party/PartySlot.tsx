@@ -2,13 +2,13 @@ import { Box, Flex, VStack, Text, Badge, Button, HStack, SimpleGrid, Icon, Image
 import { useState, useEffect } from 'react'
 import * as GameIcons from 'react-icons/gi'
 import { GiPerson } from 'react-icons/gi'
-import type { IconType } from 'react-icons'
 import type { Hero, Item } from '../../types'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { formatDefenseReduction } from '@/utils/defenseUtils'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { EquipmentPips } from './EquipmentPips'
 import { HeroName } from '@/components/ui/HeroName'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 interface SlotOwnerInfo {
   name: string
@@ -28,7 +28,6 @@ interface PartySlotProps {
 
 export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }: PartySlotProps) {
   const isEmpty = !hero
-  const IconComponent = hero ? ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType : null
   const [isPortrait, setIsPortrait] = useState(false)
   // In multiplayer, only the contributing player may remove their hero; others are view-only.
   const canControl = !owner || owner.isMe
@@ -121,7 +120,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
             opacity={0.06}
             transform="rotate(-15deg)"
           >
-            {IconComponent && <Icon as={IconComponent} boxSize={32} color="orange.400" />}
+            {hero && <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={32} color="orange.400" />}
           </Box>
           
           <HStack className="party-slot-portrait-content" spacing={1} p={1} position="relative" zIndex={1} h="full" align="stretch">
@@ -144,7 +143,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
               >
                 {hero.customPortrait
                   ? <Image src={hero.customPortrait} boxSize={8} objectFit="cover" borderRadius="md" />
-                  : IconComponent && <Icon as={IconComponent} boxSize={8} color="orange.300" />}
+                  : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={8} color="orange.300" />}
                 {/* Glow effect */}
                 <Box
                   position="absolute"
@@ -155,7 +154,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
                   filter="blur(10px)"
                 />
                 {/* Equipment pips */}
-                <EquipmentPips 
+                <EquipmentPips
                   items={Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)}
                   layout="circular"
                   radius={25}
@@ -239,7 +238,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
             opacity={0.08}
             transform="rotate(-15deg)"
           >
-            {IconComponent && <Icon as={IconComponent} boxSize={40} color="orange.400" />}
+            {hero && <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={40} color="orange.400" />}
           </Box>
           
           <VStack className="party-slot-desktop-content" spacing={1} p={3} position="relative" zIndex={1} h="full">
@@ -256,7 +255,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
             >
               {hero.customPortrait
                 ? <Image src={hero.customPortrait} boxSize={12} objectFit="cover" borderRadius="lg" />
-                : IconComponent && <Icon as={IconComponent} boxSize={12} color="orange.300" />}
+                : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={12} color="orange.300" />}
               {/* Glow effect */}
               <Box
                 position="absolute"

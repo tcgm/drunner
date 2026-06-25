@@ -47,8 +47,6 @@ interface HeroModalProps {
 }
 
 export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: HeroModalProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
   const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables, addItemToDungeonInventory, moveItemToBank, updateHero } = useGameStore()
 
   // Multiplayer: heroes belonging to another player are viewable but not controllable
