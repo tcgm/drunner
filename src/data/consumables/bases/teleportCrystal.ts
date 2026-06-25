@@ -1,4 +1,4 @@
-import { GiCrystalBall } from 'react-icons/gi'
+import { GiFloatingCrystal } from 'react-icons/gi'
 import type { ConsumableBase } from './types'
 
 // Teleport crystal: jumps the party to a specific floor based on potency
@@ -13,7 +13,7 @@ export const TELEPORT_CRYSTAL_BASE: ConsumableBase = {
       value: 3,
     }
   ],
-  icon: GiCrystalBall,
+  icon: GiFloatingCrystal,
   baseGoldValue: 50,
   usableInCombat: false,
   usableOutOfCombat: true,

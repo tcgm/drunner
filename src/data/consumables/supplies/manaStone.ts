@@ -1,4 +1,4 @@
-import { GiFloatingCrystal } from 'react-icons/gi'
+import { GiCrystalShine } from 'react-icons/gi'
 import type { ConsumableBase } from '../bases/types'
 
 // Mana Stone - crystallized magic energy, increases magic power
@@ -15,7 +15,7 @@ export const MANA_STONE_BASE: ConsumableBase = {
       target: 'self',
     }
   ],
-  icon: GiFloatingCrystal,
+  icon: GiCrystalShine,
   baseGoldValue: 25,
   usableInCombat: true,
   usableOutOfCombat: true,
