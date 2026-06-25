@@ -67,6 +67,8 @@ export function PartySlotPopover({
 }: PartySlotPopoverProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const isEmpty = !hero
+  // In multiplayer, only the contributing player may equip/unequip/remove their hero.
+  const canControl = !owner || owner.isMe
 
   const handleSlotClick = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -116,7 +118,7 @@ export function PartySlotPopover({
         >
           <ModalCloseButton />
           <ModalHeader className="party-slot-popover-header" color="orange.400" fontWeight="bold">
-            {isEmpty ? `Party Slot ${slotIndex + 1}` : `${hero.name} - Slot ${slotIndex + 1}`}
+            {isEmpty ? `Party Slot ${slotIndex + 1}` : `${hero.name} - Slot ${slotIndex + 1}${canControl ? '' : ' (view only)'}`}
           </ModalHeader>
           <ModalBody className="party-slot-popover-body" pb={4} px={3}>
           {isEmpty ? (
@@ -178,10 +180,11 @@ export function PartySlotPopover({
                     return (
                       <Box
                         className="party-slot-popover-equipment-item"
-                        key={slotId} 
+                        key={slotId}
                         position="relative"
-                        cursor="pointer"
-                        onClick={() => onSlotClick(slotIndex, slotId)}
+                        cursor={canControl ? 'pointer' : 'default'}
+                        opacity={canControl ? 1 : 0.85}
+                        onClick={() => canControl && onSlotClick(slotIndex, slotId)}
                       >
                         <EquipmentSlot
                           slot={slotId}
@@ -191,7 +194,7 @@ export function PartySlotPopover({
                           showSwapButton={false}
                           size="sm"
                         />
-                        {item && (
+                        {item && canControl && (
                           <Button
                             className="party-slot-popover-unequip-btn"
                             position="absolute"
@@ -233,11 +236,12 @@ export function PartySlotPopover({
                         return (
                           <Box
                             className="party-slot-popover-consumable-item"
-                            key={slotId} 
-                            position="relative" 
+                            key={slotId}
+                            position="relative"
                             flex={1}
-                            cursor="pointer"
-                            onClick={() => onSlotClick(slotIndex, slotId)}
+                            cursor={canControl ? 'pointer' : 'default'}
+                            opacity={canControl ? 1 : 0.85}
+                            onClick={() => canControl && onSlotClick(slotIndex, slotId)}
                           >
                             <EquipmentSlot
                               slot={slotId}
@@ -247,7 +251,7 @@ export function PartySlotPopover({
                               showSwapButton={false}
                               size="sm"
                             />
-                            {item && (
+                            {item && canControl && (
                               <Button
                                 className="party-slot-popover-unequip-consumable-btn"
                                 position="absolute"
@@ -279,22 +283,24 @@ export function PartySlotPopover({
               </Box>
 
               {/* Actions */}
-              <Box className="party-slot-popover-actions">
-                <Button
-                  className="party-slot-popover-remove-btn"
-                  colorScheme="red"
-                  variant="solid"
-                  w="full"
-                  leftIcon={<Icon as={GiCancel} />}
-                  onClick={() => {
-                    onRemove()
-                    onClose()
-                  }}
-                  size="sm"
-                >
-                  Remove from Party
-                </Button>
-              </Box>
+              {canControl && (
+                <Box className="party-slot-popover-actions">
+                  <Button
+                    className="party-slot-popover-remove-btn"
+                    colorScheme="red"
+                    variant="solid"
+                    w="full"
+                    leftIcon={<Icon as={GiCancel} />}
+                    onClick={() => {
+                      onRemove()
+                      onClose()
+                    }}
+                    size="sm"
+                  >
+                    Remove from Party
+                  </Button>
+                </Box>
+              )}
             </VStack>
           )}
         </ModalBody>

@@ -14,7 +14,7 @@ import {
   getSlotsForPlayerIndex,
   MULTIPLAYER_CONFIG,
 } from '@/config/multiplayerConfig'
-import type { SlotAssignment, PlayerProfile, VoteState, NodeVoteState, DraftState } from './types'
+import type { SlotAssignment, PlayerProfile, VoteState, NodeVoteState, RetreatVoteState, DraftState } from './types'
 import type { Item } from '@/types'
 
 interface SessionState {
@@ -41,6 +41,8 @@ interface SessionState {
   voteState: VoteState | null
   /** Live vote tally for map node selection. Null when no vote is active. */
   nodeVoteState: NodeVoteState | null
+  /** Live tally of who has agreed to retreat. Null when no one has voted to retreat. */
+  retreatVoteState: RetreatVoteState | null
 
   // ── Loot draft ─────────────────────────────────────────────────────────────
   /** Active draft state. Null when no draft is in progress. */
@@ -90,6 +92,8 @@ interface SessionState {
   setVoteState: (vs: VoteState | null) => void
   /** Set or clear the current node vote state. */
   setNodeVoteState: (vs: NodeVoteState | null) => void
+  /** Set or clear the current retreat vote state. */
+  setRetreatVoteState: (vs: RetreatVoteState | null) => void
 
   /** Set or clear the active draft state. */
   setDraftState: (ds: DraftState | null) => void
@@ -130,6 +134,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   pendingGold: {},
   voteState: null,
   nodeVoteState: null,
+  retreatVoteState: null,
   draftState: null,
   combatQueue: {},
   readyPlayers: [],
@@ -170,6 +175,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
   setVoteState: (vs) => set({ voteState: vs }),
   setNodeVoteState: (vs) => set({ nodeVoteState: vs }),
+  setRetreatVoteState: (vs) => set({ retreatVoteState: vs }),
 
   setDraftState: (ds) => set({ draftState: ds }),
 

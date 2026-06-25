@@ -22,7 +22,7 @@ import { initializeBossCombatState } from '@/systems/combat'
 import { MusicContext } from '@/types/audio'
 import { GiCardJackHearts, GiInfo, GiSwordsEmblem } from 'react-icons/gi'
 import { useDungeonActions, useMultiplayerStore, usePartySync, useSessionStore, setVoteCompleteCallback, getSocket } from '@/multiplayer'
-import { setNodeVoteCompleteCallback } from '@/multiplayer/voteManager'
+import { setNodeVoteCompleteCallback, setRetreatVoteCompleteCallback } from '@/multiplayer/voteManager'
 // import CombatLogModal from '@components/dungeon/CombatLogModal' // Disabled - functionality merged into Journal
 import type { EventChoice, Hero, DungeonEvent } from '@/types'
 
@@ -59,7 +59,10 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const { distributeRunEnd, pickDraftItem } = usePartySync()
   const voteState     = useSessionStore((s) => s.voteState)
   const nodeVoteState = useSessionStore((s) => s.nodeVoteState)
+  const retreatVoteState = useSessionStore((s) => s.retreatVoteState)
   const draftState = useSessionStore((s) => s.draftState)
+  const mySocketId = mpRole ? getSocket()?.id : undefined
+  const iVotedToRetreat = !!(mySocketId && retreatVoteState?.votes.includes(mySocketId))
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isInventoryOpen, onOpen: onInventoryOpen, onClose: onInventoryClose } = useDisclosure()
   const { isOpen: isJournalOpen, onOpen: onJournalOpen, onClose: onJournalClose } = useDisclosure()
@@ -194,6 +197,32 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
     return () => setNodeVoteCompleteCallback(null)
   }, [mpRole, handleNodeVoteComplete])
 
+  // HOST callback fired by voteManager once every player has agreed to retreat.
+  // Distributes loot/returns guest heroes, then runs the real retreat. The resulting
+  // activeRun change is broadcast to everyone and picked up by the exit effect below.
+  const handleRetreatVoteComplete = useCallback(() => {
+    distributeRunEnd()
+    useGameStore.getState().retreatFromDungeon()
+  }, [distributeRunEnd])
+
+  useEffect(() => {
+    if (mpRole !== 'host') return
+    setRetreatVoteCompleteCallback(handleRetreatVoteComplete)
+    return () => setRetreatVoteCompleteCallback(null)
+  }, [mpRole, handleRetreatVoteComplete])
+
+  // Once the run actually ends via retreat (activeRun clears without a game-over),
+  // leave the dungeon screen. This fires for every player — host directly, guests via
+  // the synced state-update — so retreating moves the whole party at once.
+  const prevActiveRunRef = useRef(activeRun)
+  useEffect(() => {
+    const wasActive = !!prevActiveRunRef.current
+    prevActiveRunRef.current = activeRun
+    if (wasActive && !activeRun && !isGameOver) {
+      onExit()
+    }
+  }, [activeRun, isGameOver, onExit])
+
   const handleSelectChoice = (choice: EventChoice) => {
     const currentEvent = dungeon.currentEvent
 
@@ -222,11 +251,14 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   }
   
   const handleRetreat = () => {
-    // Host distributes loot and returns guest heroes before ending the run
-    if (mpRole === 'host') distributeRunEnd()
+    // Single-player: retreats immediately. Multiplayer: casts a "yes" vote — the run
+    // only actually ends once every player agrees (see handleRetreatVoteComplete).
     retreatFromDungeon()
     onClose()
-    onExit()
+  }
+
+  const handleCancelRetreatVote = () => {
+    retreatFromDungeon(false)
   }
 
   // Boss combat handlers
@@ -272,8 +304,9 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
   const handleBossFlee = () => {
     emitBossCombatEnd()
     useMultiplayerStore.getState().clearBossCombat()
+    // Single-player: retreats immediately. Multiplayer: casts a "yes" vote — leaving
+    // the screen happens reactively once everyone agrees (see the activeRun effect above).
     retreatFromDungeon()
-    onExit()
   }
 
   // Boss combat is now initiated after choice selection in handleSelectChoice
@@ -380,7 +413,33 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
             )}
           </HStack>
         )}
-        
+
+        {/* Retreat vote status — visible to everyone while a retreat is pending */}
+        {retreatVoteState && (
+          <HStack
+            spacing={3}
+            px={3}
+            py={1.5}
+            bg="orange.900"
+            borderWidth="1px"
+            borderColor="orange.600"
+            borderRadius="md"
+          >
+            <Text fontSize="xs" color="orange.200" fontWeight="bold">
+              Retreat vote: {retreatVoteState.votes.length}/{retreatVoteState.totalPlayers} agreed
+            </Text>
+            {iVotedToRetreat ? (
+              <Button size="xs" colorScheme="orange" variant="outline" onClick={handleCancelRetreatVote}>
+                Cancel my vote
+              </Button>
+            ) : (
+              <Button size="xs" colorScheme="orange" onClick={handleRetreat}>
+                Agree to retreat
+              </Button>
+            )}
+          </HStack>
+        )}
+
         <EventArea
           currentEvent={dungeon.currentEvent}
           currentOutcome={lastOutcome}
@@ -427,6 +486,11 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
             <AlertDialogBody color="gray.300">
               Are you sure you want to retreat? Your heroes will keep their levels and equipment,
               but this run will be marked as a retreat in your history.
+              {mpRole && mpPlayers.length > 1 && (
+                <Text mt={2} color="orange.300" fontSize="sm">
+                  This will cast your vote to retreat — everyone in the party must agree before the run actually ends.
+                </Text>
+              )}
             </AlertDialogBody>
 
             <AlertDialogFooter>
@@ -434,7 +498,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
                 Stay
               </Button>
               <Button colorScheme="orange" onClick={handleRetreat} ml={3}>
-                Retreat
+                {mpRole && mpPlayers.length > 1 ? 'Vote to Retreat' : 'Retreat'}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

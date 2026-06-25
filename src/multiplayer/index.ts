@@ -4,9 +4,11 @@ export { useSyncGameState } from './useSyncGameState'
 export { useDungeonActions } from './useDungeonActions'
 export { usePartySync } from './usePartySync'
 export { useSessionStore } from './sessionStore'
+export { useMyPartySlots, useCanControlSlot, useCanControlHero } from './usePartyOwnership'
+export { useSyncHeroToHost } from './useHeroSync'
 export { getSocket } from './socket'
-export { setVoteCompleteCallback, initVotes, recordVote, clearVotes, setNodeVoteCompleteCallback, initNodeVotes, recordNodeVote, clearNodeVotes } from './voteManager'
-export { startMultiplayerService, stopMultiplayerService, claimSlot, releaseSlot, distributeRunEnd, pickDraftItem, syncGuestSlotHero } from './multiplayerService'
+export { setVoteCompleteCallback, initVotes, recordVote, clearVotes, setNodeVoteCompleteCallback, initNodeVotes, recordNodeVote, clearNodeVotes, setRetreatVoteCompleteCallback, initRetreatVotes, castRetreatVote, clearRetreatVotes } from './voteManager'
+export { startMultiplayerService, stopMultiplayerService, claimSlot, releaseSlot, distributeRunEnd, pickDraftItem, syncGuestSlotHero, syncDungeonInventoryToHost } from './multiplayerService'
 export type {
   MultiplayerPlayer,
   MultiplayerSyncState,
@@ -16,5 +18,6 @@ export type {
   RunEndPayload,
   VoteState,
   NodeVoteState,
+  RetreatVoteState,
   DraftState,
 } from './types'

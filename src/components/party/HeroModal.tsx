@@ -29,6 +29,7 @@ import { calculateTotalStats } from '@/utils/statCalculator'
 import { GiDiamondHard } from 'react-icons/gi'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useGameStore } from '@/core/gameStore'
+import { useCanControlHero, useSyncHeroToHost, syncDungeonInventoryToHost } from '@/multiplayer'
 import DungeonInventoryModal from '@components/dungeon/DungeonInventoryModal'
 import { EquipmentSlot } from '@/components/ui/EquipmentSlot'
 import { HeroName } from '@/components/ui/HeroName'
@@ -50,6 +51,10 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
   const IconComponent = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
   const { equipItemToHero, unequipItemFromHero, dungeon, autofillConsumables, autofillDungeonConsumables, addItemToDungeonInventory, moveItemToBank, updateHero } = useGameStore()
 
+  // Multiplayer: heroes belonging to another player are viewable but not controllable
+  const canControl = useCanControlHero(hero.id)
+  const syncHeroToHost = useSyncHeroToHost()
+
   // Rename state
   const [isEditingName, setIsEditingName] = useState(false)
   const [editedName, setEditedName] = useState(hero.name)
@@ -65,9 +70,14 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
   }, [isEditingName])
 
   const handleNameSave = () => {
+    if (!canControl) { setIsEditingName(false); return }
     const trimmed = editedName.trim()
-    if (trimmed && trimmed !== hero.name) updateHero(hero.id, { name: trimmed })
-    else setEditedName(hero.name)
+    if (trimmed && trimmed !== hero.name) {
+      updateHero(hero.id, { name: trimmed })
+      syncHeroToHost(hero.id)
+    } else {
+      setEditedName(hero.name)
+    }
     setIsEditingName(false)
   }
   const [swapMode, setSwapMode] = useState<string | null>(null)
@@ -78,21 +88,24 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
 
   // Use appropriate autofill function based on context
   const handleAutofill = () => {
+    if (!canControl) return
     if (isDungeon) {
       autofillDungeonConsumables(hero.id)
     } else {
       autofillConsumables(hero.id)
     }
+    syncHeroToHost(hero.id)
   }
 
   // Listen for clicks on inventory items when in swap mode
   const handleInventoryItemClick = useCallback((item: Item) => {
+    if (!canControl) return
     console.log('[HeroModal] handleInventoryItemClick called for item:', item.name, 'swapMode:', swapMode)
     if (swapMode !== null) {
       // Check if item is compatible with the slot
       const isCompatible = isItemCompatibleWithSlot(item, swapMode)
       console.log('[HeroModal] Item compatibility check:', isCompatible)
-      
+
       if (isCompatible) {
         console.log('[HeroModal] Equipping item:', item.name, 'to slot:', swapMode)
         const targetSlot = swapMode
@@ -101,11 +114,13 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
         setSwapMode(null)
         // Perform swap after state updates
         equipItemToHero(hero.id, item, targetSlot)
+        syncHeroToHost(hero.id)
+        if (isDungeon) syncDungeonInventoryToHost()
       } else {
         console.log('[HeroModal] Item not compatible with slot')
       }
     }
-  }, [swapMode, equipItemToHero, hero.id, onInventoryClose])
+  }, [canControl, swapMode, equipItemToHero, hero.id, onInventoryClose, syncHeroToHost, isDungeon])
 
   // Open inventory when entering swap mode
   useEffect(() => {
@@ -136,6 +151,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
   }, [swapMode, handleInventoryItemClick])
 
   const handleSwap = (slotId: string) => {
+    if (!canControl) return
     console.log('[HeroModal] handleSwap called for slot:', slotId, 'current swapMode:', swapMode)
     if (swapMode === null) {
       // Enter swap mode - selecting which slot to swap
@@ -151,18 +167,18 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
   const renderEquipmentSlot = (slotId: string, size: 'sm' | 'md' | 'lg' = 'md') => {
     const item = hero.slots[slotId]
     return (
-      <Box position="relative">
+      <Box position="relative" opacity={canControl ? 1 : 0.85}>
         <EquipmentSlot
           slot={slotId}
           item={item ? restoreItemIcon(item) : null}
           availableItems={dungeon.inventory}
           currentEquipment={hero.slots}
           isSwapActive={swapMode === slotId}
-          showSwapButton={true}
+          showSwapButton={canControl}
           onSwapClick={() => handleSwap(slotId)}
           size={size}
         />
-        {item && (
+        {item && canControl && (
           <Button
             position="absolute"
             top="-8px"
@@ -176,9 +192,11 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
               if (unequippedItem) {
                 if (isDungeon) {
                   addItemToDungeonInventory(unequippedItem)
+                  syncDungeonInventoryToHost()
                 } else {
                   moveItemToBank(unequippedItem)
                 }
+                syncHeroToHost(hero.id)
               }
             }}
             fontSize="2xs"
@@ -260,16 +278,18 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                         <Text fontSize="lg" fontWeight="bold" color="orange.400" textAlign="center" noOfLines={1}>
                           <HeroName hero={hero} />
                         </Text>
-                        <IconButton
-                          aria-label="Rename hero"
-                          icon={<Icon as={GameIcons.GiPencil} />}
-                          size="xs"
-                          variant="ghost"
-                          colorScheme="orange"
-                          opacity={0.5}
-                          _hover={{ opacity: 1 }}
-                          onClick={() => setIsEditingName(true)}
-                        />
+                        {canControl && (
+                          <IconButton
+                            aria-label="Rename hero"
+                            icon={<Icon as={GameIcons.GiPencil} />}
+                            size="xs"
+                            variant="ghost"
+                            colorScheme="orange"
+                            opacity={0.5}
+                            _hover={{ opacity: 1 }}
+                            onClick={() => setIsEditingName(true)}
+                          />
+                        )}
                       </HStack>
                     )}
                     <HStack spacing={2}>
@@ -295,7 +315,7 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                       boxSize="min(30vh, 200px)"
                       color="orange.400"
                       filter="drop-shadow(0 0 12px rgba(251, 146, 60, 0.6))"
-                      isEditable={true}
+                      isEditable={canControl}
                     />
                     <Box 
                       position="absolute" 
@@ -322,15 +342,17 @@ export default function HeroModal({ hero, isOpen, onClose, isDungeon = false }: 
                       {renderEquipmentSlot('consumable2', 'sm')}
                       {renderEquipmentSlot('consumable3', 'sm')}
                     </HStack>
-                    <Button
-                      size="xs"
-                      colorScheme="cyan"
-                      variant="ghost"
-                      onClick={handleAutofill}
-                      fontSize="2xs"
-                    >
-                      Auto-fill Consumables
-                    </Button>
+                    {canControl && (
+                      <Button
+                        size="xs"
+                        colorScheme="cyan"
+                        variant="ghost"
+                        onClick={handleAutofill}
+                        fontSize="2xs"
+                      >
+                        Auto-fill Consumables
+                      </Button>
+                    )}
                   </VStack>
                 </VStack>
 

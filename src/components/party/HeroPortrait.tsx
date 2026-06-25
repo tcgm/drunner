@@ -12,6 +12,7 @@ import * as GameIcons from 'react-icons/gi'
 import type { Hero } from '@/types'
 import { useRef, useState } from 'react'
 import { useGameStore } from '@/core/gameStore'
+import { useSyncHeroToHost } from '@/multiplayer'
 import { PortraitCropModal } from '@/components/ui/PortraitCropModal'
 import { RiCameraFill } from 'react-icons/ri'
 
@@ -38,6 +39,7 @@ export function HeroPortrait({
   borderRadius = 'lg',
 }: HeroPortraitProps) {
   const { updateHero } = useGameStore()
+  const syncHeroToHost = useSyncHeroToHost()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pendingImageSrc, setPendingImageSrc] = useState<string | null>(null)
   const [pendingOutputFormat, setPendingOutputFormat] = useState<'jpeg' | 'png'>('jpeg')
@@ -53,7 +55,10 @@ export function HeroPortrait({
 
     const saveDirectly = (f: File) => {
       const r = new FileReader()
-      r.onload = (ev) => { updateHero(hero.id, { customPortrait: ev.target?.result as string }) }
+      r.onload = (ev) => {
+        updateHero(hero.id, { customPortrait: ev.target?.result as string })
+        syncHeroToHost(hero.id)
+      }
       r.readAsDataURL(f)
     }
 
@@ -108,6 +113,7 @@ export function HeroPortrait({
 
   const handleCropApply = (dataUrl: string) => {
     updateHero(hero.id, { customPortrait: dataUrl })
+    syncHeroToHost(hero.id)
     setCropOpen(false)
     setPendingImageSrc(null)
   }

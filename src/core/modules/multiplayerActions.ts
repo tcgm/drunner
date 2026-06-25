@@ -30,6 +30,7 @@ export interface MultiplayerActionsSlice {
   setGuestHeroAtSlot: (hero: Hero, slotIndex: number) => void
   clearGuestHeroAtSlot: (slotIndex: number) => void
   updateGuestHeroAtSlot: (hero: Hero, slotIndex: number) => void
+  setDungeonInventory: (items: Item[]) => void
   applyHeroReturn: (heroSourceId: string, updatedHero: Hero) => void
   applyRunLoot: (items: Item[], gold: number) => void
 }
@@ -86,6 +87,12 @@ export const createMultiplayerActions: StateCreator<
       newParty[slotIndex] = hero
       return { party: newParty }
     }),
+
+  // ── Host applies the shared dungeon loot pool reported by a guest after ──
+  // they equipped/unequipped an item from it, keeping the run's shared
+  // inventory consistent so the same item can't be claimed twice.
+  setDungeonInventory: (items) =>
+    set((state) => ({ dungeon: { ...state.dungeon, inventory: items } })),
 
   // ── Guest applies updated hero state returned by host after run ──────────
   applyHeroReturn: (heroSourceId, updatedHero) =>

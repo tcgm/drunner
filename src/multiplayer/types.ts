@@ -27,7 +27,6 @@ export type GuestAction =
   | { type: 'advance-dungeon' }
   | { type: 'select-choice'; choiceIndex: number }
   | { type: 'select-map-node'; nodeId: string }
-  | { type: 'retreat' }
   | { type: 'start-dungeon'; startingFloor?: number; alkahestCost?: number }
   | { type: 'combat-action'; heroId: string; action: string }
 
@@ -84,6 +83,13 @@ export interface VoteState {
 export interface NodeVoteState {
   /** playerId → nodeId they voted for */
   votes: Record<string, string>
+  totalPlayers: number
+}
+
+/** Live tally of who has agreed to retreat. Every player must agree before the run actually ends. */
+export interface RetreatVoteState {
+  /** playerIds who have voted to retreat */
+  votes: string[]
   totalPlayers: number
 }
 

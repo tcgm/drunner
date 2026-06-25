@@ -161,3 +161,47 @@ function _applyNodeMajority() {
     _onNodeComplete(winner)
   }
 }
+
+// ── Retreat vote (unanimous — every player must agree before the run ends) ─────
+
+let _retreatVotes: Set<string> = new Set()
+let _retreatTotalPlayers = 0
+let _retreatRoomCode: string | null = null
+let _onRetreatComplete: (() => void) | null = null
+
+export function setRetreatVoteCompleteCallback(cb: (() => void) | null) {
+  _onRetreatComplete = cb
+}
+
+/** (Re)initialise for a new active run / player count change. */
+export function initRetreatVotes(totalPlayers: number, roomCode: string) {
+  _retreatVotes = new Set()
+  _retreatTotalPlayers = totalPlayers
+  _retreatRoomCode = roomCode
+  useSessionStore.getState().setRetreatVoteState(null)
+}
+
+/** Cast (or retract) a player's vote to retreat. Fires the completion callback once everyone agrees. */
+export function castRetreatVote(playerId: string, wantsRetreat: boolean) {
+  if (wantsRetreat) _retreatVotes.add(playerId)
+  else _retreatVotes.delete(playerId)
+
+  const voteState = { votes: Array.from(_retreatVotes), totalPlayers: _retreatTotalPlayers }
+  useSessionStore.getState().setRetreatVoteState(voteState)
+
+  const socket = getSocket()
+  if (_retreatRoomCode) {
+    socket.emit('retreat-vote-update', { code: _retreatRoomCode, votes: voteState.votes, totalPlayers: _retreatTotalPlayers })
+  }
+
+  if (_retreatTotalPlayers > 0 && _retreatVotes.size >= _retreatTotalPlayers) {
+    _retreatVotes = new Set()
+    useSessionStore.getState().setRetreatVoteState(null)
+    _onRetreatComplete?.()
+  }
+}
+
+export function clearRetreatVotes() {
+  _retreatVotes = new Set()
+  useSessionStore.getState().setRetreatVoteState(null)
+}

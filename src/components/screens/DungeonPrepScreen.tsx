@@ -135,10 +135,10 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
 
   const handleAddHeroClick = (index: number) => {
     if (selectedHeroFromRoster !== null) {
+      // In multiplayer, every player (host included) may only fill their own slots
+      if (mpRole && !myMpSlots?.includes(index)) return
       const hero = heroRoster[selectedHeroFromRoster]
       if (mpRole === 'guest') {
-        // Guests can only fill their own slots
-        if (!myMpSlots?.includes(index)) return
         claimSlot(index, hero)
       } else {
         addHero(hero, index)
@@ -150,8 +150,8 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   const handleAddHeroFromRosterDirect = (rosterIndex: number, slotIndex: number) => {
     const hero = heroRoster[rosterIndex]
     if (!hero) return
+    if (mpRole && !myMpSlots?.includes(slotIndex)) return
     if (mpRole === 'guest') {
-      if (!myMpSlots?.includes(slotIndex)) return
       claimSlot(slotIndex, hero)
     } else {
       addHero(hero, slotIndex)
@@ -161,9 +161,9 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   const handleRemoveHero = (index: number) => {
     const hero = party[index]
     if (hero) {
+      // In multiplayer, every player (host included) may only remove their own heroes
+      if (mpRole && !myMpSlots?.includes(index)) return
       if (mpRole === 'guest') {
-        // Guests can only remove heroes from their own slots
-        if (!myMpSlots?.includes(index)) return
         releaseSlot(index)
         // Host will clear the slot and broadcast the updated party state
       } else {
@@ -176,6 +176,8 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   }
 
   const handleOpenBankForSlot = (heroIndex: number, slotId: string) => {
+    // Equipping is restricted to heroes the local player owns; others are view-only.
+    if (mpRole && !myMpSlots?.includes(heroIndex)) return
     setPendingSlotIndex(heroIndex)
     setPendingSlot(slotId)
     onOpen()
@@ -188,7 +190,7 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   }
 
   const handleEquipFromBank = (itemId: string) => {
-    if (pendingSlotIndex !== null && pendingSlot !== null) {
+    if (pendingSlotIndex !== null && pendingSlot !== null && !(mpRole && !myMpSlots?.includes(pendingSlotIndex))) {
       const hero = party[pendingSlotIndex]
       const item = bankInventory.find(i => i.id === itemId)
       if (hero && item) {
@@ -205,6 +207,8 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   }
 
   const handleUnequipItem = (heroIndex: number, slotId: string) => {
+    // Equipment changes are restricted to heroes the local player owns; others are view-only.
+    if (mpRole && !myMpSlots?.includes(heroIndex)) return
     const hero = party[heroIndex]
     if (hero) {
       const unequippedItem = unequipItemFromHero(hero.id, slotId)
@@ -219,6 +223,7 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   }
 
   const handleEquipItemDirect = useCallback((heroIndex: number, item: Item, slotId: string) => {
+    if (mpRole && !myMpSlots?.includes(heroIndex)) return
     const hero = party[heroIndex]
     if (hero) {
       equipItemFromBank(hero.id, item, slotId)
@@ -228,7 +233,7 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
       }
       onClose()
     }
-  }, [party, equipItemFromBank, mpRole, onClose])
+  }, [party, equipItemFromBank, mpRole, myMpSlots, onClose])
 
   const handleKeepOverflow = (itemId: string) => {
     keepOverflowItem(itemId)
@@ -473,6 +478,7 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
           onUnequipItem={handleUnequipItem}
           onEquipItem={handleEquipItemDirect}
           isBankModalOpen={isOpen}
+          canControl={!mpRole || selectedHeroIndex === null || !!myMpSlots?.includes(selectedHeroIndex)}
         />
         }
       </Flex>

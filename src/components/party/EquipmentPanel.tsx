@@ -53,6 +53,8 @@ interface EquipmentPanelProps {
   onUnequipItem: (heroIndex: number, slotId: string) => void
   onEquipItem?: (heroIndex: number, item: Item, slotId: string) => void
   isBankModalOpen: boolean
+  /** Multiplayer: false when the selected hero belongs to another player (view-only). Default true. */
+  canControl?: boolean
 }
 
 export function EquipmentPanel({
@@ -63,7 +65,8 @@ export function EquipmentPanel({
   onSlotClick,
   onUnequipItem,
   onEquipItem,
-  isBankModalOpen
+  isBankModalOpen,
+  canControl = true,
 }: EquipmentPanelProps) {
   const selectedHero = selectedHeroIndex !== null ? party[selectedHeroIndex] : null
   const activeParty = party.filter((h): h is Hero => h !== null)
@@ -71,12 +74,13 @@ export function EquipmentPanel({
   const { autofillConsumables } = useGameStore()
 
   const handleAutofill = () => {
-    if (selectedHero) {
+    if (selectedHero && canControl) {
       autofillConsumables(selectedHero.id)
     }
   }
 
   const handleSwap = (slotId: string) => {
+    if (!canControl) return
     if (swapMode === null) {
       setSwapMode(slotId)
       // Open bank modal for swap mode
@@ -90,6 +94,7 @@ export function EquipmentPanel({
 
   // Handle item click from ItemSlot when in swap mode
   const handleInventoryItemClick = useCallback((item: Item) => {
+    if (!canControl) return
     if (swapMode !== null && selectedHeroIndex !== null && onEquipItem) {
       // Check if item is compatible
       const isCompatible = isItemCompatibleWithSlot(item, swapMode)
@@ -98,7 +103,7 @@ export function EquipmentPanel({
         setSwapMode(null)
       }
     }
-  }, [swapMode, selectedHeroIndex, onEquipItem])
+  }, [swapMode, selectedHeroIndex, onEquipItem, canControl])
 
   // Sync swap mode with modal state - when modal closes, clear swap mode
   useEffect(() => {
@@ -133,8 +138,9 @@ export function EquipmentPanel({
       return (
         <Box
           key={slotId}
-          onClick={() => selectedHeroIndex !== null && onSlotClick(selectedHeroIndex, slotId)}
-          cursor="pointer"
+          onClick={() => canControl && selectedHeroIndex !== null && onSlotClick(selectedHeroIndex, slotId)}
+          cursor={canControl ? 'pointer' : 'default'}
+          opacity={canControl ? 1 : 0.7}
         >
           <EquipmentSlot
             slot={slotId}
@@ -142,7 +148,7 @@ export function EquipmentPanel({
             availableItems={bankInventory}
             currentEquipment={selectedHero.slots}
             isSwapActive={swapMode === slotId}
-            showSwapButton={true}
+            showSwapButton={canControl}
             onSwapClick={() => handleSwap(slotId)}
             size={size}
           />
@@ -152,18 +158,18 @@ export function EquipmentPanel({
 
     // Equipped item - show both swap button and unequip button
     return (
-      <Box key={slotId} position="relative">
+      <Box key={slotId} position="relative" opacity={canControl ? 1 : 0.85}>
         <EquipmentSlot
           slot={slotId}
           item={restoreItemIcon(item)}
           availableItems={bankInventory}
           currentEquipment={selectedHero.slots}
           isSwapActive={swapMode === slotId}
-          showSwapButton={true}
+          showSwapButton={canControl}
           onSwapClick={() => handleSwap(slotId)}
           size={size}
         />
-        <Button
+        {canControl && <Button
           position="absolute"
           top="-8px"
           right="-8px"
@@ -185,7 +191,7 @@ export function EquipmentPanel({
           zIndex={3}
         >
           ×
-        </Button>
+        </Button>}
       </Box>
     )
   }
@@ -239,7 +245,7 @@ export function EquipmentPanel({
 
                 {/* Consumable slots */}
                 <HStack spacing={1.5} w="full" justify="center">
-                  <Tooltip label="Autofill consumables from bank" placement="top">
+                  <Tooltip label={canControl ? 'Autofill consumables from bank' : "Not your hero — view only"} placement="top">
                     <IconButton
                       aria-label="Autofill consumables"
                       icon={<Icon as={LiaArrowRightSolid} />}
@@ -247,6 +253,7 @@ export function EquipmentPanel({
                       variant="ghost"
                       colorScheme="orange"
                       onClick={handleAutofill}
+                      isDisabled={!canControl}
                       fontSize="lg"
                     />
                   </Tooltip>

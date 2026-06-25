@@ -12,7 +12,7 @@
 import { useMultiplayerStore } from './multiplayerStore'
 import { getSocket } from './socket'
 import { useGameStore } from '@/core/gameStore'
-import { recordVote, recordNodeVote } from './voteManager'
+import { recordVote, recordNodeVote, castRetreatVote } from './voteManager'
 import type { EventChoice } from '@/types'
 import type { GuestAction } from './types'
 import type { DungeonEvent } from '@/types'
@@ -87,9 +87,20 @@ export function useDungeonActions() {
         }
       : storeSelectNode,
 
-    retreatFromDungeon: isGuest
-      ? () => sendGuestAction(roomCode!, { type: 'retreat' })
-      : storeRetreat,
+    // In multiplayer, retreating requires everyone to agree (unanimous vote) before
+    // the run actually ends, so a single player can't pull the rest of the party
+    // out of the dungeon. Pass wantsRetreat=false to retract a previously cast vote.
+    // The retreat-vote-complete callback in DungeonScreen runs the real retreat once
+    // everyone has agreed.
+    retreatFromDungeon: isMultiplayer
+      ? (wantsRetreat: boolean = true) => {
+          if (isGuest) {
+            getSocket().emit('cast-retreat-vote', { code: roomCode, wantsRetreat })
+          } else {
+            castRetreatVote(getSocket().id ?? 'host', wantsRetreat)
+          }
+        }
+      : () => storeRetreat(),
 
     startDungeon: isGuest
       ? (startingFloor?: number, alkahestCost?: number) =>

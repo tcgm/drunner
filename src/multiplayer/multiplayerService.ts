@@ -13,7 +13,7 @@ import { getSocket } from './socket'
 import { useMultiplayerStore } from './multiplayerStore'
 import { useGameStore } from '@/core/gameStore'
 import { useSessionStore } from './sessionStore'
-import { recordVote, initVotes, clearVotes, recordNodeVote, initNodeVotes, clearNodeVotes } from './voteManager'
+import { recordVote, initVotes, clearVotes, recordNodeVote, initNodeVotes, clearNodeVotes, castRetreatVote, initRetreatVotes, clearRetreatVotes } from './voteManager'
 import { initializeBossCombatState } from '@/systems/combat'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { MultiplayerSyncState, GuestAction, DraftState, SlotAssignment, PlayerProfile } from './types'
@@ -73,10 +73,33 @@ export function startMultiplayerService(role: 'host' | 'guest', roomCode: string
     }))
 
     // ── Common: slot ownership + profile cleanup on player count change ────────
+    // Determine the local player's index in the ordered players array (host is always 0).
+    const getMyPlayerIdx = () => {
+        if (role === 'host') return 0
+        return useMultiplayerStore.getState().players.findIndex((p) => p.id === socket.id)
+    }
+
+    // Clear any local party slot the local player doesn't own (and that isn't already a
+    // confirmed slot assignment), so stale heroes from a previous session don't appear in
+    // another player's slots. Safe for both host and guest.
+    const clearNonOwnedSlots = () => {
+        const myIdx = getMyPlayerIdx()
+        if (myIdx === -1) return
+        const ownership = useSessionStore.getState().slotOwnershipByIndex
+        const assignments = useSessionStore.getState().slotAssignments
+        for (let i = 0; i < ownership.length; i++) {
+            if (ownership[i] !== myIdx && !assignments[i]) {
+                useGameStore.getState().clearGuestHeroAtSlot(i)
+            }
+        }
+    }
+
     useSessionStore.getState().initSlotOwnership(useMultiplayerStore.getState().players.length)
+    clearNonOwnedSlots()
     cleanups.push(useMultiplayerStore.subscribe((s, prev) => {
         if (s.players.length === prev.players.length) return
         useSessionStore.getState().initSlotOwnership(s.players.length)
+        clearNonOwnedSlots()
         const activeIds = s.players.map((p) => p.id)
         for (const pid of Object.keys(useSessionStore.getState().playerProfiles)) {
             if (!activeIds.includes(pid)) useSessionStore.getState().removePlayerProfile(pid)
@@ -115,6 +138,7 @@ function _setupHost(
     let prevEventId: string | null | undefined = undefined
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let prevFloorMap: any = undefined
+    let prevRunActive = false
 
     // Broadcast game state on every change
     cleanups.push(useGameStore.subscribe((state) => {
@@ -137,6 +161,13 @@ function _setupHost(
             if (currentFloorMap !== null) initNodeVotes(useMultiplayerStore.getState().players.length, roomCode)
             else clearNodeVotes()
         }
+
+        const runActive = state.activeRun?.result === 'active'
+        if (runActive !== prevRunActive) {
+            prevRunActive = runActive
+            if (runActive) initRetreatVotes(useMultiplayerStore.getState().players.length, roomCode)
+            else clearRetreatVotes()
+        }
     }))
 
     // Re-sync vote count when players join or leave
@@ -146,15 +177,20 @@ function _setupHost(
         if (currentEventId !== null) initVotes(s.players.length, roomCode)
         const currentFloorMap = useGameStore.getState().dungeon.floorMap ?? null
         if (currentFloorMap !== null) initNodeVotes(s.players.length, roomCode)
+        if (useGameStore.getState().activeRun?.result === 'active') initRetreatVotes(s.players.length, roomCode)
     }))
 
-    // Initial vote sync if event or floor map is already active
+    // Initial vote sync if event, floor map, or an active run is already in progress
     const currentEventId = useGameStore.getState().dungeon.currentEvent?.id ?? null
     if (currentEventId !== null) initVotes(useMultiplayerStore.getState().players.length, roomCode)
     const initialFloorMap = useGameStore.getState().dungeon.floorMap ?? null
     if (initialFloorMap !== null) initNodeVotes(useMultiplayerStore.getState().players.length, roomCode)
+    if (useGameStore.getState().activeRun?.result === 'active') {
+        prevRunActive = true
+        initRetreatVotes(useMultiplayerStore.getState().players.length, roomCode)
+    }
 
-    cleanups.push(() => { clearVotes(); clearNodeVotes() })
+    cleanups.push(() => { clearVotes(); clearNodeVotes(); clearRetreatVotes() })
 
     // Guest action requests
     on('guest-action', ({ action }: { playerId: string; playerName: string; action: GuestAction }) => {
@@ -168,7 +204,6 @@ function _setupHost(
                 break
             }
             case 'select-map-node': store.selectMapNode(action.nodeId); break
-            case 'retreat': store.retreatFromDungeon(); break
             case 'start-dungeon': store.startDungeon(action.startingFloor, action.alkahestCost); break
             case 'combat-action':
                 useSessionStore.getState().setCombatQueueEntry(action.heroId, action.action)
@@ -184,12 +219,23 @@ function _setupHost(
         recordNodeVote(playerId, nodeId)
     })
 
+    on('cast-retreat-vote', ({ playerId, wantsRetreat }: { playerId: string; wantsRetreat: boolean }) => {
+        castRetreatVote(playerId, wantsRetreat)
+    })
+
     on('update-slot-hero', ({ playerId, slotIndex, hero }: { playerId: string; slotIndex: number; hero: Hero }) => {
         const assignment = useSessionStore.getState().slotAssignments[slotIndex]
         if (assignment?.playerId !== playerId) return
         useGameStore.getState().updateGuestHeroAtSlot(hero, slotIndex)
         const updatedAssignment = { ...assignment, heroSnapshot: hero }
         useSessionStore.getState().setSlotAssignment(slotIndex, updatedAssignment)
+    })
+
+    // A guest equipped/unequipped from the shared run loot pool — adopt their
+    // reported inventory so the item can't be claimed twice. The next state-update
+    // broadcast (triggered by this very change) reconciles everyone else.
+    on('update-dungeon-inventory', ({ items }: { items: Item[] }) => {
+        useGameStore.getState().setDungeonInventory(items)
     })
 
     on('player-ready', ({ playerId }: { playerId: string }) => {
@@ -259,19 +305,8 @@ function _setupGuest(
     socket: ReturnType<typeof getSocket>,
     roomCode: string,
 ) {
-    // Clear party slots that don't belong to this guest so stale heroes from previous
-    // sessions don't appear in the host's slots until the first state-update arrives.
-    const { players } = useMultiplayerStore.getState()
-    const myPlayerIdx = players.findIndex((p) => p.id === socket.id)
-    const session = useSessionStore.getState()
-    const ownership = session.slotOwnershipByIndex
-    if (myPlayerIdx >= 0 && ownership.length > 0) {
-        for (let i = 0; i < ownership.length; i++) {
-            if (ownership[i] !== myPlayerIdx) {
-                useGameStore.getState().clearGuestHeroAtSlot(i)
-            }
-        }
-    }
+    // (Non-owned slot clearing for the guest happens in the common section of
+    // startMultiplayerService, shared with the host.)
 
     // Boss state polling: if on a boss event but not in combat, poll every 2s
     let bossPollInterval: ReturnType<typeof setInterval> | null = null
@@ -329,6 +364,10 @@ function _setupGuest(
 
     on('node-vote-update', ({ votes, totalPlayers }: { votes: Record<string, string>; totalPlayers: number }) => {
         useSessionStore.getState().setNodeVoteState({ votes, totalPlayers })
+    })
+
+    on('retreat-vote-update', ({ votes, totalPlayers }: { votes: string[]; totalPlayers: number }) => {
+        useSessionStore.getState().setRetreatVoteState(votes.length > 0 ? { votes, totalPlayers } : null)
     })
 
     on('vote-update', ({ votes, totalPlayers }: { votes: Record<string, number>; totalPlayers: number }) => {
@@ -411,6 +450,15 @@ export function syncGuestSlotHero(slotIndex: number, hero: Hero): void {
     const { role, roomCode } = useMultiplayerStore.getState()
     if (role !== 'guest' || !roomCode) return
     getSocket().emit('update-slot-hero', { code: roomCode, slotIndex, hero })
+}
+
+/** Guests call this after equipping/unequipping from the shared run loot pool
+ * (dungeon.inventory) to keep the host's authoritative copy in sync. */
+export function syncDungeonInventoryToHost(): void {
+    const { role, roomCode } = useMultiplayerStore.getState()
+    if (role !== 'guest' || !roomCode) return
+    const items = useGameStore.getState().dungeon.inventory
+    getSocket().emit('update-dungeon-inventory', { code: roomCode, items })
 }
 
 export function claimSlot(slotIndex: number, hero: Hero): void {

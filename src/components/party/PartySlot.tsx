@@ -30,6 +30,8 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
   const isEmpty = !hero
   const IconComponent = hero ? ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType : null
   const [isPortrait, setIsPortrait] = useState(false)
+  // In multiplayer, only the contributing player may remove their hero; others are view-only.
+  const canControl = !owner || owner.isMe
 
   // Detect orientation
   useEffect(() => {
@@ -201,26 +203,28 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
               </SimpleGrid>
             </VStack>
             
-            {/* Right: Remove Button */}
-            <Box className="party-slot-portrait-remove-wrapper" flexShrink={0} display="flex" alignItems="center">
-              <Button
-                className="party-slot-portrait-remove-btn"
-                size="xs"
-                colorScheme="red"
-                variant="solid"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onRemove()
-                }}
-                fontSize="xs"
-                px={1.5}
-                h="auto"
-                py={1.5}
-                minW="auto"
-              >
-                <Icon as={GameIcons.GiCancel} boxSize={3.5} />
-              </Button>
-            </Box>
+            {/* Right: Remove Button (view-only for heroes you don't own) */}
+            {canControl && (
+              <Box className="party-slot-portrait-remove-wrapper" flexShrink={0} display="flex" alignItems="center">
+                <Button
+                  className="party-slot-portrait-remove-btn"
+                  size="xs"
+                  colorScheme="red"
+                  variant="solid"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onRemove()
+                  }}
+                  fontSize="xs"
+                  px={1.5}
+                  h="auto"
+                  py={1.5}
+                  minW="auto"
+                >
+                  <Icon as={GameIcons.GiCancel} boxSize={3.5} />
+                </Button>
+              </Box>
+            )}
           </HStack>
         </>
       ) : (
@@ -310,23 +314,29 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
               </SimpleGrid>
             </VStack>
             
-            {/* Remove Button */}
-            <Button
-              className="party-slot-desktop-remove-btn"
-              size="sm"
-              colorScheme="red"
-              variant="solid"
-              w="full"
-              leftIcon={<Icon as={GameIcons.GiCancel} />}
-              onClick={(e) => {
-                e.stopPropagation()
-                onRemove()
-              }}
-              fontSize="xs"
-              mt="auto"
-            >
-              Remove
-            </Button>
+            {/* Remove Button (view-only for heroes you don't own) */}
+            {canControl ? (
+              <Button
+                className="party-slot-desktop-remove-btn"
+                size="sm"
+                colorScheme="red"
+                variant="solid"
+                w="full"
+                leftIcon={<Icon as={GameIcons.GiCancel} />}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRemove()
+                }}
+                fontSize="xs"
+                mt="auto"
+              >
+                Remove
+              </Button>
+            ) : (
+              <Text fontSize="2xs" color="gray.500" textAlign="center" mt="auto" fontStyle="italic">
+                View only
+              </Text>
+            )}
           </VStack>
         </>
       )}
