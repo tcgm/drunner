@@ -10,4 +10,5 @@ export const halfling: SpeciesDefinition = {
   ],
   nameStyle: 'halfling',
   spawnRarity: 'common',
+  backgroundIcon: 'GiFootprint',
 }

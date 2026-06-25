@@ -19,6 +19,7 @@ import { ItemSlot } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { HeroName } from '@/components/ui/HeroName'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 const MotionBox = motion.create(Box)
 
@@ -31,9 +32,6 @@ interface CombatHeroCardProps {
 }
 
 export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsumable }: CombatHeroCardProps) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const HeroIcon = (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-
     const totalStats = useMemo(() => calculateTotalStats(hero), [hero])
     const healthPercent = (hero.stats.hp / totalStats.maxHp) * 100
 
@@ -96,11 +94,11 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
             <HStack spacing={2} p={2} opacity={hero.isAlive ? 1 : 0.5}>
                 {/* Left: Icon + Equipment Pips */}
                 <HStack spacing={1} flexShrink={0}>
-                    <Icon
-                        as={HeroIcon}
+                    <HeroIcon
+                        classIcon={hero.class.icon}
+                        species={hero.species}
                         boxSize={8}
                         color={hero.isAlive ? 'orange.400' : 'gray.600'}
-                        flexShrink={0}
                     />
 
                     {/* Equipment pips */}

@@ -10,4 +10,5 @@ export const human: SpeciesDefinition = {
   ],
   nameStyle: 'common',
   spawnRarity: 'common',
+  backgroundIcon: 'GiPerson',
 }

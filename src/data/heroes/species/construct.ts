@@ -11,4 +11,5 @@ export const construct: SpeciesDefinition = {
   ],
   nameStyle: 'gnomish',
   spawnRarity: 'epic',
+  backgroundIcon: 'GiRobotGolem',
 }

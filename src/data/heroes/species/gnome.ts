@@ -10,4 +10,5 @@ export const gnome: SpeciesDefinition = {
   ],
   nameStyle: 'gnomish',
   spawnRarity: 'common',
+  backgroundIcon: 'GiBadGnome',
 }

@@ -10,4 +10,5 @@ export const dwarf: SpeciesDefinition = {
   ],
   nameStyle: 'dwarven',
   spawnRarity: 'common',
+  backgroundIcon: 'GiDwarfFace',
 }

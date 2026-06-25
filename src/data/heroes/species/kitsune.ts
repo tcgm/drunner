@@ -11,4 +11,5 @@ export const kitsune: SpeciesDefinition = {
   ],
   nameStyle: 'yokai',
   spawnRarity: 'uncommon',
+  backgroundIcon: 'GiFoxHead',
 }

@@ -11,4 +11,5 @@ export const celestine: SpeciesDefinition = {
   ],
   nameStyle: 'celestial',
   spawnRarity: 'uncommon',
+  backgroundIcon: 'GiHolySymbol',
 }

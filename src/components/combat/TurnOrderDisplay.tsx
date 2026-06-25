@@ -7,8 +7,8 @@
 import { Box, VStack, HStack, Text, Icon, Badge } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import type { Hero, BossCombatState } from '@/types'
-import * as GameIcons from 'react-icons/gi'
 import { GiSkullCrossedBones } from 'react-icons/gi'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 const MotionBox = motion.create(Box)
 
@@ -62,13 +62,6 @@ export default function TurnOrderDisplay({ combatState, party }: TurnOrderDispla
                             const isCurrent = index === currentIndex
                             const isPast = index < currentIndex
 
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            const CombatantIcon = isBoss
-                                ? GiSkullCrossedBones
-                                : hero
-                                    ? (GameIcons as any)[hero.class.icon] || GameIcons.GiSwordman
-                                    : GameIcons.GiSwordman
-
                             return (
                                 <MotionBox
                                     key={`${combatant.id}-${index}`}
@@ -114,11 +107,16 @@ export default function TurnOrderDisplay({ combatState, party }: TurnOrderDispla
 
                                         {/* Icon & Name */}
                                         <HStack flex={1} spacing={2} minW={0}>
-                                            <Icon
-                                                as={CombatantIcon}
-                                                boxSize={5}
-                                                color={isBoss ? 'red.400' : 'blue.300'}
-                                            />
+                                            {isBoss ? (
+                                                <Icon as={GiSkullCrossedBones} boxSize={5} color="red.400" />
+                                            ) : (
+                                                <HeroIcon
+                                                    classIcon={hero?.class.icon || 'GiSwordman'}
+                                                    species={hero?.species}
+                                                    boxSize={5}
+                                                    color="blue.300"
+                                                />
+                                            )}
                                             <VStack spacing={0} align="start" flex={1} minW={0}>
                                                 <Text
                                                     fontSize="xs"

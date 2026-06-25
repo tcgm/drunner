@@ -3,7 +3,6 @@ import { HStack, Box, VStack, Text, Progress, Spacer, Icon, Tooltip, Popover, Po
 import { useState, useMemo } from 'react'
 import type { Hero, Consumable, Item } from '@/types'
 import * as GameIcons from 'react-icons/gi'
-import type { IconType } from 'react-icons'
 import { calculateTotalStats } from '@/utils/statCalculator'
 import { ItemSlot } from '@/components/ui/ItemSlot'
 import { restoreItemIcon } from '@/utils/itemUtils'
@@ -13,6 +12,7 @@ import { getAbilityStatus } from '@/systems/abilities/abilityManager'
 import { refreshHeroAbilities } from '@/utils/abilityUtils'
 import { getAbilityDescription } from '@/utils/abilityDisplay'
 import { HeroName } from '@/components/ui/HeroName'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 interface CompactPartyBarProps {
   party: Hero[]
@@ -61,7 +61,6 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
         const totalStats = calculateTotalStats(hero)
         const hpPercent = (hero.stats.hp / totalStats.maxHp) * 100
         const isAlive = hero.isAlive
-        const IconComponent = ((GameIcons as Record<string, IconType>)[hero.class.icon] || GameIcons.GiSwordman) as IconType
         const heroWithIcons = refreshHeroAbilities(hero)
         const consumableSlots = ['consumable1', 'consumable2', 'consumable3']
 
@@ -104,9 +103,10 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
             <HStack spacing={1} justify="center" w="full">
               
               {/* Hero Icon */}
-              <Icon 
-                as={IconComponent} 
-                boxSize={4} 
+              <HeroIcon
+                classIcon={hero.class.icon}
+                species={hero.species}
+                boxSize={4}
                 color={isAlive ? "orange.400" : "gray.500"}
               />
               <Text

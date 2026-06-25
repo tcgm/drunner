@@ -10,4 +10,5 @@ export const hellborn: SpeciesDefinition = {
   ],
   nameStyle: 'infernal',
   spawnRarity: 'uncommon',
+  backgroundIcon: 'GiHornedHelm',
 }

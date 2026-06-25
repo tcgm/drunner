@@ -11,4 +11,5 @@ export const drakin: SpeciesDefinition = {
   ],
   nameStyle: 'draconic',
   spawnRarity: 'rare',
+  backgroundIcon: 'GiLizardman',
 }

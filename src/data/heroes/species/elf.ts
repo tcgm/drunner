@@ -10,4 +10,5 @@ export const elf: SpeciesDefinition = {
   ],
   nameStyle: 'elven',
   spawnRarity: 'common',
+  backgroundIcon: 'GiElfHelmet',
 }

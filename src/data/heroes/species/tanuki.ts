@@ -10,4 +10,5 @@ export const tanuki: SpeciesDefinition = {
   ],
   nameStyle: 'yokai',
   spawnRarity: 'common',
+  backgroundIcon: 'GiRaccoonHead',
 }

@@ -11,4 +11,5 @@ export const fae: SpeciesDefinition = {
   ],
   nameStyle: 'sylvan',
   spawnRarity: 'uncommon',
+  backgroundIcon: 'GiFairy',
 }

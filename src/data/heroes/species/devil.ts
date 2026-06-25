@@ -11,4 +11,5 @@ export const devil: SpeciesDefinition = {
   ],
   nameStyle: 'infernal',
   spawnRarity: 'epic',
+  backgroundIcon: 'GiDevilMask',
 }

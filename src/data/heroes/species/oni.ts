@@ -11,4 +11,5 @@ export const oni: SpeciesDefinition = {
   ],
   nameStyle: 'yokai',
   spawnRarity: 'uncommon',
+  backgroundIcon: 'GiOni',
 }

@@ -10,4 +10,5 @@ export const orc: SpeciesDefinition = {
   ],
   nameStyle: 'orcish',
   spawnRarity: 'common',
+  backgroundIcon: 'GiOrcHead',
 }

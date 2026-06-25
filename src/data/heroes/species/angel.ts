@@ -11,4 +11,5 @@ export const angel: SpeciesDefinition = {
   ],
   nameStyle: 'celestial',
   spawnRarity: 'legendary',
+  backgroundIcon: 'GiAngelWings',
 }

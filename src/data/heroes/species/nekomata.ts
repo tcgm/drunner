@@ -10,4 +10,5 @@ export const nekomata: SpeciesDefinition = {
   ],
   nameStyle: 'yokai',
   spawnRarity: 'uncommon',
+  backgroundIcon: 'GiCat',
 }

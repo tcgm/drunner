@@ -12,4 +12,5 @@ export const dragon: SpeciesDefinition = {
   ],
   nameStyle: 'draconic',
   spawnRarity: 'legendary',
+  backgroundIcon: 'GiDragonHead',
 }

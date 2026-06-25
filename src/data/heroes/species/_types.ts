@@ -21,4 +21,8 @@ export interface SpeciesDefinition {
   nameStyle: NameStyle
   /** Minimum hero rarity required for this species to appear on the board */
   spawnRarity: HeroRarity
+  /** react-icons/gi name, rendered full-size behind the hero's class icon */
+  backgroundIcon?: string
+  /** react-icons/gi name, rendered full-size in front of the hero's class icon */
+  foregroundIcon?: string
 }

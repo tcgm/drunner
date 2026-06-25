@@ -15,8 +15,7 @@ import type { HireableHero } from '@/types'
 import { HERO_RARITY_CONFIG } from '@/systems/heroGeneration'
 import { SPECIES_DEFINITIONS } from '@/data/heroes/species'
 import { CORE_CLASSES } from '@/data/classes'
-import * as GameIcons from 'react-icons/gi'
-import type { IconType } from 'react-icons'
+import { HeroIcon } from '@/components/ui/HeroIcon'
 
 // ── Countdown helper ──────────────────────────────────────────────────────
 
@@ -52,10 +51,6 @@ function HeroCard({ hero, bankGold, onHire }: HeroCardProps) {
   const speciesDef = SPECIES_DEFINITIONS[hero.species]
   const canAfford = bankGold >= hero.hireCost
 
-  // Resolve class icon
-  const iconName = hero.heroClass.icon as keyof typeof GameIcons
-  const ClassIcon: IconType = (GameIcons[iconName] ?? GiSwordman) as IconType
-
   return (
     <Box
       background={`linear-gradient(135deg, ${color}0e 0%, rgba(26,32,44,0.97) 100%)`}
@@ -78,7 +73,7 @@ function HeroCard({ hero, bankGold, onHire }: HeroCardProps) {
           flexShrink={0}
           boxShadow={`inset 0 0 8px ${color}18`}
         >
-          <Icon as={ClassIcon} color={color} boxSize={5} />
+          <HeroIcon classIcon={hero.heroClass.icon} species={hero.species} color={color} boxSize={5} />
         </Box>
 
         <VStack spacing={0} align="flex-start" flex={1} minW={0}>

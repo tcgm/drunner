@@ -11,4 +11,5 @@ export const tengu: SpeciesDefinition = {
   ],
   nameStyle: 'yokai',
   spawnRarity: 'rare',
+  backgroundIcon: 'GiBirdMask',
 }

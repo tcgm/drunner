@@ -11,4 +11,5 @@ export const dryad: SpeciesDefinition = {
   ],
   nameStyle: 'sylvan',
   spawnRarity: 'rare',
+  backgroundIcon: 'GiTreeRoots',
 }
