@@ -26,5 +26,5 @@ export const SHAMAN: HeroClass = {
   },
   primaryStats: ['magicPower', 'wisdom'],
   abilities: SHAMAN_ABILITIES,
-  icon: 'GiSpiritualOrb',
+  icon: 'shaman.svg',
 }

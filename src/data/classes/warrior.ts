@@ -1,6 +1,5 @@
 import type { HeroClass } from '@/types'
 import { WARRIOR_ABILITIES } from '@/data/abilities/warriorAbilities'
-import { WarriorIcon } from '@/components/icons/ClassIcons'
 
 export const WARRIOR: HeroClass = {
   id: 'warrior',
@@ -26,5 +25,5 @@ export const WARRIOR: HeroClass = {
   },
   primaryStats: ['defense', 'attack'],
   abilities: WARRIOR_ABILITIES,
-  icon: WarriorIcon,
+  icon: 'warrior.svg',
 }

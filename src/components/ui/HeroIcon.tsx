@@ -27,6 +27,17 @@ const CLASS_ICON_IMAGES = import.meta.glob<string>('/src/assets/icons/classes/*.
   import: 'default',
 })
 
+// The SVGs have no fill of their own (see scripts/fix-class-icon-colors.mjs) so
+// they can be tinted via CSS, but that only works if the markup is inlined into
+// the document - an <img src> renders the SVG in an isolated context that
+// doesn't inherit page CSS. So we also glob the raw markup for inline
+// rendering, keyed by filename like above.
+const CLASS_ICON_SVG_SOURCES = import.meta.glob<string>('/src/assets/icons/classes/*.svg', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+})
+
 function resolveIcon(name: string | undefined): IconType | undefined {
   return name ? ((GameIcons as Record<string, IconType>)[name] as IconType | undefined) : undefined
 }
@@ -35,6 +46,15 @@ function resolveIcon(name: string | undefined): IconType | undefined {
 // built with react-icons' GenIcon) rather than a string name.
 function resolveClassComponent(value: IconType | string | undefined): IconType | undefined {
   return typeof value === 'function' ? value : resolveIcon(typeof value === 'string' ? value : undefined)
+}
+
+// Bare SVG filenames (e.g. 'warrior.svg') render inline so they can inherit
+// `fill` from CSS; anything else (PNGs, already-resolved asset imports) falls
+// back to resolveClassImage and renders as a plain <img>.
+function resolveClassSvgMarkup(value: IconType | string | undefined): string | undefined {
+  if (typeof value !== 'string' || value.startsWith('data:') || value.includes('/')) return undefined
+  const entry = Object.entries(CLASS_ICON_SVG_SOURCES).find(([path]) => path.endsWith(`/${value}`))
+  return entry?.[1]
 }
 
 function resolveClassImage(value: IconType | string | undefined): string | undefined {
@@ -77,7 +97,8 @@ export function HeroIcon({
   flexShrink = 0,
   ...rest
 }: HeroIconProps) {
-  const classImage = resolveClassImage(classIcon)
+  const classSvgMarkup = resolveClassSvgMarkup(classIcon)
+  const classImage = classSvgMarkup ? undefined : resolveClassImage(classIcon)
   const ClassIconComponent = (resolveClassComponent(classIcon) ?? GameIcons.GiSwordman) as IconType
   const speciesDef = species ? SPECIES_DEFINITIONS[species] : undefined
   const BackgroundIconComponent = resolveIcon(speciesDef?.backgroundIcon)
@@ -113,7 +134,18 @@ export function HeroIcon({
           />
         )
       )}
-      {classImage ? (
+      {classSvgMarkup ? (
+        <Box
+          position="absolute"
+          boxSize="80%"
+          top="10%"
+          left="10%"
+          zIndex={1}
+          color={color}
+          sx={{ fill: 'currentColor', svg: { width: '100%', height: '100%', display: 'block' } }}
+          dangerouslySetInnerHTML={{ __html: classSvgMarkup }}
+        />
+      ) : classImage ? (
         <Image
           src={classImage}
           position="absolute"
