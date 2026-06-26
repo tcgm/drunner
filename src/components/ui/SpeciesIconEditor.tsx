@@ -23,8 +23,12 @@ import {
 } from '@chakra-ui/react'
 import { ALL_SPECIES } from '@/data/heroes/species'
 import type { HeroSpecies } from '@/types'
-import { WARRIOR } from '@/data/classes/warrior'
+import { ALL_CLASSES, UNIQUE_CLASSES } from '@/data/classes'
 import { HeroIcon } from '@/components/ui/HeroIcon'
+
+const EDITOR_CLASSES = [...ALL_CLASSES, ...UNIQUE_CLASSES]
+/** null = the species-wide default offset, used by any class without its own override */
+const DEFAULT_CLASS_VALUE = ''
 
 type Format = 'svg' | 'png'
 type Variant = 'v1' | 'v2_frame' | 'v3_addon' | 'v4_badge'
@@ -83,9 +87,18 @@ function offsetTransform(offset: Offset): string {
 
 interface SidePanelState {
   selection: SourceSelection | null
-  offset: Offset
+  /** Offset used by any class without its own entry in offsetsByClass, and by the "Default" target itself. */
+  defaultOffset: Offset
+  offsetsByClass: Record<string, Offset>
   localPreviewUrl?: string
   uploading?: boolean
+}
+
+const EMPTY_SIDE_STATE: SidePanelState = { selection: null, defaultOffset: DEFAULT_OFFSET, offsetsByClass: {} }
+
+/** The offset to show/edit for a given target ('' = Default) - falls back to the species default when the class has no override yet. */
+function resolveOffset(state: SidePanelState, classId: string): Offset {
+  return (classId && state.offsetsByClass[classId]) || state.defaultOffset
 }
 
 function SourcePicker({
@@ -245,10 +258,11 @@ function SourcePicker({
 export default function SpeciesIconEditor() {
   const toast = useToast()
   const [speciesId, setSpeciesId] = useState<HeroSpecies>(ALL_SPECIES[0].id)
+  const [classId, setClassId] = useState<string>(DEFAULT_CLASS_VALUE)
   const [manifest, setManifest] = useState<SourceManifest | null>(null)
   const [activeSide, setActiveSide] = useState<Side>('background')
-  const [background, setBackground] = useState<SidePanelState>({ selection: null, offset: DEFAULT_OFFSET })
-  const [foreground, setForeground] = useState<SidePanelState>({ selection: null, offset: DEFAULT_OFFSET })
+  const [background, setBackground] = useState<SidePanelState>(EMPTY_SIDE_STATE)
+  const [foreground, setForeground] = useState<SidePanelState>(EMPTY_SIDE_STATE)
   const [saving, setSaving] = useState(false)
 
   const dragState = useRef<{ startX: number; startY: number; offset: Offset } | null>(null)
@@ -266,20 +280,28 @@ export default function SpeciesIconEditor() {
 
   const activeState = activeSide === 'background' ? background : foreground
   const setActiveState = activeSide === 'background' ? setBackground : setForeground
+  const activeOffset = resolveOffset(activeState, classId)
 
   const updateActiveOffset = useCallback(
     (partial: Partial<Offset>) => {
-      setActiveState(prev => ({ ...prev, offset: { ...prev.offset, ...partial } }))
+      setActiveState(prev => {
+        if (!classId) {
+          return { ...prev, defaultOffset: { ...prev.defaultOffset, ...partial } }
+        }
+        // First edit for this class: branch off a copy of the default offset instead of starting from zero.
+        const base = prev.offsetsByClass[classId] ?? prev.defaultOffset
+        return { ...prev, offsetsByClass: { ...prev.offsetsByClass, [classId]: { ...base, ...partial } } }
+      })
     },
-    [setActiveState]
+    [setActiveState, classId]
   )
 
   const onPointerDown = useCallback(
     (e: ReactPointerEvent) => {
       e.currentTarget.setPointerCapture(e.pointerId)
-      dragState.current = { startX: e.clientX, startY: e.clientY, offset: activeState.offset }
+      dragState.current = { startX: e.clientX, startY: e.clientY, offset: activeOffset }
     },
-    [activeState.offset]
+    [activeOffset]
   )
 
   const onPointerMove = useCallback(
@@ -303,14 +325,27 @@ export default function SpeciesIconEditor() {
     setSnapAxis({ x: null, y: null })
   }, [])
 
+  // For the Default target this zeroes the species-wide offset; for a class target it just
+  // drops that class's override so it falls back to (i.e. matches) the default again.
   const resetActive = useCallback(() => {
-    setActiveState(prev => ({ ...prev, offset: DEFAULT_OFFSET }))
-  }, [setActiveState])
+    setActiveState(prev => {
+      if (!classId) return { ...prev, defaultOffset: DEFAULT_OFFSET }
+      const { [classId]: _removed, ...rest } = prev.offsetsByClass
+      return { ...prev, offsetsByClass: rest }
+    })
+  }, [setActiveState, classId])
 
   const handleSpeciesChange = useCallback((id: HeroSpecies) => {
     setSpeciesId(id)
-    setBackground({ selection: null, offset: DEFAULT_OFFSET })
-    setForeground({ selection: null, offset: DEFAULT_OFFSET })
+    setBackground(EMPTY_SIDE_STATE)
+    setForeground(EMPTY_SIDE_STATE)
+  }, [])
+
+  // Switching class keeps the chosen art and all offsets as-is (it's the same species art for
+  // every class) - the displayed offset just falls back to defaultOffset until this class gets
+  // its own override via an edit.
+  const handleClassChange = useCallback((id: string) => {
+    setClassId(id)
   }, [])
 
   const handleUpload = useCallback(
@@ -352,27 +387,34 @@ export default function SpeciesIconEditor() {
 
   const canSave = useMemo(() => background.selection !== null || foreground.selection !== null, [background, foreground])
 
+  // When editing the default offset, preview against the first class as a representative sample.
+  const previewClass = useMemo(
+    () => EDITOR_CLASSES.find(c => c.id === classId) ?? EDITOR_CLASSES[0],
+    [classId]
+  )
+
   const handleSave = useCallback(async () => {
     setSaving(true)
     try {
       const sides: Record<Side, (SourceSelection & { offset: Offset }) | null> = {
-        background: background.selection ? { ...background.selection, offset: background.offset } : null,
-        foreground: foreground.selection ? { ...foreground.selection, offset: foreground.offset } : null,
+        background: background.selection ? { ...background.selection, offset: resolveOffset(background, classId) } : null,
+        foreground: foreground.selection ? { ...foreground.selection, offset: resolveOffset(foreground, classId) } : null,
       }
       const res = await fetch('/__species-tool/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ speciesId, sides }),
+        body: JSON.stringify({ speciesId, sides, classId: classId || null }),
       })
       const json = await res.json()
       if (!res.ok || !json.ok) throw new Error(json.error ?? 'Save failed')
-      toast({ title: `Saved icons for ${speciesId}`, status: 'success', duration: 2500 })
+      const target = classId ? EDITOR_CLASSES.find(c => c.id === classId)?.name ?? classId : 'default'
+      toast({ title: `Saved ${speciesId} icons (${target})`, status: 'success', duration: 2500 })
     } catch (err) {
       toast({ title: 'Save failed', description: err instanceof Error ? err.message : String(err), status: 'error' })
     } finally {
       setSaving(false)
     }
-  }, [background, foreground, speciesId, toast])
+  }, [background, foreground, speciesId, classId, toast])
 
   return (
     <VStack align="stretch" spacing={4}>
@@ -380,11 +422,19 @@ export default function SpeciesIconEditor() {
         Species Icon Editor (dev-only)
       </Text>
 
-      <Select value={speciesId} onChange={e => handleSpeciesChange(e.target.value as HeroSpecies)} size="sm" maxW="220px">
-        {ALL_SPECIES.map(s => (
-          <option key={s.id} value={s.id}>{s.name}</option>
-        ))}
-      </Select>
+      <HStack spacing={3}>
+        <Select value={speciesId} onChange={e => handleSpeciesChange(e.target.value as HeroSpecies)} size="sm" maxW="220px">
+          {ALL_SPECIES.map(s => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </Select>
+        <Select value={classId} onChange={e => handleClassChange(e.target.value)} size="sm" maxW="220px">
+          <option value={DEFAULT_CLASS_VALUE}>Default (all classes)</option>
+          {EDITOR_CLASSES.map(c => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </Select>
+      </HStack>
 
       <HStack align="flex-start" spacing={6}>
         <VStack align="stretch" spacing={4} flex={1}>
@@ -456,12 +506,12 @@ export default function SpeciesIconEditor() {
                 boxSize="100%"
                 objectFit="contain"
                 zIndex={0}
-                style={{ transform: offsetTransform(background.offset) }}
+                style={{ transform: offsetTransform(resolveOffset(background, classId)) }}
                 pointerEvents="none"
               />
             )}
             <Box position="absolute" boxSize="80%" top="10%" left="10%" zIndex={1} pointerEvents="none">
-              <HeroIcon classIcon={WARRIOR.icon} boxSize="100%" color="orange.400" />
+              <HeroIcon classIcon={previewClass.icon} boxSize="100%" color="orange.400" />
             </Box>
             {foreground.selection && (
               <Image
@@ -471,7 +521,7 @@ export default function SpeciesIconEditor() {
                 boxSize="100%"
                 objectFit="contain"
                 zIndex={2}
-                style={{ transform: offsetTransform(foreground.offset) }}
+                style={{ transform: offsetTransform(resolveOffset(foreground, classId)) }}
                 pointerEvents="none"
               />
             )}
@@ -500,7 +550,7 @@ export default function SpeciesIconEditor() {
               min={0.5}
               max={2}
               step={0.01}
-              value={activeState.offset.scale}
+              value={activeOffset.scale}
               onChange={v => updateActiveOffset({ scale: snapScaleValue(v) })}
             >
               <SliderTrack><SliderFilledTrack /></SliderTrack>
@@ -512,7 +562,7 @@ export default function SpeciesIconEditor() {
             <NumberInput
               size="xs"
               w="80px"
-              value={Number(activeState.offset.x.toFixed(1))}
+              value={Number(activeOffset.x.toFixed(1))}
               min={-50}
               max={50}
               step={0.5}
@@ -528,7 +578,7 @@ export default function SpeciesIconEditor() {
             <NumberInput
               size="xs"
               w="80px"
-              value={Number(activeState.offset.y.toFixed(1))}
+              value={Number(activeOffset.y.toFixed(1))}
               min={-50}
               max={50}
               step={0.5}
@@ -544,7 +594,7 @@ export default function SpeciesIconEditor() {
             <NumberInput
               size="xs"
               w="80px"
-              value={Number(activeState.offset.scale.toFixed(2))}
+              value={Number(activeOffset.scale.toFixed(2))}
               min={0.5}
               max={2}
               step={0.05}
@@ -568,7 +618,7 @@ export default function SpeciesIconEditor() {
         onClick={handleSave}
         alignSelf="flex-start"
       >
-        Save {speciesId} icons
+        Save {speciesId} icons ({classId ? previewClass.name : 'default'})
       </Button>
     </VStack>
   )

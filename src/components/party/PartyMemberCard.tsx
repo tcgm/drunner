@@ -128,7 +128,7 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
               >
                 {hero.customPortrait
                   ? <Image src={hero.customPortrait} boxSize={8} objectFit="cover" borderRadius="md" flexShrink={0} />
-                  : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={8} color="orange.400" />}
+                  : <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={8} color="orange.400" />}
               </motion.div>
               
               <VStack className="party-member-card-info" spacing={1} align="stretch" flex={1} minW={0}>

@@ -22,6 +22,7 @@ export function HeroName({ hero }: HeroNameProps) {
     <>
       <HeroIcon
         classIcon={hero.class.icon}
+        classId={hero.class.id}
         species={hero.species}
         boxSize="0.9em"
         color="gray.400"

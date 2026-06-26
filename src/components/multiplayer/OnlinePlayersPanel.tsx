@@ -220,6 +220,7 @@ export function OnlinePlayersPanel() {
                         <HStack spacing={1}>
                           <HeroIcon
                             classIcon={assigned.heroSnapshot.class.icon}
+                            classId={assigned.heroSnapshot.class.id}
                             species={assigned.heroSnapshot.species}
                             color="blue.300"
                             boxSize={4}

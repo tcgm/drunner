@@ -67,7 +67,7 @@ export default function HeroSlot({
             opacity={0.08}
             transform="rotate(-15deg)"
           >
-            <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={40} color="orange.400" />
+            <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={40} color="orange.400" />
           </Box>
           
           <VStack className="hero-slot-content" spacing={1} p={1} position="relative" zIndex={1}>
@@ -84,7 +84,7 @@ export default function HeroSlot({
             >
               {hero.customPortrait
                 ? <Image src={hero.customPortrait} boxSize={12} objectFit="cover" borderRadius="md" />
-                : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={12} color="orange.300" />}
+                : <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={12} color="orange.300" />}
               {/* Glow effect */}
               <Box
                 position="absolute"

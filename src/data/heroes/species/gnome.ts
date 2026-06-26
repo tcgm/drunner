@@ -1,5 +1,6 @@
 import foregroundImage from '@/assets/icons/species/foreground/gnome.svg'
 import type { SpeciesDefinition } from './_types'
+import backgroundImage from '@/assets/icons/species/background/gnome.png'
 
 export const gnome: SpeciesDefinition = {
   id: 'gnome',
@@ -13,5 +14,7 @@ export const gnome: SpeciesDefinition = {
   spawnRarity: 'common',
   backgroundIcon: 'GiBadGnome',
   foregroundImage,
-  foregroundOffset: { x: 0, y: -20.777765909830727, scale: 1 },
+  foregroundOffset: { x: 0, y: 0, scale: 1 },
+  backgroundImage,
+  backgroundOffset: { x: 0, y: 0, scale: 1 },
 }

@@ -175,7 +175,7 @@ function HireableHeroToken({ hero, pos, floatDelay, onClick }: {
             transition="box-shadow 0.2s, border-color 0.2s"
             opacity={0.85}
           >
-            <HeroIcon classIcon={hero.heroClass.icon} species={hero.species} color={color} boxSize={5} />
+            <HeroIcon classIcon={hero.heroClass.icon} classId={hero.heroClass.id} species={hero.species} color={color} boxSize={5} />
           </Box>
 
           {/* "?" hire badge */}

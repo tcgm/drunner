@@ -133,6 +133,7 @@ export function HeroPortrait({
   ) : (
     <HeroIcon
       classIcon={hero.class.icon}
+      classId={hero.class.id}
       species={hero.species}
       boxSize={boxSize}
       color={color}

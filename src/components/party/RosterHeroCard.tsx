@@ -76,7 +76,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
       >
         {/* Icon Background */}
         <Box className="roster-hero-card-bg-icon" position="absolute" top={-2} right={-2} opacity={0.05}>
-          <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={20} color="blue.400" />
+          <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={20} color="blue.400" />
         </Box>
         
         <Flex className="roster-hero-card-content" gap={3} position="relative" zIndex={1} align="center">
@@ -93,7 +93,7 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
           >
             {hero.customPortrait
               ? <Image src={hero.customPortrait} boxSize={10} objectFit="cover" borderRadius="md" />
-              : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={10} color="blue.300" />}
+              : <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={10} color="blue.300" />}
             
             {/* Equipment pips around icon */}
             <EquipmentPips 

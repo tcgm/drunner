@@ -96,6 +96,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                 <HStack spacing={1} flexShrink={0}>
                     <HeroIcon
                         classIcon={hero.class.icon}
+                        classId={hero.class.id}
                         species={hero.species}
                         boxSize={8}
                         color={hero.isAlive ? 'orange.400' : 'gray.600'}

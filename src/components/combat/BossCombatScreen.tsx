@@ -724,7 +724,7 @@ export default function BossCombatScreen({
                                     {isBoss ? (
                                         <Icon as={GiSkullCrossedBones} />
                                     ) : (
-                                        <HeroIcon classIcon={hero?.class.icon || 'GiSwordman'} species={hero?.species} />
+                                        <HeroIcon classIcon={hero?.class.icon || 'GiSwordman'} classId={hero?.class.id} species={hero?.species} />
                                     )}
                                     <Text>{isBoss ? 'Boss' : hero?.name || '?'}</Text>
                                 </Box>

@@ -27,6 +27,7 @@ const SOURCE_DIR_NAME: Record<Format, string> = { svg: 'extracted_svg', png: 'ex
 const CONTENT_TYPE: Record<Format, string> = { svg: 'image/svg+xml', png: 'image/png' }
 
 const VALID_SPECIES_ID = /^[a-z]+$/
+const VALID_CLASS_ID = /^[a-z]+$/
 const VALID_NUMBER = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n)
 
 function isVariant(v: unknown): v is Variant {
@@ -40,6 +41,13 @@ function isSide(s: unknown): s is Side {
 }
 function isSpeciesId(id: unknown): id is string {
   return typeof id === 'string' && VALID_SPECIES_ID.test(id) && fs.existsSync(path.join(SPECIES_DATA_DIR, `${id}.ts`))
+}
+
+// Classes live under several files (core + unique) so there's no 1:1 filename check
+// like isSpeciesId - just guard against anything that isn't a safe object-key string,
+// since classId ends up written verbatim as a key in the species data file.
+function isClassId(id: unknown): id is string {
+  return typeof id === 'string' && VALID_CLASS_ID.test(id)
 }
 
 function presetSourcePath(format: Format, variant: Variant, speciesId: string): string {
@@ -102,7 +110,8 @@ async function readJsonBody(req: Connect.IncomingMessage): Promise<unknown> {
 }
 
 function upsertField(content: string, fieldName: string, fieldLine: string): string {
-  const fieldRe = new RegExp(`^[ \\t]*${fieldName}\\b.*\\n`, 'm')
+  // Files may have CRLF line endings (Windows checkouts) - `\r?\n` matches either.
+  const fieldRe = new RegExp(`^[ \\t]*${fieldName}\\b.*\\r?\\n`, 'm')
   if (fieldRe.test(content)) {
     return content.replace(fieldRe, fieldLine)
   }
@@ -110,13 +119,31 @@ function upsertField(content: string, fieldName: string, fieldLine: string): str
   return content.slice(0, lastBrace) + fieldLine + content.slice(lastBrace)
 }
 
+function formatOffset(o: OffsetInput): string {
+  return `{ x: ${o.x}, y: ${o.y}, scale: ${o.scale} }`
+}
+
+// Reads the existing `${fieldName}: { classId: { x, y, scale }, ... }` map (written
+// entirely on one line by this same function), merges in classId's new offset, and
+// re-serializes it back onto one line so the plain-text upsertField regex still matches.
+function upsertOffsetByClass(content: string, fieldName: string, classId: string, offset: OffsetInput): string {
+  const fieldRe = new RegExp(`^[ \\t]*${fieldName}\\s*:\\s*(\\{.*\\}),?[ \\t]*\\r?\\n`, 'm')
+  const match = content.match(fieldRe)
+  const existing: Record<string, OffsetInput> = match ? new Function(`return ${match[1]}`)() : {}
+  existing[classId] = offset
+  const entries = Object.entries(existing)
+    .map(([id, o]) => `${id}: ${formatOffset(o)}`)
+    .join(', ')
+  return upsertField(content, fieldName, `  ${fieldName}: { ${entries} },\n`)
+}
+
 function upsertImport(content: string, varName: string, importPath: string): string {
   const importLine = `import ${varName} from '${importPath}'\n`
-  const importRe = new RegExp(`^import ${varName} from '.*'\\n`, 'm')
+  const importRe = new RegExp(`^import ${varName} from '.*'\\r?\\n`, 'm')
   if (importRe.test(content)) {
     return content.replace(importRe, importLine)
   }
-  const importMatches = [...content.matchAll(/^import .*\n/gm)]
+  const importMatches = [...content.matchAll(/^import .*\r?\n/gm)]
   const last = importMatches[importMatches.length - 1]
   if (last && last.index !== undefined) {
     const insertPos = last.index + last[0].length
@@ -135,7 +162,7 @@ type SideSelection =
   | { kind: 'preset'; format: Format; variant: Variant }
   | { kind: 'custom'; format: Format }
 
-function applySide(speciesId: string, side: Side, selection: SideSelection, offset: OffsetInput): void {
+function applySide(speciesId: string, side: Side, selection: SideSelection, offset: OffsetInput, classId: string | null): void {
   const src =
     selection.kind === 'preset'
       ? presetSourcePath(selection.format, selection.variant, speciesId)
@@ -157,16 +184,16 @@ function applySide(speciesId: string, side: Side, selection: SideSelection, offs
   let content = fs.readFileSync(dataFile, 'utf8')
 
   const varName = `${side}Image`
-  const offsetVarName = `${side}Offset`
   const importPath = `@/assets/icons/species/${side}/${speciesId}.${selection.format}`
 
   content = upsertImport(content, varName, importPath)
   content = upsertField(content, varName, `  ${varName},\n`)
-  content = upsertField(
-    content,
-    offsetVarName,
-    `  ${offsetVarName}: { x: ${offset.x}, y: ${offset.y}, scale: ${offset.scale} },\n`
-  )
+
+  if (classId) {
+    content = upsertOffsetByClass(content, `${side}OffsetsByClass`, classId, offset)
+  } else {
+    content = upsertField(content, `${side}Offset`, `  ${side}Offset: ${formatOffset(offset)},\n`)
+  }
 
   fs.writeFileSync(dataFile, content, 'utf8')
 }
@@ -260,9 +287,10 @@ export function speciesIconToolPlugin(): Plugin {
         }
         readJsonBody(req)
           .then(body => {
-            const { speciesId, sides } = body as {
+            const { speciesId, sides, classId } = body as {
               speciesId?: unknown
               sides?: Partial<Record<Side, { kind: unknown; format: unknown; variant?: unknown; offset: unknown } | null>>
+              classId?: unknown
             }
             if (!isSpeciesId(speciesId)) {
               sendJson(res, 400, { ok: false, error: 'Invalid speciesId' })
@@ -270,6 +298,11 @@ export function speciesIconToolPlugin(): Plugin {
             }
             if (!sides || typeof sides !== 'object') {
               sendJson(res, 400, { ok: false, error: 'Missing sides' })
+              return
+            }
+            // null/undefined classId means "edit the species-wide default offset" rather than a per-class override.
+            if (classId !== null && classId !== undefined && !isClassId(classId)) {
+              sendJson(res, 400, { ok: false, error: 'Invalid classId' })
               return
             }
             for (const side of SIDES) {
@@ -291,7 +324,7 @@ export function speciesIconToolPlugin(): Plugin {
               }
               const selection: SideSelection =
                 kind === 'preset' ? { kind, format, variant: variant as Variant } : { kind, format }
-              applySide(speciesId, side, selection, { x: o.x, y: o.y, scale: o.scale })
+              applySide(speciesId, side, selection, { x: o.x, y: o.y, scale: o.scale }, (classId as string | undefined) ?? null)
             }
             sendJson(res, 200, { ok: true })
           })

@@ -13,5 +13,5 @@ export const elf: SpeciesDefinition = {
   spawnRarity: 'common',
   backgroundIcon: 'GiElfHelmet',
   backgroundImage,
-  backgroundOffset: { x: -1, y: -21.694437662760414, scale: 1 },
+  backgroundOffset: { x: 0, y: -31.3, scale: 0.74 },
 }

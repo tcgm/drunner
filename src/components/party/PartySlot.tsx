@@ -120,7 +120,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
             opacity={0.06}
             transform="rotate(-15deg)"
           >
-            {hero && <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={32} color="orange.400" />}
+            {hero && <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={32} color="orange.400" />}
           </Box>
           
           <HStack className="party-slot-portrait-content" spacing={1} p={1} position="relative" zIndex={1} h="full" align="stretch">
@@ -143,7 +143,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
               >
                 {hero.customPortrait
                   ? <Image src={hero.customPortrait} boxSize={8} objectFit="cover" borderRadius="md" />
-                  : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={8} color="orange.300" />}
+                  : <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={8} color="orange.300" />}
                 {/* Glow effect */}
                 <Box
                   position="absolute"
@@ -238,7 +238,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
             opacity={0.08}
             transform="rotate(-15deg)"
           >
-            {hero && <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={40} color="orange.400" />}
+            {hero && <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={40} color="orange.400" />}
           </Box>
           
           <VStack className="party-slot-desktop-content" spacing={1} p={3} position="relative" zIndex={1} h="full">
@@ -255,7 +255,7 @@ export function PartySlot({ hero, slotIndex, onAdd, onRemove, onSelect, owner }:
             >
               {hero.customPortrait
                 ? <Image src={hero.customPortrait} boxSize={12} objectFit="cover" borderRadius="lg" />
-                : <HeroIcon classIcon={hero.class.icon} species={hero.species} boxSize={12} color="orange.300" />}
+                : <HeroIcon classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={12} color="orange.300" />}
               {/* Glow effect */}
               <Box
                 position="absolute"

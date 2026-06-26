@@ -105,6 +105,7 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
               {/* Hero Icon */}
               <HeroIcon
                 classIcon={hero.class.icon}
+                classId={hero.class.id}
                 species={hero.species}
                 boxSize={4}
                 color={isAlive ? "orange.400" : "gray.500"}

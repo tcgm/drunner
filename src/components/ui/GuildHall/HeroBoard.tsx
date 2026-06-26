@@ -73,7 +73,7 @@ function HeroCard({ hero, bankGold, onHire }: HeroCardProps) {
           flexShrink={0}
           boxShadow={`inset 0 0 8px ${color}18`}
         >
-          <HeroIcon classIcon={hero.heroClass.icon} species={hero.species} color={color} boxSize={5} />
+          <HeroIcon classIcon={hero.heroClass.icon} classId={hero.heroClass.id} species={hero.species} color={color} boxSize={5} />
         </Box>
 
         <VStack spacing={0} align="flex-start" flex={1} minW={0}>

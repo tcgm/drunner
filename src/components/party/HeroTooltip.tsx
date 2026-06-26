@@ -31,7 +31,7 @@ export default function HeroTooltip({ hero, children }: HeroTooltipProps) {
           <HStack className="hero-tooltip-header" spacing={3}>
             {hero.customPortrait
               ? <Image className="hero-tooltip-icon" src={hero.customPortrait} boxSize={10} objectFit="cover" borderRadius="md" />
-              : <HeroIcon className="hero-tooltip-icon" classIcon={hero.class.icon} species={hero.species} boxSize={10} color="orange.400" />}
+              : <HeroIcon className="hero-tooltip-icon" classIcon={hero.class.icon} classId={hero.class.id} species={hero.species} boxSize={10} color="orange.400" />}
             <VStack className="hero-tooltip-info" align="start" spacing={0} flex={1}>
               <Text className="hero-tooltip-name" fontSize="md" fontWeight="bold" color="orange.400">
                 <HeroName hero={hero} />

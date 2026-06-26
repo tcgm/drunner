@@ -525,14 +525,14 @@ export default function DevTools() {
         />
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="6xl" scrollBehavior="inside" isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="inside" size="full">
         <ModalOverlay />
-        <ModalContent bg="gray.800" maxH="90vh" my={4}>
+        <ModalContent bg="gray.800">
           <ModalHeader color="yellow.400">
             Dev Tools {isInDungeon && <Text as="span" fontSize="sm" color="cyan.400">(In Dungeon)</Text>}
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={6} overflowY="auto">
+          <ModalBody pb={2} overflowY="auto">
             <Tabs colorScheme="yellow">
               <TabList>
                 <Tab>Party</Tab>

@@ -112,6 +112,7 @@ export default function TurnOrderDisplay({ combatState, party }: TurnOrderDispla
                                             ) : (
                                                 <HeroIcon
                                                     classIcon={hero?.class.icon || 'GiSwordman'}
+                                                    classId={hero?.class.id}
                                                     species={hero?.species}
                                                     boxSize={5}
                                                     color="blue.300"

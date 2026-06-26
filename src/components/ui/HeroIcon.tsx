@@ -11,6 +11,8 @@ interface HeroIconProps extends Omit<BoxProps, 'position' | 'display' | 'color'>
   classIcon: IconType | string
   /** Species id - if present, its background/foreground icons are layered with the class icon */
   species?: HeroSpecies
+  /** HeroClass.id - selects a per-class background/foreground offset override, if the species defines one */
+  classId?: string
   boxSize?: string | number
   color?: string
   backgroundColor?: string
@@ -49,6 +51,15 @@ function offsetTransform(offset: IconOffset | undefined): string {
   return `translate(${x}%, ${y}%) scale(${scale})`
 }
 
+/** A species' offset for a given class: the per-class override if one exists, else the species default. */
+function resolveOffset(
+  defaultOffset: IconOffset | undefined,
+  byClass: Record<string, IconOffset> | undefined,
+  classId: string | undefined
+): IconOffset | undefined {
+  return (classId && byClass?.[classId]) || defaultOffset
+}
+
 /**
  * Renders a hero's class icon sandwiched between the species' background and
  * foreground icons - background sits literally behind the class icon (full
@@ -58,6 +69,7 @@ function offsetTransform(offset: IconOffset | undefined): string {
 export function HeroIcon({
   classIcon,
   species,
+  classId,
   boxSize = 6,
   color = 'orange.400',
   backgroundColor,
@@ -70,6 +82,8 @@ export function HeroIcon({
   const speciesDef = species ? SPECIES_DEFINITIONS[species] : undefined
   const BackgroundIconComponent = resolveIcon(speciesDef?.backgroundIcon)
   const ForegroundIconComponent = resolveIcon(speciesDef?.foregroundIcon)
+  const backgroundOffset = resolveOffset(speciesDef?.backgroundOffset, speciesDef?.backgroundOffsetsByClass, classId)
+  const foregroundOffset = resolveOffset(speciesDef?.foregroundOffset, speciesDef?.foregroundOffsetsByClass, classId)
 
   backgroundColor = backgroundColor || color || 'orange.400'
   foregroundColor = foregroundColor || color || 'orange.400'
@@ -84,7 +98,7 @@ export function HeroIcon({
           boxSize="100%"
           objectFit="contain"
           zIndex={0}
-          style={{ transform: offsetTransform(speciesDef.backgroundOffset) }}
+          style={{ transform: offsetTransform(backgroundOffset) }}
         />
       ) : (
         BackgroundIconComponent && (
@@ -128,7 +142,7 @@ export function HeroIcon({
           boxSize="100%"
           objectFit="contain"
           zIndex={2}
-          style={{ transform: offsetTransform(speciesDef.foregroundOffset) }}
+          style={{ transform: offsetTransform(foregroundOffset) }}
         />
       ) : (
         ForegroundIconComponent && (
