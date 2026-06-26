@@ -26,5 +26,5 @@ export const DRUID: HeroClass = {
   },
   primaryStats: ['wisdom', 'magicPower'],
   abilities: DRUID_ABILITIES,
-  icon: 'GiOakLeaf',
+  icon: 'druid.svg',
 }

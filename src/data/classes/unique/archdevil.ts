@@ -27,5 +27,5 @@ export const ARCHDEVIL: HeroClass = {
     },
     primaryStats: ['attack', 'charisma'],
     abilities: ARCHDEVIL_ABILITIES,
-    icon: 'GiCrownedSkull',
+    icon: 'archdevil.svg',
 }

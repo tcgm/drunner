@@ -25,5 +25,5 @@ export const MONK: HeroClass = {
     },
     primaryStats: ['speed', 'attack'],
     abilities: MONK_ABILITIES,
-    icon: 'GiPunch',
+    icon: 'monk.svg',
 }

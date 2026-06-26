@@ -26,5 +26,5 @@ export const MAGE: HeroClass = {
   },
   primaryStats: ['magicPower', 'wisdom'],
   abilities: MAGE_ABILITIES,
-  icon: 'GiWizardStaff',
+  icon: 'mage.svg',
 }

@@ -27,5 +27,5 @@ export const TRICKSTER: HeroClass = {
     },
     primaryStats: ['luck', 'speed'],
     abilities: TRICKSTER_ABILITIES,
-    icon: 'GiTripleYin',
+    icon: 'trickster.svg',
 }

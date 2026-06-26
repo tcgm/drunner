@@ -25,5 +25,5 @@ export const RANGER: HeroClass = {
   },
   primaryStats: ['speed', 'attack'],
   abilities: RANGER_ABILITIES,
-  icon: 'GiBowArrow',
+  icon: 'ranger.svg',
 }

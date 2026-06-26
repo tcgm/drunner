@@ -26,5 +26,5 @@ export const CLERIC: HeroClass = {
   },
   primaryStats: ['wisdom', 'magicPower'],
   abilities: CLERIC_ABILITIES,
-  icon: 'GiHolySymbol',
+  icon: 'cleric.svg',
 }

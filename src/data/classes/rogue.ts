@@ -24,5 +24,5 @@ export const ROGUE: HeroClass = {
   },
   primaryStats: ['speed', 'luck'],
   abilities: ROGUE_ABILITIES,
-  icon: 'GiNinjaHeroicStance',
+  icon: 'rogue.svg',
 }

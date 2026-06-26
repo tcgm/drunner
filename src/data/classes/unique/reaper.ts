@@ -27,5 +27,5 @@ export const REAPER: HeroClass = {
     },
     primaryStats: ['attack', 'magicPower'],
     abilities: REAPER_ABILITIES,
-    icon: 'GiGrimReaper',
+    icon: 'reaper.svg',
 }

@@ -27,5 +27,5 @@ export const ARCHANGEL: HeroClass = {
     },
     primaryStats: ['magicPower', 'wisdom'],
     abilities: ARCHANGEL_ABILITIES,
-    icon: 'GiHolySymbol',
+    icon: 'archangel.svg',
 }
