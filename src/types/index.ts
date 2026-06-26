@@ -129,7 +129,7 @@ export interface HeroClass {
   statGains: Omit<Stats, 'hp'> // Stat increases per level (includes maxHp but not current hp)
   primaryStats: [PrimaryStat, PrimaryStat] // Top 2 stats by per-level gain  -  used for ability scaling
   abilities: Ability[]
-  icon: string // react-icons/gi name
+  icon: IconType | string // a react-icons-style component, a react-icons/gi name, or an image filename under src/assets/icons/classes/ (e.g. 'warrior.svg')
 }
 
 export interface Hero {

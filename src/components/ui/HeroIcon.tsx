@@ -7,8 +7,8 @@ import { SPECIES_DEFINITIONS } from '@/data/heroes/species'
 import type { IconOffset } from '@/data/heroes/species'
 
 interface HeroIconProps extends Omit<BoxProps, 'position' | 'display' | 'color'> {
-  /** react-icons/gi name from HeroClass.icon */
-  classIcon: string
+  /** A react-icons-style component, a react-icons/gi name, or an image filename under src/assets/icons/classes/ - from HeroClass.icon */
+  classIcon: IconType | string
   /** Species id - if present, its background/foreground icons are layered with the class icon */
   species?: HeroSpecies
   boxSize?: string | number
@@ -17,8 +17,31 @@ interface HeroIconProps extends Omit<BoxProps, 'position' | 'display' | 'color'>
   foregroundColor?: string
 }
 
+// Eagerly maps every class icon image asset to its resolved URL, keyed by filename
+// (e.g. 'warrior.svg'), so HeroClass.icon can reference a custom image instead of
+// a react-icons/gi name.
+const CLASS_ICON_IMAGES = import.meta.glob<string>('/src/assets/icons/classes/*.{svg,png}', {
+  eager: true,
+  import: 'default',
+})
+
 function resolveIcon(name: string | undefined): IconType | undefined {
   return name ? ((GameIcons as Record<string, IconType>)[name] as IconType | undefined) : undefined
+}
+
+// HeroClass.icon may already be a component (e.g. a hand-authored class icon
+// built with react-icons' GenIcon) rather than a string name.
+function resolveClassComponent(value: IconType | string | undefined): IconType | undefined {
+  return typeof value === 'function' ? value : resolveIcon(typeof value === 'string' ? value : undefined)
+}
+
+function resolveClassImage(value: IconType | string | undefined): string | undefined {
+  if (typeof value !== 'string') return undefined
+  // Already a resolved asset (HeroClass.icon imported the file directly) - use as-is.
+  if (value.startsWith('data:') || value.includes('/')) return value
+  // Otherwise treat it as a bare filename and look it up in the glob.
+  const entry = Object.entries(CLASS_ICON_IMAGES).find(([path]) => path.endsWith(`/${value}`))
+  return entry?.[1]
 }
 
 function offsetTransform(offset: IconOffset | undefined): string {
@@ -42,7 +65,8 @@ export function HeroIcon({
   flexShrink = 0,
   ...rest
 }: HeroIconProps) {
-  const ClassIconComponent = (resolveIcon(classIcon) ?? GameIcons.GiSwordman) as IconType
+  const classImage = resolveClassImage(classIcon)
+  const ClassIconComponent = (resolveClassComponent(classIcon) ?? GameIcons.GiSwordman) as IconType
   const speciesDef = species ? SPECIES_DEFINITIONS[species] : undefined
   const BackgroundIconComponent = resolveIcon(speciesDef?.backgroundIcon)
   const ForegroundIconComponent = resolveIcon(speciesDef?.foregroundIcon)
@@ -75,15 +99,27 @@ export function HeroIcon({
           />
         )
       )}
-      <Icon
-        as={ClassIconComponent}
-        position="absolute"
-        boxSize="80%"
-        top="10%"
-        left="10%"
-        color={color}
-        zIndex={1}
-      />
+      {classImage ? (
+        <Image
+          src={classImage}
+          position="absolute"
+          boxSize="80%"
+          top="10%"
+          left="10%"
+          objectFit="contain"
+          zIndex={1}
+        />
+      ) : (
+        <Icon
+          as={ClassIconComponent}
+          position="absolute"
+          boxSize="80%"
+          top="10%"
+          left="10%"
+          color={color}
+          zIndex={1}
+        />
+      )}
       {speciesDef?.foregroundImage ? (
         <Image
           src={speciesDef.foregroundImage}
