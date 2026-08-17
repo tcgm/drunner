@@ -198,6 +198,36 @@ function applySide(speciesId: string, side: Side, selection: SideSelection, offs
   fs.writeFileSync(dataFile, content, 'utf8')
 }
 
+// Figures out what's currently saved for a species/side by comparing the asset file that
+// ended up in src/assets/icons/species/{side}/{speciesId}.{ext} (the one applySide() writes
+// on save) against every known preset/custom source - the data file itself only keeps the
+// final image + offset, not which preset variant (if any) produced it.
+function currentSelection(speciesId: string, side: Side): (SideSelection | { kind: 'asset'; format: Format }) | null {
+  const destDir = path.join(ASSETS_DIR, side)
+  if (!fs.existsSync(destDir)) return null
+  const file = fs.readdirSync(destDir).find(f => f.startsWith(`${speciesId}.`))
+  if (!file) return null
+  const destBuf = fs.readFileSync(path.join(destDir, file))
+
+  for (const format of FORMATS) {
+    for (const variant of VARIANTS) {
+      const src = presetSourcePath(format, variant, speciesId)
+      if (fs.existsSync(src) && fs.readFileSync(src).equals(destBuf)) {
+        return { kind: 'preset', format, variant }
+      }
+    }
+    const customSrc = customSourcePath(side, format, speciesId)
+    if (fs.existsSync(customSrc) && fs.readFileSync(customSrc).equals(destBuf)) {
+      return { kind: 'custom', format }
+    }
+  }
+
+  // Saved file doesn't match any known source (e.g. uploads dir was cleared) - still report it
+  // as "something is selected" so the editor doesn't show None for an art asset that's actually set.
+  const format = file.endsWith('.svg') ? 'svg' : file.endsWith('.png') ? 'png' : null
+  return format ? { kind: 'asset', format } : null
+}
+
 function sendJson(res: http.ServerResponse, status: number, body: unknown): void {
   res.statusCode = status
   res.setHeader('Content-Type', 'application/json')
@@ -213,6 +243,17 @@ export function speciesIconToolPlugin(): Plugin {
         sendJson(res, 200, listSources())
       })
 
+      server.middlewares.use('/__species-tool/current', (req, res) => {
+        const url = new URL(req.url ?? '', 'http://localhost')
+        const speciesId = url.searchParams.get('speciesId')
+        const side = url.searchParams.get('side')
+        if (!isSpeciesId(speciesId) || !isSide(side)) {
+          sendJson(res, 400, { ok: false, error: 'Invalid parameters' })
+          return
+        }
+        sendJson(res, 200, { ok: true, selection: currentSelection(speciesId, side) })
+      })
+
       server.middlewares.use('/__species-tool/preview', (req, res) => {
         const url = new URL(req.url ?? '', 'http://localhost')
         const kind = url.searchParams.get('kind') ?? 'preset'
@@ -225,14 +266,14 @@ export function speciesIconToolPlugin(): Plugin {
         }
 
         let filePath: string
-        if (kind === 'custom') {
+        if (kind === 'custom' || kind === 'asset') {
           const side = url.searchParams.get('side')
           if (!isSide(side)) {
             res.statusCode = 400
             res.end('Invalid parameters')
             return
           }
-          filePath = customSourcePath(side, format, id)
+          filePath = kind === 'asset' ? path.join(ASSETS_DIR, side, `${id}.${format}`) : customSourcePath(side, format, id)
         } else {
           const variant = url.searchParams.get('variant')
           if (!isVariant(variant)) {

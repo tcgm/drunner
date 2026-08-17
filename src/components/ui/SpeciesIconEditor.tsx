@@ -17,11 +17,12 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  Spinner,
   Text,
   VStack,
   useToast,
 } from '@chakra-ui/react'
-import { ALL_SPECIES } from '@/data/heroes/species'
+import { ALL_SPECIES, SPECIES_DEFINITIONS } from '@/data/heroes/species'
 import type { HeroSpecies } from '@/types'
 import { ALL_CLASSES, UNIQUE_CLASSES } from '@/data/classes'
 import { HeroIcon } from '@/components/ui/HeroIcon'
@@ -43,6 +44,8 @@ interface Offset {
 type SourceSelection =
   | { kind: 'preset'; format: Format; variant: Variant }
   | { kind: 'custom'; format: Format }
+  /** Currently saved on the species, but its art doesn't match a known preset/upload source. */
+  | { kind: 'asset'; format: Format }
 
 interface SourceManifest {
   presets: Record<Format, Record<Variant, string[]>>
@@ -77,6 +80,9 @@ function previewUrl(selection: SourceSelection, speciesId: string, side: Side): 
   const id = encodeURIComponent(speciesId)
   if (selection.kind === 'preset') {
     return `/__species-tool/preview?kind=preset&format=${selection.format}&variant=${selection.variant}&id=${id}`
+  }
+  if (selection.kind === 'asset') {
+    return `/__species-tool/preview?kind=asset&format=${selection.format}&side=${side}&id=${id}`
   }
   return `/__species-tool/preview?kind=custom&format=${selection.format}&side=${side}&id=${id}`
 }
@@ -127,8 +133,16 @@ function SourcePicker({
         : manifest?.custom[side].png.includes(speciesId)
           ? 'png'
           : undefined
-  const customThumb = state.localPreviewUrl ?? (customFormat ? previewUrl({ kind: 'custom', format: customFormat }, speciesId, side) : undefined)
-  const isCustomSelected = state.selection?.kind === 'custom'
+  // 'asset' means "currently saved but doesn't match a known preset/upload source" - shown via the
+  // custom tile too, since visually it's the same as a one-off custom image.
+  const customThumb =
+    state.localPreviewUrl ??
+    (state.selection?.kind === 'asset'
+      ? previewUrl(state.selection, speciesId, side)
+      : customFormat
+        ? previewUrl({ kind: 'custom', format: customFormat }, speciesId, side)
+        : undefined)
+  const isCustomSelected = state.selection?.kind === 'custom' || state.selection?.kind === 'asset'
 
   return (
     <VStack align="stretch" spacing={2}>
@@ -173,6 +187,7 @@ function SourcePicker({
                     boxSize="100%"
                     objectFit="contain"
                     alt={`${variant} ${format}`}
+                    fallback={<Spinner size="xs" color="gray.400" />}
                   />
                 ) : (
                   <Text fontSize="2xs" color="gray.500" textAlign="center">n/a</Text>
@@ -215,7 +230,7 @@ function SourcePicker({
           ) : isDragOver ? (
             <Text fontSize="2xs" color="cyan.300" textAlign="center">Drop it</Text>
           ) : customThumb ? (
-            <Image src={customThumb} boxSize="100%" objectFit="contain" alt="custom upload" />
+            <Image src={customThumb} boxSize="100%" objectFit="contain" alt="custom upload" fallback={<Spinner size="xs" color="cyan.300" />} />
           ) : (
             <Text fontSize="2xs" color="cyan.300" textAlign="center">+ Upload</Text>
           )}
@@ -260,9 +275,11 @@ export default function SpeciesIconEditor() {
   const [speciesId, setSpeciesId] = useState<HeroSpecies>(ALL_SPECIES[0].id)
   const [classId, setClassId] = useState<string>(DEFAULT_CLASS_VALUE)
   const [manifest, setManifest] = useState<SourceManifest | null>(null)
+  const [manifestLoading, setManifestLoading] = useState(true)
   const [activeSide, setActiveSide] = useState<Side>('background')
   const [background, setBackground] = useState<SidePanelState>(EMPTY_SIDE_STATE)
   const [foreground, setForeground] = useState<SidePanelState>(EMPTY_SIDE_STATE)
+  const [selectionsLoading, setSelectionsLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
   const dragState = useRef<{ startX: number; startY: number; offset: Offset } | null>(null)
@@ -271,12 +288,56 @@ export default function SpeciesIconEditor() {
   const [snapAxis, setSnapAxis] = useState<{ x: number | null; y: number | null }>({ x: null, y: null })
 
   useEffect(() => {
+    setManifestLoading(true)
     fetch('/__species-tool/sources')
       .then(r => r.json())
       .then(setManifest)
       .catch(() => toast({ title: 'Failed to load species art sources', status: 'error' }))
+      .finally(() => setManifestLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Loads what's actually saved for this species. Offsets come straight from the bundled
+  // species data, so they're applied synchronously - they must NOT wait on the network fetch
+  // below, or switching species (then class) would keep showing the *previous* species'
+  // offsets until that fetch resolves. Only which source produced the current art (preset vs
+  // custom) needs a fetch, since the data file only keeps the final image path, not which
+  // preset/upload it came from - that part fills in a moment later via `selection`.
+  useEffect(() => {
+    const def = SPECIES_DEFINITIONS[speciesId]
+    setBackground({
+      selection: null,
+      defaultOffset: def.backgroundOffset ?? DEFAULT_OFFSET,
+      offsetsByClass: def.backgroundOffsetsByClass ?? {},
+    })
+    setForeground({
+      selection: null,
+      defaultOffset: def.foregroundOffset ?? DEFAULT_OFFSET,
+      offsetsByClass: def.foregroundOffsetsByClass ?? {},
+    })
+
+    let cancelled = false
+    setSelectionsLoading(true)
+    Promise.all(
+      (['background', 'foreground'] as const).map(side =>
+        fetch(`/__species-tool/current?speciesId=${encodeURIComponent(speciesId)}&side=${side}`)
+          .then(r => r.json())
+          .then(json => (json.ok ? (json.selection as SourceSelection | null) : null))
+          .catch(() => null)
+      )
+    )
+      .then(([backgroundSelection, foregroundSelection]) => {
+        if (cancelled) return
+        setBackground(prev => ({ ...prev, selection: backgroundSelection }))
+        setForeground(prev => ({ ...prev, selection: foregroundSelection }))
+      })
+      .finally(() => {
+        if (!cancelled) setSelectionsLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [speciesId])
 
   const activeState = activeSide === 'background' ? background : foreground
   const setActiveState = activeSide === 'background' ? setBackground : setForeground
@@ -337,8 +398,6 @@ export default function SpeciesIconEditor() {
 
   const handleSpeciesChange = useCallback((id: HeroSpecies) => {
     setSpeciesId(id)
-    setBackground(EMPTY_SIDE_STATE)
-    setForeground(EMPTY_SIDE_STATE)
   }, [])
 
   // Switching class keeps the chosen art and all offsets as-is (it's the same species art for
@@ -434,6 +493,7 @@ export default function SpeciesIconEditor() {
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </Select>
+        {(manifestLoading || selectionsLoading) && <Spinner size="sm" color="yellow.400" />}
       </HStack>
 
       <HStack align="flex-start" spacing={6}>
@@ -508,6 +568,7 @@ export default function SpeciesIconEditor() {
                 zIndex={0}
                 style={{ transform: offsetTransform(resolveOffset(background, classId)) }}
                 pointerEvents="none"
+                fallback={<Spinner position="absolute" inset={0} m="auto" color="gray.400" />}
               />
             )}
             <Box position="absolute" boxSize="80%" top="10%" left="10%" zIndex={1} pointerEvents="none">
@@ -523,6 +584,7 @@ export default function SpeciesIconEditor() {
                 zIndex={2}
                 style={{ transform: offsetTransform(resolveOffset(foreground, classId)) }}
                 pointerEvents="none"
+                fallback={<Spinner position="absolute" inset={0} m="auto" color="gray.400" zIndex={2} />}
               />
             )}
 

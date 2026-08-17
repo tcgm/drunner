@@ -14,4 +14,5 @@ export const elf: SpeciesDefinition = {
   backgroundIcon: 'GiElfHelmet',
   backgroundImage,
   backgroundOffset: { x: 0, y: -31.3, scale: 0.74 },
+  backgroundOffsetsByClass: { bard: { x: -3.5, y: -1.8, scale: 0.74 } },
 }
