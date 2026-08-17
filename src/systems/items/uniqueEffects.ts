@@ -238,7 +238,21 @@ export const UNIQUE_ITEM_EFFECTS: Record<string, UniqueEffectDefinition> = {
 
       const baseMagicPower = sourceHero.stats.magicPower ?? 0
       const surgeAmount = Math.floor(baseMagicPower * 0.60 * effectMultiplier)
-      sourceHero.stats.magicPower = baseMagicPower + surgeAmount
+      const depth = context.currentDepth ?? 0
+      const duration = 1
+      if (!sourceHero.activeEffects) sourceHero.activeEffects = []
+      sourceHero.activeEffects.push({
+        id: `eternal-flame-mp-${Date.now()}`,
+        type: 'buff',
+        name: 'Eternal Flame',
+        description: `+${surgeAmount} Magic Power from Eternal Flame`,
+        stat: 'magicPower',
+        modifier: surgeAmount,
+        duration,
+        appliedAtDepth: depth,
+        expiresAtDepth: depth + duration,
+        isPermanent: false,
+      })
 
       return {
         party,
