@@ -612,7 +612,7 @@ function hydrateMaterialFragment(item: MaterialFragmentV3): Item {
     rarity: material.rarity,
     stats: {},
     value,
-    icon: material.icon,
+    icon: material.icon ?? GiCrystalWand,
     materialId: item.materialId,
     quantity: item.quantity,
     modifiers: item.modifiers,

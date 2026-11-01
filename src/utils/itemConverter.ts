@@ -175,7 +175,7 @@ function convertConsumableToV3(item: Consumable): ConsumableV3 | null {
     }
 
     // Try to parse name
-    let parsed = parseConsumableName(item.name)
+    const parsed = parseConsumableName(item.name)
 
     // If standard parse fails, try legacy format
     if (!parsed) {

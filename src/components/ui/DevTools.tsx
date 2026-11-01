@@ -320,11 +320,10 @@ export default function DevTools() {
     }
 
     // Find the attack/fight choice
-    const fightChoice = currentEvent.choices.find(c => 
-      c.text.toLowerCase().includes('fight') || 
-      c.text.toLowerCase().includes('attack') ||
-      c.successOutcome
-    )
+    const fightChoice = currentEvent.choices.find(c => {
+      const text = (Array.isArray(c.text) ? c.text.join(' ') : c.text).toLowerCase()
+      return text.includes('fight') || text.includes('attack') || c.successOutcome
+    })
     
     if (fightChoice) {
       state.selectChoice(fightChoice)
@@ -415,8 +414,8 @@ export default function DevTools() {
     alert(`Dealt ${damageDealt} true damage to boss! Victory condition triggered.`)
   }
 
-  const handleLoadBackups = () => {
-    const availableBackups = listBackups()
+  const handleLoadBackups = async () => {
+    const availableBackups = await listBackups()
     setBackups(availableBackups)
   }
 

@@ -242,7 +242,7 @@ class AudioManager {
 
     // Set up end event based on loop mode
     const loopMode = this.getLoopMode(this.currentPlaylist);
-    const shouldLoop = loopMode === 'single' || track.loop;
+    const shouldLoop = loopMode === 'single' || !!track.loop;
 
     this.nextAudio.loop = shouldLoop;
 

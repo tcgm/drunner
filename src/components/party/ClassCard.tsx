@@ -21,7 +21,9 @@ export default function ClassCard({
   partyHasClass, 
   onClick 
 }: ClassCardProps) {
-  const IconComponent = ((GameIcons as Record<string, IconType>)[heroClass.icon] || GameIcons.GiSwordman) as IconType
+  const IconComponent = (typeof heroClass.icon === 'function'
+    ? heroClass.icon
+    : (GameIcons as Record<string, IconType>)[heroClass.icon] || GameIcons.GiSwordman) as IconType
   const maxHp = calculateMaxHp(1, heroClass.baseStats.defense)
   const textRef = useRef<HTMLDivElement>(null)
   const [fontSize, setFontSize] = useState(16)

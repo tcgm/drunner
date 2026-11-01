@@ -229,7 +229,7 @@ export function canPerformAction(
         case 'flee':
             return { valid: true }
 
-        case 'useAbility':
+        case 'useAbility': {
             if (!action.ability) {
                 return { valid: false, reason: 'No ability specified' }
             }
@@ -255,6 +255,7 @@ export function canPerformAction(
             }
 
             return { valid: true }
+        }
 
         case 'useItem':
             if (!action.item) {

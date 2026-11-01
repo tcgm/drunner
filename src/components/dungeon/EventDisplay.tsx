@@ -34,6 +34,7 @@ const EVENT_TYPE_COLORS: Record<DungeonEvent['type'], string> = {
   merchant: 'blue',
   trap: 'orange',
   boss: 'pink',
+  mining: 'gray',
 }
 
 /**

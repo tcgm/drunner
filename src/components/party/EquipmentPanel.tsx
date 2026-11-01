@@ -22,6 +22,7 @@ const SLOT_ICONS: Record<ItemSlot, IconType> = {
   accessory1: GameIcons.GiRing,
   accessory2: GameIcons.GiGemNecklace,
   consumable: GameIcons.GiHealthPotion,
+  material: GameIcons.GiStoneBlock,
 }
 
 const SLOT_NAMES: Record<ItemSlot, string> = {
@@ -32,6 +33,7 @@ const SLOT_NAMES: Record<ItemSlot, string> = {
   accessory1: 'Accessory',
   accessory2: 'Accessory',
   consumable: 'Consumable',
+  material: 'Material',
 }
 
 // const RARITY_COLORS: Record<string, string> = {

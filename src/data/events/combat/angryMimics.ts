@@ -70,9 +70,9 @@ export const ANGRY_MIMICS: DungeonEvent = {
         },
         {
             text: 'Flirt with the mimic (risky pun)',
-            chanceBasedOutcomes: [
+            possibleOutcomes: [
                 {
-                    chance: 0.65,
+                    weight: 65,
                     outcome: {
                         text: '"I must be a rogue, because I\'m falling for your trap!" The mimic giggles and lets you pass with gifts!',
                         effects: [
@@ -83,7 +83,7 @@ export const ANGRY_MIMICS: DungeonEvent = {
                     },
                 },
                 {
-                    chance: 0.35,
+                    weight: 35,
                     outcome: {
                         text: '"You look like a real jaw-dropper!" The mimic is NOT amused and bites you extra hard for that terrible pun!',
                         effects: [

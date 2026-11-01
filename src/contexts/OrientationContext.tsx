@@ -2,7 +2,7 @@
 
 // HMR: context identity must be stable - force full page reload when this module changes
 if (import.meta.hot) {
-  import.meta.hot.decline()
+  (import.meta.hot as { decline?: () => void }).decline?.()
 }
 
 interface OrientationContextType {

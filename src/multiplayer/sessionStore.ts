@@ -163,7 +163,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
   removePlayerProfile: (playerId) =>
     set((s) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       const { [playerId]: _removed, ...rest } = s.playerProfiles
       return { playerProfiles: rest }
     }),
@@ -184,7 +184,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
 
   clearCombatQueueEntry: (heroId) =>
     set((s) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       const { [heroId]: _removed, ...rest } = s.combatQueue
       return { combatQueue: rest }
     }),

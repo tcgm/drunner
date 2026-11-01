@@ -16,11 +16,12 @@ export const BERSERKER_KING: DungeonEvent = {
   attackPatterns: [HEAVY_STRIKE, WHIRLWIND],
   phases: [
     {
+      phase: 2,
       hpThreshold: 0.5,
       name: 'Primal Rage',
       description: 'The Berserker King enters a berserk state, attacking with increased fury!',
-      abilityChanges: { ENRAGE: true },
-      patternChanges: { WHIRLWIND: 2 } // Doubles frequency
+      // TODO: abilityChanges/patternChanges (enable ENRAGE, double WHIRLWIND frequency) aren't
+      // supported by BossPhase - use addAbilities/addAttackPatterns if this should take effect
     }
   ],
 

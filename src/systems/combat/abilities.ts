@@ -180,7 +180,13 @@ function executeAbilityEffect(
                 // Special handling for ENRAGE - double the boss's current attack
                 if (abilityId === 'enrage' && effect.stat === 'attack') {
                     const currentBossStats = recalculateDynamicBossStats(
-                        combatState.baseStats,
+                        {
+                            baseHp: 0, // Not needed
+                            baseAttack: combatState.baseStats.attack,
+                            baseDefense: combatState.baseStats.defense,
+                            baseSpeed: combatState.baseStats.speed,
+                            baseLuck: combatState.baseStats.luck,
+                        },
                         combatState.floor,
                         combatState.depth,
                         combatState.combatDepth,

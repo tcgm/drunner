@@ -17,7 +17,7 @@ import { recordVote, initVotes, clearVotes, recordNodeVote, initNodeVotes, clear
 import { initializeBossCombatState } from '@/systems/combat'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import type { MultiplayerSyncState, GuestAction, DraftState, SlotAssignment, PlayerProfile } from './types'
-import type { Hero, Item, DungeonEvent } from '@/types'
+import type { Hero, Item, DungeonEvent, Run } from '@/types'
 
 // ── Service lifecycle ─────────────────────────────────────────────────────────
 
@@ -130,7 +130,8 @@ export function stopMultiplayerService(): void {
 // ── Host setup ────────────────────────────────────────────────────────────────
 
 function _setupHost(
-    on: (event: string, fn: (...args: unknown[]) => void) => void,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    on: (event: string, fn: (...args: any[]) => void) => void,
     cleanups: Array<() => void>,
     socket: ReturnType<typeof getSocket>,
     roomCode: string,
@@ -301,7 +302,8 @@ function _setupHost(
 // ── Guest setup ───────────────────────────────────────────────────────────────
 
 function _setupGuest(
-    on: (event: string, fn: (...args: unknown[]) => void) => void,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    on: (event: string, fn: (...args: any[]) => void) => void,
     cleanups: Array<() => void>,
     socket: ReturnType<typeof getSocket>,
     roomCode: string,
@@ -406,9 +408,7 @@ function _setupGuest(
             store.applyHeroReturn(heroSourceId, updatedHero as Hero)
         }
         if (loot.length > 0 || gold > 0) store.applyRunLoot(loot as Item[], gold)
-        if (run && typeof (store as Record<string, unknown>).processRunForQuests === 'function') {
-            ; (store as Record<string, unknown>).processRunForQuests(run)
-        }
+        if (run) store.processRunForQuests(run as Run)
     })
 
     on('player-profile-update', ({ playerId, profile }: { playerId: string; profile: PlayerProfile }) => {

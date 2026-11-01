@@ -3,6 +3,7 @@
  */
 
 import type { GameState, Hero, HeroSpecies, Item, Run } from '@/types'
+import type { IconType } from 'react-icons'
 
 export interface MultiplayerPlayer {
   id: string
@@ -50,7 +51,7 @@ export interface PlayerProfile {
     id: string
     name: string
     className: string
-    classIcon: string
+    classIcon: string | IconType
     species?: HeroSpecies
     level: number
   }>

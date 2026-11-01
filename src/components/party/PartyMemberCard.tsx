@@ -161,8 +161,8 @@ export default function PartyMemberCard({ hero, floatingEffects = [], isDungeon 
                   {heroWithIcons.abilities
                     // Filter out combat-only abilities (no combat system yet)
                     .filter(ability => {
-                      const target = ability.effect.target
-                      return target !== 'enemy' && target !== 'all-enemies'
+                      const target = ability.effect.targeting.side
+                      return target !== 'enemy'
                     })
                     .slice(0, 3)
                     .map(ability => {

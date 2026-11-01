@@ -12,6 +12,7 @@ import { isRarityAtOrBelow, RARITY_ORDER, getRarityIndex, getRarityConfig } from
 import { selectConsumablesForAutofill } from '@/systems/consumables/consumableAutofill'
 import { deduplicateItems } from '@/utils/itemDeduplication'
 import { convertToV3 } from '@/utils/itemConverter'
+import type { ItemV2 } from '@/types/items-v3'
 import { hydrateItem } from '@/utils/itemHydration'
 import { getActiveNexusUpgrades, getNexusBonus } from '@/data/nexus'
 import { getMaterialById } from '@/data/items/materials'
@@ -557,7 +558,7 @@ export const createInventoryActions: StateCreator<
 
       // Generate a new random item of the same rarity
       // Use floor 1 as base, rarity system will handle the appropriate stats
-      const newItem = generateItem(1, corruptedItem.rarity, corruptedItem.type)
+      const newItem = generateItem(1, corruptedItem.type, corruptedItem.rarity, corruptedItem.rarity)
 
       return {
         corruptedItems: state.corruptedItems.filter(item => item.id !== itemId),
@@ -601,7 +602,7 @@ export const createInventoryActions: StateCreator<
       if (!v2Item) return {}
 
       // Try to convert using the automatic converter first
-      const v3Item = convertToV3(v2Item)
+      const v3Item = convertToV3(v2Item as unknown as ItemV2)
 
       let updatedItem: Item
 

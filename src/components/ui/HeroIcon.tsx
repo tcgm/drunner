@@ -6,7 +6,7 @@ import type { HeroSpecies } from '@/types'
 import { SPECIES_DEFINITIONS } from '@/data/heroes/species'
 import type { IconOffset } from '@/data/heroes/species'
 
-interface HeroIconProps extends Omit<BoxProps, 'position' | 'display' | 'color'> {
+interface HeroIconProps extends Omit<BoxProps, 'position' | 'color'> {
   /** A react-icons-style component, a react-icons/gi name, or an image filename under src/assets/icons/classes/ - from HeroClass.icon */
   classIcon: IconType | string
   /** Species id - if present, its background/foreground icons are layered with the class icon */

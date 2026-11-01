@@ -66,7 +66,7 @@ export function BankInventoryModal({ isOpen, onClose, bankInventory, pendingSlot
   // Auto-enter selection mode when opened in breakdown picker mode
   useEffect(() => {
     if (isOpen && onBreakDownItems) setIsSelectionMode(true)
-  }, [isOpen, onBreakDownItems])  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen, onBreakDownItems])   
 
   // Use shared hooks
   const visibleCount = useLazyLoading({

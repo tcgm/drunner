@@ -93,13 +93,13 @@ export function OverflowInventoryModal({
 
   const itemsByType = useItemsByType(filteredAndSortedItems)
 
-  const handleItemClick = useCallback((item: Item) => {
+  const handleItemClick = useCallback((itemId: string) => {
     setSelectedItems(prev => {
       const newSelection = new Set(prev)
-      if (newSelection.has(item.id)) {
-        newSelection.delete(item.id)
+      if (newSelection.has(itemId)) {
+        newSelection.delete(itemId)
       } else {
-        newSelection.add(item.id)
+        newSelection.add(itemId)
       }
       return newSelection
     })

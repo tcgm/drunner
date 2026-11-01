@@ -21,9 +21,9 @@ const SLOT_ICONS: Record<string, IconType> = {
   boots: GameIcons.GiBootStomp,
   accessory1: GameIcons.GiRing,
   accessory2: GameIcons.GiGemNecklace,
-  consumable1: GameIcons.GiPotion,
-  consumable2: GameIcons.GiPotion,
-  consumable3: GameIcons.GiPotion,
+  consumable1: GameIcons.GiHealthPotion,
+  consumable2: GameIcons.GiHealthPotion,
+  consumable3: GameIcons.GiHealthPotion,
 }
 
 const RARITY_COLORS: Record<string, string> = {
@@ -173,7 +173,7 @@ export default function InventoryPanel({ hero, onSlotClick, showBankOption }: In
                   variant="solid"
                   isDisabled={(() => {
                     const consumable = item as Consumable
-                    const isRevive = consumable.effect?.type === 'revive'
+                    const isRevive = consumable.effects?.some((e) => e.type === 'revive')
                     return isRevive ? hero.isAlive : false
                   })()}
                   onClick={(e) => {

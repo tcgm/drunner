@@ -1,5 +1,5 @@
 import { GAME_CONFIG } from '@/config/gameConfig'
-import type { Hero } from '@/types/hero'
+import type { Hero } from '@/types'
 
 /**
  * Calculate the party's average level

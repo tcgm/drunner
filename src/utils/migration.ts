@@ -132,7 +132,7 @@ export function migrateGameState(state: GameState): GameState {
 
   // First migrate hero structure (old equipment/consumableSlots to new slots)
   let migratedParty = migrateHeroArray(state.party)
-  let migratedRoster = migrateHeroArray(state.heroRoster)
+  const migratedRoster = migrateHeroArray(state.heroRoster)
   
   // Then migrate item stats on all heroes
   migratedParty = migrateHeroArrayItems(migratedParty)

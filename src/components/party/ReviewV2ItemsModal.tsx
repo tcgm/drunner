@@ -167,7 +167,7 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
     // Check if unique by flag
     let isUnique = currentItem.isUnique && !currentItem.setId
     let isSet = !!currentItem.setId && !currentItem.isUnique
-    let isUniqueSet = !!currentItem.setId && !!currentItem.isUnique
+    const isUniqueSet = !!currentItem.setId && !!currentItem.isUnique
     
     // Fallback: Check if unique/set by name lookup (for items missing flags)
     if (!isUnique && !isSet && !isUniqueSet && !isConsumable) {
@@ -225,7 +225,7 @@ export function ReviewV2ItemsModal({ onClose }: { onClose: () => void }) {
             const isConsumable = item.type === 'consumable' || 'consumableType' in item
             let isUnique = item.isUnique && !item.setId
             let isSet = !!item.setId && !item.isUnique
-            let isUniqueSet = !!item.setId && !!item.isUnique
+            const isUniqueSet = !!item.setId && !!item.isUnique
             
             // Fallback: Check if unique/set by name lookup (for items missing flags)
             if (!isUnique && !isSet && !isUniqueSet && !isConsumable) {

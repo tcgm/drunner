@@ -84,7 +84,7 @@ export const DRAGON_WYRMLING: DungeonEvent = {
               { 
                 type: 'item', 
                 itemChoices: [
-                  { weight: 80, rarity: 'legendary' },
+                  { weight: 80, minRarity: 'legendary', maxRarity: 'legendary' },
                   { weight: 20, setId: 'draconic' }
                 ]
               },

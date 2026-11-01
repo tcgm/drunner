@@ -4,6 +4,7 @@ import {
   GiLevelThreeAdvanced,
   GiDragonHead,
   GiCoins,
+  GiCrossedSwords,
 } from 'react-icons/gi'
 import type { QuestDifficulty, QuestType } from '@/types/quests'
 import type React from 'react'
@@ -27,6 +28,7 @@ export const QUEST_TYPE_ICON: Record<QuestType, React.ElementType> = {
   reach_floor: GiLevelThreeAdvanced,
   defeat_bosses: GiDragonHead,
   earn_gold: GiCoins,
+  complete_encounters: GiCrossedSwords,
 }
 
 export function formatTimeLeft(expiresAt: number): string {

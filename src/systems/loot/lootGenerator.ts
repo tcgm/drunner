@@ -59,7 +59,7 @@ function getDepthAdjustedWeights(depth: number): Partial<Record<ItemRarity, numb
   const excluded = new Set<string>(excludedFromLoot)
 
   // Find highest band whose minFloor has been reached
-  let activeBand = floorBands[0]
+  let activeBand: (typeof floorBands)[number] = floorBands[0]
   for (const band of floorBands) {
     if (depth >= band.minFloor) activeBand = band
   }

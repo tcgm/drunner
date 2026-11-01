@@ -984,10 +984,10 @@ export const createDungeonActions: StateCreator<
       })
 
       // Track statistics from resolved outcome
-      let damageDealt = 0
+      const damageDealt = 0
       let damageTaken = 0
       let healingReceived = 0
-      let xpGained = metaXpGained
+      const xpGained = metaXpGained
       let revivals = 0
       const heroesAffected = new Set<string>()
 

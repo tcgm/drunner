@@ -16,11 +16,12 @@ export const BOUND_DEMON: DungeonEvent = {
   attackPatterns: [RAPID_STRIKES, EXECUTE],
   phases: [
     {
+      phase: 2,
       hpThreshold: 0.3,
       name: 'Chains Breaking',
       description: 'The magical chains begin to shatter! The demon\'s power surges!',
-      abilityChanges: { DEVASTATING_SLAM: true },
-      patternChanges: { RAPID_STRIKES: 2 }
+      // TODO: abilityChanges/patternChanges (enable DEVASTATING_SLAM, double RAPID_STRIKES frequency)
+      // aren't supported by BossPhase - use addAbilities/addAttackPatterns if this should take effect
     }
   ],
 

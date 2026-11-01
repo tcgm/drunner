@@ -206,7 +206,7 @@ function applyAbilityEffect(
 } {
     const effect = ability.effect
     let updatedHero = { ...hero }
-    let updatedParty = [...party]
+    const updatedParty = [...party]
     let message = `${hero.name} used ${ability.name}!`
 
     // Calculate final effect value with stat scaling
@@ -217,7 +217,8 @@ function applyAbilityEffect(
             const targets = resolveAbilityTargets(effect.targeting, hero, party).heroes
             
             // Check if this is a heal-over-time effect (has duration > 1)
-            if (effect.duration && effect.duration > 1) {
+            const hotDuration = effect.duration
+            if (hotDuration && hotDuration > 1) {
                 // Apply HoT as an activeEffects regeneration TimedEffect so
                 // tickEffectsForDepthProgression heals on every depth increase
                 const healPerTurn = effectValue
@@ -234,7 +235,7 @@ function applyAbilityEffect(
                                 description: `Regenerating ${healPerTurn} HP per event`,
                                 type: 'regeneration',
                                 modifier: healPerTurn,
-                                duration: effect.duration,
+                                duration: hotDuration,
                                 isPermanent: false,
                             },
                             depth

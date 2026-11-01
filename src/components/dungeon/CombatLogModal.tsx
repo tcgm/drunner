@@ -24,9 +24,12 @@ import {
   GiLevelEndFlag,
   GiSkullCrossedBones,
   GiDodge,
-  GiGooExplosion
+  GiGooExplosion,
+  GiMining,
 } from 'react-icons/gi'
+import type { IconType } from 'react-icons'
 import { useGameStore } from '@/core/gameStore'
+import type { EventType } from '@/types'
 
 const MotionBox = motion.create(Box)
 
@@ -35,7 +38,7 @@ interface CombatLogModalProps {
   onClose: () => void
 }
 
-const EVENT_TYPE_ICONS = {
+const EVENT_TYPE_ICONS: Record<EventType, IconType> = {
   combat: GiSwordClash,
   treasure: GiChest,
   choice: GiLevelEndFlag,
@@ -43,9 +46,10 @@ const EVENT_TYPE_ICONS = {
   merchant: GiTwoCoins,
   trap: GiSkullCrossedBones,
   boss: GiGooExplosion,
+  mining: GiMining,
 }
 
-const EVENT_TYPE_COLORS = {
+const EVENT_TYPE_COLORS: Record<EventType, string> = {
   combat: 'red.400',
   treasure: 'yellow.400',
   choice: 'blue.400',
@@ -53,6 +57,7 @@ const EVENT_TYPE_COLORS = {
   merchant: 'orange.400',
   trap: 'purple.400',
   boss: 'red.500',
+  mining: 'gray.400',
 }
 
 export default function CombatLogModal({ isOpen, onClose }: CombatLogModalProps) {

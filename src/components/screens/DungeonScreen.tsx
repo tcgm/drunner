@@ -360,7 +360,7 @@ export default function DungeonScreen({ onExit }: DungeonScreenProps) {
         onDefeat={handleBossDefeat}
         onFlee={handleBossFlee}
         myHeroIds={myHeroIds}
-        onGuestCombatAction={isGuest ? submitCombatAction : undefined}
+        onGuestCombatAction={isGuest ? (submitCombatAction ?? undefined) : undefined}
       />
     )
   }

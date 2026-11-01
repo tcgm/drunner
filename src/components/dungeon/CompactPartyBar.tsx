@@ -72,8 +72,8 @@ export default function CompactPartyBar({ party, onClick }: CompactPartyBarProps
 
         // Filter abilities that are usable outside combat
         const usableAbilities = (heroWithIcons.abilities || []).filter(ability => {
-          const target = ability.effect.target
-          return target !== 'enemy' && target !== 'all-enemies'
+          const target = ability.effect.targeting.side
+          return target !== 'enemy'
         })
 
         return (

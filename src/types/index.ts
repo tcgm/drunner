@@ -309,7 +309,7 @@ export interface TimedEffect {
   id: string
   name: string
   description: string
-  icon?: IconType
+  icon?: IconType | string
   type: 'buff' | 'debuff' | 'status' | 'regeneration'
   appliedAtDepth: number
   duration: number // Number of events (depths)

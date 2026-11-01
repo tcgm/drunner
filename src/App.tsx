@@ -157,7 +157,7 @@ function App() {
       socket.off('navigate', handleNavigate)
       if (pendingNavTimerRef.current) { clearInterval(pendingNavTimerRef.current); pendingNavTimerRef.current = null }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [mpRole, doNavigate])
 
   // HMR: Force component remount on module reload to restore item icons
