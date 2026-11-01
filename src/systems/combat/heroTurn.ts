@@ -14,7 +14,7 @@ import {
 } from './heroActions'
 import { executeHeroAbility } from './heroAbilities'
 import {
-    useConsumable,
+    applyCombatConsumable,
     getConsumableActionCost,
     isReviveConsumable,
     getUsableConsumables,
@@ -101,7 +101,7 @@ export function processHeroTurn(
                 if (!action.item || !action.itemSlot) {
                     continue
                 }
-                actionResult = useConsumable(
+                actionResult = applyCombatConsumable(
                     context.hero,
                     action.item,
                     action.itemSlot,

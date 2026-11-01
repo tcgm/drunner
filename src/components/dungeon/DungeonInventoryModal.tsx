@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { GiTwoCoins, GiSwordsPower, GiStack, GiCrossedSwords, GiCheckedShield, GiHealthPotion, GiVisoredHelm, GiBoots, GiNecklace } from 'react-icons/gi'
-import type { Item } from '@/types'
+import type { Item, Hero } from '@/types'
 import { ItemGrid } from '@/components/inventory/ItemGrid'
 import { InventoryControls, type SortOption, type FilterOption } from '@/components/inventory/InventoryControls'
 import { useInventoryFilters } from '@/components/inventory/useInventoryFilters'
@@ -34,7 +34,7 @@ interface DungeonInventoryModalProps {
   inventory: Item[]
   gold: number
   pendingSlot?: string | null
-  hero?: any
+  hero?: Hero | null
 }
 
 export default function DungeonInventoryModal({ isOpen, onClose, inventory, gold, pendingSlot = null, hero }: DungeonInventoryModalProps) {

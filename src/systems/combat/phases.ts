@@ -5,7 +5,7 @@
  */
 
 import type { BossCombatState, BossPhase, Hero } from '@/types'
-import { executeAbility } from './abilities'
+import { executeAbility, type AbilityExecutionResult } from './abilities'
 
 /**
  * Check if boss should transition to a new phase
@@ -34,7 +34,7 @@ export function checkPhaseTransition(
 
 export interface PhaseTransitionResult {
     phase: BossPhase
-    abilityResults: any[]
+    abilityResults: AbilityExecutionResult[]
     message: string
 }
 

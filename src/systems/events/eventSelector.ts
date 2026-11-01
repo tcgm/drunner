@@ -35,17 +35,17 @@ export function selectRandomEvent(
     
     if (isFinalFloor) {
       // Only show the final boss at Floor 100
-      const finalBoss = bossEvents.find(e => (e as any).isFinalBoss)
+      const finalBoss = bossEvents.find(e => e.isFinalBoss)
       if (finalBoss) return finalBoss
     } else {
       // Exclude final boss from appearing before Floor 100
-      bossEvents = bossEvents.filter(e => !(e as any).isFinalBoss)
+      bossEvents = bossEvents.filter(e => !e.isFinalBoss)
     }
     
     // Floors 1-9: Prefer intro bosses designed for early-game pacing
     // (zone boss is at floor 10, so floors 1-9 are the intro window)
     if (floor < GAME_CONFIG.dungeon.majorBossInterval) {
-      const introBosses = bossEvents.filter(e => (e as any).isIntroBoss)
+      const introBosses = bossEvents.filter(e => e.isIntroBoss)
       if (introBosses.length > 0) {
         return introBosses[Math.floor(Math.random() * introBosses.length)]
       }
@@ -53,12 +53,12 @@ export function selectRandomEvent(
     
     // For major bosses (every 10 floors), look for zone-specific boss
     if (isMajorBoss && !isFinalFloor) {
-      const zoneBoss = bossEvents.find(e => (e as any).zoneBossFloor === floor)
+      const zoneBoss = bossEvents.find(e => e.zoneBossFloor === floor)
       if (zoneBoss) return zoneBoss
       
       // Fallback to random boss if no zone boss found
       const sortedBosses = [...bossEvents]
-        .filter(e => !(e as any).isZoneBoss) // Exclude other zone bosses
+        .filter(e => !e.isZoneBoss) // Exclude other zone bosses
       if (sortedBosses.length > 0) {
         return sortedBosses[Math.floor(Math.random() * sortedBosses.length)]
       }
@@ -66,7 +66,7 @@ export function selectRandomEvent(
     
     if (bossEvents.length > 0) {
       // For regular floor bosses, random selection (exclude zone bosses)
-      const regularBosses = bossEvents.filter(e => !(e as any).isZoneBoss)
+      const regularBosses = bossEvents.filter(e => !e.isZoneBoss)
       if (regularBosses.length > 0) {
         return regularBosses[Math.floor(Math.random() * regularBosses.length)]
       }

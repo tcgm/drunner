@@ -295,7 +295,7 @@ Abilities have triggers and cooldowns:
 - `executeAttack` - Hero basic attack
 - `executeDefend` - Hero defensive stance
 - `executeHeroAbility` - Use hero ability
-- `useConsumable` - Use item/consumable
+- `applyCombatConsumable` - Use item/consumable
 
 ### Boss Systems
 - Danger calculation

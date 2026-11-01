@@ -59,7 +59,6 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
             animate={isActive ? {
                 boxShadow: ['0 0 20px rgba(250, 204, 21, 0.6)', '0 0 30px rgba(250, 204, 21, 0.8)', '0 0 20px rgba(250, 204, 21, 0.6)']
             } : {}}
-            // @ts-ignore - framer motion types
             transition={isActive ? { repeat: Infinity, duration: 2 } : {}}
         >
             {/* Position Badge */}
@@ -234,7 +233,7 @@ export function CombatHeroCard({ hero, position, slotIndex, isActive, onUseConsu
                     {consumableSlots.map(slotId => {
                         const item = hero.slots[slotId] ? restoreItemIcon(hero.slots[slotId]) : null
                         const consumable = item && 'consumableType' in item ? item as Consumable : null
-                        const isRevive = consumable?.effects?.some((effect: any) => effect.type === 'revive') ?? false
+                        const isRevive = consumable?.effects?.some(effect => effect.type === 'revive') ?? false
                         const canUse = isRevive ? !hero.isAlive : hero.isAlive
 
                         if (!consumable) {

@@ -351,7 +351,7 @@ export const ItemSlot = memo(function ItemSlot({
         Value: {item.value} gold
       </Text>
     </VStack>
-  ), [item, setName, comparisonItem, displayName, isCursed, uniqueEffect])
+  ), [item, setName, comparisonItem, displayName, isCursed, uniqueEffect, effectMultiplier])
 
   // Build className string
   const slotClassName = [

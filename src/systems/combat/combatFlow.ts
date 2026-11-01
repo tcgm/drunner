@@ -7,9 +7,9 @@
 import type { Hero, BossCombatState, Dungeon } from '@/types'
 import { calculateTurnOrder, updateHeroPositions } from './turnOrder'
 import { recalculateDynamicBossStats } from './bossStats'
-import { checkPhaseTransition, executePhaseTransition } from './phases'
-import { checkAbilityTriggers, executeAbility } from './abilities'
-import { selectAttackPattern, executeAttackPattern } from './attackPatterns'
+import { checkPhaseTransition, executePhaseTransition, type PhaseTransitionResult } from './phases'
+import { checkAbilityTriggers, executeAbility, type AbilityExecutionResult } from './abilities'
+import { selectAttackPattern, executeAttackPattern, type AttackResult } from './attackPatterns'
 import {
     decrementCooldowns,
     processEffectDurations,
@@ -19,14 +19,17 @@ import {
 
 export interface BossTurnResult {
     passiveHealing?: number
-    phaseTransition?: any
-    abilitiesUsed: any[]
-    attackResult: any
-    statusEffects: any[]
+    phaseTransition?: PhaseTransitionResult
+    abilitiesUsed: AbilityExecutionResult[]
+    attackResult: AttackResult | null
+    statusEffects: StatusEffectResult[]
 }
 
+/** Per-target outcome of a status effect tick (poison, regen, etc.) */
+export type StatusEffectResult = ReturnType<typeof processStatusEffects>[number]
+
 export interface RoundEndResult {
-    effectsProcessed: any[]
+    effectsProcessed: StatusEffectResult[]
     cooldownsDecremented: boolean
     turnOrderRecalculated: boolean
 }

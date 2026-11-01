@@ -19,20 +19,24 @@ import { HeroIcon } from '@/components/ui/HeroIcon'
 
 // ── Countdown helper ──────────────────────────────────────────────────────
 
+/** Formats time remaining until targetMs; empty string once it has passed. */
+function formatCountdown(targetMs: number): string {
+  const remaining = targetMs - Date.now()
+  if (remaining <= 0) return ''
+  const h = Math.floor(remaining / 3600000)
+  const m = Math.floor((remaining % 3600000) / 60000)
+  const s = Math.floor((remaining % 60000) / 1000)
+  return h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`
+}
+
 function useCountdown(targetMs: number): string {
-  const [label, setLabel] = useState('')
+  const [label, setLabel] = useState(() => formatCountdown(targetMs))
   useEffect(() => {
-    function calc() {
-      const remaining = targetMs - Date.now()
-      if (remaining <= 0) { setLabel(''); return }
-      const h = Math.floor(remaining / 3600000)
-      const m = Math.floor((remaining % 3600000) / 60000)
-      const s = Math.floor((remaining % 60000) / 1000)
-      setLabel(h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`)
-    }
-    calc()
-    const id = setInterval(calc, 1000)
-    return () => clearInterval(id)
+    const tick = () => setLabel(formatCountdown(targetMs))
+    const id = setInterval(tick, 1000)
+    // Re-sync immediately when the target changes (interval only fires after 1s)
+    const sync = setTimeout(tick, 0)
+    return () => { clearInterval(id); clearTimeout(sync) }
   }, [targetMs])
   return label
 }
@@ -237,7 +241,7 @@ export function HeroBoard({
 }: HeroBoardProps) {
   const callCooldownLabel = useCountdown(callCooldownUntil)
   const nextArrivalLabel = useCountdown(nextArrivalAt)
-  const callOnCooldown = callCooldownUntil > Date.now()
+  const callOnCooldown = callCooldownLabel !== ''
 
   return (
     <Box flex={{ base: 'none', md: '0 0 40%' }} display="flex" flexDirection="column" overflow="hidden" minH={0}>

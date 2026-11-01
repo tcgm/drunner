@@ -43,7 +43,7 @@ export function getConsumableActionCost(consumable: Consumable): number {
  * @param party - Party of heroes
  * @returns Usage result
  */
-export function useConsumable(
+export function applyCombatConsumable(
     hero: Hero,
     consumable: Consumable,
     slotKey: string,

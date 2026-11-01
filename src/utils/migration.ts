@@ -90,16 +90,15 @@ export function migrateGameState(state: GameState): GameState {
   // Check party for legacy equipment that hasn't been migrated
   state.party.forEach(hero => {
     if (hero && hero.equipment) {
-      const equipment = hero.equipment as any
-      Object.values(equipment).forEach(item => {
+      Object.values(hero.equipment).forEach(item => {
         if (item && typeof item === 'object' && 'stats' in item) {
           // Check if this item is already in slots
           const isInSlots = hero.slots && Object.values(hero.slots).some(slotItem =>
-            slotItem && typeof slotItem === 'object' && 'id' in slotItem && slotItem.id === (item as any).id
+            slotItem && typeof slotItem === 'object' && 'id' in slotItem && slotItem.id === item.id
           )
           if (!isInSlots) {
-            orphanedItems.push(item as Item)
-            console.log(`[Migration] Rescued orphaned item from ${hero.name}: ${(item as Item).name}`)
+            orphanedItems.push(item)
+            console.log(`[Migration] Rescued orphaned item from ${hero.name}: ${item.name}`)
           }
         }
       })
@@ -109,15 +108,14 @@ export function migrateGameState(state: GameState): GameState {
   // Check roster for legacy equipment
   state.heroRoster.forEach(hero => {
     if (hero && hero.equipment) {
-      const equipment = hero.equipment as any
-      Object.values(equipment).forEach(item => {
+      Object.values(hero.equipment).forEach(item => {
         if (item && typeof item === 'object' && 'stats' in item) {
           const isInSlots = hero.slots && Object.values(hero.slots).some(slotItem =>
-            slotItem && typeof slotItem === 'object' && 'id' in slotItem && slotItem.id === (item as any).id
+            slotItem && typeof slotItem === 'object' && 'id' in slotItem && slotItem.id === item.id
           )
           if (!isInSlots) {
-            orphanedItems.push(item as Item)
-            console.log(`[Migration] Rescued orphaned item from ${hero.name}: ${(item as Item).name}`)
+            orphanedItems.push(item)
+            console.log(`[Migration] Rescued orphaned item from ${hero.name}: ${item.name}`)
           }
         }
       })

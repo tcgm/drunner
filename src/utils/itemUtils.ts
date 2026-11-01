@@ -12,12 +12,12 @@ import { ALL_MATERIALS } from '@/data/items/materials'
  */
 export function restoreItemIcon(item: Item): Item {
   // Clean up corrupted uniqueEffect from old saves (functions don't serialize)
-  const itemWithCleanup = { ...item }
+  const itemWithCleanup: Item & { uniqueEffect?: { handler?: unknown } } = { ...item }
   if ('uniqueEffect' in itemWithCleanup) {
-    const uniqueEffect = (itemWithCleanup as any).uniqueEffect
+    const uniqueEffect = itemWithCleanup.uniqueEffect
     // If uniqueEffect exists but handler is not a function, remove it
     if (!uniqueEffect || typeof uniqueEffect.handler !== 'function') {
-      delete (itemWithCleanup as any).uniqueEffect
+      delete itemWithCleanup.uniqueEffect
     }
   }
   

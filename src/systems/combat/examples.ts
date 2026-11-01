@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- partial mock fixtures for documentation examples */
 /**
  * Boss Combat System - Example Usage
  * 

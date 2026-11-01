@@ -29,11 +29,12 @@ import {
     executeAttack,
     executeDefend,
     executeHeroAbility,
-    useConsumable,
+    applyCombatConsumable,
     advanceTurn,
     getCurrentCombatant,
     createCombatManager,
     type BossCombatManager,
+    type BossTurnResult,
 } from '@/systems/combat'
 
 const MotionBox = motion.create(Box)
@@ -108,7 +109,7 @@ export default function BossCombatScreen({
     }
 
     // Helper to process boss turn with animations and delays
-    const processBossTurnWithAnimations = async (bossTurnResult: any) => {
+    const processBossTurnWithAnimations = async (bossTurnResult: BossTurnResult) => {
         setIsBossActing(true)
 
         // Passive healing animation
@@ -120,7 +121,7 @@ export default function BossCombatScreen({
 
         // Phase transition animation
         if (bossTurnResult.phaseTransition) {
-            addLogEntry('phase', `Boss enters Phase ${bossTurnResult.phaseTransition.newPhase}!`)
+            addLogEntry('phase', bossTurnResult.phaseTransition.message)
             triggerParticles('phase', { x: 50, y: 30 })
             await new Promise(resolve => setTimeout(resolve, 600))
         }
@@ -381,7 +382,7 @@ export default function BossCombatScreen({
                     throw new Error('Invalid consumable')
                 }
                 const consumable = item as import('@/types').Consumable
-                const result = useConsumable(
+                const result = applyCombatConsumable(
                     hero,
                     consumable,
                     slot,

@@ -37,6 +37,7 @@ import { InventoryTabs } from '@/components/inventory/InventoryTabs'
 import { useInventoryFilters } from '@/components/inventory/useInventoryFilters'
 import { useItemsByType } from '@/components/inventory/useItemsByType'
 import { useLazyLoading } from '@/components/inventory/useLazyLoading'
+import type { Hero } from '@/types'
 import BuyBankSlotsModal from './BuyBankSlotsModal'
 import { ReviewV2ItemsModal } from './ReviewV2ItemsModal'
 
@@ -47,7 +48,7 @@ interface BankInventoryModalProps {
   pendingSlot: string | null
   onEquipItem: (itemId: string) => void
   selectedHeroIndex: number | null
-  party: any[]
+  party: (Hero | null)[]
   /** When set, the modal opens in "Break Down" picker mode. Hides unrelated controls. */
   onBreakDownItems?: (itemIds: string[]) => void
 }

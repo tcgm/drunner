@@ -6,7 +6,7 @@ import { useGameStore } from '@/core/gameStore'
 import { GAME_CONFIG } from '@/config/gameConfig'
 import { getEquipmentSlotIds, getSlotById } from '@/config/slotConfig'
 import { restoreItemIcon } from '@/utils/itemUtils'
-import { useConsumable as applyConsumable } from '@/systems/consumables/consumableManager'
+import { applyConsumable } from '@/systems/consumables/consumableManager'
 
 interface InventoryPanelProps {
   hero: Hero

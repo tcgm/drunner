@@ -9,7 +9,7 @@ import { getConsumableEffects } from '@/utils/itemDataResolver'
 /**
  * Use a consumable from a hero's slot by slot ID
  */
-export function useConsumable(
+export function applyConsumable(
   hero: Hero,
   slotId: string,
   currentDepth: number,

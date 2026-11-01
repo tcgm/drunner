@@ -129,7 +129,6 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                         }
                         : {}
             }
-            // @ts-ignore - framer motion types
             transition={
                 shake
                     ? { duration: 0.5 }
@@ -319,7 +318,6 @@ export default function BossDisplay({ event, combatState, onPhaseChange, isActin
                                     ? ['0 0 10px rgba(239, 68, 68, 0.5)', '0 0 15px rgba(239, 68, 68, 0.7)', '0 0 10px rgba(239, 68, 68, 0.5)']
                                     : 'none'
                             }}
-                            // @ts-ignore - framer motion types
                             transition={healthPercent < 30 ? { repeat: Infinity, duration: 2.5 } : {}}
                         />
 

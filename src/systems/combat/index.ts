@@ -120,7 +120,7 @@ export {
 
 // Item usage and consumables
 export {
-    useConsumable,
+    applyCombatConsumable,
     getConsumableActionCost,
     isReviveConsumable,
     getUsableConsumables,

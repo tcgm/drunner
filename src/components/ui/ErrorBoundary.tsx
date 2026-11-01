@@ -9,7 +9,7 @@ interface State {
   hasError: boolean
   error: Error | null
   errorInfo: ErrorInfo | null
-  globalErrors: Array<{ error: any; timestamp: number; type: string }>
+  globalErrors: Array<{ error: unknown; timestamp: number; type: string }>
 }
 
 class ErrorBoundary extends Component<Props, State> {
@@ -158,9 +158,9 @@ class ErrorBoundary extends Component<Props, State> {
                       [{errDetail.type}] {new Date(errDetail.timestamp).toLocaleTimeString()}
                     </Text>
                     <Text color="yellow.200" mt={1} whiteSpace="pre-wrap">
-                      {errDetail.error?.toString() || String(errDetail.error)}
+                      {String(errDetail.error)}
                     </Text>
-                    {errDetail.error?.stack && (
+                    {errDetail.error instanceof Error && errDetail.error.stack && (
                       <Text color="gray.500" mt={1} fontSize="xx-small" whiteSpace="pre-wrap">
                         {errDetail.error.stack}
                       </Text>
