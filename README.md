@@ -50,6 +50,7 @@ Visit `http://localhost:5173` to play the game.
 ### Development
 - **[Roadmap](docs/development/roadmap.md)** - 5-phase development plan
 - **[Deployment](docs/development/deployment.md)** - Build and deploy guides
+- **[Hosting the multiplayer relay](docs/development/hosting.md)** - LAN, Caddy + nginx, or an existing nginx
 
 ---
 

@@ -1,0 +1,8 @@
+# Public HTTPS front door for the relay (docker-compose.hosting.yml, profile "public").
+# Caddy gets and renews a Let's Encrypt certificate for RELAY_HOSTNAME automatically
+# (needs a DNS record pointing here and ports 80 and 443 reachable) and hands the
+# decrypted traffic to nginx, which applies the request filtering and limits.
+# RELAY_HOSTNAME=localhost serves a locally trusted certificate for testing.
+{$RELAY_HOSTNAME:localhost} {
+	reverse_proxy nginx:80
+}

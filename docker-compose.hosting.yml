@@ -1,0 +1,76 @@
+# Self-hosting the Dungeon Runner multiplayer relay. Self-contained: needs only
+# this repo and Docker.
+#
+#   LAN / friends on your network (relay only):
+#     docker compose -f docker-compose.hosting.yml up -d
+#
+#   Public HTTPS (Caddy -> nginx -> relay):
+#     cp .env.example .env     # set RELAY_HOSTNAME
+#     docker compose -f docker-compose.hosting.yml --profile public up -d
+#
+# See docs/development/hosting.md for DNS, ports, and using an existing nginx instead.
+name: drunner-hosting
+
+services:
+  relay:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      - PORT=3001
+    ports:
+      # LAN / direct mode connects straight to this port (7-character join codes).
+      - "${RELAY_PORT:-3001}:3001"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3001/"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - drunner
+
+  # nginx applies the request filtering and per-client limits in
+  # deploy/nginx/drunner-relay.conf.template.
+  nginx:
+    profiles: ["public"]
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    environment:
+      - RELAY_HOSTNAME=${RELAY_HOSTNAME:-localhost}
+      - RELAY_UPSTREAM=relay:3001
+      - RELAY_RESOLVER=127.0.0.11
+    volumes:
+      - ./deploy/nginx/drunner-relay.conf.template:/etc/nginx/templates/drunner-relay.conf.template:ro
+      - ./deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      relay:
+        condition: service_healthy
+    networks:
+      - drunner
+
+  # Caddy terminates TLS and fetches/renews the certificate by itself.
+  caddy:
+    profiles: ["public"]
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      - RELAY_HOSTNAME=${RELAY_HOSTNAME:-localhost}
+    ports:
+      - "${PROXY_HTTP_PORT:-80}:80"
+      - "${PROXY_HTTPS_PORT:-443}:443"
+      - "${PROXY_HTTPS_PORT:-443}:443/udp"
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - nginx
+    networks:
+      - drunner
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  drunner:

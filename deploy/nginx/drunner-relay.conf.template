@@ -1,0 +1,76 @@
+# Dungeon Runner relay - public-facing nginx site.
+#
+# Used by both docker-compose.hosting.yml (the nginx image fills in the ${...}
+# placeholders from environment variables) and scripts/setup-nginx.mjs (which
+# fills them in for an existing nginx). Do not edit the generated copy; edit
+# this template and re-run.
+#
+#   ${RELAY_HOSTNAME}  public host name this site answers to
+#   ${RELAY_UPSTREAM}  host:port of the relay (the Socket.IO server)
+#   ${RELAY_RESOLVER}  DNS server nginx uses if the upstream is a host name
+#                      (127.0.0.11 inside Docker); unused for an IP address
+#
+# TLS is not handled here. Terminate it in front of nginx (Caddy, Cloudflare)
+# or run certbot against this site afterwards.
+
+# "upgrade" for WebSocket handshakes, "close" for plain long-polling requests.
+map $http_upgrade $drunner_connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+# Cap simultaneous connections per client address (see limit_conn below).
+limit_conn_zone $binary_remote_addr zone=drunner_conn:10m;
+
+server {
+    listen 80;
+    # For IPv6 add:  listen [::]:80;
+    server_name ${RELAY_HOSTNAME};
+
+    # Resolve the upstream name again as DNS changes (e.g. when the relay
+    # container is recreated) instead of caching it forever at startup.
+    resolver ${RELAY_RESOLVER} valid=10s ipv6=off;
+
+    # When a proxy on a private network (Caddy, another nginx) is in front,
+    # take the real client address from X-Forwarded-For. Public addresses are
+    # never trusted, so this cannot be spoofed by an outside client.
+    set_real_ip_from 10.0.0.0/8;
+    set_real_ip_from 172.16.0.0/12;
+    set_real_ip_from 192.168.0.0/16;
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+
+    # A game session needs a handful of connections per player; this is far
+    # above that but stops one address from exhausting the relay.
+    limit_conn drunner_conn 50;
+
+    # Only the Socket.IO endpoint and the status page are public. Everything
+    # else (including the relay's /room and /info helpers, which exist for
+    # LAN direct mode and leak a room code and the host's LAN address) is 404.
+    location /socket.io/ {
+        set $drunner_upstream ${RELAY_UPSTREAM};
+        proxy_pass http://$drunner_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $drunner_connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        # Do not hold back long-poll responses or WebSocket frames.
+        proxy_buffering off;
+        # Idle WebSockets are kept alive by Socket.IO's own ping (every 25s).
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+    }
+
+    location = / {
+        set $drunner_upstream ${RELAY_UPSTREAM};
+        proxy_pass http://$drunner_upstream;
+        proxy_set_header Host $host;
+    }
+
+    location / {
+        return 404;
+    }
+}
