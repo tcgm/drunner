@@ -1,5 +1,5 @@
 import type { DungeonEvent } from '@/types'
-import { GiSkeletonKey } from 'react-icons/gi'
+import { GiSkeleton } from 'react-icons/gi'
 import { TAGS } from '@data/tags'
 
 export const SKELETAL_CHAMPION: DungeonEvent = {
@@ -54,5 +54,5 @@ export const SKELETAL_CHAMPION: DungeonEvent = {
     },
   ],
   depth: 4,
-  icon: GiSkeletonKey,
+  icon: GiSkeleton,
 }

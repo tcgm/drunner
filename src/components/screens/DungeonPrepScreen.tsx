@@ -146,6 +146,7 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
   })
 
   const canStart = party.filter(h => h !== null).length > 0
+  const partyHeroIds = new Set(party.flatMap(h => (h ? [h.id] : [])))
 
   const handleRosterHeroClick = (index: number) => {
     setSelectedHeroFromRoster(index)
@@ -342,6 +343,7 @@ export function DungeonPrepScreen({ onBack, onStart, onGoToTown }: DungeonPrepSc
         <HeroSelectionSidebar
           selectedHeroFromRoster={selectedHeroFromRoster}
           storedHeroes={heroRoster}
+          partyHeroIds={partyHeroIds}
           onRosterHeroClick={handleRosterHeroClick}
         />
 

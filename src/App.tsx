@@ -8,6 +8,7 @@ import { PartySetupScreen } from '@components/screens/PartySetupScreen'
 import DungeonScreen from '@components/screens/DungeonScreen'
 import RunHistoryScreen from '@components/screens/RunHistoryScreen'
 import DevTools from '@components/ui/DevTools'
+import { isDevToolsEnabled } from '@/utils/devMode'
 import { MusicControls } from '@components/ui/MusicControls'
 import { MusicManager } from '@components/ui/MusicManager'
 import { MigrationWarningDialog } from '@components/ui/MigrationWarningDialog'
@@ -490,7 +491,7 @@ function App() {
         {/* Global Multiplayer Button — accessible from every screen */}
         <GlobalMultiplayerButton />
 
-        <DevTools />
+        {isDevToolsEnabled() && <DevTools />}
         </Box>
         </HeroModalProvider>
       </ItemDetailModalProvider>

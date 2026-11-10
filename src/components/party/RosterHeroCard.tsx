@@ -12,10 +12,12 @@ import { HeroIcon } from '@/components/ui/HeroIcon'
 interface RosterHeroCardProps {
   hero: Hero
   isSelected: boolean
+  /** Hero is already placed in a party slot */
+  inParty?: boolean
   onClick: () => void
 }
 
-export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProps) {
+export function RosterHeroCard({ hero, isSelected, inParty = false, onClick }: RosterHeroCardProps) {
   const equippedItems = Object.values(hero.slots || {}).filter((item): item is Item => item !== null && 'stats' in item)
   
   const tooltipLabel = (
@@ -63,12 +65,13 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
         borderRadius="lg"
         borderWidth="2px"
         borderColor={isSelected ? 'blue.500' : 'gray.700'}
-        cursor="pointer"
-        onClick={onClick}
+        cursor={inParty ? 'default' : 'pointer'}
+        opacity={inParty ? 0.5 : 1}
+        onClick={inParty ? undefined : onClick}
         transition="all 0.2s"
         overflow="hidden"
         p={3}
-        _hover={{ 
+        _hover={inParty ? undefined : {
           borderColor: 'blue.400', 
           transform: 'translateY(-2px)',
           boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
@@ -122,9 +125,16 @@ export function RosterHeroCard({ hero, isSelected, onClick }: RosterHeroCardProp
               </HStack>
             </HStack>
             
-            <Text className="roster-hero-card-class" fontSize="xs" color="gray.400">
-              {hero.class.name}
-            </Text>
+            <HStack spacing={2}>
+              <Text className="roster-hero-card-class" fontSize="xs" color="gray.400">
+                {hero.class.name}
+              </Text>
+              {inParty && (
+                <Badge fontSize="2xs" colorScheme="green" variant="subtle">
+                  In party
+                </Badge>
+              )}
+            </HStack>
             
             <HStack className="roster-hero-card-stats" spacing={3} fontSize="xs" color="gray.500" pt={1}>
               <HStack spacing={1}>

@@ -4,11 +4,13 @@ import { RosterHeroCard } from './RosterHeroCard'
 
 interface RosterTabProps {
   storedHeroes: Hero[]
+  /** Ids of heroes already placed in the party */
+  partyHeroIds?: ReadonlySet<string>
   selectedHeroFromRoster: number | null
   onRosterHeroClick: (index: number) => void
 }
 
-export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroClick }: RosterTabProps) {
+export function RosterTab({ storedHeroes, partyHeroIds, selectedHeroFromRoster, onRosterHeroClick }: RosterTabProps) {
   return (
     <Box className="roster-tab" display="flex" flexDirection="column" h="100%">
       <Box flexShrink={0} mb={2}>
@@ -37,6 +39,7 @@ export function RosterTab({ storedHeroes, selectedHeroFromRoster, onRosterHeroCl
                 key={hero.id}
                 hero={hero}
                 isSelected={selectedHeroFromRoster === index}
+                inParty={partyHeroIds?.has(hero.id) ?? false}
                 onClick={() => onRosterHeroClick(index)}
               />
             ))

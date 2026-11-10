@@ -6,12 +6,14 @@ import type { Hero } from '../../types'
 interface HeroSelectionSidebarProps {
   selectedHeroFromRoster: number | null
   storedHeroes: Hero[]
+  partyHeroIds?: ReadonlySet<string>
   onRosterHeroClick: (index: number) => void
 }
 
 export function HeroSelectionSidebar({
   selectedHeroFromRoster,
   storedHeroes,
+  partyHeroIds,
   onRosterHeroClick,
 }: HeroSelectionSidebarProps) {
   return (
@@ -30,6 +32,7 @@ export function HeroSelectionSidebar({
       <Box flex={1} overflow="hidden">
         <RosterTab
           storedHeroes={storedHeroes}
+          partyHeroIds={partyHeroIds}
           selectedHeroFromRoster={selectedHeroFromRoster}
           onRosterHeroClick={onRosterHeroClick}
         />

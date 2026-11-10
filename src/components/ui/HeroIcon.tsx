@@ -110,7 +110,7 @@ export function HeroIcon({
   foregroundColor = foregroundColor || color || 'orange.400'
 
   return (
-    <Box position="relative" display="inline-flex" boxSize={boxSize} flexShrink={flexShrink} {...rest}>
+    <Box as="span" position="relative" display="inline-flex" boxSize={boxSize} flexShrink={flexShrink} {...rest}>
       {speciesDef?.backgroundImage ? (
         <Image
           src={speciesDef.backgroundImage}
@@ -136,6 +136,8 @@ export function HeroIcon({
       )}
       {classSvgMarkup ? (
         <Box
+          as="span"
+          display="block"
           position="absolute"
           boxSize="80%"
           top="10%"

@@ -24,6 +24,8 @@ export const createHeroActions: StateCreator<
 > = (set) => ({
   addHero: (hero, slotIndex) =>
     set((state) => {
+      // A hero can only occupy one party slot
+      if (state.party.some(p => p !== null && p.id === hero.id)) return state
       // If no slot specified, find first empty slot
       const targetIndex = slotIndex !== undefined ? slotIndex : state.party.findIndex(h => h === null)
       if (targetIndex === -1 || targetIndex >= state.party.length) return state // Party full or invalid slot

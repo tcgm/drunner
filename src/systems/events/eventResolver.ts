@@ -458,20 +458,31 @@ export function resolveEventOutcome(
           damageDescriptions.push(`${formatNameList(dodgedHeroes)} dodged!`)
         }
         
+        // Group heroes that took identical damage so the log stays compact but each
+        // number is the one that hero actually took. Defense mitigation is shown as
+        // "blocked" (not applicable to crits, which double the post-defense damage).
+        const describeHits = (hits: { name: string, dmg: number, origDmg: number }[], showBlocked: boolean): string[] => {
+          const groups = new Map<string, { names: string[], dmg: number, blocked: number }>()
+          hits.forEach(h => {
+            const blocked = showBlocked && !isTrueDamage ? Math.max(0, h.origDmg - h.dmg) : 0
+            const key = `${h.dmg}:${blocked}`
+            const group = groups.get(key) ?? { names: [], dmg: h.dmg, blocked }
+            group.names.push(h.name)
+            groups.set(key, group)
+          })
+          return [...groups.values()].map(g =>
+            `${formatNameList(g.names)} took ${g.dmg} damage${g.blocked > 0 ? ` (${g.blocked} blocked)` : ''}`
+          )
+        }
+
         if (critHits.length > 0) {
-          const critDesc = critHits.map(h => 
-            isTrueDamage ? `${h.name} took ${h.dmg}` : `${h.name} took ${h.dmg} (${h.origDmg})`
-          ).join(', ')
-          damageDescriptions.push(`💥 CRITICAL HIT! ${critDesc} damage`)
+          damageDescriptions.push(`💥 CRITICAL HIT! ${describeHits(critHits, false).join(', ')}`)
         }
-        
+
         if (normalHits.length > 0) {
-          const normalDesc = isTrueDamage
-            ? `${formatNameList(normalHits.map(h => h.name))} took ${normalHits[0].dmg} damage`
-            : `${formatNameList(normalHits.map(h => h.name))} took ${normalHits[0].dmg} (${normalHits[0].origDmg}) damage`
-          damageDescriptions.push(normalDesc)
+          damageDescriptions.push(...describeHits(normalHits, true))
         }
-        
+
         const damageDesc = damageDescriptions.join('; ')
         
         resolvedEffects.push({

@@ -221,7 +221,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
         left={0}
         right={0}
         bottom={0}
-        bgGradient="linear(to-b, #2d3015, #1a1a0d)"
+        bgGradient="linear(to-b, rgba(45, 48, 21, 0) 0%, #2d3015 14%, #1a1a0d 100%)"
         pointerEvents="none"
         zIndex={1}
       />
@@ -229,7 +229,7 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
       {/* Horizon line */}
       <Box 
         position="absolute"
-        top="60%"
+        top="40%"
         left={0}
         right={0}
         height="2px"
@@ -349,14 +349,17 @@ export default function TownHubScreen({ onEnterDungeon, onBack, openGuildHallOnM
             {/* (castle is now a building in townLayout) */}
 
             {/* Far background tower on right */}
-            <MotionBox
-              className="building-tower-back row-1"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 0.3, scale: 1 }}
-              transition={{ duration: 1, delay: 0.3 }}
-            >
-              <Icon as={GiTowerFlag} boxSize="70px" color="gray.600" filter="blur(1px)" />
-            </MotionBox>
+            {!isMobile && (
+              <MotionBox
+                className="building-tower-back row-1"
+                style={{ gridColumn: gridCols, gridRow: 1 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 0.3, scale: 1 }}
+                transition={{ duration: 1, delay: 0.3 }}
+              >
+                <Icon as={GiTowerFlag} boxSize="70px" color="gray.600" filter="blur(1px)" />
+              </MotionBox>
+            )}
 
             {/* Back row - coming soon buildings */}
             {/* Midground buildings */}
@@ -574,7 +577,7 @@ function BuildingCard({ icon, label, color, disabled = false, sizeMultiplier = 1
           className="icon-scale-wrapper"
           style={{
             transform: `scale(${sizeMultiplier})`,
-            transformOrigin: 'center',
+            transformOrigin: 'center bottom',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -608,9 +611,9 @@ function BuildingCard({ icon, label, color, disabled = false, sizeMultiplier = 1
           <Text 
             fontSize={labelSize ?? 'sm'} 
             fontWeight="bold" 
-            color={disabled ? 'gray.500' : 'white'}
+            color={disabled ? 'gray.400' : 'white'}
             textAlign="center"
-            textShadow={disabled ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.8)'}
+            textShadow="0 2px 4px rgba(0, 0, 0, 0.9)"
           >
             {label}
           </Text>

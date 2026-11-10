@@ -235,6 +235,11 @@
 
 /* Responsive - Narrow screens: shrink icons */
 @media (max-width: 768px) {
+  /* 4 rows of 80px icons + labels need more vertical room than the desktop grid */
+  .town-grid {
+    top: 17%;
+    height: 78%;
+  }
   .building-card svg,
   .building-card img {
     width: 80px !important;

@@ -118,6 +118,7 @@ export function PartySetupScreen({ onBack, onStart, onGoToTown }: PartySetupScre
   })
 
   const canStart = party.filter(h => h !== null).length > 0
+  const partyHeroIds = new Set(party.flatMap(h => (h ? [h.id] : [])))
 
   const handleRosterHeroClick = (index: number) => {
     setSelectedHeroFromRoster(index)
@@ -246,6 +247,7 @@ export function PartySetupScreen({ onBack, onStart, onGoToTown }: PartySetupScre
         <HeroSelectionSidebar
           selectedHeroFromRoster={selectedHeroFromRoster}
           storedHeroes={heroRoster}
+          partyHeroIds={partyHeroIds}
           onRosterHeroClick={handleRosterHeroClick}
         />
 

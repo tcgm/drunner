@@ -1047,3 +1047,27 @@
     font-size: 1rem !important;
   }
 }
+
+/* ============================================================================
+   PHONE PORTRAIT - keep bottom controls clear of the global floating buttons
+   (music, multiplayer, dev tools) and lay the drawer toggles out in a row
+   ============================================================================ */
+@media (orientation: portrait) and (max-width: 768px) {
+  body .dungeon-action-bar-portrait,
+  body .party-summary {
+    margin-bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .mobile-fab-container {
+    flex-direction: row;
+    right: 3.5rem;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 0.5rem;
+  }
+
+  .mobile-fab {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+  }
+}

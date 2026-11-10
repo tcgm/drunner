@@ -22,9 +22,9 @@ export const townGridCols = 9
  */
 export const townGridRowSizes = ['10%', '40%', '50%']
 
-/** Mobile portrait grid: 3 columns */
+/** Mobile portrait grid: 3 columns, 4 rows (11 buildings don't fit a 3x3 grid) */
 export const mobileTownGridCols = 3
-export const mobileTownGridRowSizes = ['20%', '35%', '35%']
+export const mobileTownGridRowSizes = ['22%', '24%', '24%', '30%']
 
 /**
  * Visual depth scale per row – row 1 is furthest back (smallest), row 3 is foreground.
@@ -34,6 +34,7 @@ export const townRowDepthScale: Record<number, number> = {
   1: 0.85,
   2: 0.93,
   3: 1.0,
+  4: 1.0,
 }
 
 /**
@@ -74,19 +75,19 @@ export const townLayout: BuildingPlacement[] = [
   { building: market,          col: 3, row: 2, side: 'left',
     mobile: { col: 2, row: 2 } },
   { building: forge,           col: 8, row: 3, side: 'right',
-    mobile: { col: 3, row: 2 } },
-  { building: tower,           col: 7, row: 2, side: 'right',
     mobile: { col: 3, row: 3 } },
+  { building: tower,           col: 7, row: 2, side: 'right',
+    mobile: { col: 3, row: 2 } },
 
   // ── Front row (row 3) ─────────────────────────────────────────────
   { building: bank,            col: 2, row: 3, side: 'left',
     mobile: { col: 1, row: 3 } },
   { building: dungeonEntrance, col: 5, row: 3, side: 'left', action: 'enter-dungeon',
-    mobile: { col: 2, row: 3 } },
+    mobile: { col: 1, row: 4, colSpan: 3 } },
 
   // ── Guild buildings ───────────────────────────────────────────────
   { building: guildHall,       col: 6, row: 2, side: 'right',
-    mobile: { col: 3, row: 3 } },
+    mobile: { col: 2, row: 3 } },
   { building: heroShrine,      col: 2, row: 1, side: 'left',
-    mobile: { col: 1, row: 1, hidden: false } },
+    mobile: { col: 2, row: 1 } },
 ]
