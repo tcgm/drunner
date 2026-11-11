@@ -98,7 +98,8 @@ function validate(opts) {
 function render({ serverName, upstream, resolver }) {
   if (!existsSync(TEMPLATE)) fail(`Template not found: ${TEMPLATE}`)
   const vars = { RELAY_HOSTNAME: serverName, RELAY_UPSTREAM: upstream, RELAY_RESOLVER: resolver }
-  return readFileSync(TEMPLATE, 'utf8').replace(/\$\{(RELAY_[A-Z]+)\}/g, (whole, key) => vars[key] ?? whole)
+  // Normalise line endings: a Windows checkout may have turned the template into CRLF.
+  return readFileSync(TEMPLATE, 'utf8').replace(/\r\n/g, '\n').replace(/\$\{(RELAY_[A-Z]+)\}/g, (whole, key) => vars[key] ?? whole)
 }
 
 // ── Where nginx runs ─────────────────────────────────────────────────────────
@@ -156,6 +157,7 @@ function install(config, opts) {
   const hadFile = existing.ok
   if (hadFile && existing.out.replace(/\r/g, '').trim() === config.rendered.replace(/\r/g, '').trim()) {
     step('already up to date, nothing to change')
+    checkRelayReachable(sh, where, config.upstream, Boolean(opts.container))
     return
   }
 
@@ -197,11 +199,38 @@ function install(config, opts) {
 
   if (opts['no-reload']) {
     step('not reloading (--no-reload); reload nginx to apply')
+    checkRelayReachable(sh, where, config.upstream, Boolean(opts.container))
     return
   }
   const reload = sh('nginx -s reload')
   if (!reload.ok) fail(`Config is installed and valid, but reloading nginx failed: ${reload.out}\nReload it yourself to apply.`)
   step('reloaded nginx')
+  checkRelayReachable(sh, where, config.upstream, Boolean(opts.container))
+}
+
+/**
+ * Warn if nginx's own machine/container cannot reach the relay. Never fails the install
+ * (the relay may simply not be running yet). The common trap: a Docker Desktop container
+ * cannot reach the host's LAN address, so nginx would hang on every relay request.
+ */
+function checkRelayReachable(sh, where, upstream, inContainer) {
+  const probe = sh(
+    `command -v wget >/dev/null 2>&1 || { echo NOWGET; exit 0; }; ` +
+    `wget -q -O /dev/null -T 3 -t 1 'http://${upstream}/' && echo REACHABLE || echo UNREACHABLE`
+  )
+  if (/UNREACHABLE/.test(probe.out)) {
+    console.warn(`\nWarning: ${where} could not reach the relay at ${upstream}.`)
+    console.warn('  - Is the relay running and listening on that port?')
+    if (inContainer && !upstream.startsWith('host.docker.internal')) {
+      console.warn('  - A Docker Desktop container usually cannot reach the host\'s LAN address. If the relay runs on')
+      console.warn('    this PC, re-run with:  --upstream host.docker.internal:<port> --resolver 127.0.0.11')
+    }
+    console.warn('  Until it can, requests to /socket.io/ will hang or fail with 502/504.')
+  } else if (/REACHABLE/.test(probe.out)) {
+    console.log(`- relay reachable at ${upstream}`)
+  } else {
+    console.log('- could not check relay reachability (no wget on the target); test it with curl')
+  }
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -216,7 +245,7 @@ config.rendered = render(config)
 
 if (opts.container || opts.local) {
   install(config, opts)
-  if (!opts['dry-run']) console.log(`\nDone. Test: curl -i https://${config.serverName}/socket.io/?EIO=4\\&transport=polling  (expect 200; /room and /info should be 404)`)
+  if (!opts['dry-run']) console.log(`\nDone. Test: curl -i "https://${config.serverName}/socket.io/?EIO=4&transport=polling"  (expect 200; /room and /info should be 404)`)
 } else {
   process.stdout.write(config.rendered)
 }

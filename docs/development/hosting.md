@@ -7,6 +7,12 @@ encodes the host's LAN address (direct/LAN mode connects to port **3001**).
 
 Everything needed to host it is in this repo. You need Docker, or an existing nginx.
 
+On Windows, two scripts in `scripts/` do the setup interactively (they ask questions and
+show what they will change before changing it):
+
+- `setup-relay-docker.bat` - options 1 and 2 below (the relay, optionally with Caddy + nginx).
+- `setup-relay-nginx.bat` - option 3 below, for an nginx that runs in a Docker container.
+
 ## Option 1: friends on your network (relay only)
 
 ```
@@ -54,6 +60,13 @@ It writes into `sites-available` and `sites-enabled` if your nginx uses them, ot
 nginx config directory), runs `nginx -t`, reloads, and **restores the old file if nginx
 rejects the new one**. `--dry-run` shows the plan, `--no-reload` skips the reload.
 Run `node scripts/setup-nginx.mjs --help` for every option.
+
+If your nginx runs in a Docker container on Docker Desktop and the relay runs on the same
+PC, use `--upstream host.docker.internal:<port> --resolver 127.0.0.11`. Such a container
+cannot reach the PC's own LAN address (for example `192.168.1.x`), and nginx would hang on
+every relay request. The script checks that nginx can reach the relay after installing and
+warns if it cannot. (On a Linux host, give the nginx service
+`extra_hosts: ["host.docker.internal:host-gateway"]` for the same name to work.)
 
 TLS is not set up by the script. Terminate it in front of nginx (Caddy, Cloudflare), or
 run `certbot --nginx -d relay.example.com` afterwards. The script supports one relay

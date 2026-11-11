@@ -1,0 +1,10 @@
+# Files that are mounted into Linux containers or run by Linux tools must keep
+# LF line endings even when checked out on Windows (autocrlf would make them CRLF).
+deploy/** text eol=lf
+docker-compose*.yml text eol=lf
+scripts/setup-nginx.mjs text eol=lf
+*.sh text eol=lf
+
+# Windows batch files need CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
